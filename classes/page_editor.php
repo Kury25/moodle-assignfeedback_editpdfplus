@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,6 +25,8 @@
 
 namespace assignfeedback_editpdfplus;
 
+use assignfeedback_editpdfplus\tool;
+
 /**
  * This class performs crud operations on comments and annotations from a page of a response.
  *
@@ -46,7 +49,7 @@ class page_editor {
         global $DB;
 
         $comments = array();
-        $params = array('gradeid'=>$gradeid, 'pageno'=>$pageno, 'draft'=>1);
+        $params = array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1);
         if (!$draft) {
             $params['draft'] = 0;
         }
@@ -68,7 +71,7 @@ class page_editor {
     public static function set_comments($gradeid, $pageno, $comments) {
         global $DB;
 
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'pageno'=>$pageno, 'draft'=>1));
+        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1));
 
         $added = 0;
         foreach ($comments as $record) {
@@ -98,7 +101,7 @@ class page_editor {
      * @return comment or false
      */
     public static function get_comment($commentid) {
-        $record = $DB->get_record('assignfeedback_editpp_cmnt', array('id'=>$commentid), '*', IGNORE_MISSING);
+        $record = $DB->get_record('assignfeedback_editpp_cmnt', array('id' => $commentid), '*', IGNORE_MISSING);
         if ($record) {
             return new comment($record);
         }
@@ -123,7 +126,23 @@ class page_editor {
      */
     public static function remove_comment($commentid) {
         global $DB;
-        return $DB->delete_records('assignfeedback_editpp_cmnt', array('id'=>$commentid));
+        return $DB->delete_records('assignfeedback_editpp_cmnt', array('id' => $commentid));
+    }
+
+    /**
+     * Get all tools for a page.
+     * @param int $contextid
+     * @param int $axis
+     * @return tool[]
+     */
+    public static function get_tools($contextidlist) {
+        global $DB;
+        $tools = array();
+        $records = $DB->get_records_list('assignfeedback_editpp_tool', 'contextid', $contextidlist);
+        foreach ($records as $record) {
+            array_push($tools, new tool($record));
+        }
+        return $tools;
     }
 
     /**
@@ -136,7 +155,7 @@ class page_editor {
     public static function get_annotations($gradeid, $pageno, $draft) {
         global $DB;
 
-        $params = array('gradeid'=>$gradeid, 'pageno'=>$pageno, 'draft'=>1);
+        $params = array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1);
         if (!$draft) {
             $params['draft'] = 0;
         }
@@ -187,7 +206,7 @@ class page_editor {
     public static function get_annotation($annotationid) {
         global $DB;
 
-        $record = $DB->get_record('assignfeedback_editpp_annot', array('id'=>$annotationid), '*', IGNORE_MISSING);
+        $record = $DB->get_record('assignfeedback_editpp_annot', array('id' => $annotationid), '*', IGNORE_MISSING);
         if ($record) {
             return new annotation($record);
         }
@@ -203,8 +222,8 @@ class page_editor {
         global $DB;
 
         // Delete the non-draft annotations and comments.
-        $result = $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'draft'=>0));
-        $result = $DB->delete_records('assignfeedback_editpp_annot', array('gradeid'=>$gradeid, 'draft'=>0)) && $result;
+        $result = $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
+        $result = $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0)) && $result;
         return $result;
     }
 
@@ -217,17 +236,17 @@ class page_editor {
         global $DB;
 
         // Delete the previous non-draft annotations and comments.
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'draft'=>0));
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid'=>$gradeid, 'draft'=>0));
+        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
+        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0));
 
         // Copy all the draft annotations and comments to non-drafts.
-        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid'=>$gradeid, 'draft'=>1));
+        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 1));
         foreach ($records as $record) {
             unset($record->id);
             $record->draft = 0;
             $DB->insert_record('assignfeedback_editpp_annot', $record);
         }
-        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'draft'=>1));
+        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
         foreach ($records as $record) {
             unset($record->id);
             $record->draft = 0;
@@ -244,7 +263,7 @@ class page_editor {
      */
     public static function has_annotations_or_comments($gradeid, $includedraft) {
         global $DB;
-        $params = array('gradeid'=>$gradeid);
+        $params = array('gradeid' => $gradeid);
         if (!$includedraft) {
             $params['draft'] = 0;
         }
@@ -266,17 +285,17 @@ class page_editor {
         global $DB;
 
         // Delete the previous non-draft annotations and comments.
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'draft'=>1));
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid'=>$gradeid, 'draft'=>1));
+        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
+        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 1));
 
         // Copy all the draft annotations and comments to non-drafts.
-        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid'=>$gradeid, 'draft'=>0));
+        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0));
         foreach ($records as $record) {
             unset($record->id);
             $record->draft = 0;
             $DB->insert_record('assignfeedback_editpp_annot', $record);
         }
-        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid'=>$gradeid, 'draft'=>0));
+        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
         foreach ($records as $record) {
             unset($record->id);
             $record->draft = 0;
@@ -306,7 +325,7 @@ class page_editor {
     public static function remove_annotation($annotationid) {
         global $DB;
 
-        return $DB->delete_records('assignfeedback_editpp_annot', array('id'=>$annotationid));
+        return $DB->delete_records('assignfeedback_editpp_annot', array('id' => $annotationid));
     }
 
     /**
@@ -368,8 +387,7 @@ class page_editor {
         $fs->delete_area_files($contextid, $component, $area, $itemid);
 
         // Copy the files from the source area.
-        if ($files = $fs->get_area_files($contextid, $component, $area, $sourceitemid,
-                                         "filename", $includesubdirs)) {
+        if ($files = $fs->get_area_files($contextid, $component, $area, $sourceitemid, "filename", $includesubdirs)) {
             foreach ($files as $file) {
                 $newrecord = new \stdClass();
                 $newrecord->contextid = $contextid;
@@ -395,4 +413,5 @@ class page_editor {
         $result = $result && $DB->delete_records('assignfeedback_editpp_cmnt', $conditions);
         return $result;
     }
+
 }

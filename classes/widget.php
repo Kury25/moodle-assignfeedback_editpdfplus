@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +22,6 @@
  * @copyright 2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -35,20 +35,30 @@ class assignfeedback_editpdfplus_widget implements renderable {
 
     /** @var int $assignment - Assignment instance id */
     public $assignment = 0;
+
     /** @var int $userid - The user id we are grading */
     public $userid = 0;
+
     /** @var mixed $attemptnumber - The attempt number we are grading */
     public $attemptnumber = 0;
+
     /** @var moodle_url $downloadurl */
     public $downloadurl = null;
+
     /** @var string $downloadfilename */
     public $downloadfilename = null;
+
     /** @var string[] $stampfiles */
     public $stampfiles = array();
+
     /** @var bool $readonly */
     public $readonly = true;
+
     /** @var integer $pagetotal */
     public $pagetotal = 0;
+
+    /** @var string[] $toolbars */
+    public $toolbars = array();
 
     /**
      * Constructor
@@ -61,8 +71,7 @@ class assignfeedback_editpdfplus_widget implements renderable {
      * @param bool $readonly - Show the readonly interface (no tools).
      * @param integer $pagetotal - The total number of pages.
      */
-    public function __construct($assignment, $userid, $attemptnumber, $downloadurl,
-                                $downloadfilename, $stampfiles, $readonly, $pagetotal) {
+    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $pagetotal, $toolbars) {
         $this->assignment = $assignment;
         $this->userid = $userid;
         $this->attemptnumber = $attemptnumber;
@@ -71,5 +80,7 @@ class assignfeedback_editpdfplus_widget implements renderable {
         $this->stampfiles = $stampfiles;
         $this->readonly = $readonly;
         $this->pagetotal = $pagetotal;
+        $this->toolbars = $toolbars;
     }
+
 }

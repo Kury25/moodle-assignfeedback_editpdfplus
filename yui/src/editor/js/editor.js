@@ -220,15 +220,15 @@ EDITOR.prototype = {
 
         // Initalise the colour buttons.
         /*button = this.get_dialogue_element(SELECTOR.COMMENTCOLOURBUTTON);
-
-        imgurl = M.util.image_url('background_colour_' + this.currentedit.commentcolour, 'assignfeedback_editpdfplus');
-        button.one('img').setAttribute('src', imgurl);
-
-        if (this.currentedit.commentcolour === 'clear') {
-            button.one('img').setStyle('borderStyle', 'dashed');
-        } else {
-            button.one('img').setStyle('borderStyle', 'solid');
-        }*/
+         
+         imgurl = M.util.image_url('background_colour_' + this.currentedit.commentcolour, 'assignfeedback_editpdfplus');
+         button.one('img').setAttribute('src', imgurl);
+         
+         if (this.currentedit.commentcolour === 'clear') {
+         button.one('img').setStyle('borderStyle', 'dashed');
+         } else {
+         button.one('img').setStyle('borderStyle', 'solid');
+         }*/
 
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
@@ -240,10 +240,10 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
 
-       /* button = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
-        button.one('img').setAttrs({'src': this.get_stamp_image_url(this.currentedit.stamp),
-            'height': '16',
-            'width': '16'});*/
+        /* button = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
+         button.one('img').setAttrs({'src': this.get_stamp_image_url(this.currentedit.stamp),
+         'height': '16',
+         'width': '16'});*/
     },
     /**
      * Called to get the bounds of the drawing region.
@@ -539,14 +539,14 @@ EDITOR.prototype = {
      */
     setup_toolbar: function () {
         var toolnode,
-                //commentcolourbutton,
                 annotationcolourbutton,
                 searchcommentsbutton,
-                //currentstampbutton,
-                //stampfiles,
-                picker//,
-                //filename;
-                ;
+                picker;
+
+        var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '1');
+        customtoolbar.show();
+        var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR);
+        axisselector.on('change', this.update_custom_toolbars, this);
 
         searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
         searchcommentsbutton.on('click', this.open_search_comments, this);
@@ -566,20 +566,20 @@ EDITOR.prototype = {
         // Set the default tool.
 
         /*commentcolourbutton = this.get_dialogue_element(SELECTOR.COMMENTCOLOURBUTTON);
-        picker = new M.assignfeedback_editpdfplus.colourpicker({
-            buttonNode: commentcolourbutton,
-            colours: COMMENTCOLOUR,
-            iconprefix: 'background_colour_',
-            callback: function (e) {
-                var colour = e.target.getAttribute('data-colour');
-                if (!colour) {
-                    colour = e.target.ancestor().getAttribute('data-colour');
-                }
-                this.currentedit.commentcolour = colour;
-                this.handle_tool_button(e, "comment");
-            },
-            context: this
-        });*/
+         picker = new M.assignfeedback_editpdfplus.colourpicker({
+         buttonNode: commentcolourbutton,
+         colours: COMMENTCOLOUR,
+         iconprefix: 'background_colour_',
+         callback: function (e) {
+         var colour = e.target.getAttribute('data-colour');
+         if (!colour) {
+         colour = e.target.ancestor().getAttribute('data-colour');
+         }
+         this.currentedit.commentcolour = colour;
+         this.handle_tool_button(e, "comment");
+         },
+         context: this
+         });*/
 
         annotationcolourbutton = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         picker = new M.assignfeedback_editpdfplus.colourpicker({
@@ -602,31 +602,40 @@ EDITOR.prototype = {
         });
 
         /*stampfiles = this.get('stampfiles');
-        if (stampfiles.length <= 0) {
-            this.get_dialogue_element(TOOLSELECTOR.stamp).ancestor().hide();
-        } else {
-            filename = stampfiles[0].substr(stampfiles[0].lastIndexOf('/') + 1);
-            this.currentedit.stamp = filename;
-            currentstampbutton = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
-
-            picker = new M.assignfeedback_editpdfplus.stamppicker({
-                buttonNode: currentstampbutton,
-                stamps: stampfiles,
-                callback: function (e) {
-                    var stamp = e.target.getAttribute('data-stamp'),
-                            filename;
-
-                    if (!stamp) {
-                        stamp = e.target.ancestor().getAttribute('data-stamp');
-                    }
-                    filename = stamp.substr(stamp.lastIndexOf('/'));
-                    this.currentedit.stamp = filename;
-                    this.handle_tool_button(e, "stamp");
-                },
-                context: this
-            });
-            this.refresh_button_state();
-        }*/
+         if (stampfiles.length <= 0) {
+         this.get_dialogue_element(TOOLSELECTOR.stamp).ancestor().hide();
+         } else {
+         filename = stampfiles[0].substr(stampfiles[0].lastIndexOf('/') + 1);
+         this.currentedit.stamp = filename;
+         currentstampbutton = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
+         
+         picker = new M.assignfeedback_editpdfplus.stamppicker({
+         buttonNode: currentstampbutton,
+         stamps: stampfiles,
+         callback: function (e) {
+         var stamp = e.target.getAttribute('data-stamp'),
+         filename;
+         
+         if (!stamp) {
+         stamp = e.target.ancestor().getAttribute('data-stamp');
+         }
+         filename = stamp.substr(stamp.lastIndexOf('/'));
+         this.currentedit.stamp = filename;
+         this.handle_tool_button(e, "stamp");
+         },
+         context: this
+         });
+         this.refresh_button_state();
+         }*/
+    },
+    update_custom_toolbars: function () {
+        Y.all(SELECTOR.CUSTOMTOOLBARS).each(function (toolbar) {
+            toolbar.hide();
+        }, this);
+        var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR+' option:checked');
+        var axisid= axisselector.get('value');
+        var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
+        customtoolbar.show();
     },
     /**
      * Change the current tool.

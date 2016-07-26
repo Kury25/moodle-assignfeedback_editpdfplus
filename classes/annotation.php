@@ -58,7 +58,7 @@ class annotation {
     public $path = '';
 
     /** @var int toolid for this annotation. */
-    public $toolid = 9;
+    public $toolid = 0;
     
     /** @var string textannot, contains the text of this annotation */
     public $textannot = '';

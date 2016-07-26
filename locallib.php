@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,7 +23,6 @@
  * @copyright 2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 use \assignfeedback_editpdfplus\document_services;
@@ -64,31 +64,30 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $grade = $this->assignment->get_user_grade($userid, true);
         }
 
-        $feedbackfile = document_services::get_feedback_document($this->assignment->get_instance()->id,
-                                                                 $userid,
-                                                                 $attempt);
+        $feedbackfile = document_services::get_feedback_document($this->assignment->get_instance()->id, $userid, $attempt);
 
         $stampfiles = array();
         $fs = get_file_storage();
         $syscontext = context_system::instance();
 
+        // get the costum toolbars
+        $toolbars = array();
+        $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
+        $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
+        $tools = page_editor::get_tools($coursecontexts);
+        foreach ($tools as $tool) {
+            if ($tool->axis > 0) {
+                $toolbars[$tool->axis - 1][] = $tool;
+            }
+        }
+        //debugging(sizeof($toolbars[0]) . ' ' . sizeof($toolbars[1]) . ' ' . sizeof($toolbars[2]));
         // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($syscontext->id,
-                                         'assignfeedback_editpdfplus',
-                                         'stamps',
-                                         0,
-                                         "filename",
-                                         false)) {
+        if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {
             foreach ($files as $file) {
                 $filename = $file->get_filename();
                 if ($filename !== '.') {
 
-                    $existingfile = $fs->get_file($this->assignment->get_context()->id,
-                                                  'assignfeedback_editpdfplus',
-                                                  'stamps',
-                                                  $grade->id,
-                                                  '/',
-                                                  $file->get_filename());
+                    $existingfile = $fs->get_file($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename());
                     if (!$existingfile) {
                         $newrecord = new stdClass();
                         $newrecord->contextid = $this->assignment->get_context()->id;
@@ -100,22 +99,11 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         }
 
         // Now get the full list of stamp files for this instance.
-        if ($files = $fs->get_area_files($this->assignment->get_context()->id,
-                                         'assignfeedback_editpdfplus',
-                                         'stamps',
-                                         $grade->id,
-                                         "filename",
-                                         false)) {
+        if ($files = $fs->get_area_files($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
             foreach ($files as $file) {
                 $filename = $file->get_filename();
                 if ($filename !== '.') {
-                    $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id,
-                                                   'assignfeedback_editpdfplus',
-                                                   'stamps',
-                                                   $grade->id,
-                                                   '/',
-                                                   $file->get_filename(),
-                                                   false);
+                    $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename(), false);
                     array_push($stampfiles, $url->out());
                 }
             }
@@ -124,30 +112,14 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         $url = false;
         $filename = '';
         if ($feedbackfile) {
-            $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id,
-                                                   'assignfeedback_editpdfplus',
-                                                   document_services::FINAL_PDF_FILEAREA,
-                                                   $grade->id,
-                                                   '/',
-                                                   $feedbackfile->get_filename(),
-                                                   false);
-           $filename = $feedbackfile->get_filename();
+            $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $feedbackfile->get_filename(), false);
+            $filename = $feedbackfile->get_filename();
         }
 
         // Retrieve total number of pages.
-        $pagetotal = document_services::page_number_for_attempt($this->assignment->get_instance()->id,
-                $userid,
-                $attempt,
-                $readonly);
+        $pagetotal = document_services::page_number_for_attempt($this->assignment->get_instance()->id, $userid, $attempt, $readonly);
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id,
-                                                    $userid,
-                                                    $attempt,
-                                                    $url,
-                                                    $filename,
-                                                    $stampfiles,
-                                                    $readonly,
-                                                    $pagetotal);
+        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $pagetotal, $toolbars);
         return $widget;
     }
 
@@ -295,10 +267,8 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         $html = '';
         // Show a link to download the pdf.
         if (page_editor::has_annotations_or_comments($grade->id, false)) {
-            $html = $this->assignment->render_area_files('assignfeedback_editpdfplus',
-                                                         document_services::FINAL_PDF_FILEAREA,
-                                                         $grade->id);
-            debugging('tutu');
+            $html = $this->assignment->render_area_files('assignfeedback_editpdfplus', document_services::FINAL_PDF_FILEAREA, $grade->id);
+            //debugging('tutu');
             // Also show the link to the read-only interface.
             $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
             $widget = $this->get_widget($grade->userid, $grade, true);
@@ -316,8 +286,8 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     public function is_empty(stdClass $grade) {
         global $DB;
 
-        $comments = $DB->count_records('assignfeedback_editpp_cmnt', array('gradeid'=>$grade->id, 'draft'=>0));
-        $annotations = $DB->count_records('assignfeedback_editpdfp_annot', array('gradeid'=>$grade->id, 'draft'=>0));
+        $comments = $DB->count_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id, 'draft' => 0));
+        $annotations = $DB->count_records('assignfeedback_editpdfp_annot', array('gradeid' => $grade->id, 'draft' => 0));
         return $comments == 0 && $annotations == 0;
     }
 
@@ -328,7 +298,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function delete_instance() {
         global $DB;
-        $grades = $DB->get_records('assign_grades', array('assignment'=>$this->assignment->get_instance()->id), '', 'id');
+        $grades = $DB->get_records('assign_grades', array('assignment' => $this->assignment->get_instance()->id), '', 'id');
         if ($grades) {
             list($gradeids, $params) = $DB->get_in_or_equal(array_keys($grades), SQL_PARAMS_NAMED);
             $DB->delete_records_select('assignfeedback_editpdfp_annot', 'gradeid ' . $gradeids, $params);
@@ -350,6 +320,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         }
         return $this->enabledcache;
     }
+
     /**
      * Automatically hide the setting for the editpdf feedback plugin.
      *
@@ -375,4 +346,5 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     public function supports_review_panel() {
         return true;
     }
+
 }

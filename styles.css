@@ -75,6 +75,11 @@
 .yui3-commentmenu-hidden {
     display: none;
 }
+
+.lineplusbutton, .lineplusbutton:hover {
+    text-decoration: line-through;
+}
+
 .assignfeedback_editpdfplus_widget .pageheader button img {
     padding-top: 3px;
     vertical-align: top;
@@ -90,7 +95,6 @@
     border-radius: 0px;
     margin: 0px;
     height: 30px;
-    line-height: 30px;
     vertical-align: top;
     cursor: pointer;
 }
