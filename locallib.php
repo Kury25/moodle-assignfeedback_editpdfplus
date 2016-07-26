@@ -287,7 +287,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         global $DB;
 
         $comments = $DB->count_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id, 'draft' => 0));
-        $annotations = $DB->count_records('assignfeedback_editpdfp_annot', array('gradeid' => $grade->id, 'draft' => 0));
+        $annotations = $DB->count_records('assignfeedback_editpp_annot', array('gradeid' => $grade->id, 'draft' => 0));
         return $comments == 0 && $annotations == 0;
     }
 
@@ -301,7 +301,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         $grades = $DB->get_records('assign_grades', array('assignment' => $this->assignment->get_instance()->id), '', 'id');
         if ($grades) {
             list($gradeids, $params) = $DB->get_in_or_equal(array_keys($grades), SQL_PARAMS_NAMED);
-            $DB->delete_records_select('assignfeedback_editpdfp_annot', 'gradeid ' . $gradeids, $params);
+            $DB->delete_records_select('assignfeedback_editpp_annot', 'gradeid ' . $gradeids, $params);
             $DB->delete_records_select('assignfeedback_editpp_cmnt', 'gradeid ' . $gradeids, $params);
         }
         return true;

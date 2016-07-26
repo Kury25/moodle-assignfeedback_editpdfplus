@@ -45,7 +45,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         DIALOGUE : '.' + CSS.DIALOGUE,
         CUSTOMTOOLBARID : '#toolbaraxis',
         CUSTOMTOOLBARS : '.customtoolbar',
-        AXISCUSTOMTOOLBAR : '.menuaxisselection'
+        AXISCUSTOMTOOLBAR : '.menuaxisselection',
+        CUSTOMTOOLBARBUTTONS : '.costumtoolbarbutton'
     },
     SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
     SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',
@@ -76,7 +77,14 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         //'stamp': '.stampbutton',
         'select': '.selectbutton',
         'drag': '.dragbutton',
-        'highlight': '.highlightbutton'
+        'highlight': '.highlightbutton'/*,
+        /*'highlightplus': '.highlightplusbutton',
+        'lineplus': '.lineplusbutton',
+        'stampplus': '.stampplusbutton',
+        'frame': '.framebutton',
+        'verticalline': '.verticallinebutton',
+        'stampcomment': '.stampcommentbutton',
+        'commentplus': '.commentplusbutton'*/
     },
     TOOLTYPE = {
         'PEN' : 8,

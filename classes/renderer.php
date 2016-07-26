@@ -127,7 +127,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 default:
                     break;
             }
-            $iconparams = array('data-tool' => $datatool, 'class' => $class . 'button');
+            $iconparams = array('data-tool' => $datatool, 'class' => $class . 'button costumtoolbarbutton', 'id' => 'ctbutton' . $fulltool->id);
         }
 
         if (!empty($accesskey)) {
@@ -251,7 +251,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                         $toolbarCostumdiv .
                         $toolbar001 .
                         $clearfix, 'pageheader');
-        debugging($pageheader);
+        //debugging($pageheader);
 
         $body .= $pageheader;
 

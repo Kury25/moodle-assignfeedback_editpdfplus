@@ -47,7 +47,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         DIALOGUE : '.' + CSS.DIALOGUE,
         CUSTOMTOOLBARID : '#toolbaraxis',
         CUSTOMTOOLBARS : '.customtoolbar',
-        AXISCUSTOMTOOLBAR : '.menuaxisselection'
+        AXISCUSTOMTOOLBAR : '.menuaxisselection',
+        CUSTOMTOOLBARBUTTONS : '.costumtoolbarbutton'
     },
     SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
     SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',
@@ -78,7 +79,14 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         //'stamp': '.stampbutton',
         'select': '.selectbutton',
         'drag': '.dragbutton',
-        'highlight': '.highlightbutton'
+        'highlight': '.highlightbutton'/*,
+        /*'highlightplus': '.highlightplusbutton',
+        'lineplus': '.lineplusbutton',
+        'stampplus': '.stampplusbutton',
+        'frame': '.framebutton',
+        'verticalline': '.verticallinebutton',
+        'stampcomment': '.stampcommentbutton',
+        'commentplus': '.commentplusbutton'*/
     },
     TOOLTYPE = {
         'PEN' : 8,
@@ -3294,7 +3302,11 @@ EDITOR.prototype = {
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         button.one('img').setAttribute('src', imgurl);
 
-        currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
+        console.log(this.currentedit.tool);
+        if (this.currentedit.id)
+            currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
+        else
+            currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
         currenttoolnode.setAttribute('aria-pressed', 'true');
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
@@ -3607,6 +3619,13 @@ EDITOR.prototype = {
         customtoolbar.show();
         var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR);
         axisselector.on('change', this.update_custom_toolbars, this);
+        Y.all(SELECTOR.CUSTOMTOOLBARBUTTONS).each(function (toolnode) {
+            var toolid = toolnode.get('id');
+            var toollib = toolnode.getAttribute('data-tool');
+            toolnode.on('click', this.handle_tool_button, this, toollib, toolid);
+            toolnode.on('key', this.handle_tool_button, 'down:13', this, toollib, toolid);
+            toolnode.setAttribute('aria-pressed', 'false');
+        }, this);
 
         searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
         searchcommentsbutton.on('click', this.open_search_comments, this);
@@ -3689,16 +3708,11 @@ EDITOR.prototype = {
          }*/
     },
     update_custom_toolbars: function () {
-        /*var customtoolbars = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARS).each(function(e){
-                    e.hide();
-        });
-        //customtoolbars.hide();*/
         Y.all(SELECTOR.CUSTOMTOOLBARS).each(function (toolbar) {
             toolbar.hide();
         }, this);
-        var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR+' option:checked');
-        var axisid= axisselector.get('value');
-        //alert(axisid);
+        var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR + ' option:checked');
+        var axisid = axisselector.get('value');
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
@@ -3707,16 +3721,23 @@ EDITOR.prototype = {
      * @protected
      * @method handle_tool_button
      */
-    handle_tool_button: function (e, tool) {
+    handle_tool_button: function (e, tool, toolid) {
         var currenttoolnode;
+        console.log(tool);
 
         e.preventDefault();
-
+        
         // Change style of the pressed button.
-        currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
+        if (this.currentedit.id) {
+            currenttoolnode = this.get_dialogue_element("#" + this.currentedit.id);
+        } else {
+            currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
+        }
         currenttoolnode.removeClass('assignfeedback_editpdfplus_selectedbutton');
         currenttoolnode.setAttribute('aria-pressed', 'false');
+        //update le currentedit object with the new tool
         this.currentedit.tool = tool;
+        this.currentedit.id = toolid;
 
         if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
             this.lastannotationtool = tool;

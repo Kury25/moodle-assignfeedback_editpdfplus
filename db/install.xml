@@ -79,10 +79,10 @@
         <FIELD NAME="contextid" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="axis" TYPE="int" LENGTH="9" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
         <FIELD NAME="type" TYPE="int" LENGTH="9" NOTNULL="true" DEFAULT="1" SEQUENCE="false"/>
-        <FIELD NAME="colors" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="colors" TYPE="char" LENGTH="300" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="image" TYPE="binary" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="thumbnail" TYPE="binary" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="cartridge" TYPE="char" LENGTH="5" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="cartridge" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="texts" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="position" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="label" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
