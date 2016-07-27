@@ -137,7 +137,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.endx = parseInt(config.endx, 10) || 0;
         this.endy = parseInt(config.endy, 10) || 0;
         this.path = config.path || '';
-        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
+        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
     },

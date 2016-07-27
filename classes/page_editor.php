@@ -138,7 +138,11 @@ class page_editor {
     public static function get_tools($contextidlist) {
         global $DB;
         $tools = array();
-        $records = $DB->get_records_list('assignfeedback_editpp_tool', 'contextid', $contextidlist);
+        if ($contextidlist) {
+            $records = $DB->get_records_list('assignfeedback_editpp_tool', 'contextid', $contextidlist);
+        } else {
+            $records = $DB->get_records('assignfeedback_editpp_tool');
+        }
         foreach ($records as $record) {
             array_push($tools, new tool($record));
         }

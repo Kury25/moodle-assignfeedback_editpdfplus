@@ -490,6 +490,13 @@ EDITOR.prototype = {
 
         this.pagecount = data.pagecount;
         this.pages = data.pages;
+        //this.tools = data.tools;
+
+        this.tools = [];
+        for (i = 0; i < data.tools.length; i++) {
+            var tooltmp = data.tools[i];
+            this.tools[tooltmp.id] = tooltmp;
+        }
 
         for (i = 0; i < this.pages.length; i++) {
             for (j = 0; j < this.pages[i].comments.length; j++) {
@@ -505,7 +512,7 @@ EDITOR.prototype = {
             }
             for (j = 0; j < this.pages[i].annotations.length; j++) {
                 data = this.pages[i].annotations[j];
-                this.pages[i].annotations[j] = this.create_annotation(data.type, data); //@TODO
+                this.pages[i].annotations[j] = this.create_annotation(this.tools[data.toolid].type, data.toolid, data, this.tools[data.toolid]); //@TODO
             }
         }
 
@@ -655,10 +662,10 @@ EDITOR.prototype = {
      */
     handle_tool_button: function (e, tool, toolid) {
         var currenttoolnode;
-        console.log(tool);
+        console.log('handle_tool_button : ' + tool + ' - ' + toolid);
 
         e.preventDefault();
-        
+
         // Change style of the pressed button.
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element("#" + this.currentedit.id);
@@ -717,7 +724,7 @@ EDITOR.prototype = {
             comment = new M.assignfeedback_editpdfplus.comment(this);
             drawable = comment.draw_current_edit(this.currentedit);
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, {});
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
             if (annotation) {
                 drawable = annotation.draw_current_edit(this.currentedit);
             }
@@ -891,7 +898,7 @@ EDITOR.prototype = {
                 this.editingcomment = true;
             }
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, {});
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
             if (annotation) {
                 if (this.currentdrawable) {
                     this.currentdrawable.erase();
@@ -945,32 +952,40 @@ EDITOR.prototype = {
      * @public
      * @method create_annotation
      */
-    create_annotation: function (type, data) {
+    create_annotation: function (type, toolid, data, toolobjet) {
+        console.log('create_annotation : ' + type + ' - ' + toolid);
+
         /*pour fonctionnement des anciens outils*/
-        if (type && typeof type !== 'undefined') {
+        if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
             if (type === "line") {
-                data.toolid = TOOLTYPE.LINE;
+                data.toolid = TOOLTYPEID.LINE;
             } else if (type === "rectangle") {
-                data.toolid = TOOLTYPE.RECTANGLE;
+                data.toolid = TOOLTYPEID.RECTANGLE;
             } else if (type === "oval") {
-                data.toolid = TOOLTYPE.OVAL;
+                data.toolid = TOOLTYPEID.OVAL;
             } else if (type === "pen") {
-                data.toolid = TOOLTYPE.PEN;
+                data.toolid = TOOLTYPEID.PEN;
             } else if (type === "highlight") {
-                data.toolid = TOOLTYPE.HIGHLIGHT;
+                data.toolid = TOOLTYPEID.HIGHLIGHT;
             }
+        } else if (toolid !== null && toolid[0] === 'c') {
+            data.toolid = toolid.substr(8);
         }
+        data.tool = type;
         data.editor = this;
-        if (data.toolid + '' === TOOLTYPE.LINE + '') {
+        console.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid);
+        if (data.tool === TOOLTYPE.LINE + '' || data.tool === TOOLTYPELIB.LINE) {
             return new M.assignfeedback_editpdfplus.annotationline(data);
-        } else if (data.toolid + '' === TOOLTYPE.RECTANGLE + '') {
+        } else if (data.tool === TOOLTYPE.RECTANGLE + '' || data.tool === TOOLTYPELIB.RECTANGLE) {
             return new M.assignfeedback_editpdfplus.annotationrectangle(data);
-        } else if (data.toolid + '' === TOOLTYPE.OVAL + '') {
+        } else if (data.tool === TOOLTYPE.OVAL + '' || data.tool === TOOLTYPELIB.OVAL) {
             return new M.assignfeedback_editpdfplus.annotationoval(data);
-        } else if (data.toolid + '' === TOOLTYPE.PEN + '') {
+        } else if (data.tool === TOOLTYPE.PEN + '' || data.tool === TOOLTYPELIB.PEN) {
             return new M.assignfeedback_editpdfplus.annotationpen(data);
-        } else if (data.toolid + '' === TOOLTYPE.HIGHLIGHT + '') {
+        } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
+        } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+            return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
         }
 
         return false;

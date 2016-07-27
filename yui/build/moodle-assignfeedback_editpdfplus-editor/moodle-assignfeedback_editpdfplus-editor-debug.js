@@ -21,81 +21,109 @@ YUI.add('moodle-assignfeedback_editpdfplus-editor', function (Y, NAME) {
  * @module moodle-assignfeedback_editpdfplus-editor
  */
 var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
-    AJAXBASEPROGRESS = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax_progress.php',
-    CSS = {
-        DIALOGUE : 'assignfeedback_editpdfplus_widget'
-    },
-    SELECTOR = {
-        PREVIOUSBUTTON :  '.navigate-previous-button',
-        NEXTBUTTON :  ' .navigate-next-button',
-        SEARCHCOMMENTSBUTTON : '.searchcommentsbutton',
-        SEARCHFILTER : '.assignfeedback_editpdfplus_commentsearch input',
-        SEARCHCOMMENTSLIST : '.assignfeedback_editpdfplus_commentsearch ul',
-        PAGESELECT : '.navigate-page-select',
-        LOADINGICON : '.loading',
-        PROGRESSBARCONTAINER : '.progress-info.progress-striped',
-        DRAWINGREGION : '.drawingregion',
-        DRAWINGCANVAS : '.drawingcanvas',
-        SAVE : '.savebutton',
-        COMMENTCOLOURBUTTON : '.commentcolourbutton',
-        COMMENTMENU : '.commentdrawable a',
-        ANNOTATIONCOLOURBUTTON :  '.annotationcolourbutton',
-        DELETEANNOTATIONBUTTON : '.deleteannotationbutton',
-        UNSAVEDCHANGESDIV : '.assignfeedback_editpdfplus_unsavedchanges',
-        UNSAVEDCHANGESINPUT : 'input[name="assignfeedback_editpdfplus_haschanges"]',
-        STAMPSBUTTON : '.currentstampbutton',
-        DIALOGUE : '.' + CSS.DIALOGUE,
-        CUSTOMTOOLBARID : '#toolbaraxis',
-        CUSTOMTOOLBARS : '.customtoolbar',
-        AXISCUSTOMTOOLBAR : '.menuaxisselection',
-        CUSTOMTOOLBARBUTTONS : '.costumtoolbarbutton'
-    },
-    SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
-    SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',
-    COMMENTTEXTCOLOUR = 'rgb(51, 51, 51)',
-    COMMENTCOLOUR = {
-        'white' : 'rgb(255,255,255)',
-        'yellow' : 'rgb(255,236,174)',
-        'red' : 'rgb(249,181,179)',
-        'green' : 'rgb(214,234,178)',
-        'blue' : 'rgb(203,217,237)',
-        'clear' : 'rgba(255,255,255, 0)'
-    },
-    ANNOTATIONCOLOUR = {
-        'white' : 'rgb(255,255,255)',
-        'yellow' : 'rgb(255,207,53)',
-        'red' : 'rgb(239,69,64)',
-        'green' : 'rgb(152,202,62)',
-        'blue' : 'rgb(125,159,211)',
-        'black' : 'rgb(51,51,51)'
-    },
-    CLICKTIMEOUT = 300,
-    TOOLSELECTOR = {
-        //'comment': '.commentbutton',
-        'pen': '.penbutton',
-        'line': '.linebutton',
-        'rectangle': '.rectanglebutton',
-        'oval': '.ovalbutton',
-        //'stamp': '.stampbutton',
-        'select': '.selectbutton',
-        'drag': '.dragbutton',
-        'highlight': '.highlightbutton'/*,
-        /*'highlightplus': '.highlightplusbutton',
-        'lineplus': '.lineplusbutton',
-        'stampplus': '.stampplusbutton',
-        'frame': '.framebutton',
-        'verticalline': '.verticallinebutton',
-        'stampcomment': '.stampcommentbutton',
-        'commentplus': '.commentplusbutton'*/
-    },
-    TOOLTYPE = {
-        'PEN' : 8,
-        'LINE' : 9,
-        'RECTANGLE' : 10,
-        'OVAL' : 11,
-        'HIGHLIGHT' : 12
-    },
-    STROKEWEIGHT = 4;// This file is part of Moodle - http://moodle.org/
+        AJAXBASEPROGRESS = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax_progress.php',
+        CSS = {
+            DIALOGUE: 'assignfeedback_editpdfplus_widget'
+        },
+SELECTOR = {
+    PREVIOUSBUTTON: '.navigate-previous-button',
+    NEXTBUTTON: ' .navigate-next-button',
+    SEARCHCOMMENTSBUTTON: '.searchcommentsbutton',
+    SEARCHFILTER: '.assignfeedback_editpdfplus_commentsearch input',
+    SEARCHCOMMENTSLIST: '.assignfeedback_editpdfplus_commentsearch ul',
+    PAGESELECT: '.navigate-page-select',
+    LOADINGICON: '.loading',
+    PROGRESSBARCONTAINER: '.progress-info.progress-striped',
+    DRAWINGREGION: '.drawingregion',
+    DRAWINGCANVAS: '.drawingcanvas',
+    SAVE: '.savebutton',
+    COMMENTCOLOURBUTTON: '.commentcolourbutton',
+    COMMENTMENU: '.commentdrawable a',
+    ANNOTATIONCOLOURBUTTON: '.annotationcolourbutton',
+    DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
+    UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
+    UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
+    STAMPSBUTTON: '.currentstampbutton',
+    DIALOGUE: '.' + CSS.DIALOGUE,
+    CUSTOMTOOLBARID: '#toolbaraxis',
+    CUSTOMTOOLBARS: '.customtoolbar',
+    AXISCUSTOMTOOLBAR: '.menuaxisselection',
+    CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton'
+},
+SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
+        SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',
+        COMMENTTEXTCOLOUR = 'rgb(51, 51, 51)',
+        COMMENTCOLOUR = {
+            'white': 'rgb(255,255,255)',
+            'yellow': 'rgb(255,236,174)',
+            'red': 'rgb(249,181,179)',
+            'green': 'rgb(214,234,178)',
+            'blue': 'rgb(203,217,237)',
+            'clear': 'rgba(255,255,255, 0)'
+        },
+ANNOTATIONCOLOUR = {
+    'white': 'rgb(255,255,255)',
+    'yellow': 'rgb(255,207,53)',
+    'red': 'rgb(239,69,64)',
+    'green': 'rgb(152,202,62)',
+    'blue': 'rgb(125,159,211)',
+    'black': 'rgb(51,51,51)'
+},
+CLICKTIMEOUT = 300,
+        TOOLSELECTOR = {
+            //'comment': '.commentbutton',
+            'pen': '.penbutton',
+            'line': '.linebutton',
+            'rectangle': '.rectanglebutton',
+            'oval': '.ovalbutton',
+            //'stamp': '.stampbutton',
+            'select': '.selectbutton',
+            'drag': '.dragbutton',
+            'highlight': '.highlightbutton'/*,
+             /*'highlightplus': '.highlightplusbutton',
+             'lineplus': '.lineplusbutton',
+             'stampplus': '.stampplusbutton',
+             'frame': '.framebutton',
+             'verticalline': '.verticallinebutton',
+             'stampcomment': '.stampcommentbutton',
+             'commentplus': '.commentplusbutton'*/
+        },
+TOOLTYPEID = {
+    'PEN': 8,
+    'LINE': 9,
+    'RECTANGLE': 10,
+    'OVAL': 11,
+    'HIGHLIGHT': 12
+},
+TOOLTYPE = {
+    'HIGHLIGHTPLUS': 1,
+    'LINEPLUS': 2,
+    'STAMPPLUS': 3,
+    'FRAME': 4,
+    'VERTICALLINE': 5,
+    'STAMPCOMMENT': 6,
+    'COMMENTPLUS': 7,
+    'PEN': 8,
+    'LINE': 9,
+    'RECTANGLE': 10,
+    'OVAL': 11,
+    'HIGHLIGHT': 12
+},
+TOOLTYPELIB = {
+    'HIGHLIGHTPLUS': 'highlightplus',
+    'LINEPLUS': 'lineplus',
+    'STAMPPLUS': 'stampplus',
+    'FRAME': 'frame',
+    'VERTICALLINE': 'verticalline',
+    'STAMPCOMMENT': 'stampcomment',
+    'COMMENTPLUS': 'commentplus',
+    'PEN': 'pen',
+    'LINE': 'line',
+    'RECTANGLE': 'rectangle',
+    'OVAL': 'oval',
+    'HIGHLIGHT': 'highlight'
+},
+STROKEWEIGHT = 4;// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -666,7 +694,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.endx = parseInt(config.endx, 10) || 0;
         this.endy = parseInt(config.endy, 10) || 0;
         this.path = config.path || '';
-        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
+        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
     },
@@ -1528,6 +1556,159 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationhighlight = ANNOTATIONHIGHLIGHT;
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Provides an in browser PDF editor.
+ *
+ * @module moodle-assignfeedback_editpdfplus-editor
+ */
+
+/**
+ * Class representing a highlight.
+ *
+ * @namespace M.assignfeedback_editpdfplus
+ * @class annotationhighlightplus
+ * @extends M.assignfeedback_editpdfplus.annotation
+ * @module moodle-assignfeedback_editpdfplus-editor
+ */
+var ANNOTATIONHIGHLIGHTPLUS = function(config) {
+    ANNOTATIONHIGHLIGHTPLUS.superclass.constructor.apply(this, [config]);
+};
+
+ANNOTATIONHIGHLIGHTPLUS.NAME = "annotationhighlightplus";
+ANNOTATIONHIGHLIGHTPLUS.ATTRS = {};
+
+Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
+    /**
+     * Draw a highlight annotation
+     * @protected
+     * @method draw
+     * @return M.assignfeedback_editpdfplus.drawable
+     */
+    draw : function() {
+        var drawable,
+            shape,
+            bounds,
+            highlightcolour;
+
+        drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
+        bounds = new M.assignfeedback_editpdfplus.rect();
+        bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
+                      new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+
+        highlightcolour = ANNOTATIONCOLOUR[this.colour];
+
+        // Add an alpha channel to the rgb colour.
+
+        highlightcolour = highlightcolour.replace('rgb', 'rgba');
+        highlightcolour = highlightcolour.replace(')', ',0.5)');
+
+        shape = this.editor.graphic.addShape({
+            type: Y.Rect,
+            width: bounds.width,
+            height: bounds.height,
+            stroke: false,
+            fill: {
+                color: highlightcolour
+            },
+            x: bounds.x,
+            y: bounds.y
+        });
+
+        drawable.shapes.push(shape);
+        this.drawable = drawable;
+
+        return ANNOTATIONHIGHLIGHTPLUS.superclass.draw.apply(this);
+    },
+
+    /**
+     * Draw the in progress edit.
+     *
+     * @public
+     * @method draw_current_edit
+     * @param M.assignfeedback_editpdfplus.edit edit
+     */
+    draw_current_edit : function(edit) {
+        var drawable = new M.assignfeedback_editpdfplus.drawable(this.editor),
+            shape,
+            bounds,
+            highlightcolour;
+
+        bounds = new M.assignfeedback_editpdfplus.rect();
+        bounds.bound([new M.assignfeedback_editpdfplus.point(edit.start.x, edit.start.y),
+                      new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
+
+        // Set min. width of highlight.
+        if (!bounds.has_min_width()) {
+            bounds.set_min_width();
+        }
+
+        highlightcolour = ANNOTATIONCOLOUR[edit.annotationcolour];
+        // Add an alpha channel to the rgb colour.
+
+        highlightcolour = highlightcolour.replace('rgb', 'rgba');
+        highlightcolour = highlightcolour.replace(')', ',0.5)');
+
+        // We will draw a box with the current background colour.
+        shape = this.editor.graphic.addShape({
+            type: Y.Rect,
+            width: bounds.width,
+            height: 16,
+            stroke: false,
+            fill: {
+               color: highlightcolour
+            },
+            x: bounds.x,
+            y: edit.start.y
+        });
+
+        drawable.shapes.push(shape);
+
+        return drawable;
+    },
+
+    /**
+     * Promote the current edit to a real annotation.
+     *
+     * @public
+     * @method init_from_edit
+     * @param M.assignfeedback_editpdfplus.edit edit
+     * @return bool true if highlight bound is more than min width/height, else false.
+     */
+    init_from_edit : function(edit) {
+        var bounds = new M.assignfeedback_editpdfplus.rect();
+        bounds.bound([edit.start, edit.end]);
+
+        this.gradeid = this.editor.get('gradeid');
+        this.pageno = this.editor.currentpage;
+        this.x = bounds.x;
+        this.y = edit.start.y;
+        this.endx = bounds.x + bounds.width;
+        this.endy = edit.start.y + 16;
+        this.colour = edit.annotationcolour;
+        this.page = '';
+
+        return (bounds.has_min_width());
+    }
+
+});
+
+M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
+M.assignfeedback_editpdfplus.annotationhighlightplus = ANNOTATIONHIGHLIGHTPLUS;
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -3302,7 +3483,7 @@ EDITOR.prototype = {
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         button.one('img').setAttribute('src', imgurl);
 
-        console.log(this.currentedit.tool);
+        //console.log(this.currentedit.tool);
         if (this.currentedit.id)
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
         else
@@ -3558,6 +3739,13 @@ EDITOR.prototype = {
 
         this.pagecount = data.pagecount;
         this.pages = data.pages;
+        //this.tools = data.tools;
+
+        this.tools = [];
+        for (i = 0; i < data.tools.length; i++) {
+            var tooltmp = data.tools[i];
+            this.tools[tooltmp.id] = tooltmp;
+        }
 
         for (i = 0; i < this.pages.length; i++) {
             for (j = 0; j < this.pages[i].comments.length; j++) {
@@ -3573,7 +3761,7 @@ EDITOR.prototype = {
             }
             for (j = 0; j < this.pages[i].annotations.length; j++) {
                 data = this.pages[i].annotations[j];
-                this.pages[i].annotations[j] = this.create_annotation(data.type, data); //@TODO
+                this.pages[i].annotations[j] = this.create_annotation(this.tools[data.toolid].type, data.toolid, data, this.tools[data.toolid]); //@TODO
             }
         }
 
@@ -3723,10 +3911,10 @@ EDITOR.prototype = {
      */
     handle_tool_button: function (e, tool, toolid) {
         var currenttoolnode;
-        console.log(tool);
+        console.log('handle_tool_button : ' + tool + ' - ' + toolid);
 
         e.preventDefault();
-        
+
         // Change style of the pressed button.
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element("#" + this.currentedit.id);
@@ -3785,7 +3973,7 @@ EDITOR.prototype = {
             comment = new M.assignfeedback_editpdfplus.comment(this);
             drawable = comment.draw_current_edit(this.currentedit);
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, {});
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
             if (annotation) {
                 drawable = annotation.draw_current_edit(this.currentedit);
             }
@@ -3959,7 +4147,7 @@ EDITOR.prototype = {
                 this.editingcomment = true;
             }
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, {});
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
             if (annotation) {
                 if (this.currentdrawable) {
                     this.currentdrawable.erase();
@@ -4013,32 +4201,40 @@ EDITOR.prototype = {
      * @public
      * @method create_annotation
      */
-    create_annotation: function (type, data) {
+    create_annotation: function (type, toolid, data, toolobjet) {
+        console.log('create_annotation : ' + type + ' - ' + toolid);
+
         /*pour fonctionnement des anciens outils*/
-        if (type && typeof type !== 'undefined') {
+        if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
             if (type === "line") {
-                data.toolid = TOOLTYPE.LINE;
+                data.toolid = TOOLTYPEID.LINE;
             } else if (type === "rectangle") {
-                data.toolid = TOOLTYPE.RECTANGLE;
+                data.toolid = TOOLTYPEID.RECTANGLE;
             } else if (type === "oval") {
-                data.toolid = TOOLTYPE.OVAL;
+                data.toolid = TOOLTYPEID.OVAL;
             } else if (type === "pen") {
-                data.toolid = TOOLTYPE.PEN;
+                data.toolid = TOOLTYPEID.PEN;
             } else if (type === "highlight") {
-                data.toolid = TOOLTYPE.HIGHLIGHT;
+                data.toolid = TOOLTYPEID.HIGHLIGHT;
             }
+        } else if (toolid !== null && toolid[0] === 'c') {
+            data.toolid = toolid.substr(8);
         }
+        data.tool = type;
         data.editor = this;
-        if (data.toolid + '' === TOOLTYPE.LINE + '') {
+        console.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid);
+        if (data.tool === TOOLTYPE.LINE + '' || data.tool === TOOLTYPELIB.LINE) {
             return new M.assignfeedback_editpdfplus.annotationline(data);
-        } else if (data.toolid + '' === TOOLTYPE.RECTANGLE + '') {
+        } else if (data.tool === TOOLTYPE.RECTANGLE + '' || data.tool === TOOLTYPELIB.RECTANGLE) {
             return new M.assignfeedback_editpdfplus.annotationrectangle(data);
-        } else if (data.toolid + '' === TOOLTYPE.OVAL + '') {
+        } else if (data.tool === TOOLTYPE.OVAL + '' || data.tool === TOOLTYPELIB.OVAL) {
             return new M.assignfeedback_editpdfplus.annotationoval(data);
-        } else if (data.toolid + '' === TOOLTYPE.PEN + '') {
+        } else if (data.tool === TOOLTYPE.PEN + '' || data.tool === TOOLTYPELIB.PEN) {
             return new M.assignfeedback_editpdfplus.annotationpen(data);
-        } else if (data.toolid + '' === TOOLTYPE.HIGHLIGHT + '') {
+        } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
+        } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+            return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
         }
 
         return false;

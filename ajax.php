@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +22,6 @@
  * @copyright  2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 use \assignfeedback_editpdfplus\document_services;
 use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\comments_quick_list;
@@ -63,10 +63,7 @@ if ($action == 'loadallpages') {
         $draft = false;
     }
 
-    $pages = document_services::get_page_images_for_attempt($assignment,
-                                                            $userid,
-                                                            $attemptnumber,
-                                                            $readonly);
+    $pages = document_services::get_page_images_for_attempt($assignment, $userid, $attemptnumber, $readonly);
 
     $response = new stdClass();
     $response->pagecount = count($pages);
@@ -84,12 +81,7 @@ if ($action == 'loadallpages') {
         $index = count($response->pages);
         $page = new stdClass();
         $comments = page_editor::get_comments($grade->id, $index, $draft);
-        $page->url = moodle_url::make_pluginfile_url($context->id,
-                                                     'assignfeedback_editpdfplus',
-                                                     $filearea,
-                                                     $grade->id,
-                                                     '/',
-                                                     $pagefile->get_filename())->out();
+        $page->url = moodle_url::make_pluginfile_url($context->id, 'assignfeedback_editpdfplus', $filearea, $grade->id, '/', $pagefile->get_filename())->out();
         $page->comments = $comments;
         if ($imageinfo = $pagefile->get_imageinfo()) {
             $page->width = $imageinfo['width'];
@@ -102,6 +94,9 @@ if ($action == 'loadallpages') {
         $page->annotations = $annotations;
         array_push($response->pages, $page);
     }
+
+    $tools = page_editor::get_tools();
+    $response->tools = $tools;
 
     echo json_encode($response);
     die();
@@ -119,15 +114,14 @@ if ($action == 'loadallpages') {
 
     $added = page_editor::set_comments($grade->id, $index, $page->comments);
     if ($added != count($page->comments)) {
-        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index+1));
+        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
     }
     $added = page_editor::set_annotations($grade->id, $index, $page->annotations);
     if ($added != count($page->annotations)) {
-        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index+1));
+        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
     }
     echo json_encode($response);
     die();
-
 } else if ($action == 'generatepdf') {
 
     require_capability('mod/assign:grade', $context);
@@ -137,13 +131,7 @@ if ($action == 'loadallpages') {
 
     $response->url = '';
     if ($file) {
-        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id,
-                                               'assignfeedback_editpdfplus',
-                                               document_services::FINAL_PDF_FILEAREA,
-                                               $grade->id,
-                                               '/',
-                                               $file->get_filename(),
-                                               false);
+        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, 'assignfeedback_editpdfplus', document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
         $response->url = $url->out(true);
         $response->filename = $file->get_filename();
     }
@@ -157,7 +145,6 @@ if ($action == 'loadallpages') {
 
     echo json_encode($result);
     die();
-
 } else if ($action == 'addtoquicklist') {
     require_capability('mod/assign:grade', $context);
 
