@@ -27,7 +27,7 @@
  * @extends M.assignfeedback_editpdfplus.annotation
  * @module moodle-assignfeedback_editpdfplus-editor
  */
-var ANNOTATIONHIGHLIGHTPLUS = function(config) {
+var ANNOTATIONHIGHLIGHTPLUS = function (config) {
     ANNOTATIONHIGHLIGHTPLUS.superclass.constructor.apply(this, [config]);
 };
 
@@ -41,23 +41,27 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
      * @method draw
      * @return M.assignfeedback_editpdfplus.drawable
      */
-    draw : function() {
+    draw: function () {
         var drawable,
-            shape,
-            bounds,
-            highlightcolour;
+                shape,
+                bounds,
+                highlightcolour;
 
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                      new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+            new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
         highlightcolour = ANNOTATIONCOLOUR[this.colour];
+        if (!highlightcolour) {
+            highlightcolour = this.colour;
+        } else {
 
-        // Add an alpha channel to the rgb colour.
+            // Add an alpha channel to the rgb colour.
 
-        highlightcolour = highlightcolour.replace('rgb', 'rgba');
-        highlightcolour = highlightcolour.replace(')', ',0.5)');
+            highlightcolour = highlightcolour.replace('rgb', 'rgba');
+            highlightcolour = highlightcolour.replace(')', ',0.5)');
+        }
 
         shape = this.editor.graphic.addShape({
             type: Y.Rect,
@@ -65,7 +69,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             height: bounds.height,
             stroke: false,
             fill: {
-                color: highlightcolour
+                color: highlightcolour,
+                opacity: 0.5
             },
             x: bounds.x,
             y: bounds.y
@@ -76,7 +81,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return ANNOTATIONHIGHLIGHTPLUS.superclass.draw.apply(this);
     },
-
     /**
      * Draw the in progress edit.
      *
@@ -84,26 +88,37 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
      * @method draw_current_edit
      * @param M.assignfeedback_editpdfplus.edit edit
      */
-    draw_current_edit : function(edit) {
+    draw_current_edit: function (edit) {
         var drawable = new M.assignfeedback_editpdfplus.drawable(this.editor),
-            shape,
-            bounds,
-            highlightcolour;
+                shape,
+                bounds,
+                highlightcolour;
 
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(edit.start.x, edit.start.y),
-                      new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
+            new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
 
         // Set min. width of highlight.
         if (!bounds.has_min_width()) {
             bounds.set_min_width();
         }
 
-        highlightcolour = ANNOTATIONCOLOUR[edit.annotationcolour];
+        /*highlightcolour = ANNOTATIONCOLOUR[edit.annotationcolour];
         // Add an alpha channel to the rgb colour.
 
         highlightcolour = highlightcolour.replace('rgb', 'rgba');
-        highlightcolour = highlightcolour.replace(')', ',0.5)');
+        highlightcolour = highlightcolour.replace(')', ',0.5)');*/
+        
+        highlightcolour = ANNOTATIONCOLOUR[this.colour];
+        if (!highlightcolour) {
+            highlightcolour = this.colour;
+        } else {
+
+            // Add an alpha channel to the rgb colour.
+
+            highlightcolour = highlightcolour.replace('rgb', 'rgba');
+            highlightcolour = highlightcolour.replace(')', ',0.5)');
+        }
 
         // We will draw a box with the current background colour.
         shape = this.editor.graphic.addShape({
@@ -112,7 +127,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             height: 16,
             stroke: false,
             fill: {
-               color: highlightcolour
+                color: highlightcolour,
+                opacity: 0.5
             },
             x: bounds.x,
             y: edit.start.y
@@ -122,7 +138,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return drawable;
     },
-
     /**
      * Promote the current edit to a real annotation.
      *
@@ -131,7 +146,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
      * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool true if highlight bound is more than min width/height, else false.
      */
-    init_from_edit : function(edit) {
+    init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
 
@@ -141,7 +156,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.y = edit.start.y;
         this.endx = bounds.x + bounds.width;
         this.endy = edit.start.y + 16;
-        this.colour = edit.annotationcolour;
+        //this.colour = edit.annotationcolour;
         this.page = '';
 
         return (bounds.has_min_width());

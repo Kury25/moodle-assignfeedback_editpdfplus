@@ -724,7 +724,11 @@ EDITOR.prototype = {
             comment = new M.assignfeedback_editpdfplus.comment(this);
             drawable = comment.draw_current_edit(this.currentedit);
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
+            var toolid = this.currentedit.id;
+            if (this.currentedit.id && this.currentedit.id[0] === 'c') {
+                toolid = this.currentedit.id.substr(8);
+            }
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
             if (annotation) {
                 drawable = annotation.draw_current_edit(this.currentedit);
             }
@@ -898,7 +902,11 @@ EDITOR.prototype = {
                 this.editingcomment = true;
             }
         } else {
-            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {});
+            var toolid = this.currentedit.id;
+            if (this.currentedit.id && this.currentedit.id[0] === 'c') {
+                toolid = this.currentedit.id.substr(8);
+            }
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
             if (annotation) {
                 if (this.currentdrawable) {
                     this.currentdrawable.erase();
@@ -985,6 +993,16 @@ EDITOR.prototype = {
         } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+            if (toolobjet) {
+                console.log('create_annotation couleur origine : ' + toolobjet.colors);
+                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1)
+                    data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                else
+                    data.colour = toolobjet.colors;
+                if (data.colour === "")
+                    data.colour = 'yellow';
+            }
+            console.log('create_annotation couleur : ' + data.colour);
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
         }
 
