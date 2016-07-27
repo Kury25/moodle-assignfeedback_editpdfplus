@@ -1689,7 +1689,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 opacity: 0.5
             },
             x: bounds.x,
-            y: edit.start.y
+            y: edit.start.y-8
         });
 
         drawable.shapes.push(shape);
@@ -1711,9 +1711,9 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
-        this.y = edit.start.y;
+        this.y = edit.start.y-8;
         this.endx = bounds.x + bounds.width;
-        this.endy = edit.start.y + 16;
+        this.endy = edit.start.y + 16-8;
         //this.colour = edit.annotationcolour;
         this.page = '';
 
