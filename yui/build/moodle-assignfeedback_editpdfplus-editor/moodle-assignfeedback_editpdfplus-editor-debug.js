@@ -123,6 +123,10 @@ TOOLTYPELIB = {
     'OVAL': 'oval',
     'HIGHLIGHT': 'highlight'
 },
+TOOLTYPEDEFAULTCOLOR = {
+    'HIGHLIGHTPLUS': 'yellow',
+    'HIGHLIGHTPLUSCARTRIDGE': 'red'
+},
 STROKEWEIGHT = 4;// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -678,6 +682,10 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable : false,
+    
+    tooltype : null,
+    
+    divcartridge : '',
 
     /**
      * Initialise the annotation.
@@ -697,6 +705,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
+        this.tooltype = config.tooltype;
     },
 
     /**
@@ -1610,16 +1619,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
             new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
-        highlightcolour = ANNOTATIONCOLOUR[this.colour];
-        if (!highlightcolour) {
-            highlightcolour = this.colour;
-        } else {
-
-            // Add an alpha channel to the rgb colour.
-
-            highlightcolour = highlightcolour.replace('rgb', 'rgba');
-            highlightcolour = highlightcolour.replace(')', ',0.5)');
-        }
+        highlightcolour = this.get_color();
 
         shape = this.editor.graphic.addShape({
             type: Y.Rect,
@@ -1636,6 +1636,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         drawable.shapes.push(shape);
         this.drawable = drawable;
+
+        this.draw_catridge();
 
         return ANNOTATIONHIGHLIGHTPLUS.superclass.draw.apply(this);
     },
@@ -1661,22 +1663,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             bounds.set_min_width();
         }
 
-        /*highlightcolour = ANNOTATIONCOLOUR[edit.annotationcolour];
-        // Add an alpha channel to the rgb colour.
-
-        highlightcolour = highlightcolour.replace('rgb', 'rgba');
-        highlightcolour = highlightcolour.replace(')', ',0.5)');*/
-        
-        highlightcolour = ANNOTATIONCOLOUR[this.colour];
-        if (!highlightcolour) {
-            highlightcolour = this.colour;
-        } else {
-
-            // Add an alpha channel to the rgb colour.
-
-            highlightcolour = highlightcolour.replace('rgb', 'rgba');
-            highlightcolour = highlightcolour.replace(')', ',0.5)');
-        }
+        highlightcolour = this.get_color();
 
         // We will draw a box with the current background colour.
         shape = this.editor.graphic.addShape({
@@ -1689,7 +1676,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 opacity: 0.5
             },
             x: bounds.x,
-            y: edit.start.y-8
+            y: edit.start.y - 8
         });
 
         drawable.shapes.push(shape);
@@ -1711,13 +1698,97 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
-        this.y = edit.start.y-8;
+        this.y = edit.start.y - 8;
         this.endx = bounds.x + bounds.width;
-        this.endy = edit.start.y + 16-8;
+        this.endy = edit.start.y + 16 - 8;
         //this.colour = edit.annotationcolour;
         this.page = '';
 
         return (bounds.has_min_width());
+    },
+    get_color: function () {
+        var highlightcolour = ANNOTATIONCOLOUR[this.colour];
+        if (!highlightcolour) {
+            highlightcolour = this.colour;
+        } else {
+            // Add an alpha channel to the rgb colour.
+            highlightcolour = highlightcolour.replace('rgb', 'rgba');
+            highlightcolour = highlightcolour.replace(')', ',0.5)');
+        }
+        console.log('get_color : ' + highlightcolour);
+        return highlightcolour;
+    },
+    get_color_cartridge: function () {
+        var highlightcolour = ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
+        if (!highlightcolour) {
+            highlightcolour = this.tooltype.cartridge_color;
+        } else {
+            // Add an alpha channel to the rgb colour.
+            highlightcolour = highlightcolour.replace('rgb', 'rgba');
+            highlightcolour = highlightcolour.replace(')', ',0.5)');
+        }
+        if (highlightcolour ==='')
+            return TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUSCARTRIDGE;
+        console.log('get_color_cartridge : ' + highlightcolour);
+        return highlightcolour;
+    },
+    draw_catridge: function (edit) {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        if (this.divcartridge === '') {
+            var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
+            this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var cartridge = this.tooltype.cartridge;
+            console.log('draw_catridge : ' + cartridge);
+            var colorcartridge = this.get_color_cartridge();
+            var div = "<div ";
+            div += "id='" + this.divcartridge + "' ";
+            div += "style='position:absolute;border:2px solid " + colorcartridge + ";padding-left:2px; padding-right:2px;color:" + colorcartridge + ";font-size:10px;'> ";
+            div += cartridge;
+            div += "</div>";
+            var divdisplay = Y.Node.create(div);
+            divdisplay.setX(offsetcanvas[0] + this.x);
+            divdisplay.setY(this.y - 16 - 8);
+            drawingregion.append(divdisplay);
+        } else {
+            var divid = '#' + this.divcartridge;
+            console.log('draw_catridge : ' + divid);
+            var divdisplay = this.editor.get_dialogue_element(divid);
+            divdisplay.setX(offsetcanvas[0] + this.x);
+            divdisplay.setY(offsetcanvas[1] + this.y - 16 - 8);
+        }
+        return true;
+    },
+    /**
+     * Delete an annotation
+     * @protected
+     * @method remove
+     * @param event
+     */
+    remove: function (e) {
+        var annotations,
+                i;
+
+        e.preventDefault();
+
+        annotations = this.editor.pages[this.editor.currentpage].annotations;
+        for (i = 0; i < annotations.length; i++) {
+            if (annotations[i] === this) {
+                if (this.divcartridge !== '') {
+                    var divid = '#' + this.divcartridge;
+                    console.log('draw_catridge : ' + divid);
+                    var divdisplay = this.editor.get_dialogue_element(divid);
+                    divdisplay.remove();
+                }
+                annotations.splice(i, 1);
+                if (this.drawable) {
+                    this.drawable.erase();
+                }
+                this.editor.currentannotation = false;
+                this.editor.save_current_page();
+                return;
+            }
+        }
     }
 
 });
@@ -4177,6 +4248,11 @@ EDITOR.prototype = {
                 }
                 this.currentdrawable = false;
                 if (annotation.init_from_edit(this.currentedit)) {
+                    if (toolid) {
+                        if (this.tools[toolid].type === TOOLTYPE.HIGHLIGHTPLUS + '') {
+                            annotation.draw_catridge(this.currentedit);
+                        }
+                    }
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
                 }
@@ -4264,9 +4340,9 @@ EDITOR.prototype = {
                 else
                     data.colour = toolobjet.colors;
                 if (data.colour === "")
-                    data.colour = 'yellow';
+                    data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
             }
-            console.log('create_annotation couleur : ' + data.colour);
+            data.tooltype = toolobjet;
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
         }
 

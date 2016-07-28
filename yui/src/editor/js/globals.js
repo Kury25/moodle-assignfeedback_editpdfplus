@@ -121,4 +121,8 @@ TOOLTYPELIB = {
     'OVAL': 'oval',
     'HIGHLIGHT': 'highlight'
 },
+TOOLTYPEDEFAULTCOLOR = {
+    'HIGHLIGHTPLUS': 'yellow',
+    'HIGHLIGHTPLUSCARTRIDGE': 'red'
+},
 STROKEWEIGHT = 4;

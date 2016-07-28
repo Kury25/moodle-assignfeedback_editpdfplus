@@ -913,6 +913,11 @@ EDITOR.prototype = {
                 }
                 this.currentdrawable = false;
                 if (annotation.init_from_edit(this.currentedit)) {
+                    if (toolid) {
+                        if (this.tools[toolid].type === TOOLTYPE.HIGHLIGHTPLUS + '') {
+                            annotation.draw_catridge(this.currentedit);
+                        }
+                    }
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
                 }
@@ -1000,9 +1005,9 @@ EDITOR.prototype = {
                 else
                     data.colour = toolobjet.colors;
                 if (data.colour === "")
-                    data.colour = 'yellow';
+                    data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
             }
-            console.log('create_annotation couleur : ' + data.colour);
+            data.tooltype = toolobjet;
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
         }
 

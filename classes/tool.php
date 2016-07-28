@@ -32,6 +32,9 @@ class tool {
 
     /** @var string cartridge for drawing the annotation. */
     public $cartridge = '';
+    
+    /** @var string colors used */
+    public $cartridge_color = '';
 
     /** @var string texts for this annotation. */
     public $texts = '';

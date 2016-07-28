@@ -121,6 +121,10 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable : false,
+    
+    tooltype : null,
+    
+    divcartridge : '',
 
     /**
      * Initialise the annotation.
@@ -140,6 +144,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
+        this.tooltype = config.tooltype;
     },
 
     /**
