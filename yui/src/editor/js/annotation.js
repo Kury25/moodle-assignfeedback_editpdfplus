@@ -125,6 +125,8 @@ Y.extend(ANNOTATION, Y.Base, {
     tooltype : null,
     
     divcartridge : '',
+    
+    commentaire : '',
 
     /**
      * Initialise the annotation.
@@ -145,6 +147,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.colour = config.colour || 'red';
         this.drawable = false;
         this.tooltype = config.tooltype;
+        this.commentaire = config.textannot;
     },
 
     /**
@@ -238,6 +241,10 @@ Y.extend(ANNOTATION, Y.Base, {
         // Should be overridden by the subclass.
         this.draw_highlight();
         return this.drawable;
+    },
+    
+    draw_catridge: function (edit) {
+        return true;
     },
 
     /**
