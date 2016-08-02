@@ -126,7 +126,7 @@ Y.extend(ANNOTATION, Y.Base, {
     
     divcartridge : '',
     
-    commentaire : '',
+    textannot : '',
 
     /**
      * Initialise the annotation.
@@ -147,7 +147,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.colour = config.colour || 'red';
         this.drawable = false;
         this.tooltype = config.tooltype;
-        this.commentaire = config.textannot;
+        this.textannot = config.textannot;
     },
 
     /**
@@ -166,7 +166,8 @@ Y.extend(ANNOTATION, Y.Base, {
             toolid : this.toolid,
             path : this.path,
             pageno : this.pageno,
-            colour : this.colour
+            colour : this.colour,
+            textannot : this.textannot
         };
     },
 

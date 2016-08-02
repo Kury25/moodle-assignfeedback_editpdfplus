@@ -234,7 +234,7 @@ EDITOR.prototype = {
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         button.one('img').setAttribute('src', imgurl);
 
-        //console.log(this.currentedit.tool);
+        //Y.log(this.currentedit.tool);
         if (this.currentedit.id)
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
         else
@@ -662,7 +662,7 @@ EDITOR.prototype = {
      */
     handle_tool_button: function (e, tool, toolid) {
         var currenttoolnode;
-        console.log('handle_tool_button : ' + tool + ' - ' + toolid);
+        Y.log('handle_tool_button : ' + tool + ' - ' + toolid);
 
         e.preventDefault();
 
@@ -962,7 +962,7 @@ EDITOR.prototype = {
      * @method create_annotation
      */
     create_annotation: function (type, toolid, data, toolobjet) {
-        console.log('create_annotation : ' + type + ' - ' + toolid);
+        Y.log('create_annotation : ' + type + ' - ' + toolid);
 
         /*pour fonctionnement des anciens outils*/
         if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
@@ -982,7 +982,7 @@ EDITOR.prototype = {
         }
         data.tool = type;
         data.editor = this;
-        console.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid);
+        Y.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid);
         if (data.tool === TOOLTYPE.LINE + '' || data.tool === TOOLTYPELIB.LINE) {
             return new M.assignfeedback_editpdfplus.annotationline(data);
         } else if (data.tool === TOOLTYPE.RECTANGLE + '' || data.tool === TOOLTYPELIB.RECTANGLE) {
@@ -995,7 +995,7 @@ EDITOR.prototype = {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
             if (toolobjet) {
-                console.log('create_annotation couleur origine : ' + toolobjet.colors);
+                Y.log('create_annotation couleur origine : ' + toolobjet.colors);
                 if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1)
                     data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
                 else
