@@ -1809,20 +1809,20 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             var divedition = "<div ";
             divedition += "id='" + this.divcartridge + "_edit' ";
-            //divedition += "class='assignfeedback_editpdfplus_hightlightplus_edition' >";
-            divedition += "style='display:none;padding-left:2px; padding-right:2px;font-size:12px;'> ";
+            divedition += "class='assignfeedback_editpdfplus_hightlightplus_edition' ";
+            divedition += "style='display:none;'> ";
             divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.textannot + "\" />";
             divedition += "</div>";
             var diveditiondisplay = Y.Node.create(divedition);
             divconteneurdisplay.append(diveditiondisplay);
             var propositions = this.tooltype.texts;
             Y.log('draw_catridge : ' + propositions);
-            var divproposition = "<div style='width:220px;'></div>";
+            var divproposition = "<div></div>";
             var divpropositiondisplay = Y.Node.create(divproposition);
             if (propositions && propositions.length > 0) {
                 var propositionarray = propositions.split('","');
                 for (i = 0; i < propositionarray.length; i++) {
-                    var buttontmp = "<p style='margin:0;width:195px;' class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
+                    var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
                     var buttontmpdisplay = Y.Node.create(buttontmp);
                     buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
                     divpropositiondisplay.append(buttontmpdisplay);

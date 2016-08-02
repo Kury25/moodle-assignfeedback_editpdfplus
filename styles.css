@@ -375,3 +375,10 @@ ul.assignfeedback_editpdfplus_menu {
     padding-right:2px;
     font-size:12px;
 }
+.assignfeedback_editpdfplus_hightlightplus_edition > div {
+    width:220px;
+}
+.assignfeedback_editpdfplus_hightlightplus_edition > div > p {
+    margin:0;
+    width:195px;
+}
