@@ -44,6 +44,8 @@ class tool {
 
     /** @var boolean, allow reply or not */
     public $reply = 0;
+    
+    public $enabled = 1;
 
     /**
      * Convert a compatible stdClass into an instance of this class.

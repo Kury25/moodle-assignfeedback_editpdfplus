@@ -144,7 +144,9 @@ class page_editor {
             $records = $DB->get_records('assignfeedback_editpp_tool');
         }
         foreach ($records as $record) {
-            array_push($tools, new tool($record));
+            if ($record->enabled == 1) {
+                array_push($tools, new tool($record));
+            }
         }
         return $tools;
     }
@@ -318,7 +320,6 @@ class page_editor {
         global $DB;
 
         $annotation->id = null;
-            debugging($annotation->textannot . ' - ' . $annotation->displaylock);
         return $DB->insert_record('assignfeedback_editpp_annot', $annotation);
     }
 
