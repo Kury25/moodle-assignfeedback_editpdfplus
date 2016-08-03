@@ -235,10 +235,11 @@ EDITOR.prototype = {
         button.one('img').setAttribute('src', imgurl);
 
         //Y.log(this.currentedit.tool);
-        if (this.currentedit.id)
+        if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
-        else
+        } else {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
+        }
         currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
         currenttoolnode.setAttribute('aria-pressed', 'true');
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
@@ -995,7 +996,7 @@ EDITOR.prototype = {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
             if (toolobjet) {
-                Y.log('create_annotation couleur origine : ' + toolobjet.colors);
+                //Y.log('create_annotation couleur origine : ' + toolobjet.colors);
                 if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
                     data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
                 } else {
@@ -1007,6 +1008,19 @@ EDITOR.prototype = {
             }
             data.tooltype = toolobjet;
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
+        } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
+            if (toolobjet) {
+                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                    data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                } else {
+                    data.colour = toolobjet.colors;
+                }
+                if (data.colour === "") {
+                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPPLUS;
+                }
+            }
+            data.tooltype = toolobjet;
+            return new M.assignfeedback_editpdfplus.annotationstampplus(data);
         }
 
         return false;

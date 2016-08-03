@@ -144,7 +144,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return {}
      */
     clean: function () {
-        Y.log("clean : " + this.textannot + ' ' + parseInt(this.displaylock, 10));
         return {
             gradeid: this.gradeid,
             x: parseInt(this.x, 10),
