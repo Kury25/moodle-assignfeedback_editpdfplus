@@ -66,6 +66,9 @@ class annotation {
     /** @var string colour - One of red, yellow, green, blue, white */
     public $colour = 'yellow';
 
+    /** @var bool displaylock for displaying this annotation */
+    public $displaylock = 0;
+    
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

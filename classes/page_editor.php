@@ -318,6 +318,7 @@ class page_editor {
         global $DB;
 
         $annotation->id = null;
+            debugging($annotation->textannot . ' - ' . $annotation->displaylock);
         return $DB->insert_record('assignfeedback_editpp_annot', $annotation);
     }
 

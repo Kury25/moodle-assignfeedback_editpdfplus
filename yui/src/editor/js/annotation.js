@@ -26,7 +26,7 @@
  * @class annotation
  * @constructor
  */
-var ANNOTATION = function(config) {
+var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
 
@@ -40,101 +40,88 @@ Y.extend(ANNOTATION, Y.Base, {
      * @type M.assignfeedback_editpdfplus.editor
      * @public
      */
-    editor : null,
-
+    editor: null,
     /**
      * Grade id
      * @property gradeid
      * @type Int
      * @public
      */
-    gradeid : 0,
-
+    gradeid: 0,
     /**
      * Comment page number
      * @property pageno
      * @type Int
      * @public
      */
-    pageno : 0,
-
+    pageno: 0,
     /**
      * X position
      * @property x
      * @type Int
      * @public
      */
-    x : 0,
-
+    x: 0,
     /**
      * Y position
      * @property y
      * @type Int
      * @public
      */
-    y : 0,
-
+    y: 0,
     /**
      * Ending x position
      * @property endx
      * @type Int
      * @public
      */
-    endx : 0,
-
+    endx: 0,
     /**
      * Ending y position
      * @property endy
      * @type Int
      * @public
      */
-    endy : 0,
-
+    endy: 0,
     /**
      * Path
      * @property path
      * @type String - list of points like x1,y1:x2,y2
      * @public
      */
-    path : '',
-
+    path: '',
     /**
      * Tool.
      * @property toolid
      * @type Int
      * @public
      */
-    toolid : 0,
-
+    toolid: 0,
     /**
      * Annotation colour.
      * @property colour
      * @type String
      * @public
      */
-    colour : 'red',
-
+    colour: 'red',
     /**
      * Reference to M.assignfeedback_editpdfplus.drawable
      * @property drawable
      * @type M.assignfeedback_editpdfplus.drawable
      * @public
      */
-    drawable : false,
-    
-    tooltype : null,
-    
-    divcartridge : '',
-    
-    textannot : '',
-
+    drawable: false,
+    tooltype: null,
+    divcartridge: '',
+    textannot: '',
+    displaylock: 0,
     /**
      * Initialise the annotation.
      *
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         this.editor = config.editor || null;
         this.gradeid = parseInt(config.gradeid, 10) || 0;
         this.pageno = parseInt(config.pageno, 10) || 0;
@@ -143,62 +130,63 @@ Y.extend(ANNOTATION, Y.Base, {
         this.endx = parseInt(config.endx, 10) || 0;
         this.endy = parseInt(config.endy, 10) || 0;
         this.path = config.path || '';
-        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+        this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
         this.tooltype = config.tooltype;
         this.textannot = config.textannot;
+        this.displaylock = config.displaylock;
     },
-
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
      * @method clean
      * @return {}
      */
-    clean : function() {
+    clean: function () {
+        Y.log("clean : " + this.textannot + ' ' + parseInt(this.displaylock, 10));
         return {
-            gradeid : this.gradeid,
-            x : parseInt(this.x, 10),
-            y : parseInt(this.y, 10),
-            endx : parseInt(this.endx, 10),
-            endy : parseInt(this.endy, 10),
-            toolid : this.toolid,
-            path : this.path,
-            pageno : this.pageno,
-            colour : this.colour,
-            textannot : this.textannot
+            gradeid: this.gradeid,
+            x: parseInt(this.x, 10),
+            y: parseInt(this.y, 10),
+            endx: parseInt(this.endx, 10),
+            endy: parseInt(this.endy, 10),
+            toolid: this.toolid,
+            path: this.path,
+            pageno: this.pageno,
+            colour: this.colour,
+            textannot: this.textannot,
+            displaylock: parseInt(this.displaylock, 10)
         };
     },
-
     /**
      * Draw a selection around this annotation if it is selected.
      * @public
      * @method draw_highlight
      * @return M.assignfeedback_editpdfplus.drawable
      */
-    draw_highlight : function() {
+    draw_highlight: function () {
         var bounds,
-            drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
-            offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
-            shape;
+                drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
+                offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
+                shape;
 
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
             bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                          new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+                new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
             shape = this.editor.graphic.addShape({
                 type: Y.Rect,
                 width: bounds.width,
                 height: bounds.height,
                 stroke: {
-                   weight: STROKEWEIGHT,
-                   color: SELECTEDBORDERCOLOUR
+                    weight: STROKEWEIGHT,
+                    color: SELECTEDBORDERCOLOUR
                 },
                 fill: {
-                   color: SELECTEDFILLCOLOUR
+                    color: SELECTEDFILLCOLOUR
                 },
                 x: bounds.x,
                 y: bounds.y
@@ -207,13 +195,13 @@ Y.extend(ANNOTATION, Y.Base, {
 
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
-                deletelink = Y.Node.create('<a href="#" role="button"></a>');
+                    deletelink = Y.Node.create('<a href="#" role="button"></a>');
 
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
             });
             deleteicon.setStyles({
-                'backgroundColor' : 'white'
+                'backgroundColor': 'white'
             });
             deletelink.addClass('deleteannotationbutton');
             deletelink.append(deleteicon);
@@ -231,32 +219,29 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return this.drawable;
     },
-
     /**
      * Draw an annotation
      * @public
      * @method draw
      * @return M.assignfeedback_editpdfplus.drawable|false
      */
-    draw : function() {
+    draw: function () {
         // Should be overridden by the subclass.
         this.draw_highlight();
         return this.drawable;
     },
-    
     draw_catridge: function (edit) {
         return true;
     },
-
     /**
      * Delete an annotation
      * @protected
      * @method remove
      * @param event
      */
-    remove : function(e) {
+    remove: function (e) {
         var annotations,
-            i;
+                i;
 
         e.preventDefault();
 
@@ -273,7 +258,6 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
-
     /**
      * Move an annotation to a new location.
      * @public
@@ -281,11 +265,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param int newy
      * @method move_annotation
      */
-    move : function(newx, newy) {
+    move: function (newx, newy) {
         var diffx = newx - this.x,
-            diffy = newy - this.y,
-            newpath, oldpath, xy,
-            x, y;
+                diffy = newy - this.y,
+                newpath, oldpath, xy,
+                x, y;
 
         this.x += diffx;
         this.y += diffy;
@@ -295,7 +279,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
-            Y.each(oldpath, function(position) {
+            Y.each(oldpath, function (position) {
                 xy = position.split(',');
                 x = parseInt(xy[0], 10);
                 y = parseInt(xy[1], 10);
@@ -310,7 +294,6 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         this.editor.drawables.push(this.draw());
     },
-
     /**
      * Draw the in progress edit.
      *
@@ -318,12 +301,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @method draw_current_edit
      * @param M.assignfeedback_editpdfplus.edit edit
      */
-    draw_current_edit : function(edit) {
+    draw_current_edit: function (edit) {
         var noop = edit && false;
         // Override me please.
         return noop;
     },
-
     /**
      * Promote the current edit to a real annotation.
      *
@@ -332,7 +314,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool if width/height is more than min. required.
      */
-    init_from_edit : function(edit) {
+    init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
 

@@ -996,12 +996,14 @@ EDITOR.prototype = {
         } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
             if (toolobjet) {
                 Y.log('create_annotation couleur origine : ' + toolobjet.colors);
-                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1)
+                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
                     data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                else
+                } else {
                     data.colour = toolobjet.colors;
-                if (data.colour === "")
+                }
+                if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
+                }
             }
             data.tooltype = toolobjet;
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);

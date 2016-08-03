@@ -587,7 +587,7 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
  * @class annotation
  * @constructor
  */
-var ANNOTATION = function(config) {
+var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
 
@@ -601,101 +601,88 @@ Y.extend(ANNOTATION, Y.Base, {
      * @type M.assignfeedback_editpdfplus.editor
      * @public
      */
-    editor : null,
-
+    editor: null,
     /**
      * Grade id
      * @property gradeid
      * @type Int
      * @public
      */
-    gradeid : 0,
-
+    gradeid: 0,
     /**
      * Comment page number
      * @property pageno
      * @type Int
      * @public
      */
-    pageno : 0,
-
+    pageno: 0,
     /**
      * X position
      * @property x
      * @type Int
      * @public
      */
-    x : 0,
-
+    x: 0,
     /**
      * Y position
      * @property y
      * @type Int
      * @public
      */
-    y : 0,
-
+    y: 0,
     /**
      * Ending x position
      * @property endx
      * @type Int
      * @public
      */
-    endx : 0,
-
+    endx: 0,
     /**
      * Ending y position
      * @property endy
      * @type Int
      * @public
      */
-    endy : 0,
-
+    endy: 0,
     /**
      * Path
      * @property path
      * @type String - list of points like x1,y1:x2,y2
      * @public
      */
-    path : '',
-
+    path: '',
     /**
      * Tool.
      * @property toolid
      * @type Int
      * @public
      */
-    toolid : 0,
-
+    toolid: 0,
     /**
      * Annotation colour.
      * @property colour
      * @type String
      * @public
      */
-    colour : 'red',
-
+    colour: 'red',
     /**
      * Reference to M.assignfeedback_editpdfplus.drawable
      * @property drawable
      * @type M.assignfeedback_editpdfplus.drawable
      * @public
      */
-    drawable : false,
-    
-    tooltype : null,
-    
-    divcartridge : '',
-    
-    textannot : '',
-
+    drawable: false,
+    tooltype: null,
+    divcartridge: '',
+    textannot: '',
+    displaylock: 0,
     /**
      * Initialise the annotation.
      *
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         this.editor = config.editor || null;
         this.gradeid = parseInt(config.gradeid, 10) || 0;
         this.pageno = parseInt(config.pageno, 10) || 0;
@@ -704,62 +691,62 @@ Y.extend(ANNOTATION, Y.Base, {
         this.endx = parseInt(config.endx, 10) || 0;
         this.endy = parseInt(config.endy, 10) || 0;
         this.path = config.path || '';
-        this.toolid =  config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+        this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
         this.colour = config.colour || 'red';
         this.drawable = false;
         this.tooltype = config.tooltype;
         this.textannot = config.textannot;
+        this.displaylock = config.displaylock;
     },
-
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
      * @method clean
      * @return {}
      */
-    clean : function() {
+    clean: function () {
         return {
-            gradeid : this.gradeid,
-            x : parseInt(this.x, 10),
-            y : parseInt(this.y, 10),
-            endx : parseInt(this.endx, 10),
-            endy : parseInt(this.endy, 10),
-            toolid : this.toolid,
-            path : this.path,
-            pageno : this.pageno,
-            colour : this.colour,
-            textannot : this.textannot
+            gradeid: this.gradeid,
+            x: parseInt(this.x, 10),
+            y: parseInt(this.y, 10),
+            endx: parseInt(this.endx, 10),
+            endy: parseInt(this.endy, 10),
+            toolid: this.toolid,
+            path: this.path,
+            pageno: this.pageno,
+            colour: this.colour,
+            textannot: this.textannot,
+            displaylock: parseInt(this.displaylock, 10)
         };
     },
-
     /**
      * Draw a selection around this annotation if it is selected.
      * @public
      * @method draw_highlight
      * @return M.assignfeedback_editpdfplus.drawable
      */
-    draw_highlight : function() {
+    draw_highlight: function () {
         var bounds,
-            drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
-            offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
-            shape;
+                drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
+                offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
+                shape;
 
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
             bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                          new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+                new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
             shape = this.editor.graphic.addShape({
                 type: Y.Rect,
                 width: bounds.width,
                 height: bounds.height,
                 stroke: {
-                   weight: STROKEWEIGHT,
-                   color: SELECTEDBORDERCOLOUR
+                    weight: STROKEWEIGHT,
+                    color: SELECTEDBORDERCOLOUR
                 },
                 fill: {
-                   color: SELECTEDFILLCOLOUR
+                    color: SELECTEDFILLCOLOUR
                 },
                 x: bounds.x,
                 y: bounds.y
@@ -768,13 +755,13 @@ Y.extend(ANNOTATION, Y.Base, {
 
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
-                deletelink = Y.Node.create('<a href="#" role="button"></a>');
+                    deletelink = Y.Node.create('<a href="#" role="button"></a>');
 
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
             });
             deleteicon.setStyles({
-                'backgroundColor' : 'white'
+                'backgroundColor': 'white'
             });
             deletelink.addClass('deleteannotationbutton');
             deletelink.append(deleteicon);
@@ -792,32 +779,29 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return this.drawable;
     },
-
     /**
      * Draw an annotation
      * @public
      * @method draw
      * @return M.assignfeedback_editpdfplus.drawable|false
      */
-    draw : function() {
+    draw: function () {
         // Should be overridden by the subclass.
         this.draw_highlight();
         return this.drawable;
     },
-    
     draw_catridge: function (edit) {
         return true;
     },
-
     /**
      * Delete an annotation
      * @protected
      * @method remove
      * @param event
      */
-    remove : function(e) {
+    remove: function (e) {
         var annotations,
-            i;
+                i;
 
         e.preventDefault();
 
@@ -834,7 +818,6 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
-
     /**
      * Move an annotation to a new location.
      * @public
@@ -842,11 +825,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param int newy
      * @method move_annotation
      */
-    move : function(newx, newy) {
+    move: function (newx, newy) {
         var diffx = newx - this.x,
-            diffy = newy - this.y,
-            newpath, oldpath, xy,
-            x, y;
+                diffy = newy - this.y,
+                newpath, oldpath, xy,
+                x, y;
 
         this.x += diffx;
         this.y += diffy;
@@ -856,7 +839,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
-            Y.each(oldpath, function(position) {
+            Y.each(oldpath, function (position) {
                 xy = position.split(',');
                 x = parseInt(xy[0], 10);
                 y = parseInt(xy[1], 10);
@@ -871,7 +854,6 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         this.editor.drawables.push(this.draw());
     },
-
     /**
      * Draw the in progress edit.
      *
@@ -879,12 +861,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @method draw_current_edit
      * @param M.assignfeedback_editpdfplus.edit edit
      */
-    draw_current_edit : function(edit) {
+    draw_current_edit: function (edit) {
         var noop = edit && false;
         // Override me please.
         return noop;
     },
-
     /**
      * Promote the current edit to a real annotation.
      *
@@ -893,7 +874,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool if width/height is more than min. required.
      */
-    init_from_edit : function(edit) {
+    init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
 
@@ -1734,8 +1715,9 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             highlightcolour = highlightcolour.replace('rgb', 'rgba');
             highlightcolour = highlightcolour.replace(')', ',0.5)');
         }
-        if (highlightcolour === '')
+        if (highlightcolour === '') {
             return TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUSCARTRIDGE;
+        }
         return highlightcolour;
     },
     draw_catridge: function (edit) {
@@ -1776,12 +1758,30 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 divinput += '&nbsp;&nbsp;';
             }
             divinput += "</div>";
+            var onof = 0;
+            if (this.displaylock === '1') {
+                onof = 1;
+            }
             var divinputdisplay = Y.Node.create(divinput);
             var inputvalref = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.textannot + "\"/>");
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=0 />");
-            var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=0 />");
+            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+            var lockvalue = 0;
+            if (this.displaylock > 0) {
+                lockvalue = 1;
+            }
+            var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=" + lockvalue + " />");
             divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ><img src='" + M.util.image_url('t/right', 'core') + "' /></button>";
+            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+            if (lockvalue > 0) {
+                buttonvisibility += "style='display:none;' "
+            }
+            buttonvisibility += "><img src='";
+            if (this.displaylock === 1) {
+                buttonvisibility += M.util.image_url('t/left', 'core');
+            } else {
+                buttonvisibility += M.util.image_url('t/right', 'core');
+            }
+            buttonvisibility += "' /></button>";
             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
@@ -1790,7 +1790,13 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/delete', 'core') + "' /></button>";
             var buttoncanceldisplay = Y.Node.create(buttoncancel);
             buttoncanceldisplay.on('click', this.hide_edit, this);
-            var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><img src='" + M.util.image_url('t/lock', 'core') + "' /></button>";
+            var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><img src='";
+            if (this.displaylock > 0) {
+                buttonlock += M.util.image_url('t/locked', 'core');
+            } else {
+                buttonlock += M.util.image_url('t/lock', 'core');
+            }
+            buttonlock += "' /></button>";
             var buttonlockdisplay = Y.Node.create(buttonlock);
             buttonlockdisplay.on('click', this.lock_display, this);
             divconteneurdisplay.append(divinputdisplay);
@@ -1831,6 +1837,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             divdisplay.setX(offsetcanvas[0] + this.x);
             divdisplay.setY(this.y - 16 - 8);
             drawingregion.append(divdisplay);
+
+            this.apply_visibility_annot();
         } else {
             var divid = '#' + this.divcartridge;
             var divdisplay = this.editor.get_dialogue_element(divid);
@@ -1845,35 +1853,67 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-        if (lockdisplay.get('value') === '0')
+        if (lockdisplay.get('value') === '0') {
             if (interrupt.get('value') === '0') {
                 divdisplay.setContent(valref);
                 interrupt.set('value', 1);
-                buttonplus.one('img').setAttribute('src',M.util.image_url('t/left', 'core'));
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
             } else {
                 divdisplay.setContent(valref.substr(0, 20));
                 interrupt.set('value', 0);
-                buttonplus.one('img').setAttribute('src',M.util.image_url('t/right', 'core'));
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
             }
-        else
-        if (interrupt.get('value') === '0') {
-            divdisplay.setContent(valref.substr(0, 20));
         } else {
-            divdisplay.setContent(valref);
+            if (interrupt.get('value') === '0') {
+                divdisplay.setContent(valref.substr(0, 20));
+            } else {
+                divdisplay.setContent(valref);
+            }
+        }
+    },
+    apply_visibility_annot: function () {
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
+        var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
+        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+        if (lockdisplay.get('value') === '0') {
+            if (interrupt.get('value') === '0') {
+                divdisplay.setContent(valref.substr(0, 20));
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            } else {
+                divdisplay.setContent(valref);
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            }
+        } else {
+            if (interrupt.get('value') === '0') {
+                divdisplay.setContent(valref.substr(0, 20));
+            } else {
+                divdisplay.setContent(valref);
+            }
         }
     },
     lock_display: function () {
         var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         var buttonlock = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonlock");
+        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
         if (lockdisplay.get('value') === '0') {
             lockdisplay.set('value', 1);
             buttonplus.hide();
-            buttonlock.one('img').setAttribute('src',M.util.image_url('t/locked', 'core'));
+            buttonlock.one('img').setAttribute('src', M.util.image_url('t/locked', 'core'));
+            if (interrupt.get('value') === '0') {
+                this.displaylock = 2;
+            } else {
+                this.displaylock = 1;
+            }
+            this.editor.save_current_page();
         } else {
             lockdisplay.set('value', 0);
             buttonplus.show();
-            buttonlock.one('img').setAttribute('src',M.util.image_url('t/lock', 'core'));
+            buttonlock.one('img').setAttribute('src', M.util.image_url('t/lock', 'core'));
+            this.displaylock = 0;
+            this.editor.save_current_page();
         }
     },
     edit_annot: function () {
@@ -1894,8 +1934,9 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
     },
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        if (input)
+        if (input) {
             input.set('value', unputtext);
+        }
     },
     hide_edit: function () {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
@@ -1924,14 +1965,12 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var result = input.get('value');
         this.textannot = result;
         this.editor.save_current_page();
-        if (result.length === 0)
+        if (result.length === 0) {
             result = "&nbsp;&nbsp;";
+        }
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
         valref.set('value', result);
-        this.change_visibility_annot();
-        this.change_visibility_annot();
-        //var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        //divdisplay.set('text', result);
+        this.apply_visibility_annot();
         this.hide_edit();
         return;
     },
@@ -4501,12 +4540,14 @@ EDITOR.prototype = {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
             if (toolobjet) {
-                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1)
+                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
                     data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                else
+                } else {
                     data.colour = toolobjet.colors;
-                if (data.colour === "")
+                }
+                if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
+                }
             }
             data.tooltype = toolobjet;
             return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
