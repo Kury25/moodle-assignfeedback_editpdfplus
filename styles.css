@@ -348,6 +348,8 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus {
     position:absolute;
     border:2px solid;
+    border-radius: 10px;
+    background-color: #FFFEEB;
 }
 .assignfeedback_editpdfplus_hightlightplus_cartridge {
     display:inline;
@@ -358,6 +360,7 @@ ul.assignfeedback_editpdfplus_menu {
 }
 .assignfeedback_editpdfplus_hightlightplus_conteneur {
     display:inline;
+    margin-right:4px;
 }
 .assignfeedback_editpdfplus_hightlightplus_conteneur > button {
     margin:0;

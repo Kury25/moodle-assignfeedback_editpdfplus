@@ -1781,16 +1781,16 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=0 />");
             var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=0 />");
             divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' >...</button>";
+            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ><img src='" + M.util.image_url('t/right', 'core') + "' /></button>";
             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'>save</button>";
+            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_annot, this);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'>cancel</button>";
+            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/delete', 'core') + "' /></button>";
             var buttoncanceldisplay = Y.Node.create(buttoncancel);
             buttoncanceldisplay.on('click', this.hide_edit, this);
-            var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><span class='glyphicon glyphicon-lock'>lock</span></button>";
+            var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><img src='" + M.util.image_url('t/lock', 'core') + "' /></button>";
             var buttonlockdisplay = Y.Node.create(buttonlock);
             buttonlockdisplay.on('click', this.lock_display, this);
             divconteneurdisplay.append(divinputdisplay);
@@ -1844,13 +1844,16 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
         var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         if (lockdisplay.get('value') === '0')
             if (interrupt.get('value') === '0') {
                 divdisplay.setContent(valref);
                 interrupt.set('value', 1);
+                buttonplus.one('img').setAttribute('src',M.util.image_url('t/left', 'core'));
             } else {
                 divdisplay.setContent(valref.substr(0, 20));
                 interrupt.set('value', 0);
+                buttonplus.one('img').setAttribute('src',M.util.image_url('t/right', 'core'));
             }
         else
         if (interrupt.get('value') === '0') {
@@ -1866,9 +1869,11 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         if (lockdisplay.get('value') === '0') {
             lockdisplay.set('value', 1);
             buttonplus.hide();
+            buttonlock.one('img').setAttribute('src',M.util.image_url('t/locked', 'core'));
         } else {
             lockdisplay.set('value', 0);
             buttonplus.show();
+            buttonlock.one('img').setAttribute('src',M.util.image_url('t/lock', 'core'));
         }
     },
     edit_annot: function () {
