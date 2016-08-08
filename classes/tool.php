@@ -46,6 +46,8 @@ class tool {
     public $reply = 0;
     
     public $enabled = 1;
+    
+    public $order = 1000;
 
     /**
      * Convert a compatible stdClass into an instance of this class.
@@ -65,6 +67,5 @@ class tool {
             }
         }
     }
-    
     
 }

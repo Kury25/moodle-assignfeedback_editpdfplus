@@ -148,6 +148,14 @@ class page_editor {
                 array_push($tools, new tool($record));
             }
         }
+        usort($tools, function($a, $b) {
+            $al = $a->order;
+            $bl = $b->order;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
         return $tools;
     }
 
