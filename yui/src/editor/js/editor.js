@@ -652,7 +652,7 @@ EDITOR.prototype = {
             toolbar.hide();
         }, this);
         var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR + ' option:checked');
-        var axisid = axisselector.get('value');
+        var axisid = parseInt(axisselector.get('value')) + 1;
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
@@ -994,7 +994,7 @@ EDITOR.prototype = {
             return new M.assignfeedback_editpdfplus.annotationpen(data);
         } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
-        } else if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+        } else {
             if (toolobjet) {
                 //Y.log('create_annotation couleur origine : ' + toolobjet.colors);
                 if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
@@ -1002,27 +1002,25 @@ EDITOR.prototype = {
                 } else {
                     data.colour = toolobjet.colors;
                 }
+            }
+            data.tooltype = toolobjet;
+            if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
                 }
-            }
-            data.tooltype = toolobjet;
-            return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
-        } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
-            if (toolobjet) {
-                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                    data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                } else {
-                    data.colour = toolobjet.colors;
-                }
+                return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
+            } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.STAMPPLUS;
                 }
+                return new M.assignfeedback_editpdfplus.annotationstampplus(data);
+            } else if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
+                if (data.colour === "") {
+                    data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
+                }
+                return new M.assignfeedback_editpdfplus.annotationframe(data);
             }
-            data.tooltype = toolobjet;
-            return new M.assignfeedback_editpdfplus.annotationstampplus(data);
         }
-
         return false;
     },
     /**

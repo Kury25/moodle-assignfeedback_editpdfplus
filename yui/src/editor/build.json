@@ -17,6 +17,7 @@
         "annotationhighlightplus.js",
         "annotationstamp.js",
         "annotationstampplus.js",
+        "annotationframe.js",
         "dropdown.js",
         "colourpicker.js",
         "stamppicker.js",

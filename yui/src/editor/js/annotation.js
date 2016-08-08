@@ -213,7 +213,7 @@ Y.extend(ANNOTATION, Y.Base, {
             deletelink.on('key', this.remove, 'space,enter', this);
 
             deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
-            deletelink.setY(offsetcanvas[1] + bounds.y + 6);
+            deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;

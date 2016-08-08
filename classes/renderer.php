@@ -235,7 +235,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                     $compteur++;
                 }
             }
-
+            usort($axis, function($a, $b) {
+                $al = substr($a, 4, 5);
+                $bl = substr($b, 4, 5);
+                if ($al == $bl) {
+                    return 0;
+                }
+                return ($al > $bl) ? +1 : -1;
+            });
             $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
             $toolbarCostumdiv = '';
             foreach ($toolbarCostum as $toolbarCostumUnit) {

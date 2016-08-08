@@ -220,7 +220,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             divinputdisplay.on('click', this.edit_annot, this);
             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
             if (lockvalue > 0) {
-                buttonvisibility += "style='display:none;' "
+                buttonvisibility += "style='display:none;' ";
             }
             buttonvisibility += "><img src='";
             if (this.displaylock === 1) {
