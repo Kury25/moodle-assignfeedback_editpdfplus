@@ -69,6 +69,9 @@ class annotation {
     /** @var bool displaylock for displaying this annotation */
     public $displaylock = 0;
     
+    /** @var string borderstyle */
+    public $borderstyle = '';
+    
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

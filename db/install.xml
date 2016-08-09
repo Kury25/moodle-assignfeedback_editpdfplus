@@ -41,14 +41,18 @@
         <FIELD NAME="studentanswer" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="studentstatus" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="displaylock" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="borderstyle" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="parent_annot" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="gradeid" TYPE="foreign" FIELDS="gradeid" REFTABLE="assign_grades" REFFIELDS="id"/>
         <KEY NAME="toolid" TYPE="foreign" FIELDS="toolid" REFTABLE="editpdfpp_tool" REFFIELDS="id"/>
+        <KEY NAME="parent_annot" TYPE="foreign" FIELDS="parent_annot" REFTABLE="editpdfpp_annot" REFFIELDS="id"/>
       </KEYS>
       <INDEXES>
         <INDEX NAME="gradeid_pageno" UNIQUE="false" FIELDS="gradeid, pageno"/>
+        <INDEX NAME="parent_annot" UNIQUE="false" FIELDS="parent_annot"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="assignfeedback_editpp_quick" COMMENT="Stores teacher specified quicklist comments">

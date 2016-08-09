@@ -115,6 +115,7 @@ Y.extend(ANNOTATION, Y.Base, {
     divcartridge: '',
     textannot: '',
     displaylock: 0,
+    borderstyle: '',
     /**
      * Initialise the annotation.
      *
@@ -136,6 +137,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.tooltype = config.tooltype;
         this.textannot = config.textannot;
         this.displaylock = config.displaylock;
+        this.borderstyle = config.borderstyle || 'solid';
     },
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
@@ -144,6 +146,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return {}
      */
     clean: function () {
+        Y.log('clean : ' + this.borderstyle);
         return {
             gradeid: this.gradeid,
             x: parseInt(this.x, 10),
@@ -155,7 +158,8 @@ Y.extend(ANNOTATION, Y.Base, {
             pageno: this.pageno,
             colour: this.colour,
             textannot: this.textannot,
-            displaylock: parseInt(this.displaylock, 10)
+            displaylock: parseInt(this.displaylock, 10),
+            borderstyle: this.borderstyle
         };
     },
     /**

@@ -995,26 +995,40 @@ EDITOR.prototype = {
         } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else {
-            if (toolobjet) {
-                //Y.log('create_annotation couleur origine : ' + toolobjet.colors);
-                if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                    data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                } else {
-                    data.colour = toolobjet.colors;
-                }
-            }
             data.tooltype = toolobjet;
             if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+                if (toolobjet) {
+                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                    } else {
+                        data.colour = toolobjet.colors;
+                    }
+                }
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
                 }
                 return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
             } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
+                if (toolobjet) {
+                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                    } else {
+                        data.colour = toolobjet.colors;
+                    }
+                }
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.STAMPPLUS;
                 }
                 return new M.assignfeedback_editpdfplus.annotationstampplus(data);
             } else if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
+                /*if (toolobjet && data.colour === '') {
+                 if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                 data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                 } else {
+                 data.colour = toolobjet.colors;
+                 }
+                 }*/
+                Y.log('create_annotation : ' + data.colour);
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
