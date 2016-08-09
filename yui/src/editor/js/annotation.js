@@ -116,6 +116,7 @@ Y.extend(ANNOTATION, Y.Base, {
     textannot: '',
     displaylock: 0,
     borderstyle: '',
+    parent_annot: 0,
     /**
      * Initialise the annotation.
      *
@@ -123,21 +124,61 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return void
      */
     initializer: function (config) {
-        this.editor = config.editor || null;
-        this.gradeid = parseInt(config.gradeid, 10) || 0;
-        this.pageno = parseInt(config.pageno, 10) || 0;
-        this.x = parseInt(config.x, 10) || 0;
-        this.y = parseInt(config.y, 10) || 0;
-        this.endx = parseInt(config.endx, 10) || 0;
-        this.endy = parseInt(config.endy, 10) || 0;
-        this.path = config.path || '';
-        this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
-        this.colour = config.colour || 'red';
-        this.drawable = false;
-        this.tooltype = config.tooltype;
-        this.textannot = config.textannot;
-        this.displaylock = config.displaylock;
-        this.borderstyle = config.borderstyle || 'solid';
+        if (config.parent_annot) {
+            this.editor = config.parent_annot.editor || null;
+            this.gradeid = parseInt(config.parent_annot.gradeid, 10) || 0;
+            this.pageno = parseInt(config.parent_annot.pageno, 10) || 0;
+            this.x = parseInt(config.x, 10) || 0;
+            this.y = parseInt(config.y, 10) || 0;
+            this.endx = parseInt(config.endx, 10) || 0;
+            this.endy = parseInt(config.endy, 10) || 0;
+            this.path = config.path || '';
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.colour = config.parent_annot.colour || 'red';
+            this.drawable = false;
+            this.tooltype = config.tooltype;
+            this.textannot = config.parent_annot.textannot;
+            this.displaylock = config.parent_annot.displaylock;
+            this.borderstyle = config.parent_annot.borderstyle || 'solid';
+            this.parent_annot = -1;
+            config.parent_annot.children.push(this);
+        } else {
+            this.editor = config.editor || null;
+            this.gradeid = parseInt(config.gradeid, 10) || 0;
+            this.pageno = parseInt(config.pageno, 10) || 0;
+            this.x = parseInt(config.x, 10) || 0;
+            this.y = parseInt(config.y, 10) || 0;
+            this.endx = parseInt(config.endx, 10) || 0;
+            this.endy = parseInt(config.endy, 10) || 0;
+            this.path = config.path || '';
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.colour = config.colour || 'red';
+            this.drawable = false;
+            this.tooltype = config.tooltype;
+            this.textannot = config.textannot;
+            this.displaylock = config.displaylock;
+            this.borderstyle = config.borderstyle || 'solid';
+            this.parent_annot = config.parent_annot;
+        }
+    },
+    clone: function () {
+        return {
+            editor: this.editor,
+            gradeid: this.gradeid,
+            pageno: this.pageno,
+            x: this.x,
+            y: this.y,
+            endx: this.endx,
+            endy: this.endy,
+            path: this.path,
+            toolid: this.toolid,
+            colour: this.colour,
+            tooltype: this.tooltype,
+            textannot: this.textannot,
+            displaylock: this.displaylock,
+            borderstyle: this.borderstyle,
+            parent_annot: this
+        };
     },
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
@@ -146,7 +187,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return {}
      */
     clean: function () {
-        Y.log('clean : ' + this.borderstyle);
         return {
             gradeid: this.gradeid,
             x: parseInt(this.x, 10),
@@ -159,7 +199,8 @@ Y.extend(ANNOTATION, Y.Base, {
             colour: this.colour,
             textannot: this.textannot,
             displaylock: parseInt(this.displaylock, 10),
-            borderstyle: this.borderstyle
+            borderstyle: this.borderstyle,
+            parent_annot: this.parent_annot
         };
     },
     /**

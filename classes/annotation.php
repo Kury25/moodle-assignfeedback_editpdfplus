@@ -72,6 +72,9 @@ class annotation {
     /** @var string borderstyle */
     public $borderstyle = '';
     
+    /** @var int $parent_annot */
+    public $parent_annot = 0;
+    
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

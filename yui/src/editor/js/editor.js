@@ -1028,10 +1028,10 @@ EDITOR.prototype = {
                  data.colour = toolobjet.colors;
                  }
                  }*/
-                Y.log('create_annotation : ' + data.colour);
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
+                data.parent_annot = this.currentedit.parent_annot;
                 return new M.assignfeedback_editpdfplus.annotationframe(data);
             }
         }
