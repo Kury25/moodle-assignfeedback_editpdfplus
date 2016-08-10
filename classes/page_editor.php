@@ -194,7 +194,15 @@ class page_editor {
 
         $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1));
         $added = 0;
+        $annotationdiv = array();
         foreach ($annotations as $record) {
+            //debugging($record->divcartridge . ' - ' . $record->parent_annot_div);
+            $currentdiv = $record->divcartridge;
+            if ($record->parent_annot_div != '') {
+                //on est dans le cas d'une annotation liee
+                $idparent = $annotationdiv[$record->parent_annot_div];
+                $record->parent_annot = intval($idparent);
+            }
             // Force these.
             if (!($record instanceof annotation)) {
                 $annotation = new annotation($record);
@@ -204,7 +212,12 @@ class page_editor {
             $annotation->gradeid = $gradeid;
             $annotation->pageno = $pageno;
             $annotation->draft = 1;
-            if (self::add_annotation($annotation)) {
+            $newid = self::add_annotation($annotation);
+            if ($newid) {
+                if ($currentdiv != '') {
+                    $annotationdiv[$currentdiv] = $newid;
+                    debugging($currentdiv . ' -> ' . $newid);
+                }
                 $added++;
             }
         }
@@ -328,6 +341,10 @@ class page_editor {
         global $DB;
 
         $annotation->id = null;
+        debugging('idparent : ' . $annotation->parent_annot);
+        if ($annotation->parent_annot == 0) {
+            $annotation->parent_annot = null;
+        }
         return $DB->insert_record('assignfeedback_editpp_annot', $annotation);
     }
 

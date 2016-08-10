@@ -511,9 +511,20 @@ EDITOR.prototype = {
                         comment.colour,
                         comment.rawtext);
             }
+            var parentannot = [];
             for (j = 0; j < this.pages[i].annotations.length; j++) {
                 data = this.pages[i].annotations[j];
-                this.pages[i].annotations[j] = this.create_annotation(this.tools[data.toolid].type, data.toolid, data, this.tools[data.toolid]); //@TODO
+                if (data.parent_annot) {
+                    data.parent_annot_element = parentannot[data.parent_annot];
+                    /*for (var k = 0; k < j; k++) {
+                     if (this.pages[i].annotations[k].id === data.parent_annot) {
+                     data.parent_annot_element = this.pages[i].annotations[k];
+                     }
+                     }*/
+                }
+                var newannot = this.create_annotation(this.tools[data.toolid].type, data.toolid, data, this.tools[data.toolid]);
+                parentannot[data.id] = newannot;
+                this.pages[i].annotations[j] = newannot;
             }
         }
 
@@ -983,7 +994,7 @@ EDITOR.prototype = {
         }
         data.tool = type;
         data.editor = this;
-        Y.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid);
+        Y.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid + ' - ' + data.parent_annot);
         if (data.tool === TOOLTYPE.LINE + '' || data.tool === TOOLTYPELIB.LINE) {
             return new M.assignfeedback_editpdfplus.annotationline(data);
         } else if (data.tool === TOOLTYPE.RECTANGLE + '' || data.tool === TOOLTYPELIB.RECTANGLE) {
@@ -1031,7 +1042,15 @@ EDITOR.prototype = {
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
-                data.parent_annot = this.currentedit.parent_annot;
+                if (!data.parent_annot && !data.parent_annot_element) {
+                    if (this.currentedit.parent_annot_element) {
+                        data.parent_annot_element = this.currentedit.parent_annot_element;
+                        //this.currentedit.parent_annot_element = null;
+                    } else {
+                        data.parent_annot_element = null;
+                        data.parent_annot = 0;
+                    }
+                }
                 return new M.assignfeedback_editpdfplus.annotationframe(data);
             }
         }
