@@ -346,14 +346,16 @@ ul.assignfeedback_editpdfplus_menu {
 
 /*** add editpdfplus ***/
 .assignfeedback_editpdfplus_hightlightplus,
-.assignfeedback_editpdfplus_frame {
+.assignfeedback_editpdfplus_frame,
+.assignfeedback_editpdfplus_verticalline {
     position:absolute;
     border:2px solid;
     border-radius: 10px;
     background-color: #FFFEEB;
 }
 .assignfeedback_editpdfplus_hightlightplus_cartridge,
-.assignfeedback_editpdfplus_frame_cartridge {
+.assignfeedback_editpdfplus_frame_cartridge,
+.assignfeedback_editpdfplus_verticalline_cartridge {
     display:inline;
     border-right:2px solid;
     padding-left:2px; 
@@ -361,35 +363,41 @@ ul.assignfeedback_editpdfplus_menu {
     font-size:10px;
 }
 .assignfeedback_editpdfplus_hightlightplus_conteneur,
-.assignfeedback_editpdfplus_frame_conteneur {
+.assignfeedback_editpdfplus_frame_conteneur,
+.assignfeedback_editpdfplus_verticalline_conteneur {
     display:inline;
     margin-right:4px;
 }
 .assignfeedback_editpdfplus_hightlightplus_conteneur > button,
-.assignfeedback_editpdfplus_frame_conteneur > button {
+.assignfeedback_editpdfplus_frame_conteneur > button,
+.assignfeedback_editpdfplus_verticalline_conteneur > button {
     margin:0;
     margin-left:2px;
     padding:0;
 }
 .assignfeedback_editpdfplus_hightlightplus_input,
-.assignfeedback_editpdfplus_frame_input {
+.assignfeedback_editpdfplus_frame_input,
+.assignfeedback_editpdfplus_verticalline_input {
     display:inline;
     padding-left:2px;
     padding-right:2px;
     font-size:10px;
 }
 .assignfeedback_editpdfplus_hightlightplus_edition,
-.assignfeedback_editpdfplus_frame_edition {
+.assignfeedback_editpdfplus_frame_edition,
+.assignfeedback_editpdfplus_verticalline_edition {
     padding-left:2px;
     padding-right:2px;
     font-size:12px;
 }
 .assignfeedback_editpdfplus_hightlightplus_edition > div,
-.assignfeedback_editpdfplus_frame_edition > div {
+.assignfeedback_editpdfplus_frame_edition > div,
+.assignfeedback_editpdfplus_verticalline_edition > div {
     width:220px;
 }
 .assignfeedback_editpdfplus_hightlightplus_edition > div > p,
-.assignfeedback_editpdfplus_frame_edition > div > p {
+.assignfeedback_editpdfplus_frame_edition > div > p,
+.assignfeedback_editpdfplus_verticalline_edition > div > p {
     margin:0;
     width:195px;
 }

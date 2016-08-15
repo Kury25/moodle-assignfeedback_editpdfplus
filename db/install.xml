@@ -88,7 +88,7 @@
         <FIELD NAME="image" TYPE="binary" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="thumbnail" TYPE="binary" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="cartridge" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="texts" TYPE="char" LENGTH="200" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="texts" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="position" TYPE="int" LENGTH="18" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="label" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="reply" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

@@ -1036,13 +1036,6 @@ EDITOR.prototype = {
                 }
                 return new M.assignfeedback_editpdfplus.annotationstampplus(data);
             } else if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
-                /*if (toolobjet && data.colour === '') {
-                 if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                 data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                 } else {
-                 data.colour = toolobjet.colors;
-                 }
-                 }*/
                 if (data.colour === "") {
                     data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
@@ -1056,6 +1049,18 @@ EDITOR.prototype = {
                     }
                 }
                 return new M.assignfeedback_editpdfplus.annotationframe(data);
+            } else if (data.tool === TOOLTYPE.VERTICALLINE + '' || data.tool === TOOLTYPELIB.VERTICALLINE) {
+                if (toolobjet) {
+                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                    } else {
+                        data.colour = toolobjet.colors;
+                    }
+                }
+                if (data.colour === "") {
+                    data.colour = TOOLTYPEDEFAULTCOLOR.VERTICALLINE;
+                }
+                return new M.assignfeedback_editpdfplus.annotationverticalline(data);
             }
         }
         return false;
