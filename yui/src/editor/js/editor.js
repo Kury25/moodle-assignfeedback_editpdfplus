@@ -672,7 +672,7 @@ EDITOR.prototype = {
      * @protected
      * @method handle_tool_button
      */
-    handle_tool_button: function (e, tool, toolid) {
+    handle_tool_button: function (e, tool, toolid, has_parent) {
         var currenttoolnode;
         Y.log('handle_tool_button : ' + tool + ' - ' + toolid);
 
@@ -693,6 +693,10 @@ EDITOR.prototype = {
         if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
             this.lastannotationtool = tool;
         }
+        if (!has_parent) {
+            this.currentedit.parent_annot_element = null;
+        }
+
         this.refresh_button_state();
     },
     /**

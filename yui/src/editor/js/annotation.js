@@ -302,20 +302,6 @@ Y.extend(ANNOTATION, Y.Base, {
                 if (this.drawable) {
                     this.drawable.erase();
                 }
-                if (this.children.length > 0) {
-                    for (i = 0; i < this.children.length; i++) {
-                        if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
-                            for (var j = 0; j < annotations.length; j++) {
-                                if (annotations[j] === this.children[i]) {
-                                    annotations.splice(j, 1);
-                                    if (this.children[i].drawable) {
-                                        this.children[i].drawable.erase();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 this.editor.currentannotation = false;
                 this.editor.save_current_page();
                 return;

@@ -865,20 +865,6 @@ Y.extend(ANNOTATION, Y.Base, {
                 if (this.drawable) {
                     this.drawable.erase();
                 }
-                if (this.children.length > 0) {
-                    for (i = 0; i < this.children.length; i++) {
-                        if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
-                            for (var j = 0; j < annotations.length; j++) {
-                                if (annotations[j] === this.children[i]) {
-                                    annotations.splice(j, 1);
-                                    if (this.children[i].drawable) {
-                                        this.children[i].drawable.erase();
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
                 this.editor.currentannotation = false;
                 this.editor.save_current_page();
                 return;
@@ -2521,7 +2507,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 shape,
                 bounds,
                 highlightcolour;
-        
+
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(edit.start.x, edit.start.y),
             new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
@@ -2770,7 +2756,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     add_annot: function (e) {
         //var new_frame = this.clone();
         this.editor.currentedit.parent_annot_element = this;
-        this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid);
+        this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
         /*var annotation = new M.assignfeedback_editpdfplus.annotationframe(new_frame);
          if (annotation) {
          if (annotation.init_from_edit(this.editor.currentedit)) {
@@ -2798,9 +2784,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
                 this.children[i].colour = colour;
                 var shapechd = this.editor.graphic.getShapeById(this.children[i].shape_id);
-                shapechd.set("stroke", {
-                    color: this.colour
-                });
+                if (shapechd) {
+                    shapechd.set("stroke", {
+                        color: this.colour
+                    });
+                }
             }
         }
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
@@ -2841,18 +2829,20 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
                 this.children[i].borderstyle = border;
                 var shapechd = this.editor.graphic.getShapeById(this.children[i].shape_id);
-                if (this.borderstyle === 'solid') {
-                    shapechd.set("stroke", {
-                        dashstyle: 'none'
-                    });
-                } else if (this.borderstyle === 'dashed') {
-                    shapechd.set("stroke", {
-                        dashstyle: [5, 3]
-                    });
-                } else {
-                    shapechd.set("stroke", {
-                        dashstyle: [2, 2]
-                    });
+                if (shapechd) {
+                    if (this.borderstyle === 'solid') {
+                        shapechd.set("stroke", {
+                            dashstyle: 'none'
+                        });
+                    } else if (this.borderstyle === 'dashed') {
+                        shapechd.set("stroke", {
+                            dashstyle: [5, 3]
+                        });
+                    } else {
+                        shapechd.set("stroke", {
+                            dashstyle: [2, 2]
+                        });
+                    }
                 }
             }
         }
@@ -2935,6 +2925,20 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
+                }
+                if (this.children && this.children.length > 0) {
+                    for (i = 0; i < this.children.length; i++) {
+                        if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
+                            for (var j = 0; j < annotations.length; j++) {
+                                if (annotations[j] === this.children[i]) {
+                                    annotations.splice(j, 1);
+                                    if (this.children[i].drawable) {
+                                        this.children[i].drawable.erase();
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 this.editor.currentannotation = false;
                 this.editor.save_current_page();
@@ -4994,7 +4998,7 @@ EDITOR.prototype = {
      * @protected
      * @method handle_tool_button
      */
-    handle_tool_button: function (e, tool, toolid) {
+    handle_tool_button: function (e, tool, toolid, has_parent) {
         var currenttoolnode;
         Y.log('handle_tool_button : ' + tool + ' - ' + toolid);
 
@@ -5015,6 +5019,10 @@ EDITOR.prototype = {
         if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
             this.lastannotationtool = tool;
         }
+        if (!has_parent){
+            this.currentedit.parent_annot_element=false;
+        }
+        
         this.refresh_button_state();
     },
     /**
