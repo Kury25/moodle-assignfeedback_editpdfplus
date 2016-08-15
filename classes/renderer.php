@@ -214,26 +214,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $toolbarCostum = array();
             $axis = array();
             foreach ($widget->toolbars as $toolbar) {
-                $compteur = 0;
-                if (sizeof($toolbar) > 0) {
-                    $toolbartmp = '';
-                    foreach ($toolbar as $tool) {
-                        $toolbartmp .= $this->render_toolbar_button('', '', $tool);
-                    }
-                    $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $tool->axis, 'style' => 'display:none;'));
-                    switch ($tool->axis) {
-                        case 1:
-                            $axis[1] = 'Axe 1 : rectitude';
-                            break;
-                        case 2:
-                            $axis[2] = 'Axe 2 : structure/contenu';
-                            break;
-                        case 3:
-                            $axis[3] = 'Axe 3 : instance corr.';
-                            break;
-                    }
-                    $compteur++;
+                $axis[] = $toolbar['label'];
+                $toolbartmp = '';
+                foreach ($toolbar['tool'] as $tool) {
+                    $toolbartmp .= $this->render_toolbar_button('', '', $tool);
                 }
+                $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $tool->axis, 'style' => 'display:none;'));
             }
             usort($axis, function($a, $b) {
                 $al = substr($a, 4, 5);

@@ -160,6 +160,34 @@ class page_editor {
     }
 
     /**
+     * Get all tools for a page.
+     * @param int $contextid
+     * @param int $axis
+     * @return tool[]
+     */
+    public static function get_axis($contextidlist) {
+        global $DB;
+        $axis = array();
+        if ($contextidlist) {
+            $records = $DB->get_records_list('assignfeedback_editpp_axis', 'contextid', $contextidlist);
+        } else {
+            $records = $DB->get_records('assignfeedback_editpp_axis');
+        }
+        foreach ($records as $record) {
+            array_push($axis, new tool($record));
+        }
+        usort($axis, function($a, $b) {
+            $al = $a->order;
+            $bl = $b->order;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+        return $axis;
+    }
+
+    /**
      * Get all annotations for a page.
      * @param int $gradeid
      * @param int $pageno

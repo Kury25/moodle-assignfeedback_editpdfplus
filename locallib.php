@@ -75,11 +75,20 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
         $tools = page_editor::get_tools($coursecontexts);
-        foreach ($tools as $tool) {
+        $axis = page_editor::get_axis($coursecontexts);
+        foreach ($axis as $ax) {
+            $toolbars[$ax->id]['label'] = $ax->label;
+            foreach ($tools as $tool) {
+                if ($tool->axis == $ax->id) {
+                    $toolbars[$ax->id]['tool'][$tool->id] = $tool;
+                }
+            }
+        }
+        /*foreach ($tools as $tool) {
             if ($tool->axis > 0) {
                 $toolbars[$tool->axis - 1][] = $tool;
             }
-        }
+        }*/
         //debugging(sizeof($toolbars[0]) . ' ' . sizeof($toolbars[1]) . ' ' . sizeof($toolbars[2]));
         // Copy any new stamps to this instance.
         if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {

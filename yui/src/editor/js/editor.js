@@ -1061,6 +1061,18 @@ EDITOR.prototype = {
                     data.colour = TOOLTYPEDEFAULTCOLOR.VERTICALLINE;
                 }
                 return new M.assignfeedback_editpdfplus.annotationverticalline(data);
+            } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
+                if (toolobjet) {
+                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
+                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
+                    } else {
+                        data.colour = toolobjet.colors;
+                    }
+                }
+                if (data.colour === "") {
+                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPCOMMENT;
+                }
+                return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
             }
         }
         return false;
