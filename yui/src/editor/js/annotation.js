@@ -115,10 +115,12 @@ Y.extend(ANNOTATION, Y.Base, {
     divcartridge: '',
     textannot: '',
     displaylock: 0,
+    displayrotation: 0,
     borderstyle: '',
     parent_annot: 0,
     parent_annot_element: null,
     id: 0,
+    shape_id: '',
     /**
      * Initialise the annotation.
      *
@@ -141,6 +143,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.tooltype = config.tooltype;
             this.textannot = config.parent_annot_element.textannot;
             this.displaylock = config.parent_annot_element.displaylock;
+            this.displayrotation = config.parent_annot_element.displayrotation;
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
             this.parent_annot = config.parent_annot_element.id;
             this.parent_annot_element = config.parent_annot_element;
@@ -160,6 +163,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.tooltype = config.tooltype;
             this.textannot = config.textannot;
             this.displaylock = config.displaylock;
+            this.displayrotation = config.displayrotation;
             this.borderstyle = config.borderstyle || 'solid';
             this.parent_annot = config.parent_annot;
             this.id = config.id;
@@ -185,6 +189,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 colour: this.colour,
                 textannot: this.textannot,
                 displaylock: parseInt(this.displaylock, 10),
+                displayrotation: parseInt(this.displayrotation, 10),
                 borderstyle: this.borderstyle,
                 parent_annot: this.parent_annot,
                 divcartridge: this.divcartridge,
@@ -203,11 +208,72 @@ Y.extend(ANNOTATION, Y.Base, {
             colour: this.colour,
             textannot: this.textannot,
             displaylock: parseInt(this.displaylock, 10),
+            displayrotation: parseInt(this.displayrotation, 10),
             borderstyle: this.borderstyle,
             parent_annot: this.parent_annot,
             divcartridge: this.divcartridge,
             parent_annot_div: ''
         };
+    },
+    get_color: function () {
+        var color = ANNOTATIONCOLOUR[this.colour];
+        if (!color) {
+            color = this.colour;
+        } else {
+            // Add an alpha channel to the rgb colour.
+            color = color.replace('rgb', 'rgba');
+            color = color.replace(')', ',0.5)');
+        }
+        return color;
+    },
+    get_color_cartridge: function () {
+        var color = ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
+        if (!color) {
+            color = this.tooltype.cartridge_color;
+        } else {
+            // Add an alpha channel to the rgb colour.
+            color = color.replace('rgb', 'rgba');
+            color = color.replace(')', ',0.5)');
+        }
+        return color;
+    },
+    init_div_cartridge_id: function () {
+        var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
+        this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+    },
+    get_div_cartridge: function (colorcartridge) {
+        var div = "<div ";
+        div += "id='" + this.divcartridge + "' ";
+        div += "style='border-color: " + colorcartridge + ";'> ";
+        div += "</div>";
+        return Y.Node.create(div);
+    },
+    get_div_cartridge_label: function (colorcartridge) {
+        var divcartridge = "<div ";
+        divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
+        divcartridge += this.tooltype.cartridge;
+        divcartridge += "</div>";
+        return Y.Node.create(divcartridge);
+    },
+    apply_visibility_annot: function () {
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
+        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+        if (valref === '') {
+            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+        }
+        if (interrupt.get('value') === '0') {
+            if (valref !== '') {
+                divdisplay.setContent(valref.substr(0, 20));
+            }
+            buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+        } else {
+            if (valref !== '') {
+                divdisplay.setContent(valref);
+            }
+            buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+        }
     },
     /**
      * Draw a selection around this annotation if it is selected.

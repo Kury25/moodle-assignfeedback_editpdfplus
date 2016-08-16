@@ -134,56 +134,28 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
-    get_color: function () {
-        var verticallinecolour = ANNOTATIONCOLOUR[this.colour];
-        if (!verticallinecolour) {
-            verticallinecolour = this.colour;
-        } else {
-            // Add an alpha channel to the rgb colour.
-            verticallinecolour = verticallinecolour.replace('rgb', 'rgba');
-            verticallinecolour = verticallinecolour.replace(')', ',0.5)');
-        }
-        //Y.log('get_color : ' + verticallinecolour);
-        return verticallinecolour;
-    },
     get_color_cartridge: function () {
-        var verticallinecolour = ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
-        if (!verticallinecolour) {
-            verticallinecolour = this.tooltype.cartridge_color;
-        } else {
-            // Add an alpha channel to the rgb colour.
-            verticallinecolour = verticallinecolour.replace('rgb', 'rgba');
-            verticallinecolour = verticallinecolour.replace(')', ',0.5)');
-        }
-        if (verticallinecolour === '') {
+        var color = ANNOTATIONVERTICALLINE.superclass.get_color_cartridge.apply(this);
+        if (color === '') {
             return TOOLTYPEDEFAULTCOLOR.VERTICALLINECARTRIDGE;
         }
-        //Y.log('get_color_cartridge : ' + verticallinecolour);
-        return verticallinecolour;
+        return color;
     },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
-            var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
-            this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+            this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
-            var cartridge = this.tooltype.cartridge;
-            //Y.log('draw_catridge : ' + cartridge);
+            
+            //init cartridge
             var colorcartridge = this.get_color_cartridge();
-            var div = "<div ";
-            div += "id='" + this.divcartridge + "' ";
-            div += "class='assignfeedback_editpdfplus_verticalline' ";
-            div += "style='border-color: " + colorcartridge + ";'> ";
-            div += "</div>";
-            var divdisplay = Y.Node.create(div);
+            var divdisplay = this.get_div_cartridge(colorcartridge);
+            divdisplay.addClass('assignfeedback_editpdfplus_verticalline');
 
-            //inscription entete
-            var divcartridge = "<div ";
-            divcartridge += "class='assignfeedback_editpdfplus_verticalline_cartridge' ";
-            divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
-            divcartridge += cartridge;
-            divcartridge += "</div>";
-            divdisplay.append(Y.Node.create(divcartridge));
+            // inscription entete
+            var divcartridge = this.get_div_cartridge_label(colorcartridge);
+            divcartridge.addClass('assignfeedback_editpdfplus_verticalline_cartridge');
+            divdisplay.append(divcartridge);
 
             //creation input
             var divconteneur = "<div ";
@@ -281,7 +253,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             divdisplay.setY(this.y);
             drawingregion.append(divdisplay);
 
-            //this.apply_visibility_annot();
+            this.apply_visibility_annot();
         } else {
             var divid = '#' + this.divcartridge;
             //Y.log('draw_catridge : ' + divid);
@@ -307,29 +279,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                 divdisplay.setContent(valref.substr(0, 20));
                 interrupt.set('value', 0);
                 buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
-            }
-        } else {
-            if (interrupt.get('value') === '0') {
-                divdisplay.setContent(valref.substr(0, 20));
-            } else {
-                divdisplay.setContent(valref);
-            }
-        }
-    },
-    apply_visibility_annot: function () {
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
-        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-        //Y.log('apply_visibility_annot : ' + interrupt.get('value') + ' - ' + valref + ' - ' + lockdisplay.get('value'));
-        if (lockdisplay.get('value') === '0') {
-            if (interrupt.get('value') === '0') {
-                divdisplay.setContent(valref.substr(0, 20));
-                buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
-            } else {
-                divdisplay.setContent(valref);
-                buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
             }
         } else {
             if (interrupt.get('value') === '0') {

@@ -68,6 +68,9 @@ class annotation {
 
     /** @var bool displaylock for displaying this annotation */
     public $displaylock = 0;
+
+    /** @var bool displayrotation for displaying the sign of the annotation */
+    public $displayrotation = 0;
     
     /** @var string borderstyle */
     public $borderstyle = '';

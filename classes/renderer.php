@@ -93,6 +93,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         } else {
             $iconalt = $fulltool->label;
             $iconhtml = $fulltool->label;
+            if ($fulltool->type == 4) {
+                $iconhtml = '| ' . $fulltool->label . ' |';
+            }
+            if ($fulltool->type == 5) {
+                $iconhtml = '| ' . $fulltool->label;
+            }
             $datatool = '';
             $class = '';
             switch ($fulltool->type) {

@@ -35,7 +35,6 @@ ANNOTATIONFRAME.NAME = "annotationframe";
 ANNOTATIONFRAME.ATTRS = {};
 
 Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
-    shape_id: '',
     children: [],
     /**
      * Draw a highlight annotation
@@ -186,45 +185,29 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         return this.colour;
     },
     get_color_cartridge: function () {
-        var highlightcolour = ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
-        if (!highlightcolour) {
-            highlightcolour = this.tooltype.cartridge_color;
-        } else {
-            // Add an alpha channel to the rgb colour.
-            highlightcolour = highlightcolour.replace('rgb', 'rgba');
-            highlightcolour = highlightcolour.replace(')', ',0.5)');
-        }
-        if (highlightcolour === '') {
+        var color = ANNOTATIONFRAME.superclass.get_color_cartridge.apply(this);
+        if (color === '') {
             return TOOLTYPEDEFAULTCOLOR.FRAMECARTRIDGE;
         }
-        //Y.log('get_color_cartridge : ' + highlightcolour);
-        return highlightcolour;
+        return color;
     },
     draw_catridge: function (edit) {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
             if (this.divcartridge === '') {
-                var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
-                this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+                this.init_div_cartridge_id();
                 var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
-                var cartridge = this.tooltype.cartridge;
-                //Y.log('draw_catridge : ' + cartridge);
+
+                //init cartridge
                 var colorcartridge = this.get_color();
-                var div = "<div ";
-                div += "id='" + this.divcartridge + "' ";
-                div += "class='assignfeedback_editpdfplus_frame' ";
-                div += "style='border-color: " + colorcartridge + ";border-style: " + this.borderstyle + "'> ";
-                div += "</div>";
-                var divdisplay = Y.Node.create(div);
+                var divdisplay = this.get_div_cartridge(colorcartridge);
+                divdisplay.addClass('assignfeedback_editpdfplus_frame');
+                divdisplay.setStyles({'border-style': this.borderstyle});
 
                 // inscription entete
-                var divcartridge = "<div ";
-                divcartridge += "id='" + this.divcartridge + "_cartridge' ";
-                divcartridge += "class='assignfeedback_editpdfplus_frame_cartridge' ";
-                divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
-                divcartridge += cartridge;
-                divcartridge += "</div>";
-                divdisplay.append(Y.Node.create(divcartridge));
+                var divcartridge = this.get_div_cartridge_label(colorcartridge);
+                divcartridge.addClass('assignfeedback_editpdfplus_frame_cartridge');
+                divdisplay.append(divcartridge);
 
                 //creation input
                 var divconteneur = "<div ";

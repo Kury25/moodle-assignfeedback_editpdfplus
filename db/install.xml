@@ -41,6 +41,7 @@
         <FIELD NAME="studentanswer" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="studentstatus" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="displaylock" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="displayrotation" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="borderstyle" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="parent_annot" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="true"/>
       </FIELDS>
