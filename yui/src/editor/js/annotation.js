@@ -121,6 +121,8 @@ Y.extend(ANNOTATION, Y.Base, {
     parent_annot_element: null,
     id: 0,
     shape_id: '',
+    cartridgex: 0,
+    cartridgey: 0,
     /**
      * Initialise the annotation.
      *
@@ -136,6 +138,8 @@ Y.extend(ANNOTATION, Y.Base, {
             this.y = parseInt(config.y, 10) || 0;
             this.endx = parseInt(config.endx, 10) || 0;
             this.endy = parseInt(config.endy, 10) || 0;
+            this.cartridgex = parseInt(config.parent_annot_element.cartridgex, 10) || 0;
+            this.cartridgey = parseInt(config.parent_annot_element.cartridgey, 10) || 0;
             this.path = config.path || '';
             this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
             this.colour = config.parent_annot_element.colour || 'red';
@@ -156,6 +160,8 @@ Y.extend(ANNOTATION, Y.Base, {
             this.y = parseInt(config.y, 10) || 0;
             this.endx = parseInt(config.endx, 10) || 0;
             this.endy = parseInt(config.endy, 10) || 0;
+            this.cartridgex = parseInt(config.cartridgex, 10) || 0;
+            this.cartridgey = parseInt(config.cartridgey, 10) || 0;
             this.path = config.path || '';
             this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
             this.colour = config.colour || 'red';
@@ -183,6 +189,8 @@ Y.extend(ANNOTATION, Y.Base, {
                 y: parseInt(this.y, 10),
                 endx: parseInt(this.endx, 10),
                 endy: parseInt(this.endy, 10),
+                cartridgex: parseInt(this.cartridgex, 10),
+                cartridgey: parseInt(this.cartridgey, 10),
                 toolid: this.toolid,
                 path: this.path,
                 pageno: this.pageno,
@@ -202,6 +210,8 @@ Y.extend(ANNOTATION, Y.Base, {
             y: parseInt(this.y, 10),
             endx: parseInt(this.endx, 10),
             endy: parseInt(this.endy, 10),
+            cartridgex: parseInt(this.cartridgex, 10),
+            cartridgey: parseInt(this.cartridgey, 10),
             toolid: this.toolid,
             path: this.path,
             pageno: this.pageno,
@@ -250,10 +260,31 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     get_div_cartridge_label: function (colorcartridge) {
         var divcartridge = "<div ";
+        divcartridge += "id='" + this.divcartridge + "_cartridge' ";
         divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
         divcartridge += this.tooltype.cartridge;
         divcartridge += "</div>";
         return Y.Node.create(divcartridge);
+    },
+    get_div_input: function (colorcartridge) {
+        var divinput = "<div ";
+        divinput += "id='" + this.divcartridge + "_display' ";
+        divinput += "style='color:" + colorcartridge + ";'> ";
+        divinput += "</div>";
+        var divinputdisplay = Y.Node.create(divinput);
+        divinputdisplay.on('click', this.edit_annot, this);
+        return divinputdisplay;
+    },
+    get_valref: function () {
+        if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
+            return this.textannot;
+        }
+        return '';
+
+    },
+    get_input_valref: function () {
+        return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.get_valref() + "\"/>");
+
     },
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -274,6 +305,21 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
         }
+    },
+    move_cartridge_begin: function (e) {
+        e.preventDefault();
+
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+                        e.clientY + canvas.get('docScrollY')),
+                point = this.editor.get_canvas_coordinates(clientpoint);
+
+        this.oldx = point.x;
+        this.oldy = point.y;
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
+        divcartridge.on('mousemove', this.move_cartridge_continue, this);
+        divcartridge.on('mouseup', this.move_cartridge_stop, this);
     },
     /**
      * Draw a selection around this annotation if it is selected.

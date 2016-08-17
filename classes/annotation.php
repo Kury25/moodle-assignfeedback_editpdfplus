@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -53,13 +54,15 @@ class annotation {
 
     /** @var int ending location in pixels. Image resolution is 100 pixels per inch */
     public $endy = 0;
+    public $cartridgex = 0;
+    public $cartridgey = 0;
 
     /** @var string path information for drawing the annotation. */
     public $path = '';
 
     /** @var int toolid for this annotation. */
     public $toolid = 0;
-    
+
     /** @var string textannot, contains the text of this annotation */
     public $textannot = '';
 
@@ -71,13 +74,13 @@ class annotation {
 
     /** @var bool displayrotation for displaying the sign of the annotation */
     public $displayrotation = 0;
-    
+
     /** @var string borderstyle */
     public $borderstyle = '';
-    
+
     /** @var int $parent_annot */
     public $parent_annot = 0;
-    
+
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record
@@ -96,4 +99,5 @@ class annotation {
             }
         }
     }
+
 }

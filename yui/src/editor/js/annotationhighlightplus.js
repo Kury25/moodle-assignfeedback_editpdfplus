@@ -166,22 +166,13 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             divconteneur += "class='assignfeedback_editpdfplus_hightlightplus_conteneur' >";
             divconteneur += "</div>";
             var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinput = "<div ";
-            divinput += "id='" + this.divcartridge + "_display' ";
-            divinput += "class='assignfeedback_editpdfplus_hightlightplus_input' ";
-            divinput += "style='color:" + colorcartridge + ";'> ";
-            if (this.textannot && this.textannot.length > 0) {
-                divinput += this.textannot.substr(0, 20);
-            } else {
-                divinput += '&nbsp;&nbsp;';
-            }
-            divinput += "</div>";
+            var divinputdisplay = this.get_div_input(colorcartridge);
+            divinputdisplay.addClass('assignfeedback_editpdfplus_hightlightplus_input');
+            var inputvalref = this.get_input_valref();
             var onof = 0;
             if (this.displaylock === '1') {
                 onof = 1;
             }
-            var divinputdisplay = Y.Node.create(divinput);
-            var inputvalref = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.textannot + "\"/>");
             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
             var lockvalue = 0;
             if (this.displaylock > 0) {
@@ -232,7 +223,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             divedition += "id='" + this.divcartridge + "_edit' ";
             divedition += "class='assignfeedback_editpdfplus_hightlightplus_edition' ";
             divedition += "style='display:none;'> ";
-            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.textannot + "\" />";
+            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
             divedition += "</div>";
             var diveditiondisplay = Y.Node.create(divedition);
             divconteneurdisplay.append(diveditiondisplay);
@@ -253,8 +244,14 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             diveditiondisplay.append(divpropositiondisplay);
 
             //positionnement de la div par rapport a l'annotation
-            divdisplay.setX(offsetcanvas[0] + this.x);
-            divdisplay.setY(this.y - 16 - 8);
+            if (!this.cartridgex || this.cartridgex === 0) {
+                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+            }
+            if (!this.cartridgey || this.cartridgey === 0) {
+                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+            }
+            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
             this.apply_visibility_annot();
@@ -262,8 +259,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var divid = '#' + this.divcartridge;
             //Y.log('draw_catridge : ' + divid);
             var divdisplay = this.editor.get_dialogue_element(divid);
-            divdisplay.setX(offsetcanvas[0] + this.x);
-            divdisplay.setY(offsetcanvas[1] + this.y - 16 - 8);
+            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
         return true;
     },

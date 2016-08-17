@@ -170,27 +170,14 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             divconteneur += "class='assignfeedback_editpdfplus_stampcomment_conteneur' >";
             divconteneur += "</div>";
             var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinput = "<div ";
-            divinput += "id='" + this.divcartridge + "_display' ";
-            divinput += "class='assignfeedback_editpdfplus_stampcomment_input' ";
-            divinput += "style='color:" + colorcartridge + ";'> ";
-            var valref = '';
-            if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
-                valref = this.textannot;
-            }
-            divinput += "</div>";
+            var divinputdisplay = this.get_div_input(colorcartridge);
+            divinputdisplay.addClass('assignfeedback_editpdfplus_stampcomment_input');
+            var inputvalref = this.get_input_valref();
             var onof = 0;
             if (this.displaylock === '1') {
                 onof = 1;
             }
-            var divinputdisplay = Y.Node.create(divinput);
-            var inputvalref = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + valref + "\"/>");
             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            var lockvalue = 0;
-            if (this.displaylock > 0) {
-                lockvalue = 1;
-            }
-            var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=" + lockvalue + " />");
             divinputdisplay.on('click', this.edit_annot, this);
             var rotationvalue = 0;
             if (this.displayrotation > 0) {
@@ -198,9 +185,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             }
             var inputrotationdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_rotation' value=" + rotationvalue + " />");
             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            if (lockvalue > 0) {
-                buttonvisibility += "style='display:none;' ";
-            }
             buttonvisibility += "><img src='";
             if (this.displaylock === 1) {
                 buttonvisibility += M.util.image_url('t/left', 'core');
@@ -222,7 +206,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             divconteneurdisplay.append(divinputdisplay);
             divconteneurdisplay.append(inputvalref);
             divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(inputlockdisplay);
             divconteneurdisplay.append(inputrotationdisplay);
             divconteneurdisplay.append(buttonvisibilitydisplay);
             divconteneurdisplay.append(buttonsavedisplay);
@@ -235,7 +218,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             divedition += "id='" + this.divcartridge + "_edit' ";
             divedition += "class='assignfeedback_editpdfplus_stampcomment_edition' ";
             divedition += "style='display:none;'> ";
-            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + valref + "\" />";
+            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
             divedition += "</div>";
             var diveditiondisplay = Y.Node.create(divedition);
             divconteneurdisplay.append(diveditiondisplay);
@@ -255,8 +238,14 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             diveditiondisplay.append(divpropositiondisplay);
 
             //positionnement de la div par rapport a l'annotation
-            divdisplay.setX(offsetcanvas[0] + this.x + 35);
-            divdisplay.setY(this.y + 6);
+            if (!this.cartridgex || this.cartridgex === 0) {
+                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+            }
+            if (!this.cartridgey || this.cartridgey === 0) {
+                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+            }
+            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
             this.apply_visibility_annot();
@@ -264,8 +253,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             var divid = '#' + this.divcartridge;
             //Y.log('draw_catridge : ' + divid);
             var divdisplay = this.editor.get_dialogue_element(divid);
-            divdisplay.setX(offsetcanvas[0] + this.x + 35);
-            divdisplay.setY(offsetcanvas[1] + this.y + 6);
+            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
         return true;
     },
