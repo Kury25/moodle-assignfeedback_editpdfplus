@@ -237,12 +237,13 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             }
             diveditiondisplay.append(divpropositiondisplay);
 
+            Y.log('draw_cartridge : ' + this.editor.typetools[this.toolid].label);
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);

@@ -69,22 +69,13 @@ ANNOTATIONCOLOUR = {
 },
 CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
-            //'comment': '.commentbutton',
             'pen': '.penbutton',
             'line': '.linebutton',
             'rectangle': '.rectanglebutton',
             'oval': '.ovalbutton',
-            //'stamp': '.stampbutton',
             'select': '.selectbutton',
             'drag': '.dragbutton',
-            'highlight': '.highlightbutton'/*,
-             /*'highlightplus': '.highlightplusbutton',
-             'lineplus': '.lineplusbutton',
-             'stampplus': '.stampplusbutton',
-             'frame': '.framebutton',
-             'verticalline': '.verticallinebutton',
-             'stampcomment': '.stampcommentbutton',
-             'commentplus': '.commentplusbutton'*/
+            'highlight': '.highlightbutton'
         },
 TOOLTYPEID = {
     'PEN': 8,

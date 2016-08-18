@@ -112,6 +112,7 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     drawable: false,
     tooltype: null,
+    tooltypefamille: null,
     divcartridge: '',
     textannot: '',
     displaylock: 0,
@@ -174,6 +175,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.parent_annot = config.parent_annot;
             this.id = config.id;
         }
+        this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
     /**
      * Clean a comment record, returning an oject with only fields that are valid.

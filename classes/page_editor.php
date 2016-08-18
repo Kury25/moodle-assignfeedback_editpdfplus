@@ -159,6 +159,20 @@ class page_editor {
         return $tools;
     }
 
+    public static function get_typetools($contextidlist) {
+        global $DB;
+        $typetools = array();
+        if ($contextidlist) {
+            $records = $DB->get_records_list('assignfeedback_editpp_typet', 'contextid', $contextidlist);
+        } else {
+            $records = $DB->get_records('assignfeedback_editpp_typet');
+        }
+        foreach ($records as $record) {
+            array_push($typetools, new type_tool($record));
+        }
+        return $typetools;
+    }
+
     /**
      * Get all tools for a page.
      * @param int $contextid

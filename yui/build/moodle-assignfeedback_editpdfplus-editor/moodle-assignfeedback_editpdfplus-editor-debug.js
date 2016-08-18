@@ -71,22 +71,13 @@ ANNOTATIONCOLOUR = {
 },
 CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
-            //'comment': '.commentbutton',
             'pen': '.penbutton',
             'line': '.linebutton',
             'rectangle': '.rectanglebutton',
             'oval': '.ovalbutton',
-            //'stamp': '.stampbutton',
             'select': '.selectbutton',
             'drag': '.dragbutton',
-            'highlight': '.highlightbutton'/*,
-             /*'highlightplus': '.highlightplusbutton',
-             'lineplus': '.lineplusbutton',
-             'stampplus': '.stampplusbutton',
-             'frame': '.framebutton',
-             'verticalline': '.verticallinebutton',
-             'stampcomment': '.stampcommentbutton',
-             'commentplus': '.commentplusbutton'*/
+            'highlight': '.highlightbutton'
         },
 TOOLTYPEID = {
     'PEN': 8,
@@ -679,6 +670,7 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     drawable: false,
     tooltype: null,
+    tooltypefamille: null,
     divcartridge: '',
     textannot: '',
     displaylock: 0,
@@ -741,6 +733,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.parent_annot = config.parent_annot;
             this.id = config.id;
         }
+        this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
@@ -1970,10 +1963,10 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
@@ -2724,12 +2717,13 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             }
             diveditiondisplay.append(divpropositiondisplay);
 
+            Y.log('draw_cartridge : ' + this.editor.typetools[this.toolid].label);
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
@@ -3213,10 +3207,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //positionnement de la div par rapport a l'annotation
                 if (!this.cartridgex || this.cartridgex === 0) {
-                    this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+                    this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
                 }
                 if (!this.cartridgey || this.cartridgey === 0) {
-                    this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+                    this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
                 }
                 divdisplay.setX(offsetcanvas[0] + this.cartridgex);
                 divdisplay.setY(this.y + this.cartridgey);
@@ -3714,10 +3708,10 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltype.cartridge_positionx);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltype.cartridge_positiony);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
@@ -5796,6 +5790,12 @@ EDITOR.prototype = {
             this.tools[tooltmp.id] = tooltmp;
         }
 
+        this.typetools = [];
+        for (i = 0; i < data.typetools.length; i++) {
+            var typetooltmp = data.typetools[i];
+            this.typetools[typetooltmp.id] = typetooltmp;
+        }
+
         for (i = 0; i < this.pages.length; i++) {
             for (j = 0; j < this.pages[i].comments.length; j++) {
                 comment = this.pages[i].comments[j];
@@ -5813,13 +5813,8 @@ EDITOR.prototype = {
                 data = this.pages[i].annotations[j];
                 if (data.parent_annot) {
                     data.parent_annot_element = parentannot[data.parent_annot];
-                    /*for (var k = 0; k < j; k++) {
-                     if (this.pages[i].annotations[k].id === data.parent_annot) {
-                     data.parent_annot_element = this.pages[i].annotations[k];
-                     }
-                     }*/
                 }
-                var newannot = this.create_annotation(this.tools[data.toolid].type, data.toolid, data, this.tools[data.toolid]);
+                var newannot = this.create_annotation(this.typetools[this.tools[data.toolid].type].label, data.toolid, data, this.tools[data.toolid]);
                 parentannot[data.id] = newannot;
                 this.pages[i].annotations[j] = newannot;
             }
@@ -5927,33 +5922,6 @@ EDITOR.prototype = {
             },
             context: this
         });
-
-        /*stampfiles = this.get('stampfiles');
-         if (stampfiles.length <= 0) {
-         this.get_dialogue_element(TOOLSELECTOR.stamp).ancestor().hide();
-         } else {
-         filename = stampfiles[0].substr(stampfiles[0].lastIndexOf('/') + 1);
-         this.currentedit.stamp = filename;
-         currentstampbutton = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
-         
-         picker = new M.assignfeedback_editpdfplus.stamppicker({
-         buttonNode: currentstampbutton,
-         stamps: stampfiles,
-         callback: function (e) {
-         var stamp = e.target.getAttribute('data-stamp'),
-         filename;
-         
-         if (!stamp) {
-         stamp = e.target.ancestor().getAttribute('data-stamp');
-         }
-         filename = stamp.substr(stamp.lastIndexOf('/'));
-         this.currentedit.stamp = filename;
-         this.handle_tool_button(e, "stamp");
-         },
-         context: this
-         });
-         this.refresh_button_state();
-         }*/
     },
     update_custom_toolbars: function () {
         Y.all(SELECTOR.CUSTOMTOOLBARS).each(function (toolbar) {
@@ -6273,6 +6241,12 @@ EDITOR.prototype = {
      * Factory method for creating annotations of the correct subclass.
      * @public
      * @method create_annotation
+     * 
+     * @param {type} type label du type de tool
+     * @param {type} toolid id du tool en cours
+     * @param {type} data annotation complete si elle existe
+     * @param {type} toolobjet le tool
+     * @returns {M.assignfeedback_editpdfplus.annotationrectangle|M.assignfeedback_editpdfplus.annotationhighlight|M.assignfeedback_editpdfplus.annotationoval|Boolean|M.assignfeedback_editpdfplus.annotationstampplus|M.assignfeedback_editpdfplus.annotationframe|M.assignfeedback_editpdfplus.annotationline|M.assignfeedback_editpdfplus.annotationstampcomment|M.assignfeedback_editpdfplus.annotationhighlightplus|M.assignfeedback_editpdfplus.annotationverticalline|M.assignfeedback_editpdfplus.annotationpen}
      */
     create_annotation: function (type, toolid, data, toolobjet) {
         Y.log('create_annotation : ' + type + ' - ' + toolid);
@@ -6293,6 +6267,7 @@ EDITOR.prototype = {
         } else if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
         }
+
         data.tool = type;
         data.editor = this;
         Y.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid + ' - ' + data.parent_annot);
@@ -6462,6 +6437,7 @@ EDITOR.prototype = {
         }
 
         for (i = 0; i < page.annotations.length; i++) {
+            Y.log('redraw : ' + page.annotations[i].tooltypefamille.label);
             this.drawables.push(page.annotations[i].draw());
         }
         for (i = 0; i < page.comments.length; i++) {

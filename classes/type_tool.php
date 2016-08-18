@@ -9,11 +9,11 @@
 namespace assignfeedback_editpdfplus;
 
 /**
- * Description of tool
+ * Description of type_tool
  *
  * @author kury
  */
-class tool {
+class type_tool {
 
     /** @var int unique id for this annotation */
     public $id = 0;
@@ -21,33 +21,17 @@ class tool {
     /** @var int contextid for this annotation */
     public $contextid = 0;
 
-    /** @var int axis for this annotation */
-    public $axis = 0;
-
-    /** @var int type */
-    public $type = null;
-
-    /** @var string colors used */
-    public $colors = '';
-
-    /** @var string cartridge for drawing the annotation. */
-    public $cartridge = '';
-
-    /** @var string colors used */
-    public $cartridge_color = '';
-
-    /** @var string texts for this annotation. */
-    public $texts = '';
-
     /** @var string label of this annotation */
     public $label = '';
 
-    /** @var boolean, allow reply or not */
-    public $reply = 0;
-    public $enabled = 1;
-    public $order = 1000;
-    public $cartridge_positionx = 0;
-    public $cartridge_positiony = 0;
+    /** @var string colors used */
+    public $color = '';
+
+    /** @var string colors used */
+    public $cartridge_color = '';
+    
+    public $cartridge_x = 0;
+    public $cartridge_y = 0;
 
     /**
      * Convert a compatible stdClass into an instance of this class.

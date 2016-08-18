@@ -96,7 +96,9 @@ if ($action == 'loadallpages') {
     }
 
     $tools = page_editor::get_tools();
+    $typetools = page_editor::get_typetools();
     $response->tools = $tools;
+    $response->typetools = $typetools;
 
     echo json_encode($response);
     die();
