@@ -245,7 +245,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         // Toobars written in reverse order because they are floated right.
         $pageheader = html_writer::div($divnavigation1 .
-                        $divnavigation2 .
+        //                $divnavigation2 .
                         $toolbar002 .
                         $toolbarCostumdiv .
                         $toolbar001 .

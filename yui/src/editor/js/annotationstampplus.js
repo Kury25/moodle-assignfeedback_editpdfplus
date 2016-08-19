@@ -51,7 +51,7 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            'zIndex': 50,
+            //'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
             'padding' : '0 2px'
@@ -87,7 +87,7 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            'zIndex': 50,
+            //'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
             'padding' : '0 2px'

@@ -579,9 +579,9 @@ EDITOR.prototype = {
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
 
-        searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
-        searchcommentsbutton.on('click', this.open_search_comments, this);
-        searchcommentsbutton.on('key', this.open_search_comments, 'down:13', this);
+        //searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
+        //searchcommentsbutton.on('click', this.open_search_comments, this);
+        //searchcommentsbutton.on('key', this.open_search_comments, 'down:13', this);
 
         if (this.get('readonly')) {
             return;
@@ -1030,6 +1030,8 @@ EDITOR.prototype = {
                     return new M.assignfeedback_editpdfplus.annotationverticalline(data);
                 } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
                     return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
+                } else if (data.tool === TOOLTYPE.COMMENTPLUS + '' || data.tool === TOOLTYPELIB.COMMENTPLUS) {
+                    return new M.assignfeedback_editpdfplus.annotationcommentplus(data);
                 }
             }
         }

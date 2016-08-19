@@ -355,7 +355,8 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus,
 .assignfeedback_editpdfplus_frame,
 .assignfeedback_editpdfplus_verticalline,
-.assignfeedback_editpdfplus_stampcomment {
+.assignfeedback_editpdfplus_stampcomment,
+.assignfeedback_editpdfplus_commentplus {
     position:absolute;
     border-width: 2px;
     border-style: solid;
@@ -381,7 +382,8 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus_conteneur,
 .assignfeedback_editpdfplus_frame_conteneur,
 .assignfeedback_editpdfplus_verticalline_conteneur,
-.assignfeedback_editpdfplus_stampcomment_conteneur {
+.assignfeedback_editpdfplus_stampcomment_conteneur,
+.assignfeedback_editpdfplus_commentplus_conteneur {
     display:inline;
     margin:0px;
     margin-right:4px;
@@ -391,7 +393,8 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus_conteneur > button,
 .assignfeedback_editpdfplus_frame_conteneur > button,
 .assignfeedback_editpdfplus_verticalline_conteneur > button,
-.assignfeedback_editpdfplus_stampcomment_conteneur > button {
+.assignfeedback_editpdfplus_stampcomment_conteneur > button,
+.assignfeedback_editpdfplus_commentplus_conteneur > button {
     margin:0px;
     margin-left:2px;
     padding:0;
@@ -400,16 +403,22 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus_input,
 .assignfeedback_editpdfplus_frame_input,
 .assignfeedback_editpdfplus_verticalline_input,
-.assignfeedback_editpdfplus_stampcomment_input {
+.assignfeedback_editpdfplus_stampcomment_input,
+.assignfeedback_editpdfplus_commentplus_input {
     display:inline;
     padding-left:2px;
     padding-right:2px;
     font-size:10px;
 }
+.assignfeedback_editpdfplus_commentplus_input > table {
+    width:200px;
+    z-index: 51;
+}
 .assignfeedback_editpdfplus_hightlightplus_edition,
 .assignfeedback_editpdfplus_frame_edition,
 .assignfeedback_editpdfplus_verticalline_edition,
-.assignfeedback_editpdfplus_stampcomment_edition {
+.assignfeedback_editpdfplus_stampcomment_edition,
+.assignfeedback_editpdfplus_commentplus_edition {
     padding-left:2px;
     padding-right:2px;
     font-size:12px;
@@ -417,13 +426,15 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus_edition > div,
 .assignfeedback_editpdfplus_frame_edition > div,
 .assignfeedback_editpdfplus_verticalline_edition > div,
-.assignfeedback_editpdfplus_stampcomment_edition > div {
+.assignfeedback_editpdfplus_stampcomment_edition > div,
+.assignfeedback_editpdfplus_commentplus_edition > div {
     width:220px;
 }
 .assignfeedback_editpdfplus_hightlightplus_edition > div > p,
 .assignfeedback_editpdfplus_frame_edition > div > p,
 .assignfeedback_editpdfplus_verticalline_edition > div > p,
-.assignfeedback_editpdfplus_stampcomment_edition > div > p {
+.assignfeedback_editpdfplus_stampcomment_edition > div > p,
+.assignfeedback_editpdfplus_commentplus_edition > div > p {
     margin:0;
     width:195px;
 }

@@ -385,8 +385,20 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     display_picker: function () {
         //Y.log('display_picker : ' + this.children.length);
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
+        var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
+        divcartridge.setStyle('z-index', 1000);
         divpalette.show();
+        buttonrenderdisplay.on('click', this.hide_picker, this);
+    },
+    hide_picker: function () {
+        var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
+        var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divpalette.hide();
+        divcartridge.setStyle('z-index', 0);
+        buttonrenderdisplay.on('click', this.display_picker, this);
     },
     change_color: function (e, colour) {
         this.colour = colour;
@@ -419,8 +431,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divdisplay.setStyles({
             'color': this.colour
         });
-        var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
-        divpalette.hide();
+        this.hide_picker();
         this.editor.save_current_page();
     },
     change_border: function (e, border) {
