@@ -77,13 +77,6 @@ CLICKTIMEOUT = 300,
             'drag': '.dragbutton',
             'highlight': '.highlightbutton'
         },
-TOOLTYPEID = {
-    'PEN': 8,
-    'LINE': 9,
-    'RECTANGLE': 10,
-    'OVAL': 11,
-    'HIGHLIGHT': 12
-},
 TOOLTYPE = {
     'HIGHLIGHTPLUS': 1,
     'LINEPLUS': 2,
@@ -111,15 +104,5 @@ TOOLTYPELIB = {
     'RECTANGLE': 'rectangle',
     'OVAL': 'oval',
     'HIGHLIGHT': 'highlight'
-},
-TOOLTYPEDEFAULTCOLOR = {
-    'HIGHLIGHTPLUS': 'yellow',
-    'HIGHLIGHTPLUSCARTRIDGE': 'red',
-    'STAMPPLUS': 'red',
-    'FRAME': '#FF0000',
-    'VERTICALLINE': '#0000FF',
-    'VERTICALLINECARTRIDGE': '#0000FF',
-    'STAMPCOMMENT': '#000099',
-    'STAMPCOMMENTCARTRIDGE': '#000099'
 },
 STROKEWEIGHT = 4;

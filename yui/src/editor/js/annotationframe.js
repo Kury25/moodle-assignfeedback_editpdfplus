@@ -80,7 +80,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 dashstyle: [2, 2]
             });
         }
-        Y.log('draw : ' + this.shape_id);
+        //Y.log('draw : ' + this.shape_id);
 
         drawable.shapes.push(shape);
         this.drawable = drawable;
@@ -185,13 +185,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     get_color: function () {
         return this.colour;
-    },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONFRAME.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.FRAMECARTRIDGE;
-        }
-        return color;
     },
     draw_catridge: function (edit) {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
@@ -374,7 +367,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-        
+
         this.editor.save_current_page();
     },
     apply_visibility_annot: function () {
@@ -391,7 +384,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
     },
     display_picker: function () {
-        Y.log('display_picker : ' + this.children.length);
+        //Y.log('display_picker : ' + this.children.length);
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
         divpalette.show();
     },
@@ -473,7 +466,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         });
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
         divpalette.hide();
-        Y.log('change_border : ' + this.borderstyle);
+        //Y.log('change_border : ' + this.borderstyle);
         this.editor.save_current_page();
     },
     edit_annot: function () {

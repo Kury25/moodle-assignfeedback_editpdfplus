@@ -142,13 +142,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONSTAMPCOMMENT.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.STAMPCOMMENTCARTRIDGE;
-        }
-        return color;
-    },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -237,7 +230,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             }
             diveditiondisplay.append(divpropositiondisplay);
 
-            Y.log('draw_cartridge : ' + this.editor.typetools[this.toolid].label);
+            //Y.log('draw_cartridge : ' + this.editor.typetools[this.toolid].label);
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
                 this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);

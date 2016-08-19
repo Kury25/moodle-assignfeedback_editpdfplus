@@ -134,13 +134,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONVERTICALLINE.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.VERTICALLINECARTRIDGE;
-        }
-        return color;
-    },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {

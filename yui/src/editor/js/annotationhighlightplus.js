@@ -138,13 +138,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return (bounds.has_min_width());
     },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONHIGHLIGHTPLUS.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUSCARTRIDGE;
-        }
-        return color;
-    },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {

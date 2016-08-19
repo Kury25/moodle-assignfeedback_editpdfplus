@@ -79,13 +79,6 @@ CLICKTIMEOUT = 300,
             'drag': '.dragbutton',
             'highlight': '.highlightbutton'
         },
-TOOLTYPEID = {
-    'PEN': 8,
-    'LINE': 9,
-    'RECTANGLE': 10,
-    'OVAL': 11,
-    'HIGHLIGHT': 12
-},
 TOOLTYPE = {
     'HIGHLIGHTPLUS': 1,
     'LINEPLUS': 2,
@@ -113,16 +106,6 @@ TOOLTYPELIB = {
     'RECTANGLE': 'rectangle',
     'OVAL': 'oval',
     'HIGHLIGHT': 'highlight'
-},
-TOOLTYPEDEFAULTCOLOR = {
-    'HIGHLIGHTPLUS': 'yellow',
-    'HIGHLIGHTPLUSCARTRIDGE': 'red',
-    'STAMPPLUS': 'red',
-    'FRAME': '#FF0000',
-    'VERTICALLINE': '#0000FF',
-    'VERTICALLINECARTRIDGE': '#0000FF',
-    'STAMPCOMMENT': '#000099',
-    'STAMPCOMMENTCARTRIDGE': '#000099'
 },
 STROKEWEIGHT = 4;// This file is part of Moodle - http://moodle.org/
 //
@@ -700,7 +683,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.cartridgex = parseInt(config.parent_annot_element.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.parent_annot_element.cartridgey, 10) || 0;
             this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.parent_annot_element.colour || 'red';
             this.drawable = false;
             this.tooltype = config.tooltype;
@@ -722,7 +705,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.cartridgex = parseInt(config.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.cartridgey, 10) || 0;
             this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.colour || 'red';
             this.drawable = false;
             this.tooltype = config.tooltype;
@@ -804,6 +787,9 @@ Y.extend(ANNOTATION, Y.Base, {
             // Add an alpha channel to the rgb colour.
             color = color.replace('rgb', 'rgba');
             color = color.replace(')', ',0.5)');
+        }
+        if (color === '') {
+            return this.tooltypefamille.cartridge_color;
         }
         return color;
     },
@@ -1856,13 +1842,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return (bounds.has_min_width());
     },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONHIGHLIGHTPLUS.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUSCARTRIDGE;
-        }
-        return color;
-    },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -2357,10 +2336,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            //'backgroundImage': 'url(' + this.editor.get_stamp_image_url(this.path) + ')',
-            //'width': (this.endx - this.x),
-            //'height': (this.endy - this.y),
-            //'backgroundSize': '100% 100%',
             'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
@@ -2397,10 +2372,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            //'backgroundImage': 'url(' + this.editor.get_stamp_image_url(edit.stamp) + ')',
-            //'width': bounds.width,
-            //'height': bounds.height,
-            //'backgroundSize': '100% 100%',
             'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
@@ -2440,8 +2411,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.y = bounds.y-10;
         this.endx = bounds.x + bounds.width;
         this.endy = bounds.y + bounds.height;
-        //this.colour = edit.annotationcolour;
-        //this.path = edit.stamp;
 
         // Min width and height is always more than 40px.
         return true;
@@ -2615,13 +2584,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         // Min width and height is always more than 40px.
         return true;
-    },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONSTAMPCOMMENT.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.STAMPCOMMENTCARTRIDGE;
-        }
-        return color;
     },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
@@ -3067,13 +3029,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     get_color: function () {
         return this.colour;
     },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONFRAME.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.FRAMECARTRIDGE;
-        }
-        return color;
-    },
     draw_catridge: function (edit) {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
@@ -3249,7 +3204,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-        
+
         this.editor.save_current_page();
     },
     apply_visibility_annot: function () {
@@ -3579,13 +3534,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.endy = edit.end.y;
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
-    },
-    get_color_cartridge: function () {
-        var color = ANNOTATIONVERTICALLINE.superclass.get_color_cartridge.apply(this);
-        if (color === '') {
-            return TOOLTYPEDEFAULTCOLOR.VERTICALLINECARTRIDGE;
-        }
-        return color;
     },
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
@@ -6218,18 +6166,22 @@ EDITOR.prototype = {
         /*pour fonctionnement des anciens outils*/
         if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
             if (type === "line") {
-                data.toolid = TOOLTYPEID.LINE;
+                data.toolid = TOOLTYPE.LINE;
             } else if (type === "rectangle") {
-                data.toolid = TOOLTYPEID.RECTANGLE;
+                data.toolid = TOOLTYPE.RECTANGLE;
             } else if (type === "oval") {
-                data.toolid = TOOLTYPEID.OVAL;
+                data.toolid = TOOLTYPE.OVAL;
             } else if (type === "pen") {
-                data.toolid = TOOLTYPEID.PEN;
+                data.toolid = TOOLTYPE.PEN;
             } else if (type === "highlight") {
-                data.toolid = TOOLTYPEID.HIGHLIGHT;
+                data.toolid = TOOLTYPE.HIGHLIGHT;
             }
+            data.tooltype = this.tools[data.toolid];
         } else if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
+        }
+        if (!data.tooltype || data.tooltype === '') {
+            data.tooltype = toolobjet;
         }
 
         data.tool = type;
@@ -6245,34 +6197,11 @@ EDITOR.prototype = {
         } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else {
-            data.tooltype = toolobjet;
-            if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+            if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
                 if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
+                    if (data.colour === "") {
+                        data.colour = this.typetools[toolobjet.type].color;
                     }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
-                }
-                return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
-            } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
-                if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
-                    }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPPLUS;
-                }
-                return new M.assignfeedback_editpdfplus.annotationstampplus(data);
-            } else if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
                 if (!data.parent_annot && !data.parent_annot_element) {
                     if (this.currentedit.parent_annot_element) {
@@ -6284,30 +6213,26 @@ EDITOR.prototype = {
                     }
                 }
                 return new M.assignfeedback_editpdfplus.annotationframe(data);
-            } else if (data.tool === TOOLTYPE.VERTICALLINE + '' || data.tool === TOOLTYPELIB.VERTICALLINE) {
+            } else {
                 if (toolobjet) {
                     if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
                         data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
                     } else {
                         data.colour = toolobjet.colors;
                     }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.VERTICALLINE;
-                }
-                return new M.assignfeedback_editpdfplus.annotationverticalline(data);
-            } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
-                if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
+                    if (data.colour === "") {
+                        data.colour = this.typetools[toolobjet.type].color;
                     }
                 }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPCOMMENT;
+                if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+                    return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
+                } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
+                    return new M.assignfeedback_editpdfplus.annotationstampplus(data);
+                } else if (data.tool === TOOLTYPE.VERTICALLINE + '' || data.tool === TOOLTYPELIB.VERTICALLINE) {
+                    return new M.assignfeedback_editpdfplus.annotationverticalline(data);
+                } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
+                    return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
                 }
-                return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
             }
         }
         return false;

@@ -51,10 +51,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            //'backgroundImage': 'url(' + this.editor.get_stamp_image_url(this.path) + ')',
-            //'width': (this.endx - this.x),
-            //'height': (this.endy - this.y),
-            //'backgroundSize': '100% 100%',
             'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
@@ -91,10 +87,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
-            //'backgroundImage': 'url(' + this.editor.get_stamp_image_url(edit.stamp) + ')',
-            //'width': bounds.width,
-            //'height': bounds.height,
-            //'backgroundSize': '100% 100%',
             'zIndex': 50,
             'color' : this.colour,
             'border' : '2px solid '+this.colour,
@@ -134,8 +126,6 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.y = bounds.y-10;
         this.endx = bounds.x + bounds.width;
         this.endy = bounds.y + bounds.height;
-        //this.colour = edit.annotationcolour;
-        //this.path = edit.stamp;
 
         // Min width and height is always more than 40px.
         return true;

@@ -963,18 +963,22 @@ EDITOR.prototype = {
         /*pour fonctionnement des anciens outils*/
         if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
             if (type === "line") {
-                data.toolid = TOOLTYPEID.LINE;
+                data.toolid = TOOLTYPE.LINE;
             } else if (type === "rectangle") {
-                data.toolid = TOOLTYPEID.RECTANGLE;
+                data.toolid = TOOLTYPE.RECTANGLE;
             } else if (type === "oval") {
-                data.toolid = TOOLTYPEID.OVAL;
+                data.toolid = TOOLTYPE.OVAL;
             } else if (type === "pen") {
-                data.toolid = TOOLTYPEID.PEN;
+                data.toolid = TOOLTYPE.PEN;
             } else if (type === "highlight") {
-                data.toolid = TOOLTYPEID.HIGHLIGHT;
+                data.toolid = TOOLTYPE.HIGHLIGHT;
             }
+            data.tooltype = this.tools[data.toolid];
         } else if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
+        }
+        if (!data.tooltype || data.tooltype === '') {
+            data.tooltype = toolobjet;
         }
 
         data.tool = type;
@@ -991,34 +995,11 @@ EDITOR.prototype = {
         } else if (data.tool === TOOLTYPE.HIGHLIGHT + '' || data.tool === TOOLTYPELIB.HIGHLIGHT) {
             return new M.assignfeedback_editpdfplus.annotationhighlight(data);
         } else {
-            data.tooltype = toolobjet;
-            if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+            if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
                 if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
+                    if (data.colour === "") {
+                        data.colour = this.typetools[toolobjet.type].color;
                     }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.HIGHLIGHTPLUS;
-                }
-                return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
-            } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
-                if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
-                    }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPPLUS;
-                }
-                return new M.assignfeedback_editpdfplus.annotationstampplus(data);
-            } else if (data.tool === TOOLTYPE.FRAME + '' || data.tool === TOOLTYPELIB.FRAME) {
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.FRAME;
                 }
                 if (!data.parent_annot && !data.parent_annot_element) {
                     if (this.currentedit.parent_annot_element) {
@@ -1030,30 +1011,26 @@ EDITOR.prototype = {
                     }
                 }
                 return new M.assignfeedback_editpdfplus.annotationframe(data);
-            } else if (data.tool === TOOLTYPE.VERTICALLINE + '' || data.tool === TOOLTYPELIB.VERTICALLINE) {
+            } else {
                 if (toolobjet) {
                     if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
                         data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
                     } else {
                         data.colour = toolobjet.colors;
                     }
-                }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.VERTICALLINE;
-                }
-                return new M.assignfeedback_editpdfplus.annotationverticalline(data);
-            } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
-                if (toolobjet) {
-                    if (toolobjet.colors && toolobjet.colors.indexOf(',') !== -1) {
-                        data.colour = toolobjet.colors.substr(0, toolobjet.colors.indexOf(','));
-                    } else {
-                        data.colour = toolobjet.colors;
+                    if (data.colour === "") {
+                        data.colour = this.typetools[toolobjet.type].color;
                     }
                 }
-                if (data.colour === "") {
-                    data.colour = TOOLTYPEDEFAULTCOLOR.STAMPCOMMENT;
+                if (data.tool === TOOLTYPE.HIGHLIGHTPLUS + '' || data.tool === TOOLTYPELIB.HIGHLIGHTPLUS) {
+                    return new M.assignfeedback_editpdfplus.annotationhighlightplus(data);
+                } else if (data.tool === TOOLTYPE.STAMPPLUS + '' || data.tool === TOOLTYPELIB.STAMPPLUS) {
+                    return new M.assignfeedback_editpdfplus.annotationstampplus(data);
+                } else if (data.tool === TOOLTYPE.VERTICALLINE + '' || data.tool === TOOLTYPELIB.VERTICALLINE) {
+                    return new M.assignfeedback_editpdfplus.annotationverticalline(data);
+                } else if (data.tool === TOOLTYPE.STAMPCOMMENT + '' || data.tool === TOOLTYPELIB.STAMPCOMMENT) {
+                    return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
                 }
-                return new M.assignfeedback_editpdfplus.annotationstampcomment(data);
             }
         }
         return false;

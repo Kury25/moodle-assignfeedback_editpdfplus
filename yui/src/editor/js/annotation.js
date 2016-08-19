@@ -142,7 +142,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.cartridgex = parseInt(config.parent_annot_element.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.parent_annot_element.cartridgey, 10) || 0;
             this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.parent_annot_element.colour || 'red';
             this.drawable = false;
             this.tooltype = config.tooltype;
@@ -164,7 +164,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.cartridgex = parseInt(config.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.cartridgey, 10) || 0;
             this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPEID.RECTANGLE);
+            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.colour || 'red';
             this.drawable = false;
             this.tooltype = config.tooltype;
@@ -246,6 +246,9 @@ Y.extend(ANNOTATION, Y.Base, {
             // Add an alpha channel to the rgb colour.
             color = color.replace('rgb', 'rgba');
             color = color.replace(')', ',0.5)');
+        }
+        if (color === '') {
+            return this.tooltypefamille.cartridge_color;
         }
         return color;
     },

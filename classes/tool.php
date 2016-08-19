@@ -46,8 +46,6 @@ class tool {
     public $reply = 0;
     public $enabled = 1;
     public $order = 1000;
-    public $cartridge_positionx = 0;
-    public $cartridge_positiony = 0;
 
     /**
      * Convert a compatible stdClass into an instance of this class.
