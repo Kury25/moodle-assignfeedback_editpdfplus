@@ -259,6 +259,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_cartridge: function (colorcartridge) {
         var div = "<div ";
         div += "id='" + this.divcartridge + "' ";
+        div += "class='assignfeedback_editpdfplus_cartridge' ";
         div += "style='border-color: " + colorcartridge + ";'> ";
         div += "</div>";
         return Y.Node.create(div);
@@ -341,8 +342,8 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
-            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x - 10, this.y - 10),
+                new M.assignfeedback_editpdfplus.point(this.endx + 10, this.endy + 10)]);
 
             shape = this.editor.graphic.addShape({
                 type: Y.Rect,

@@ -142,7 +142,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -243,7 +243,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 

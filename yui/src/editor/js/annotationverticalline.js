@@ -64,6 +64,9 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         });
 
         shape.moveTo(this.x, this.y);
+        if (this.endy - this.y <= 30) {
+            this.endy = this.y + 30;
+        }
         shape.lineTo(this.x, this.endy);
         shape.end();
 
@@ -95,6 +98,9 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         if (!bounds.has_min_width()) {
             bounds.set_min_width();
         }
+        if (!bounds.has_min_height()) {
+            bounds.set_min_height();
+        }
 
         verticallinecolour = this.get_color();
 
@@ -109,7 +115,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         });
 
         shape.moveTo(edit.start.x, edit.start.y);
-        shape.lineTo(edit.start.x, edit.end.y);
+        if (edit.end.y - edit.start.y <= 30) {
+            shape.lineTo(edit.start.x, edit.start.y + 30);
+        } else {
+            shape.lineTo(edit.start.x, edit.end.y);
+        }
         shape.end();
 
         drawable.shapes.push(shape);
@@ -130,7 +140,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.x = edit.start.x;
         this.y = edit.start.y;
         this.endx = edit.end.x + 4;
-        this.endy = edit.end.y;
+        if (edit.end.y - this.y <= 30) {
+            this.endy = this.y + 30;
+        } else {
+            this.endy = edit.end.y;
+        }
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
@@ -138,7 +152,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -237,7 +251,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
@@ -293,7 +307,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-        
+
         this.editor.save_current_page();
     },
     change_visibility_annot: function () {

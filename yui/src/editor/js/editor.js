@@ -121,6 +121,14 @@ EDITOR.prototype = {
      */
     drawables: [],
     /**
+     * Current annotations.
+     *
+     * @property drawables
+     * @type array(M.assignfeedback_editpdfplus.drawable)
+     * @protected
+     */
+    drawablesannotations: [],
+    /**
      * Current comment when the comment menu is open.
      * @property currentcomment
      * @type M.assignfeedback_editpdfplus.comment
@@ -803,6 +811,7 @@ EDITOR.prototype = {
                     if (lastannotation.drawable) {
                         lastannotation.drawable.erase();
                         this.drawables.push(lastannotation.draw());
+                        this.drawablesannotations.push(lastannotation);
                     }
                 }
                 // Redraw the newly selected annotation to show the highlight.
@@ -810,6 +819,7 @@ EDITOR.prototype = {
                     this.currentannotation.drawable.erase();
                 }
                 this.drawables.push(this.currentannotation.draw());
+                this.drawablesannotations.push(this.currentannotation);
             }
         }
         if (this.currentannotation) {
@@ -906,6 +916,7 @@ EDITOR.prototype = {
                     annotation.draw_catridge(this.currentedit);
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
+                    this.drawablesannotations.push(annotation);
                 }
             }
         }
@@ -1123,9 +1134,17 @@ EDITOR.prototype = {
         while (this.drawables.length > 0) {
             this.drawables.pop().erase();
         }
+        while (this.drawablesannotations.length > 0) {
+            var annot = this.drawablesannotations.pop();
+            if (annot.divcartridge) {
+                Y.one('#' + annot.divcartridge).remove();
+                annot.divcartridge = "";
+            }
+        }
 
         for (i = 0; i < page.annotations.length; i++) {
             this.drawables.push(page.annotations[i].draw());
+            this.drawablesannotations.push(page.annotations[i]);
         }
         for (i = 0; i < page.comments.length; i++) {
             this.drawables.push(page.comments[i].draw(false));

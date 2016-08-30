@@ -135,7 +135,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -191,7 +191,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var diveditiondisplay = Y.Node.create(divedition);
             divconteneurdisplay.append(diveditiondisplay);
 
-            divdisplay.setX(offsetcanvas[0] + this.x + 20);
+            divdisplay.setX(this.x + 20);
             divdisplay.setY(this.y);
             drawingregion.append(divdisplay);
 

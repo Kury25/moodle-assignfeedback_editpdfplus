@@ -800,6 +800,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_cartridge: function (colorcartridge) {
         var div = "<div ";
         div += "id='" + this.divcartridge + "' ";
+        div += "class='assignfeedback_editpdfplus_cartridge' ";
         div += "style='border-color: " + colorcartridge + ";'> ";
         div += "</div>";
         return Y.Node.create(div);
@@ -882,8 +883,8 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
-            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x - 10, this.y - 10),
+                new M.assignfeedback_editpdfplus.point(this.endx + 10, this.endy + 10)]);
 
             shape = this.editor.graphic.addShape({
                 type: Y.Rect,
@@ -1846,7 +1847,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -1946,7 +1947,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
@@ -2498,8 +2499,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
             'width': (this.endx - this.x),
             'height': (this.endy - this.y),
-            'backgroundSize': '100% 100%',
-            //'zIndex': 50
+            'backgroundSize': '100% 100%'
         });
         if (this.displayrotation > 0) {
             node.setStyles({
@@ -2542,8 +2542,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
             'width': bounds.width,
             'height': bounds.height,
-            'backgroundSize': '100% 100%',
-            //'zIndex': 50
+            'backgroundSize': '100% 100%'
         });
 
         drawingregion.append(node);
@@ -2589,7 +2588,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -2679,7 +2678,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
@@ -3034,7 +3033,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
             if (this.divcartridge === '') {
                 this.init_div_cartridge_id();
-                var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+                var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
                 //init cartridge
                 var colorcartridge = this.get_color();
@@ -3152,7 +3151,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 if (!this.cartridgey || this.cartridgey === 0) {
                     this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
                 }
-                divdisplay.setX(offsetcanvas[0] + this.cartridgex);
+                divdisplay.setX(this.cartridgex);
                 divdisplay.setY(this.y + this.cartridgey);
                 drawingregion.append(divdisplay);
 
@@ -3476,6 +3475,9 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         });
 
         shape.moveTo(this.x, this.y);
+        if (this.endy - this.y <= 30) {
+            this.endy = this.y + 30;
+        }
         shape.lineTo(this.x, this.endy);
         shape.end();
 
@@ -3507,6 +3509,9 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         if (!bounds.has_min_width()) {
             bounds.set_min_width();
         }
+        if (!bounds.has_min_height()) {
+            bounds.set_min_height();
+        }
 
         verticallinecolour = this.get_color();
 
@@ -3521,7 +3526,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         });
 
         shape.moveTo(edit.start.x, edit.start.y);
-        shape.lineTo(edit.start.x, edit.end.y);
+        if (edit.end.y - edit.start.y <= 30) {
+            shape.lineTo(edit.start.x, edit.start.y + 30);
+        } else {
+            shape.lineTo(edit.start.x, edit.end.y);
+        }
         shape.end();
 
         drawable.shapes.push(shape);
@@ -3542,7 +3551,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.x = edit.start.x;
         this.y = edit.start.y;
         this.endx = edit.end.x + 4;
-        this.endy = edit.end.y;
+        if (edit.end.y - this.y <= 30) {
+            this.endy = this.y + 30;
+        } else {
+            this.endy = edit.end.y;
+        }
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
@@ -3550,7 +3563,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -3648,7 +3661,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
@@ -3699,7 +3712,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-        
+
         this.editor.save_current_page();
     },
     change_visibility_annot: function () {
@@ -3979,7 +3992,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -4035,7 +4048,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var diveditiondisplay = Y.Node.create(divedition);
             divconteneurdisplay.append(diveditiondisplay);
 
-            divdisplay.setX(offsetcanvas[0] + this.x + 20);
+            divdisplay.setX(this.x + 20);
             divdisplay.setY(this.y);
             drawingregion.append(divdisplay);
 
@@ -5661,6 +5674,14 @@ EDITOR.prototype = {
      */
     drawables: [],
     /**
+     * Current annotations.
+     *
+     * @property drawables
+     * @type array(M.assignfeedback_editpdfplus.drawable)
+     * @protected
+     */
+    drawablesannotations: [],
+    /**
      * Current comment when the comment menu is open.
      * @property currentcomment
      * @type M.assignfeedback_editpdfplus.comment
@@ -6341,6 +6362,7 @@ EDITOR.prototype = {
                     if (lastannotation.drawable) {
                         lastannotation.drawable.erase();
                         this.drawables.push(lastannotation.draw());
+                        this.drawablesannotations.push(lastannotation);
                     }
                 }
                 // Redraw the newly selected annotation to show the highlight.
@@ -6348,6 +6370,7 @@ EDITOR.prototype = {
                     this.currentannotation.drawable.erase();
                 }
                 this.drawables.push(this.currentannotation.draw());
+                this.drawablesannotations.push(this.currentannotation);
             }
         }
         if (this.currentannotation) {
@@ -6444,6 +6467,7 @@ EDITOR.prototype = {
                     annotation.draw_catridge(this.currentedit);
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
+                    this.drawablesannotations.push(annotation);
                 }
             }
         }
@@ -6659,9 +6683,17 @@ EDITOR.prototype = {
         while (this.drawables.length > 0) {
             this.drawables.pop().erase();
         }
+        while (this.drawablesannotations.length > 0) {
+            var annot = this.drawablesannotations.pop();
+            if (annot.divcartridge) {
+                Y.one('#' + annot.divcartridge).remove();
+                annot.divcartridge = "";
+            }
+        }
 
         for (i = 0; i < page.annotations.length; i++) {
             this.drawables.push(page.annotations[i].draw());
+            this.drawablesannotations.push(page.annotations[i]);
         }
         for (i = 0; i < page.comments.length; i++) {
             this.drawables.push(page.comments[i].draw(false));

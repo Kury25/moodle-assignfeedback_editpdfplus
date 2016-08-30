@@ -55,8 +55,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
             'width': (this.endx - this.x),
             'height': (this.endy - this.y),
-            'backgroundSize': '100% 100%',
-            //'zIndex': 50
+            'backgroundSize': '100% 100%'
         });
         if (this.displayrotation > 0) {
             node.setStyles({
@@ -99,8 +98,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
             'width': bounds.width,
             'height': bounds.height,
-            'backgroundSize': '100% 100%',
-            //'zIndex': 50
+            'backgroundSize': '100% 100%'
         });
 
         drawingregion.append(node);
@@ -146,7 +144,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
-            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
@@ -238,7 +236,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             if (!this.cartridgey || this.cartridgey === 0) {
                 this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
             }
-            divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+            divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
             drawingregion.append(divdisplay);
 
