@@ -495,6 +495,16 @@ Y.extend(ANNOTATION, Y.Base, {
         this.colour = edit.annotationcolour;
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
+    },
+    disabled_canvas_event: function () {
+        var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        drawingcanvas.detach();
+    },
+    enabled_canvas_event: function () {
+        var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        drawingcanvas.on('gesturemovestart', this.editor.edit_start, null, this.editor);
+        drawingcanvas.on('gesturemove', this.editor.edit_move, null, this.editor);
+        drawingcanvas.on('gesturemoveend', this.editor.edit_end, null, this.editor);
     }
 
 });

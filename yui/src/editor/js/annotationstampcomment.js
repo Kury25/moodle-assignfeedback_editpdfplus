@@ -308,6 +308,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.show();
         buttoncancel.show();
         divprincipale.setStyle('z-index', 1000);
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         //Y.log('fill_input_edition : ' + unputtext);
@@ -337,6 +339,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");

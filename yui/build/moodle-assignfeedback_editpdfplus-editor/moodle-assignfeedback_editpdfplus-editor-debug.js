@@ -1036,6 +1036,16 @@ Y.extend(ANNOTATION, Y.Base, {
         this.colour = edit.annotationcolour;
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
+    },
+    disabled_canvas_event: function () {
+        var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        drawingcanvas.detach();
+    },
+    enabled_canvas_event: function () {
+        var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        drawingcanvas.on('gesturemovestart', this.editor.edit_start, null, this.editor);
+        drawingcanvas.on('gesturemove', this.editor.edit_move, null, this.editor);
+        drawingcanvas.on('gesturemoveend', this.editor.edit_end, null, this.editor);
     }
 
 });
@@ -2044,6 +2054,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.show();
         buttoncancel.show();
         divprincipale.setStyle('z-index', 1000);
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         //Y.log('fill_input_edition : ' + unputtext);
@@ -2073,6 +2085,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -2758,6 +2772,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.show();
         buttoncancel.show();
         divprincipale.setStyle('z-index', 1000);
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         //Y.log('fill_input_edition : ' + unputtext);
@@ -2787,6 +2803,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -3349,6 +3367,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divprincipale.setStyles({
             'z-index': 1000,
         });
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -3368,6 +3388,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -3807,6 +3829,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.show();
         buttoncancel.show();
         divprincipale.setStyle('z-index', 1000);
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         //Y.log('fill_input_edition : ' + unputtext);
@@ -3836,6 +3860,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -4136,7 +4162,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
         }
     },
-    edit_annot: function () {
+    edit_annot: function (e) {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
@@ -4149,6 +4175,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.show();
         buttoncancel.show();
         divprincipale.setStyle('z-index', 1000);
+
+        this.disabled_canvas_event();
     },
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -4170,6 +4198,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         buttonsave.hide();
         buttoncancel.hide();
         divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     save_annot: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -4205,6 +4235,37 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+    },
+    /**
+     * Delete an annotation
+     * @protected
+     * @method remove
+     * @param event
+     */
+    remove: function (e) {
+        var annotations,
+                i;
+
+        e.preventDefault();
+
+        annotations = this.editor.pages[this.editor.currentpage].annotations;
+        for (i = 0; i < annotations.length; i++) {
+            if (annotations[i] === this) {
+                if (this.divcartridge !== '') {
+                    var divid = '#' + this.divcartridge;
+                    //Y.log('draw_catridge : ' + divid);
+                    var divdisplay = this.editor.get_dialogue_element(divid);
+                    divdisplay.remove();
+                }
+                annotations.splice(i, 1);
+                if (this.drawable) {
+                    this.drawable.erase();
+                }
+                this.editor.currentannotation = false;
+                this.editor.save_current_page();
+                return;
+            }
+        }
     }
 
 });
