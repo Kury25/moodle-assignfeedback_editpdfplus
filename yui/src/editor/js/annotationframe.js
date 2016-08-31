@@ -480,6 +480,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         //Y.log('change_border : ' + this.borderstyle);
         this.editor.save_current_page();
     },
+    edit_annot: function (e) {
+        ANNOTATIONFRAME.superclass.edit_annot.call(this);
+        if (!this.parent_annot_element) {
+            var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
+            var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
+            this.hide_picker();
+            buttonrender.hide();
+            buttonadd.hide();
+        }
+    },
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
         if (input) {
@@ -492,11 +502,15 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
         var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
         var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+        var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
+        var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
         divdisplay.show();
         divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
         divedit.hide();
         buttonsave.hide();
         buttoncancel.hide();
+        buttonrender.show();
+        buttonadd.show();
         divprincipale.setStyle('z-index', 1);
 
         this.enabled_canvas_event();
