@@ -160,9 +160,9 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
             buttonvisibility += "><img src='";
             if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/left', 'core');
+                buttonvisibility += M.util.image_url('t/up', 'core');
             } else {
-                buttonvisibility += M.util.image_url('t/right', 'core');
+                buttonvisibility += M.util.image_url('t/down', 'core');
             }
             buttonvisibility += "' /></button>";
             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
@@ -170,7 +170,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_annot, this);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/delete', 'core') + "' /></button>";
+            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
             var buttoncanceldisplay = Y.Node.create(buttoncancel);
             buttoncanceldisplay.on('click', this.hide_edit, this);
             divconteneurdisplay.append(divinputdisplay);
@@ -204,7 +204,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    change_visibility_annot: function () {
+    /*change_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
@@ -225,7 +225,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             interrupt.set('value', 0);
             buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
         }
-    },
+    },*/
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
@@ -238,12 +238,12 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             if (valref !== '') {
                 divdisplay.setContent(valref.substr(0, 20));
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            buttonplus.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
         } else {
             if (valref !== '') {
                 divdisplay.setContent('<table><tr><td>' + valref.replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            buttonplus.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
         }
     },
     edit_annot: function (e) {

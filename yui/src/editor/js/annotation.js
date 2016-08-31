@@ -312,6 +312,24 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
         }
     },
+    change_visibility_annot: function () {
+        //var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
+       // var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        //var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+       // if (valref === '') {
+       //     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+       // }
+        if (interrupt.get('value') === '0') {
+            interrupt.set('value', 1);
+            this.displaylock = 1;
+        } else {
+            interrupt.set('value', 0);
+            this.displaylock = 2;
+        }
+        this.apply_visibility_annot();
+        this.editor.save_current_page();
+    },
     move_cartridge_begin: function (e) {
         e.preventDefault();
 

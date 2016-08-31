@@ -178,16 +178,16 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                 onof = 1;
             }
             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            var lockvalue = 0;
+            /*var lockvalue = 0;
             if (this.displaylock > 0) {
                 lockvalue = 1;
-            }
-            var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=" + lockvalue + " />");
+            }*/
+            //var inputlockdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_lockdisplay' value=" + lockvalue + " />");
             divinputdisplay.on('click', this.edit_annot, this);
             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            if (lockvalue > 0) {
+            /*if (lockvalue > 0) {
                 buttonvisibility += "style='display:none;' ";
-            }
+            }*/
             buttonvisibility += "><img src='";
             if (this.displaylock === 1) {
                 buttonvisibility += M.util.image_url('t/left', 'core');
@@ -200,20 +200,20 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_annot, this);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/delete', 'core') + "' /></button>";
+            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
             var buttoncanceldisplay = Y.Node.create(buttoncancel);
             buttoncanceldisplay.on('click', this.hide_edit, this);
-            var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><img src='";
+            /*var buttonlock = "<button id='" + this.divcartridge + "_buttonlock'><img src='";
             if (this.displaylock > 0) {
                 buttonlock += M.util.image_url('t/locked', 'core');
             } else {
                 buttonlock += M.util.image_url('t/lock', 'core');
             }
-            buttonlock += "' /></button>";
+            buttonlock += "' /></button>";*/
             divconteneurdisplay.append(divinputdisplay);
             divconteneurdisplay.append(inputvalref);
             divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(inputlockdisplay);
+            //divconteneurdisplay.append(inputlockdisplay);
             divconteneurdisplay.append(buttonvisibilitydisplay);
             divconteneurdisplay.append(buttonsavedisplay);
             divconteneurdisplay.append(buttoncanceldisplay);
@@ -310,7 +310,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
-    change_visibility_annot: function () {
+    /*change_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
         var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
@@ -334,8 +334,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                 divdisplay.setContent(valref);
             }
         }
-    },
-    lock_display: function () {
+    },*/
+    /*lock_display: function () {
         var lockdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_lockdisplay");
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         //var buttonlock = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonlock");
@@ -357,7 +357,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             this.displaylock = 0;
             this.editor.save_current_page();
         }
-    },
+    },*/
     edit_annot: function () {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
