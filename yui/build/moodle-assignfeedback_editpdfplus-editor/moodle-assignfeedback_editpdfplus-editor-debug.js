@@ -6119,11 +6119,12 @@ EDITOR.prototype = {
      * @method handle_tool_button
      */
     handle_tool_button: function (e, tool, toolid, has_parent) {
-        var currenttoolnode;
         Y.log('handle_tool_button : ' + tool + ' - ' + toolid);
-
         e.preventDefault();
-
+        this.handle_tool_button_action(tool, toolid, has_parent);
+    },
+    handle_tool_button_action: function (tool, toolid, has_parent) {
+        var currenttoolnode;
         // Change style of the pressed button.
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element("#" + this.currentedit.id);
@@ -6138,6 +6139,18 @@ EDITOR.prototype = {
 
         if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
             this.lastannotationtool = tool;
+        }
+
+        if (tool !== "select") {
+            this.currentannotation = null;
+            var annotations = this.pages[this.currentpage].annotations;
+            Y.each(annotations, function (annotation) {
+                if (annotation && annotation.drawable) {
+                    // Redraw the annotation to remove the highlight.
+                    annotation.drawable.erase();
+                    annotation.draw();
+                }
+            });
         }
         if (!has_parent) {
             this.currentedit.parent_annot_element = null;
@@ -6393,6 +6406,9 @@ EDITOR.prototype = {
         this.currentedit.start = false;
         this.currentedit.end = false;
         this.currentedit.path = [];
+        if (this.currentedit.tool !== 'drag') {
+            this.handle_tool_button_action("select");
+        }
     },
     /**
      * Resize the dialogue window when the browser is resized.
