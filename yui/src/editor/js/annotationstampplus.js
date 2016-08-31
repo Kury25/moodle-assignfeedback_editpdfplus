@@ -52,9 +52,9 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
             'position': 'absolute',
             'display': 'inline-block',
             //'zIndex': 50,
-            'color' : this.colour,
-            'border' : '2px solid '+this.colour,
-            'padding' : '0 2px'
+            'color': this.colour,
+            'border': '2px solid ' + this.colour,
+            'padding': '0 2px'
         });
 
         drawingcanvas.append(node);
@@ -88,9 +88,9 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
             'position': 'absolute',
             'display': 'inline-block',
             //'zIndex': 50,
-            'color' : this.colour,
-            'border' : '2px solid '+this.colour,
-            'padding' : '0 2px'
+            'color': this.colour,
+            'border': '2px solid ' + this.colour,
+            'padding': '0 2px'
         });
 
         drawingregion.append(node);
@@ -122,12 +122,15 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
-        this.x = bounds.x-20;
-        this.y = bounds.y-10;
+        this.x = bounds.x - 20;
+        this.y = bounds.y - 10;
         this.endx = bounds.x + bounds.width;
         this.endy = bounds.y + bounds.height;
 
         // Min width and height is always more than 40px.
+        return true;
+    },
+    edit_annot: function (e) {
         return true;
     },
     /**

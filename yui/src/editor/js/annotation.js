@@ -315,11 +315,11 @@ Y.extend(ANNOTATION, Y.Base, {
     change_visibility_annot: function () {
         //var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-       // var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        // var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         //var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-       // if (valref === '') {
-       //     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-       // }
+        // if (valref === '') {
+        //     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+        // }
         if (interrupt.get('value') === '0') {
             interrupt.set('value', 1);
             this.displaylock = 1;
@@ -418,6 +418,26 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     draw_catridge: function (edit) {
         return true;
+    },
+    edit_annot: function (e) {
+        if (this.toolid <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
+            var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+            var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
+            var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+            var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
+            var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+            divdisplay.hide();
+            if (buttonplus) {
+                buttonplus.hide();
+            }
+            divedit.show();
+            buttonsave.show();
+            buttoncancel.show();
+            divprincipale.setStyle('z-index', 1000);
+
+            this.disabled_canvas_event();
+        }
     },
     /**
      * Delete an annotation

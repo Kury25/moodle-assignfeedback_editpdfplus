@@ -480,22 +480,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         //Y.log('change_border : ' + this.borderstyle);
         this.editor.save_current_page();
     },
-    edit_annot: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        divdisplay.hide();
-        divedit.show();
-        buttonsave.show();
-        buttoncancel.show();
-        divprincipale.setStyles({
-            'z-index': 1000,
-        });
-
-        this.disabled_canvas_event();
-    },
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
         if (input) {

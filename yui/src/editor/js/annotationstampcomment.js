@@ -268,22 +268,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         }
         this.editor.save_current_page();
     },
-    edit_annot: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        divdisplay.hide();
-        buttonplus.hide();
-        divedit.show();
-        buttonsave.show();
-        buttoncancel.show();
-        divprincipale.setStyle('z-index', 1000);
-
-        this.disabled_canvas_event();
-    },
     fill_input_edition: function (e, unputtext) {
         //Y.log('fill_input_edition : ' + unputtext);
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
