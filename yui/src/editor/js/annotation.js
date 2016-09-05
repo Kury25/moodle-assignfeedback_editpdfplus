@@ -420,7 +420,7 @@ Y.extend(ANNOTATION, Y.Base, {
         return true;
     },
     edit_annot: function (e) {
-        if (this.toolid <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
+        if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
             var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
@@ -437,7 +437,56 @@ Y.extend(ANNOTATION, Y.Base, {
             divprincipale.setStyle('z-index', 1000);
 
             this.disabled_canvas_event();
+            divprincipale.on('clickoutside', this.cancel_edit, this);
         }
+    },
+    fill_input_edition: function (e, unputtext) {
+        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+        if (input) {
+            input.set('value', unputtext);
+        }
+        this.save_annot(unputtext);
+    },
+    save_annot: function (result) {
+        if (typeof result !== 'string') {
+            var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+            result = input.get('value');
+        }
+        this.textannot = result;
+        this.editor.save_current_page();
+        if (result.length === 0) {
+            result = "&nbsp;&nbsp;";
+        }
+        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+        valref.set('value', result);
+        this.hide_edit();
+        this.apply_visibility_annot();
+    },
+    cancel_edit: function () {
+        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+        var result = valref.get('value');
+        input.set('value', result);
+        this.hide_edit();
+        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divprincipale.detach();
+    },
+    hide_edit: function () {
+        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
+        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
+        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+        divdisplay.show();
+        divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+        buttonplus.show();
+        divedit.hide();
+        buttonsave.hide();
+        buttoncancel.hide();
+        divprincipale.setStyle('z-index', 1);
+
+        this.enabled_canvas_event();
     },
     /**
      * Delete an annotation

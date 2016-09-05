@@ -187,10 +187,10 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this);
+            buttonsavedisplay.on('click', this.save_annot, this, null);
             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
             var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.hide_edit, this);
+            buttoncanceldisplay.on('click', this.cancel_edit, this);
             var buttonrotation = "<button id='" + this.divcartridge + "_buttonrotation'><img src='" + M.util.image_url('e/restore_draft', 'core') + "' /></button>";
             var buttonrotationdisplay = Y.Node.create(buttonrotation);
             buttonrotationdisplay.on('click', this.change_stamp, this);
@@ -267,45 +267,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             this.displayrotation = 0;
         }
         this.editor.save_current_page();
-    },
-    fill_input_edition: function (e, unputtext) {
-        //Y.log('fill_input_edition : ' + unputtext);
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        if (input) {
-            input.set('value', unputtext);
-        }
-    },
-    hide_edit: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        divdisplay.show();
-        divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
-        buttonplus.show();
-        divedit.hide();
-        buttonsave.hide();
-        buttoncancel.hide();
-        divprincipale.setStyle('z-index', 1);
-
-        this.enabled_canvas_event();
-    },
-    save_annot: function () {
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        var result = input.get('value');
-        //Y.log('save_annot : ' + result);
-        this.textannot = result;
-        this.editor.save_current_page();
-        if (result.length === 0) {
-            result = "&nbsp;&nbsp;";
-        }
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
-        valref.set('value', result);
-        this.apply_visibility_annot();
-        this.hide_edit();
-        return;
     },
     /**
      * Move an annotation to a new location.

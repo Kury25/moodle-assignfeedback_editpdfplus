@@ -368,7 +368,8 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_hightlightplus_cartridge,
 .assignfeedback_editpdfplus_frame_cartridge,
 .assignfeedback_editpdfplus_verticalline_cartridge,
-.assignfeedback_editpdfplus_stampcomment_cartridge {
+.assignfeedback_editpdfplus_stampcomment_cartridge,
+.assignfeedback_editpdfplus_commentplus_cartridge {
     display:inline;
     border-right-width: 2px;
     border-right-style: solid;
