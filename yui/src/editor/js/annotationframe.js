@@ -198,11 +198,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 var divdisplay = this.get_div_cartridge(colorcartridge);
                 divdisplay.addClass('assignfeedback_editpdfplus_frame');
                 divdisplay.setStyles({'border-style': this.borderstyle});
-                divdisplay.set('draggable', 'true');
+                //divdisplay.set('draggable', 'true');
 
                 // inscription entete
-                var divcartridge = this.get_div_cartridge_label(colorcartridge);
-                divcartridge.on('mousedown', this.move_cartridge_begin, this);
+                var divcartridge = this.get_div_cartridge_label(colorcartridge, true);
                 divdisplay.append(divcartridge);
 
                 //creation input
@@ -358,18 +357,18 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.editor.save_current_page();
     },
     /*apply_visibility_annot: function () {
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
-        if (valref === '') {
-            if (this.editor.get('readonly')) {
-                divdisplay.setContent('');
-            } else {
-                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-            }
-        } else if (valref !== '') {
-            divdisplay.setContent(valref);
-        }
-    },*/
+     var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+     var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+     if (valref === '') {
+     if (this.editor.get('readonly')) {
+     divdisplay.setContent('');
+     } else {
+     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+     }
+     } else if (valref !== '') {
+     divdisplay.setContent(valref);
+     }
+     },*/
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);

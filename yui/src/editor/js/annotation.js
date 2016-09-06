@@ -264,7 +264,7 @@ Y.extend(ANNOTATION, Y.Base, {
         div += "</div>";
         return Y.Node.create(div);
     },
-    get_div_cartridge_label: function (colorcartridge) {
+    get_div_cartridge_label: function (colorcartridge, draggable) {
         var divcartridge = "<div ";
         divcartridge += "id='" + this.divcartridge + "_cartridge' ";
         divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
@@ -276,7 +276,12 @@ Y.extend(ANNOTATION, Y.Base, {
         divcartridge += "> ";
         divcartridge += this.tooltype.cartridge;
         divcartridge += "</div>";
-        return Y.Node.create(divcartridge);
+        var divcartridgedisplay = Y.Node.create(divcartridge);
+        if (draggable && !this.editor.get('readonly')) {
+            divcartridgedisplay.on('mousedown', this.move_cartridge_begin, this);
+            return divcartridgedisplay;
+        }
+        return divcartridgedisplay;
     },
     get_div_input: function (colorcartridge) {
         var divinput = "<div ";

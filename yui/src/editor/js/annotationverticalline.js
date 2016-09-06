@@ -160,8 +160,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             divdisplay.addClass('assignfeedback_editpdfplus_verticalline');
 
             // inscription entete
-            var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.on('mousedown', this.move_cartridge_begin, this);
+            var divcartridge = this.get_div_cartridge_label(colorcartridge, true);
             divdisplay.append(divcartridge);
 
             //creation input

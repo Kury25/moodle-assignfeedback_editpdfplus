@@ -805,7 +805,7 @@ Y.extend(ANNOTATION, Y.Base, {
         div += "</div>";
         return Y.Node.create(div);
     },
-    get_div_cartridge_label: function (colorcartridge) {
+    get_div_cartridge_label: function (colorcartridge, draggable) {
         var divcartridge = "<div ";
         divcartridge += "id='" + this.divcartridge + "_cartridge' ";
         divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
@@ -817,7 +817,12 @@ Y.extend(ANNOTATION, Y.Base, {
         divcartridge += "> ";
         divcartridge += this.tooltype.cartridge;
         divcartridge += "</div>";
-        return Y.Node.create(divcartridge);
+        var divcartridgedisplay = Y.Node.create(divcartridge);
+        if (draggable && !this.editor.get('readonly')) {
+            divcartridgedisplay.on('mousedown', this.move_cartridge_begin, this);
+            return divcartridgedisplay;
+        }
+        return divcartridgedisplay;
     },
     get_div_input: function (colorcartridge) {
         var divinput = "<div ";
@@ -2987,11 +2992,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 var divdisplay = this.get_div_cartridge(colorcartridge);
                 divdisplay.addClass('assignfeedback_editpdfplus_frame');
                 divdisplay.setStyles({'border-style': this.borderstyle});
-                divdisplay.set('draggable', 'true');
+                //divdisplay.set('draggable', 'true');
 
                 // inscription entete
-                var divcartridge = this.get_div_cartridge_label(colorcartridge);
-                divcartridge.on('mousedown', this.move_cartridge_begin, this);
+                var divcartridge = this.get_div_cartridge_label(colorcartridge, true);
                 divdisplay.append(divcartridge);
 
                 //creation input
@@ -3147,18 +3151,18 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.editor.save_current_page();
     },
     /*apply_visibility_annot: function () {
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
-        if (valref === '') {
-            if (this.editor.get('readonly')) {
-                divdisplay.setContent('');
-            } else {
-                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-            }
-        } else if (valref !== '') {
-            divdisplay.setContent(valref);
-        }
-    },*/
+     var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+     var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+     if (valref === '') {
+     if (this.editor.get('readonly')) {
+     divdisplay.setContent('');
+     } else {
+     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+     }
+     } else if (valref !== '') {
+     divdisplay.setContent(valref);
+     }
+     },*/
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
@@ -3502,8 +3506,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             divdisplay.addClass('assignfeedback_editpdfplus_verticalline');
 
             // inscription entete
-            var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.on('mousedown', this.move_cartridge_begin, this);
+            var divcartridge = this.get_div_cartridge_label(colorcartridge, true);
             divdisplay.append(divcartridge);
 
             //creation input
