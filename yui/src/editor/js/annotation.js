@@ -478,6 +478,9 @@ Y.extend(ANNOTATION, Y.Base, {
             });
             this.drawable.shapes.push(shape);
 
+            shape.editor = this.editor;
+            shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
+
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');

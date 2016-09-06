@@ -1019,6 +1019,10 @@ Y.extend(ANNOTATION, Y.Base, {
             });
             this.drawable.shapes.push(shape);
 
+            shape.editor = this.editor;
+            //shape.on('clickoutside', this.remove_selection, this);
+            shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
+
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');
@@ -1044,6 +1048,11 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;
+    },
+    remove_selection: function (e) {
+        if (this.drawable) {
+            this.drawable.erase();
+        }
     },
     /**
      * Draw an annotation
@@ -5900,7 +5909,7 @@ EDITOR.prototype = {
             toolnode.on('key', this.handle_tool_button, 'down:13', this, toollib, toolid);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
-        
+
         // Setup the tool buttons.
         Y.each(TOOLSELECTOR, function (selector, tool) {
             toolnode = this.get_dialogue_element(selector);
@@ -5966,21 +5975,24 @@ EDITOR.prototype = {
         }
 
         if (tool !== "select") {
-            this.currentannotation = null;
-            var annotations = this.pages[this.currentpage].annotations;
-            Y.each(annotations, function (annotation) {
-                if (annotation && annotation.drawable) {
-                    // Redraw the annotation to remove the highlight.
-                    annotation.drawable.erase();
-                    annotation.draw();
-                }
-            });
+            this.redraw_annotation();
         }
         if (!has_parent) {
             this.currentedit.parent_annot_element = null;
         }
 
         this.refresh_button_state();
+    },
+    redraw_annotation: function (e) {
+        this.currentannotation = null;
+        var annotations = this.pages[this.currentpage].annotations;
+        Y.each(annotations, function (annotation) {
+            if (annotation && annotation.drawable) {
+                // Redraw the annotation to remove the highlight.
+                annotation.drawable.erase();
+                annotation.draw();
+            }
+        });
     },
     /**
      * JSON encode the current page data - stripping out drawable references which cannot be encoded.
