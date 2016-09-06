@@ -564,12 +564,6 @@ Y.extend(ANNOTATION, Y.Base, {
         this.apply_visibility_annot();
     },
     cancel_edit: function (e, clickType) {
-        /*Y.log('cancel_edit : ' + clickType);
-        if (this.editor.currentannotation === this) {
-            Y.log('cancel_edit : mm');
-        } else {
-            Y.log('cancel_edit : different');
-        }*/
         if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
             var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -581,6 +575,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             divprincipale.detach();
         }
+        return;
     },
     hide_edit: function () {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);

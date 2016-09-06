@@ -260,17 +260,17 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
                     diveditionrenderdisplay.append(diveditioncolordisplay);
                     diveditionrenderdisplay.append(diveditionframedisplay);
-                    var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:#FFFFFF;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:white;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
                     diveditionwhitedisplay.on('click', this.change_color, this, 'white');
-                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#FFCF35;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionyellowdisplay.on('click', this.change_color, this, '#FFCF35');
-                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#EF4540;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionreddisplay.on('click', this.change_color, this, '#EF4540');
-                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#99CA3E;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditiongreendisplay.on('click', this.change_color, this, '#99CA3E');
-                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#7D9FD3;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionbluedisplay.on('click', this.change_color, this, '#7D9FD3');
-                    var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:#333333;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:orange;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionyellowdisplay.on('click', this.change_color, this, 'orange');
+                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:red;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionreddisplay.on('click', this.change_color, this, 'red');
+                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:green;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiongreendisplay.on('click', this.change_color, this, 'green');
+                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:blue;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionbluedisplay.on('click', this.change_color, this, 'blue');
+                    var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:black;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
                     diveditionblackdisplay.on('click', this.change_color, this, 'black');
                     diveditioncolordisplay.append(diveditionwhitedisplay);
                     diveditioncolordisplay.append(diveditionyellowdisplay);
@@ -356,19 +356,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
-    /*apply_visibility_annot: function () {
-     var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-     var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
-     if (valref === '') {
-     if (this.editor.get('readonly')) {
-     divdisplay.setContent('');
-     } else {
-     divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-     }
-     } else if (valref !== '') {
-     divdisplay.setContent(valref);
-     }
-     },*/
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
@@ -486,9 +473,13 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
+        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
         buttonrender.show();
         buttonadd.show();
+        if (buttonplus) {
+            buttonplus.hide();
+        }
     },
     /**
      * Delete an annotation
