@@ -572,8 +572,11 @@ EDITOR.prototype = {
     setup_toolbar: function () {
         var toolnode,
                 annotationcolourbutton,
-                searchcommentsbutton,
                 picker;
+
+        if (this.get('readonly')) {
+            return;
+        }
 
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '1');
         customtoolbar.show();
@@ -586,14 +589,7 @@ EDITOR.prototype = {
             toolnode.on('key', this.handle_tool_button, 'down:13', this, toollib, toolid);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
-
-        //searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
-        //searchcommentsbutton.on('click', this.open_search_comments, this);
-        //searchcommentsbutton.on('key', this.open_search_comments, 'down:13', this);
-
-        if (this.get('readonly')) {
-            return;
-        }
+        
         // Setup the tool buttons.
         Y.each(TOOLSELECTOR, function (selector, tool) {
             toolnode = this.get_dialogue_element(selector);
@@ -601,24 +597,6 @@ EDITOR.prototype = {
             toolnode.on('key', this.handle_tool_button, 'down:13', this, tool);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
-
-        // Set the default tool.
-
-        /*commentcolourbutton = this.get_dialogue_element(SELECTOR.COMMENTCOLOURBUTTON);
-         picker = new M.assignfeedback_editpdfplus.colourpicker({
-         buttonNode: commentcolourbutton,
-         colours: COMMENTCOLOUR,
-         iconprefix: 'background_colour_',
-         callback: function (e) {
-         var colour = e.target.getAttribute('data-colour');
-         if (!colour) {
-         colour = e.target.ancestor().getAttribute('data-colour');
-         }
-         this.currentedit.commentcolour = colour;
-         this.handle_tool_button(e, "comment");
-         },
-         context: this
-         });*/
 
         annotationcolourbutton = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         picker = new M.assignfeedback_editpdfplus.colourpicker({
@@ -1154,7 +1132,10 @@ EDITOR.prototype = {
         while (this.drawablesannotations.length > 0) {
             var annot = this.drawablesannotations.pop();
             if (annot.divcartridge) {
-                Y.one('#' + annot.divcartridge).remove();
+                var divannot = Y.one('#' + annot.divcartridge);
+                if (divannot) {
+                    divannot.remove();
+                }
                 annot.divcartridge = "";
             }
         }

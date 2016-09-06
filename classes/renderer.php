@@ -198,6 +198,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $toolbar001 = '';
         $toolbar002 = '';
+        $toolbarCostumdiv = '';
         $clearfix = html_writer::div('', 'clearfix');
         if (!$widget->readonly) {
 
@@ -236,7 +237,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 return ($al > $bl) ? +1 : -1;
             });
             $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
-            $toolbarCostumdiv = '';
+            
             foreach ($toolbarCostum as $toolbarCostumUnit) {
                 $toolbarCostumdiv.= $toolbarCostumUnit;
             }

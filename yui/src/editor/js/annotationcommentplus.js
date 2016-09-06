@@ -144,57 +144,55 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             // inscription entete
             var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.addClass('assignfeedback_editpdfplus_commentplus_cartridge');
             divdisplay.append(divcartridge);
 
             //creation input
-            var divconteneur = "<div ";
-            divconteneur += "class='assignfeedback_editpdfplus_commentplus_conteneur' >";
-            divconteneur += "</div>";
-            var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinputdisplay = this.get_div_input(colorcartridge);
-            divinputdisplay.addClass('assignfeedback_editpdfplus_commentplus_input');
-            divinputdisplay.setStyles({'width': '200px'});
-            var inputvalref = this.get_input_valref();
-            var onof = 0;
-            if (this.displaylock === '1') {
-                onof = 1;
-            }
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            buttonvisibility += "><img src='";
-            if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/up', 'core');
-            } else {
-                buttonvisibility += M.util.image_url('t/down', 'core');
-            }
-            buttonvisibility += "' /></button>";
-            var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-            buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-            var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this, null);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-            var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.cancel_edit, this);
-            divconteneurdisplay.append(divinputdisplay);
-            divconteneurdisplay.append(inputvalref);
-            divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(buttonvisibilitydisplay);
-            divconteneurdisplay.append(buttonsavedisplay);
-            divconteneurdisplay.append(buttoncanceldisplay);
+            var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            /*var divconteneur = "<div ";
+             divconteneur += "class='assignfeedback_editpdfplus_commentplus_conteneur' >";
+             divconteneur += "</div>";
+             var divconteneurdisplay = Y.Node.create(divconteneur);
+             var divinputdisplay = this.get_div_input(colorcartridge);
+             divinputdisplay.addClass('assignfeedback_editpdfplus_commentplus_input');
+             divinputdisplay.setStyles({'width': '200px'});
+             var inputvalref = this.get_input_valref();
+             var onof = 0;
+             if (this.displaylock === '1') {
+             onof = 1;
+             }
+             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+             divinputdisplay.on('click', this.edit_annot, this);
+             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+             buttonvisibility += "><img src='";
+             if (this.displaylock === 1) {
+             buttonvisibility += M.util.image_url('t/up', 'core');
+             } else {
+             buttonvisibility += M.util.image_url('t/down', 'core');
+             }
+             buttonvisibility += "' /></button>";
+             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+             var buttonsavedisplay = Y.Node.create(buttonsave);
+             buttonsavedisplay.on('click', this.save_annot, this, null);
+             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+             var buttoncanceldisplay = Y.Node.create(buttoncancel);
+             buttoncanceldisplay.on('click', this.cancel_edit, this);
+             divconteneurdisplay.append(divinputdisplay);
+             divconteneurdisplay.append(inputvalref);
+             divconteneurdisplay.append(inputonof);
+             divconteneurdisplay.append(buttonvisibilitydisplay);
+             divconteneurdisplay.append(buttonsavedisplay);
+             divconteneurdisplay.append(buttoncanceldisplay);
+             divdisplay.append(divconteneurdisplay);*/
 
             //creation de la div d'edition
-            var divedition = "<div ";
-            divedition += "id='" + this.divcartridge + "_edit' ";
-            divedition += "class='assignfeedback_editpdfplus_commentplus_edition' ";
-            divedition += "style='display:none;'> ";
-            divedition += "<textarea id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" >" + this.get_valref() + "</textarea>";
-            divedition += "</div>";
-            var diveditiondisplay = Y.Node.create(divedition);
-            divconteneurdisplay.append(diveditiondisplay);
+            if (!this.editor.get('readonly')) {
+                var diveditiondisplay = this.get_div_edition();
+                diveditiondisplay.addClass('assignfeedback_editpdfplus_commentplus_edition');
+                divconteneurdisplay.append(diveditiondisplay);
+            }
 
             divdisplay.setX(this.x + 20);
             divdisplay.setY(this.y);
@@ -202,8 +200,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divid = '#' + this.divcartridge;
-            var divdisplay = this.editor.get_dialogue_element(divid);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
@@ -215,18 +212,26 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         }
         if (interrupt.get('value') === '0') {
             if (valref !== '') {
                 divdisplay.setContent(valref.substr(0, 20));
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+            }
         } else {
             if (valref !== '') {
                 divdisplay.setContent('<table><tr><td>' + valref.replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            }
         }
     },
     save_annot: function () {

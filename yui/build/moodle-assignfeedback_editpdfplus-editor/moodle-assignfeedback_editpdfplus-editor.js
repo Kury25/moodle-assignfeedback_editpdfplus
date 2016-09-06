@@ -808,7 +808,13 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_cartridge_label: function (colorcartridge) {
         var divcartridge = "<div ";
         divcartridge += "id='" + this.divcartridge + "_cartridge' ";
-        divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
+        divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
+        if (this.editor.get('readonly') && this.get_valref() === '') {
+            divcartridge += "style='border-right:none;padding-right:0px;color:" + colorcartridge + ";' ";
+        } else {
+            divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";' ";
+        }
+        divcartridge += "> ";
         divcartridge += this.tooltype.cartridge;
         divcartridge += "</div>";
         return Y.Node.create(divcartridge);
@@ -816,22 +822,102 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_input: function (colorcartridge) {
         var divinput = "<div ";
         divinput += "id='" + this.divcartridge + "_display' ";
-        divinput += "style='color:" + colorcartridge + ";'> ";
-        divinput += "</div>";
+        divinput += "style='color:" + colorcartridge + "; ";
+        if (this.editor.get('readonly') && this.get_valref() === '') {
+            divinput += "padding:0px;";
+        }
+        divinput += "'></div>";
         var divinputdisplay = Y.Node.create(divinput);
-        divinputdisplay.on('click', this.edit_annot, this);
+        if (!this.editor.get('readonly')) {
+            divinputdisplay.on('click', this.edit_annot, this);
+        }
         return divinputdisplay;
+    },
+    get_div_edition: function () {
+        var divedition = "<div ";
+        divedition += "id='" + this.divcartridge + "_edit' ";
+        divedition += "style='display:none;'> ";
+        divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
+        divedition += "</div>";
+        var diveditiondisplay = Y.Node.create(divedition);
+        var propositions = this.tooltype.texts;
+        if (propositions && propositions.length > 0) {
+            var divproposition = "<div></div>";
+            var divpropositiondisplay = Y.Node.create(divproposition);
+            var propositionarray = propositions.split('","');
+            for (i = 0; i < propositionarray.length; i++) {
+                var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
+                var buttontmpdisplay = Y.Node.create(buttontmp);
+                buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
+                divpropositiondisplay.append(buttontmpdisplay);
+            }
+            diveditiondisplay.append(divpropositiondisplay);
+        }
+        return diveditiondisplay;
+    },
+    get_div_container: function (colorcartridge) {
+        var divconteneur = "<div ";
+        divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_conteneur' >";
+        divconteneur += "</div>";
+        var divconteneurdisplay = Y.Node.create(divconteneur);
+        var divinputdisplay = this.get_div_input(colorcartridge);
+        divinputdisplay.addClass('assignfeedback_editpdfplus_' + this.tooltypefamille.label + '_input');
+        var inputvalref = this.get_input_valref();
+        var onof = 0;
+        if (this.displaylock === '1') {
+            onof = 1;
+        }
+        var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divinputdisplay.on('click', this.edit_annot, this);
+        }
+        divconteneurdisplay.append(divinputdisplay);
+        divconteneurdisplay.append(inputvalref);
+        divconteneurdisplay.append(inputonof);
+
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divconteneurdisplay.append(this.get_button_visibility());
+            divconteneurdisplay.append(this.get_button_save());
+            divconteneurdisplay.append(this.get_button_cancel());
+        }
+
+        return divconteneurdisplay;
+    },
+    get_button_visibility: function () {
+        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+        buttonvisibility += "><img src='";
+        if (this.displaylock === 1) {
+            buttonvisibility += M.util.image_url('t/left', 'core');
+        } else {
+            buttonvisibility += M.util.image_url('t/right', 'core');
+        }
+        buttonvisibility += "' /></button>";
+        var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+        buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+        return buttonvisibilitydisplay;
+    },
+    get_button_save: function () {
+        var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+        var buttonsavedisplay = Y.Node.create(buttonsave);
+        buttonsavedisplay.on('click', this.save_annot, this, null);
+        return buttonsavedisplay;
+    },
+    get_button_cancel: function () {
+        var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+        var buttoncanceldisplay = Y.Node.create(buttoncancel);
+        buttoncanceldisplay.on('click', this.cancel_edit, this);
+        return buttoncanceldisplay;
     },
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
             return this.textannot;
         }
         return '';
-
     },
     get_input_valref: function () {
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.get_valref() + "\"/>");
-
     },
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -839,18 +925,26 @@ Y.extend(ANNOTATION, Y.Base, {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         }
         if (interrupt.get('value') === '0') {
             if (valref !== '') {
                 divdisplay.setContent(valref.substr(0, 20));
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            }
         } else {
             if (valref !== '') {
                 divdisplay.setContent(valref);
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            }
         }
     },
     change_visibility_annot: function () {
@@ -968,6 +1062,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
             var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+            var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
             if (buttonplus) {
                 buttonplus.hide();
@@ -976,6 +1071,7 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonsave.show();
             buttoncancel.show();
             divprincipale.setStyle('z-index', 1000);
+            input.set('focus', 'on');
 
             this.disabled_canvas_event();
             divprincipale.on('clickoutside', this.cancel_edit, this);
@@ -1006,8 +1102,10 @@ Y.extend(ANNOTATION, Y.Base, {
     cancel_edit: function () {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        var result = valref.get('value');
-        input.set('value', result);
+        if (valref) {
+            var result = valref.get('value');
+            input.set('value', result);
+        }
         this.hide_edit();
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
         divprincipale.detach();
@@ -1019,8 +1117,10 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
         var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        divdisplay.show();
-        divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+        if (divdisplay) {
+            divdisplay.show();
+            divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+        }
         buttonplus.show();
         divedit.hide();
         buttonsave.hide();
@@ -1953,71 +2053,54 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             // inscription entete
             var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.addClass('assignfeedback_editpdfplus_hightlightplus_cartridge');
             divdisplay.append(divcartridge);
 
             //creation input
-            var divconteneur = "<div ";
-            divconteneur += "class='assignfeedback_editpdfplus_hightlightplus_conteneur' >";
-            divconteneur += "</div>";
-            var divconteneurdisplay = Y.Node.create(divconteneur);
+            /*var divconteneur = "<div ";
+             divconteneur += "class='assignfeedback_editpdfplus_hightlightplus_conteneur' >";
+             divconteneur += "</div>";
+             var divconteneurdisplay = Y.Node.create(divconteneur);*/
             //divconteneurdisplay.on('click', this.edit_annot, this);
-            var divinputdisplay = this.get_div_input(colorcartridge);
-            divinputdisplay.addClass('assignfeedback_editpdfplus_hightlightplus_input');
-            var inputvalref = this.get_input_valref();
-            var onof = 0;
-            if (this.displaylock === '1') {
-                onof = 1;
-            }
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            buttonvisibility += "><img src='";
-            if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/left', 'core');
-            } else {
-                buttonvisibility += M.util.image_url('t/right', 'core');
-            }
-            buttonvisibility += "' /></button>";
-            var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-            buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-            var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this, null);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-            var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.cancel_edit, this);
-            divconteneurdisplay.append(divinputdisplay);
-            divconteneurdisplay.append(inputvalref);
-            divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(buttonvisibilitydisplay);
-            divconteneurdisplay.append(buttonsavedisplay);
-            divconteneurdisplay.append(buttoncanceldisplay);
+            /*var divinputdisplay = this.get_div_input(colorcartridge);
+             divinputdisplay.addClass('assignfeedback_editpdfplus_hightlightplus_input');
+             var inputvalref = this.get_input_valref();
+             var onof = 0;
+             if (this.displaylock === '1') {
+             onof = 1;
+             }
+             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+             divinputdisplay.on('click', this.edit_annot, this);
+             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+             buttonvisibility += "><img src='";
+             if (this.displaylock === 1) {
+             buttonvisibility += M.util.image_url('t/left', 'core');
+             } else {
+             buttonvisibility += M.util.image_url('t/right', 'core');
+             }
+             buttonvisibility += "' /></button>";
+             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+             var buttonsavedisplay = Y.Node.create(buttonsave);
+             buttonsavedisplay.on('click', this.save_annot, this, null);
+             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+             var buttoncanceldisplay = Y.Node.create(buttoncancel);
+             buttoncanceldisplay.on('click', this.cancel_edit, this);
+             divconteneurdisplay.append(divinputdisplay);
+             divconteneurdisplay.append(inputvalref);
+             divconteneurdisplay.append(inputonof);
+             divconteneurdisplay.append(buttonvisibilitydisplay);
+             divconteneurdisplay.append(buttonsavedisplay);
+             divconteneurdisplay.append(buttoncanceldisplay);*/
+            var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
-            var divedition = "<div ";
-            divedition += "id='" + this.divcartridge + "_edit' ";
-            divedition += "class='assignfeedback_editpdfplus_hightlightplus_edition' ";
-            divedition += "style='display:none;'> ";
-            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
-            divedition += "</div>";
-            var diveditiondisplay = Y.Node.create(divedition);
-            divconteneurdisplay.append(diveditiondisplay);
-            var propositions = this.tooltype.texts;
-            var divproposition = "<div></div>";
-            var divpropositiondisplay = Y.Node.create(divproposition);
-            if (propositions && propositions.length > 0) {
-                var propositionarray = propositions.split('","');
-                for (i = 0; i < propositionarray.length; i++) {
-                    var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
-                    var buttontmpdisplay = Y.Node.create(buttontmp);
-                    buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                    divpropositiondisplay.append(buttontmpdisplay);
-                }
-
+            if (!this.editor.get('readonly')) {
+                var diveditiondisplay = this.get_div_edition();
+                diveditiondisplay.addClass('assignfeedback_editpdfplus_hightlightplus_edition');
+                divconteneurdisplay.append(diveditiondisplay);
             }
-            diveditiondisplay.append(divpropositiondisplay);
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
@@ -2032,8 +2115,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divid = '#' + this.divcartridge;
-            var divdisplay = this.editor.get_dialogue_element(divid);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
@@ -2055,8 +2137,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
                 if (this.divcartridge !== '') {
-                    var divid = '#' + this.divcartridge;
-                    var divdisplay = this.editor.get_dialogue_element(divid);
+                    var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
                     divdisplay.remove();
                 }
                 annotations.splice(i, 1);
@@ -2555,79 +2636,68 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             // inscription entete
             var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.addClass('assignfeedback_editpdfplus_stampcomment_cartridge');
             divdisplay.append(divcartridge);
 
             //creation input
-            var divconteneur = "<div ";
-            divconteneur += "class='assignfeedback_editpdfplus_stampcomment_conteneur' >";
-            divconteneur += "</div>";
-            var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinputdisplay = this.get_div_input(colorcartridge);
-            divinputdisplay.addClass('assignfeedback_editpdfplus_stampcomment_input');
-            var inputvalref = this.get_input_valref();
-            var onof = 0;
-            if (this.displaylock === '1') {
-                onof = 1;
-            }
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            divinputdisplay.on('click', this.edit_annot, this);
-            var rotationvalue = 0;
-            if (this.displayrotation > 0) {
-                rotationvalue = 1;
-            }
-            var inputrotationdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_rotation' value=" + rotationvalue + " />");
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            buttonvisibility += "><img src='";
-            if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/left', 'core');
-            } else {
-                buttonvisibility += M.util.image_url('t/right', 'core');
-            }
-            buttonvisibility += "' /></button>";
-            var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-            buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-            var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this, null);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-            var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.cancel_edit, this);
-            var buttonrotation = "<button id='" + this.divcartridge + "_buttonrotation'><img src='" + M.util.image_url('e/restore_draft', 'core') + "' /></button>";
-            var buttonrotationdisplay = Y.Node.create(buttonrotation);
-            buttonrotationdisplay.on('click', this.change_stamp, this);
-            divconteneurdisplay.append(divinputdisplay);
-            divconteneurdisplay.append(inputvalref);
-            divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(inputrotationdisplay);
-            divconteneurdisplay.append(buttonvisibilitydisplay);
-            divconteneurdisplay.append(buttonsavedisplay);
-            divconteneurdisplay.append(buttoncanceldisplay);
-            divconteneurdisplay.append(buttonrotationdisplay);
+            var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            /*var divconteneur = "<div ";
+             divconteneur += "class='assignfeedback_editpdfplus_stampcomment_conteneur' >";
+             divconteneur += "</div>";
+             var divconteneurdisplay = Y.Node.create(divconteneur);
+             var divinputdisplay = this.get_div_input(colorcartridge);
+             divinputdisplay.addClass('assignfeedback_editpdfplus_stampcomment_input');
+             var inputvalref = this.get_input_valref();
+             var onof = 0;
+             if (this.displaylock === '1') {
+             onof = 1;
+             }
+             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+             divinputdisplay.on('click', this.edit_annot, this);
+             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+             buttonvisibility += "><img src='";
+             if (this.displaylock === 1) {
+             buttonvisibility += M.util.image_url('t/left', 'core');
+             } else {
+             buttonvisibility += M.util.image_url('t/right', 'core');
+             }
+             buttonvisibility += "' /></button>";
+             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+             var buttonsavedisplay = Y.Node.create(buttonsave);
+             buttonsavedisplay.on('click', this.save_annot, this, null);
+             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+             var buttoncanceldisplay = Y.Node.create(buttoncancel);
+             buttoncanceldisplay.on('click', this.cancel_edit, this);
+             divconteneurdisplay.append(divinputdisplay);
+             divconteneurdisplay.append(inputvalref);
+             divconteneurdisplay.append(inputonof);
+             divconteneurdisplay.append(inputrotationdisplay);
+             divconteneurdisplay.append(buttonvisibilitydisplay);
+             divconteneurdisplay.append(buttonsavedisplay);
+             divconteneurdisplay.append(buttoncanceldisplay);
+             divconteneurdisplay.append(buttonrotationdisplay);
+             divdisplay.append(divconteneurdisplay);*/
+            if (!this.editor.get('readonly')) {
+                var rotationvalue = 0;
+                if (this.displayrotation > 0) {
+                    rotationvalue = 1;
+                }
+                var inputrotationdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_rotation' value=" + rotationvalue + " />");
+                divconteneurdisplay.append(inputrotationdisplay);
+                var buttonrotation = "<button id='" + this.divcartridge + "_buttonrotation'><img src='" + M.util.image_url('e/restore_draft', 'core') + "' /></button>";
+                var buttonrotationdisplay = Y.Node.create(buttonrotation);
+                buttonrotationdisplay.on('click', this.change_stamp, this);
+                divconteneurdisplay.append(buttonrotationdisplay);
+            }
 
             //creation de la div d'edition
-            var divedition = "<div ";
-            divedition += "id='" + this.divcartridge + "_edit' ";
-            divedition += "class='assignfeedback_editpdfplus_stampcomment_edition' ";
-            divedition += "style='display:none;'> ";
-            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
-            divedition += "</div>";
-            var diveditiondisplay = Y.Node.create(divedition);
-            divconteneurdisplay.append(diveditiondisplay);
-            var propositions = this.tooltype.texts;
-            var divproposition = "<div></div>";
-            var divpropositiondisplay = Y.Node.create(divproposition);
-            if (propositions && propositions.length > 0) {
-                var propositionarray = propositions.split('","');
-                for (i = 0; i < propositionarray.length; i++) {
-                    var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
-                    var buttontmpdisplay = Y.Node.create(buttontmp);
-                    buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                    divpropositiondisplay.append(buttontmpdisplay);
-                }
+            if (!this.editor.get('readonly')) {
+                var diveditiondisplay = this.get_div_edition();
+                diveditiondisplay.addClass('assignfeedback_editpdfplus_stampcomment_edition');
+                divconteneurdisplay.append(diveditiondisplay);
             }
-            diveditiondisplay.append(divpropositiondisplay);
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
@@ -2642,8 +2712,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divid = '#' + this.divcartridge;
-            var divdisplay = this.editor.get_dialogue_element(divid);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
@@ -2920,105 +2989,93 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 // inscription entete
                 var divcartridge = this.get_div_cartridge_label(colorcartridge);
-                divcartridge.addClass('assignfeedback_editpdfplus_frame_cartridge');
                 divcartridge.on('mousedown', this.move_cartridge_begin, this);
                 divdisplay.append(divcartridge);
 
                 //creation input
-                var divconteneur = "<div ";
-                divconteneur += "class='assignfeedback_editpdfplus_frame_conteneur' >";
-                divconteneur += "</div>";
-                var divconteneurdisplay = Y.Node.create(divconteneur);
-                var divinputdisplay = this.get_div_input(colorcartridge);
-                divinputdisplay.addClass('assignfeedback_editpdfplus_frame_input');
-                var inputvalref = this.get_input_valref();
-                var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-                var buttonsavedisplay = Y.Node.create(buttonsave);
-                buttonsavedisplay.on('click', this.save_annot, this, null);
-                var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-                var buttoncanceldisplay = Y.Node.create(buttoncancel);
-                buttoncanceldisplay.on('click', this.cancel_edit, this);
-                var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
-                buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
-                buttonrender += "' /></button>";
-                var buttonrenderdisplay = Y.Node.create(buttonrender);
-                buttonrenderdisplay.on('click', this.display_picker, this);
-                var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
-                buttonadd += M.util.image_url('t/add', 'core');
-                buttonadd += "' /></button>";
-                var buttonadddisplay = Y.Node.create(buttonadd);
-                buttonadddisplay.on('click', this.add_annot, this);
-                divconteneurdisplay.append(divinputdisplay);
-                divconteneurdisplay.append(inputvalref);
-                divconteneurdisplay.append(buttonsavedisplay);
-                divconteneurdisplay.append(buttoncanceldisplay);
-                divconteneurdisplay.append(buttonrenderdisplay);
-                divconteneurdisplay.append(buttonadddisplay);
+                var divconteneurdisplay = this.get_div_container(colorcartridge);
+                /*var divconteneur = "<div ";
+                 divconteneur += "class='assignfeedback_editpdfplus_frame_conteneur' >";
+                 divconteneur += "</div>";
+                 var divconteneurdisplay = Y.Node.create(divconteneur);
+                 var divinputdisplay = this.get_div_input(colorcartridge);
+                 divinputdisplay.addClass('assignfeedback_editpdfplus_frame_input');
+                 var inputvalref = this.get_input_valref();
+                 var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+                 var buttonsavedisplay = Y.Node.create(buttonsave);
+                 buttonsavedisplay.on('click', this.save_annot, this, null);
+                 var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+                 var buttoncanceldisplay = Y.Node.create(buttoncancel);
+                 buttoncanceldisplay.on('click', this.cancel_edit, this);*/
+                if (!this.editor.get('readonly')) {
+                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
+                    buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
+                    buttonrender += "' /></button>";
+                    var buttonrenderdisplay = Y.Node.create(buttonrender);
+                    buttonrenderdisplay.on('click', this.display_picker, this);
+                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
+                    buttonadd += M.util.image_url('t/add', 'core');
+                    buttonadd += "' /></button>";
+                    var buttonadddisplay = Y.Node.create(buttonadd);
+                    buttonadddisplay.on('click', this.add_annot, this);
+                    //divconteneurdisplay.append(divinputdisplay);
+                    //divconteneurdisplay.append(inputvalref);
+                    //divconteneurdisplay.append(buttonsavedisplay);
+                    //divconteneurdisplay.append(buttoncanceldisplay);
+                    divconteneurdisplay.append(buttonrenderdisplay);
+                    divconteneurdisplay.append(buttonadddisplay);
+                }
+                //divdisplay.append(divconteneurdisplay);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition
-                var divedition = "<div ";
-                divedition += "id='" + this.divcartridge + "_edit' ";
-                divedition += "class='assignfeedback_editpdfplus_frame_edition' ";
-                divedition += "style='display:none;'> ";
-                divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
-                divedition += "</div>";
-                var diveditiondisplay = Y.Node.create(divedition);
-                divconteneurdisplay.append(diveditiondisplay);
-                var propositions = this.tooltype.texts;
-                var divproposition = "<div></div>";
-                var divpropositiondisplay = Y.Node.create(divproposition);
-                if (propositions && propositions.length > 0) {
-                    var propositionarray = propositions.split('","');
-                    for (i = 0; i < propositionarray.length; i++) {
-                        var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
-                        var buttontmpdisplay = Y.Node.create(buttontmp);
-                        buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                        divpropositiondisplay.append(buttontmpdisplay);
-                    }
-
+                if (!this.editor.get('readonly')) {
+                    var diveditiondisplay = this.get_div_edition();
+                    diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
+                    divconteneurdisplay.append(diveditiondisplay);
                 }
-                diveditiondisplay.append(divpropositiondisplay);
 
                 //creation de la div palette
-                var divedition = "<div ";
-                divedition += "id='" + this.divcartridge + "_picker' ";
-                divedition += "class='assignfeedback_editpdfplus_frame_picker' ";
-                divedition += "style='display:none;text-align:right;'> ";
-                divedition += "</div>";
-                var diveditiondisplay = Y.Node.create(divedition);
-                divdisplay.append(diveditiondisplay);
-                var diveditioncolordisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
-                var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
-                diveditiondisplay.append(diveditioncolordisplay);
-                diveditiondisplay.append(diveditionframedisplay);
-                var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:#FFFFFF;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionwhitedisplay.on('click', this.change_color, this, 'white');
-                var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#FFCF35;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionyellowdisplay.on('click', this.change_color, this, '#FFCF35');
-                var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#EF4540;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionreddisplay.on('click', this.change_color, this, '#EF4540');
-                var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#99CA3E;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiongreendisplay.on('click', this.change_color, this, '#99CA3E');
-                var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#7D9FD3;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionbluedisplay.on('click', this.change_color, this, '#7D9FD3');
-                var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:#333333;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionblackdisplay.on('click', this.change_color, this, 'black');
-                diveditioncolordisplay.append(diveditionwhitedisplay);
-                diveditioncolordisplay.append(diveditionyellowdisplay);
-                diveditioncolordisplay.append(diveditionreddisplay);
-                diveditioncolordisplay.append(diveditiongreendisplay);
-                diveditioncolordisplay.append(diveditionbluedisplay);
-                diveditioncolordisplay.append(diveditionblackdisplay);
-                var diveditionsoliddisplay = Y.Node.create("<div style='margin:5px;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionsoliddisplay.on('click', this.change_border, this, 'solid');
-                var diveditiondotteddisplay = Y.Node.create("<div style='margin:5px;border:2px dotted #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiondotteddisplay.on('click', this.change_border, this, 'dotted');
-                var diveditiondasheddisplay = Y.Node.create("<div style='margin:5px;border:2px dashed #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiondasheddisplay.on('click', this.change_border, this, 'dashed');
-                diveditionframedisplay.append(diveditionsoliddisplay);
-                diveditionframedisplay.append(diveditiondotteddisplay);
-                diveditionframedisplay.append(diveditiondasheddisplay);
+                if (!this.editor.get('readonly')) {
+                    var diveditionrender = "<div ";
+                    diveditionrender += "id='" + this.divcartridge + "_picker' ";
+                    diveditionrender += "class='assignfeedback_editpdfplus_frame_picker' ";
+                    diveditionrender += "style='display:none;text-align:right;'> ";
+                    diveditionrender += "</div>";
+                    var diveditionrenderdisplay = Y.Node.create(diveditionrender);
+                    divconteneurdisplay.append(diveditionrenderdisplay);
+                    var diveditioncolordisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
+                    var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
+                    diveditionrenderdisplay.append(diveditioncolordisplay);
+                    diveditionrenderdisplay.append(diveditionframedisplay);
+                    var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:#FFFFFF;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionwhitedisplay.on('click', this.change_color, this, 'white');
+                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#FFCF35;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionyellowdisplay.on('click', this.change_color, this, '#FFCF35');
+                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#EF4540;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionreddisplay.on('click', this.change_color, this, '#EF4540');
+                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#99CA3E;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiongreendisplay.on('click', this.change_color, this, '#99CA3E');
+                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#7D9FD3;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionbluedisplay.on('click', this.change_color, this, '#7D9FD3');
+                    var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:#333333;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionblackdisplay.on('click', this.change_color, this, 'black');
+                    diveditioncolordisplay.append(diveditionwhitedisplay);
+                    diveditioncolordisplay.append(diveditionyellowdisplay);
+                    diveditioncolordisplay.append(diveditionreddisplay);
+                    diveditioncolordisplay.append(diveditiongreendisplay);
+                    diveditioncolordisplay.append(diveditionbluedisplay);
+                    diveditioncolordisplay.append(diveditionblackdisplay);
+                    var diveditionsoliddisplay = Y.Node.create("<div style='margin:5px;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionsoliddisplay.on('click', this.change_border, this, 'solid');
+                    var diveditiondotteddisplay = Y.Node.create("<div style='margin:5px;border:2px dotted #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiondotteddisplay.on('click', this.change_border, this, 'dotted');
+                    var diveditiondasheddisplay = Y.Node.create("<div style='margin:5px;border:2px dashed #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiondasheddisplay.on('click', this.change_border, this, 'dashed');
+                    diveditionframedisplay.append(diveditionsoliddisplay);
+                    diveditionframedisplay.append(diveditiondotteddisplay);
+                    diveditionframedisplay.append(diveditiondasheddisplay);
+                }
 
                 //positionnement de la div par rapport a l'annotation
                 if (!this.cartridgex || this.cartridgex === 0) {
@@ -3032,6 +3089,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 drawingregion.append(divdisplay);
 
                 this.apply_visibility_annot();
+                if (!this.editor.get('readonly')) {
+                    var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+                    buttonplus.hide();
+                }
+
             } else {
                 var divid = '#' + this.divcartridge;
                 var divdisplay = this.editor.get_dialogue_element(divid);
@@ -3082,15 +3144,19 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
-    apply_visibility_annot: function () {
+    /*apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         } else if (valref !== '') {
             divdisplay.setContent(valref);
         }
-    },
+    },*/
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
@@ -3101,6 +3167,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         divcartridge.setStyle('z-index', 1000);
         divpalette.show();
+        //divpalette.setStyle('z-index', 1000);
         buttonrenderdisplay.on('click', this.hide_picker, this);
     },
     hide_picker: function () {
@@ -3108,6 +3175,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divpalette.hide();
+        //divcartridge.setStyle('z-index', 0);
         divcartridge.setStyle('z-index', 0);
         buttonrenderdisplay.on('click', this.display_picker, this);
     },
@@ -3215,7 +3283,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         buttoncancel.hide();
         buttonrender.show();
         buttonadd.show();
-        divprincipale.setStyle('z-index', 1);
+        divdisplay.setStyle('z-index', 1);
 
         this.enabled_canvas_event();
     },
@@ -3431,71 +3499,55 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             // inscription entete
             var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.addClass('assignfeedback_editpdfplus_verticalline_cartridge');
             divcartridge.on('mousedown', this.move_cartridge_begin, this);
             divdisplay.append(divcartridge);
 
             //creation input
-            var divconteneur = "<div ";
-            divconteneur += "class='assignfeedback_editpdfplus_verticalline_conteneur' >";
-            divconteneur += "</div>";
-            var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinputdisplay = this.get_div_input(colorcartridge);
-            divinputdisplay.addClass('assignfeedback_editpdfplus_verticalline_input');
-            var inputvalref = this.get_input_valref();
-            var onof = 0;
-            if (this.displaylock === '1') {
-                onof = 1;
-            }
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            buttonvisibility += "><img src='";
-            if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/left', 'core');
-            } else {
-                buttonvisibility += M.util.image_url('t/right', 'core');
-            }
-            buttonvisibility += "' /></button>";
-            var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-            buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-            var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this, null);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-            var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.cancel_edit, this);
-            divconteneurdisplay.append(divinputdisplay);
-            divconteneurdisplay.append(inputvalref);
-            divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(buttonvisibilitydisplay);
-            divconteneurdisplay.append(buttonsavedisplay);
-            divconteneurdisplay.append(buttoncanceldisplay);
+            var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            /*var divconteneur = "<div ";
+             divconteneur += "class='assignfeedback_editpdfplus_verticalline_conteneur' >";
+             divconteneur += "</div>";
+             var divconteneurdisplay = Y.Node.create(divconteneur);
+             var divinputdisplay = this.get_div_input(colorcartridge);
+             divinputdisplay.addClass('assignfeedback_editpdfplus_verticalline_input');
+             var inputvalref = this.get_input_valref();
+             var onof = 0;
+             if (this.displaylock === '1') {
+             onof = 1;
+             }
+             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+             divinputdisplay.on('click', this.edit_annot, this);
+             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+             buttonvisibility += "><img src='";
+             if (this.displaylock === 1) {
+             buttonvisibility += M.util.image_url('t/left', 'core');
+             } else {
+             buttonvisibility += M.util.image_url('t/right', 'core');
+             }
+             buttonvisibility += "' /></button>";
+             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+             var buttonsavedisplay = Y.Node.create(buttonsave);
+             buttonsavedisplay.on('click', this.save_annot, this, null);
+             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+             var buttoncanceldisplay = Y.Node.create(buttoncancel);
+             buttoncanceldisplay.on('click', this.cancel_edit, this);
+             divconteneurdisplay.append(divinputdisplay);
+             divconteneurdisplay.append(inputvalref);
+             divconteneurdisplay.append(inputonof);
+             divconteneurdisplay.append(buttonvisibilitydisplay);
+             divconteneurdisplay.append(buttonsavedisplay);
+             divconteneurdisplay.append(buttoncanceldisplay);
+             divdisplay.append(divconteneurdisplay);*/
 
             //creation de la div d'edition
-            var divedition = "<div ";
-            divedition += "id='" + this.divcartridge + "_edit' ";
-            divedition += "class='assignfeedback_editpdfplus_verticalline_edition' ";
-            divedition += "style='display:none;'> ";
-            divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
-            divedition += "</div>";
-            var diveditiondisplay = Y.Node.create(divedition);
-            divconteneurdisplay.append(diveditiondisplay);
-            var propositions = this.tooltype.texts;
-            var divproposition = "<div></div>";
-            var divpropositiondisplay = Y.Node.create(divproposition);
-            if (propositions && propositions.length > 0) {
-                var propositionarray = propositions.split('","');
-                for (i = 0; i < propositionarray.length; i++) {
-                    var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
-                    var buttontmpdisplay = Y.Node.create(buttontmp);
-                    buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                    divpropositiondisplay.append(buttontmpdisplay);
-                }
-
+            if (!this.editor.get('readonly')) {
+                var diveditiondisplay = this.get_div_edition();
+                diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
+                divconteneurdisplay.append(diveditiondisplay);
             }
-            diveditiondisplay.append(divpropositiondisplay);
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
@@ -3510,8 +3562,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divid = '#' + this.divcartridge;
-            var divdisplay = this.editor.get_dialogue_element(divid);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
@@ -3548,7 +3599,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-        
+
         this.cartridgex += diffx;
         this.cartridgey += diffy;
 
@@ -3739,57 +3790,55 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             // inscription entete
             var divcartridge = this.get_div_cartridge_label(colorcartridge);
-            divcartridge.addClass('assignfeedback_editpdfplus_commentplus_cartridge');
             divdisplay.append(divcartridge);
 
             //creation input
-            var divconteneur = "<div ";
-            divconteneur += "class='assignfeedback_editpdfplus_commentplus_conteneur' >";
-            divconteneur += "</div>";
-            var divconteneurdisplay = Y.Node.create(divconteneur);
-            var divinputdisplay = this.get_div_input(colorcartridge);
-            divinputdisplay.addClass('assignfeedback_editpdfplus_commentplus_input');
-            divinputdisplay.setStyles({'width': '200px'});
-            var inputvalref = this.get_input_valref();
-            var onof = 0;
-            if (this.displaylock === '1') {
-                onof = 1;
-            }
-            var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-            divinputdisplay.on('click', this.edit_annot, this);
-            var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-            buttonvisibility += "><img src='";
-            if (this.displaylock === 1) {
-                buttonvisibility += M.util.image_url('t/up', 'core');
-            } else {
-                buttonvisibility += M.util.image_url('t/down', 'core');
-            }
-            buttonvisibility += "' /></button>";
-            var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-            buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-            var buttonsavedisplay = Y.Node.create(buttonsave);
-            buttonsavedisplay.on('click', this.save_annot, this, null);
-            var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-            var buttoncanceldisplay = Y.Node.create(buttoncancel);
-            buttoncanceldisplay.on('click', this.cancel_edit, this);
-            divconteneurdisplay.append(divinputdisplay);
-            divconteneurdisplay.append(inputvalref);
-            divconteneurdisplay.append(inputonof);
-            divconteneurdisplay.append(buttonvisibilitydisplay);
-            divconteneurdisplay.append(buttonsavedisplay);
-            divconteneurdisplay.append(buttoncanceldisplay);
+            var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            /*var divconteneur = "<div ";
+             divconteneur += "class='assignfeedback_editpdfplus_commentplus_conteneur' >";
+             divconteneur += "</div>";
+             var divconteneurdisplay = Y.Node.create(divconteneur);
+             var divinputdisplay = this.get_div_input(colorcartridge);
+             divinputdisplay.addClass('assignfeedback_editpdfplus_commentplus_input');
+             divinputdisplay.setStyles({'width': '200px'});
+             var inputvalref = this.get_input_valref();
+             var onof = 0;
+             if (this.displaylock === '1') {
+             onof = 1;
+             }
+             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+             divinputdisplay.on('click', this.edit_annot, this);
+             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+             buttonvisibility += "><img src='";
+             if (this.displaylock === 1) {
+             buttonvisibility += M.util.image_url('t/up', 'core');
+             } else {
+             buttonvisibility += M.util.image_url('t/down', 'core');
+             }
+             buttonvisibility += "' /></button>";
+             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+             var buttonsavedisplay = Y.Node.create(buttonsave);
+             buttonsavedisplay.on('click', this.save_annot, this, null);
+             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+             var buttoncanceldisplay = Y.Node.create(buttoncancel);
+             buttoncanceldisplay.on('click', this.cancel_edit, this);
+             divconteneurdisplay.append(divinputdisplay);
+             divconteneurdisplay.append(inputvalref);
+             divconteneurdisplay.append(inputonof);
+             divconteneurdisplay.append(buttonvisibilitydisplay);
+             divconteneurdisplay.append(buttonsavedisplay);
+             divconteneurdisplay.append(buttoncanceldisplay);
+             divdisplay.append(divconteneurdisplay);*/
 
             //creation de la div d'edition
-            var divedition = "<div ";
-            divedition += "id='" + this.divcartridge + "_edit' ";
-            divedition += "class='assignfeedback_editpdfplus_commentplus_edition' ";
-            divedition += "style='display:none;'> ";
-            divedition += "<textarea id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" >" + this.get_valref() + "</textarea>";
-            divedition += "</div>";
-            var diveditiondisplay = Y.Node.create(divedition);
-            divconteneurdisplay.append(diveditiondisplay);
+            if (!this.editor.get('readonly')) {
+                var diveditiondisplay = this.get_div_edition();
+                diveditiondisplay.addClass('assignfeedback_editpdfplus_commentplus_edition');
+                divconteneurdisplay.append(diveditiondisplay);
+            }
 
             divdisplay.setX(this.x + 20);
             divdisplay.setY(this.y);
@@ -3797,8 +3846,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divid = '#' + this.divcartridge;
-            var divdisplay = this.editor.get_dialogue_element(divid);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
@@ -3810,18 +3858,26 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         }
         if (interrupt.get('value') === '0') {
             if (valref !== '') {
                 divdisplay.setContent(valref.substr(0, 20));
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+            }
         } else {
             if (valref !== '') {
                 divdisplay.setContent('<table><tr><td>' + valref.replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            }
         }
     },
     save_annot: function () {
@@ -5840,8 +5896,11 @@ EDITOR.prototype = {
     setup_toolbar: function () {
         var toolnode,
                 annotationcolourbutton,
-                searchcommentsbutton,
                 picker;
+
+        if (this.get('readonly')) {
+            return;
+        }
 
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '1');
         customtoolbar.show();
@@ -5854,14 +5913,7 @@ EDITOR.prototype = {
             toolnode.on('key', this.handle_tool_button, 'down:13', this, toollib, toolid);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
-
-        //searchcommentsbutton = this.get_dialogue_element(SELECTOR.SEARCHCOMMENTSBUTTON);
-        //searchcommentsbutton.on('click', this.open_search_comments, this);
-        //searchcommentsbutton.on('key', this.open_search_comments, 'down:13', this);
-
-        if (this.get('readonly')) {
-            return;
-        }
+        
         // Setup the tool buttons.
         Y.each(TOOLSELECTOR, function (selector, tool) {
             toolnode = this.get_dialogue_element(selector);
@@ -5869,24 +5921,6 @@ EDITOR.prototype = {
             toolnode.on('key', this.handle_tool_button, 'down:13', this, tool);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
-
-        // Set the default tool.
-
-        /*commentcolourbutton = this.get_dialogue_element(SELECTOR.COMMENTCOLOURBUTTON);
-         picker = new M.assignfeedback_editpdfplus.colourpicker({
-         buttonNode: commentcolourbutton,
-         colours: COMMENTCOLOUR,
-         iconprefix: 'background_colour_',
-         callback: function (e) {
-         var colour = e.target.getAttribute('data-colour');
-         if (!colour) {
-         colour = e.target.ancestor().getAttribute('data-colour');
-         }
-         this.currentedit.commentcolour = colour;
-         this.handle_tool_button(e, "comment");
-         },
-         context: this
-         });*/
 
         annotationcolourbutton = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         picker = new M.assignfeedback_editpdfplus.colourpicker({
@@ -6419,7 +6453,10 @@ EDITOR.prototype = {
         while (this.drawablesannotations.length > 0) {
             var annot = this.drawablesannotations.pop();
             if (annot.divcartridge) {
-                Y.one('#' + annot.divcartridge).remove();
+                var divannot = Y.one('#' + annot.divcartridge);
+                if (divannot) {
+                    divannot.remove();
+                }
                 annot.divcartridge = "";
             }
         }

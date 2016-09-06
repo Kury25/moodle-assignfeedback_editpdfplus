@@ -267,7 +267,13 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_cartridge_label: function (colorcartridge) {
         var divcartridge = "<div ";
         divcartridge += "id='" + this.divcartridge + "_cartridge' ";
-        divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";'> ";
+        divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
+        if (this.editor.get('readonly') && this.get_valref() === '') {
+            divcartridge += "style='border-right:none;padding-right:0px;color:" + colorcartridge + ";' ";
+        } else {
+            divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";' ";
+        }
+        divcartridge += "> ";
         divcartridge += this.tooltype.cartridge;
         divcartridge += "</div>";
         return Y.Node.create(divcartridge);
@@ -275,22 +281,102 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_input: function (colorcartridge) {
         var divinput = "<div ";
         divinput += "id='" + this.divcartridge + "_display' ";
-        divinput += "style='color:" + colorcartridge + ";'> ";
-        divinput += "</div>";
+        divinput += "style='color:" + colorcartridge + "; ";
+        if (this.editor.get('readonly') && this.get_valref() === '') {
+            divinput += "padding:0px;";
+        }
+        divinput += "'></div>";
         var divinputdisplay = Y.Node.create(divinput);
-        divinputdisplay.on('click', this.edit_annot, this);
+        if (!this.editor.get('readonly')) {
+            divinputdisplay.on('click', this.edit_annot, this);
+        }
         return divinputdisplay;
+    },
+    get_div_edition: function () {
+        var divedition = "<div ";
+        divedition += "id='" + this.divcartridge + "_edit' ";
+        divedition += "style='display:none;'> ";
+        divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
+        divedition += "</div>";
+        var diveditiondisplay = Y.Node.create(divedition);
+        var propositions = this.tooltype.texts;
+        if (propositions && propositions.length > 0) {
+            var divproposition = "<div></div>";
+            var divpropositiondisplay = Y.Node.create(divproposition);
+            var propositionarray = propositions.split('","');
+            for (i = 0; i < propositionarray.length; i++) {
+                var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
+                var buttontmpdisplay = Y.Node.create(buttontmp);
+                buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
+                divpropositiondisplay.append(buttontmpdisplay);
+            }
+            diveditiondisplay.append(divpropositiondisplay);
+        }
+        return diveditiondisplay;
+    },
+    get_div_container: function (colorcartridge) {
+        var divconteneur = "<div ";
+        divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_conteneur' >";
+        divconteneur += "</div>";
+        var divconteneurdisplay = Y.Node.create(divconteneur);
+        var divinputdisplay = this.get_div_input(colorcartridge);
+        divinputdisplay.addClass('assignfeedback_editpdfplus_' + this.tooltypefamille.label + '_input');
+        var inputvalref = this.get_input_valref();
+        var onof = 0;
+        if (this.displaylock === '1') {
+            onof = 1;
+        }
+        var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divinputdisplay.on('click', this.edit_annot, this);
+        }
+        divconteneurdisplay.append(divinputdisplay);
+        divconteneurdisplay.append(inputvalref);
+        divconteneurdisplay.append(inputonof);
+
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divconteneurdisplay.append(this.get_button_visibility());
+            divconteneurdisplay.append(this.get_button_save());
+            divconteneurdisplay.append(this.get_button_cancel());
+        }
+
+        return divconteneurdisplay;
+    },
+    get_button_visibility: function () {
+        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
+        buttonvisibility += "><img src='";
+        if (this.displaylock === 1) {
+            buttonvisibility += M.util.image_url('t/left', 'core');
+        } else {
+            buttonvisibility += M.util.image_url('t/right', 'core');
+        }
+        buttonvisibility += "' /></button>";
+        var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
+        buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
+        return buttonvisibilitydisplay;
+    },
+    get_button_save: function () {
+        var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+        var buttonsavedisplay = Y.Node.create(buttonsave);
+        buttonsavedisplay.on('click', this.save_annot, this, null);
+        return buttonsavedisplay;
+    },
+    get_button_cancel: function () {
+        var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+        var buttoncanceldisplay = Y.Node.create(buttoncancel);
+        buttoncanceldisplay.on('click', this.cancel_edit, this);
+        return buttoncanceldisplay;
     },
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
             return this.textannot;
         }
         return '';
-
     },
     get_input_valref: function () {
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.get_valref() + "\"/>");
-
     },
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -298,18 +384,26 @@ Y.extend(ANNOTATION, Y.Base, {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         }
         if (interrupt.get('value') === '0') {
             if (valref !== '') {
                 divdisplay.setContent(valref.substr(0, 20));
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+            }
         } else {
             if (valref !== '') {
                 divdisplay.setContent(valref);
             }
-            buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            if (buttonplus) {
+                buttonplus.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+            }
         }
     },
     change_visibility_annot: function () {
@@ -427,6 +521,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
             var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+            var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
             if (buttonplus) {
                 buttonplus.hide();
@@ -435,6 +530,7 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonsave.show();
             buttoncancel.show();
             divprincipale.setStyle('z-index', 1000);
+            input.set('focus', 'on');
 
             this.disabled_canvas_event();
             divprincipale.on('clickoutside', this.cancel_edit, this);
@@ -465,8 +561,10 @@ Y.extend(ANNOTATION, Y.Base, {
     cancel_edit: function () {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        var result = valref.get('value');
-        input.set('value', result);
+        if (valref) {
+            var result = valref.get('value');
+            input.set('value', result);
+        }
         this.hide_edit();
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
         divprincipale.detach();
@@ -478,8 +576,10 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
         var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
         var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        divdisplay.show();
-        divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+        if (divdisplay) {
+            divdisplay.show();
+            divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+        }
         buttonplus.show();
         divedit.hide();
         buttonsave.hide();

@@ -202,106 +202,93 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 // inscription entete
                 var divcartridge = this.get_div_cartridge_label(colorcartridge);
-                divcartridge.addClass('assignfeedback_editpdfplus_frame_cartridge');
                 divcartridge.on('mousedown', this.move_cartridge_begin, this);
                 divdisplay.append(divcartridge);
 
                 //creation input
-                var divconteneur = "<div ";
-                divconteneur += "class='assignfeedback_editpdfplus_frame_conteneur' >";
-                divconteneur += "</div>";
-                var divconteneurdisplay = Y.Node.create(divconteneur);
-                var divinputdisplay = this.get_div_input(colorcartridge);
-                divinputdisplay.addClass('assignfeedback_editpdfplus_frame_input');
-                var inputvalref = this.get_input_valref();
-                var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-                var buttonsavedisplay = Y.Node.create(buttonsave);
-                buttonsavedisplay.on('click', this.save_annot, this, null);
-                var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-                var buttoncanceldisplay = Y.Node.create(buttoncancel);
-                buttoncanceldisplay.on('click', this.cancel_edit, this);
-                var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
-                buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
-                buttonrender += "' /></button>";
-                var buttonrenderdisplay = Y.Node.create(buttonrender);
-                buttonrenderdisplay.on('click', this.display_picker, this);
-                var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
-                buttonadd += M.util.image_url('t/add', 'core');
-                buttonadd += "' /></button>";
-                var buttonadddisplay = Y.Node.create(buttonadd);
-                buttonadddisplay.on('click', this.add_annot, this);
-                divconteneurdisplay.append(divinputdisplay);
-                divconteneurdisplay.append(inputvalref);
-                divconteneurdisplay.append(buttonsavedisplay);
-                divconteneurdisplay.append(buttoncanceldisplay);
-                divconteneurdisplay.append(buttonrenderdisplay);
-                divconteneurdisplay.append(buttonadddisplay);
+                var divconteneurdisplay = this.get_div_container(colorcartridge);
+                /*var divconteneur = "<div ";
+                 divconteneur += "class='assignfeedback_editpdfplus_frame_conteneur' >";
+                 divconteneur += "</div>";
+                 var divconteneurdisplay = Y.Node.create(divconteneur);
+                 var divinputdisplay = this.get_div_input(colorcartridge);
+                 divinputdisplay.addClass('assignfeedback_editpdfplus_frame_input');
+                 var inputvalref = this.get_input_valref();
+                 var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+                 var buttonsavedisplay = Y.Node.create(buttonsave);
+                 buttonsavedisplay.on('click', this.save_annot, this, null);
+                 var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+                 var buttoncanceldisplay = Y.Node.create(buttoncancel);
+                 buttoncanceldisplay.on('click', this.cancel_edit, this);*/
+                if (!this.editor.get('readonly')) {
+                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
+                    buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
+                    buttonrender += "' /></button>";
+                    var buttonrenderdisplay = Y.Node.create(buttonrender);
+                    buttonrenderdisplay.on('click', this.display_picker, this);
+                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
+                    buttonadd += M.util.image_url('t/add', 'core');
+                    buttonadd += "' /></button>";
+                    var buttonadddisplay = Y.Node.create(buttonadd);
+                    buttonadddisplay.on('click', this.add_annot, this);
+                    //divconteneurdisplay.append(divinputdisplay);
+                    //divconteneurdisplay.append(inputvalref);
+                    //divconteneurdisplay.append(buttonsavedisplay);
+                    //divconteneurdisplay.append(buttoncanceldisplay);
+                    divconteneurdisplay.append(buttonrenderdisplay);
+                    divconteneurdisplay.append(buttonadddisplay);
+                }
+                //divdisplay.append(divconteneurdisplay);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition
-                var divedition = "<div ";
-                divedition += "id='" + this.divcartridge + "_edit' ";
-                divedition += "class='assignfeedback_editpdfplus_frame_edition' ";
-                divedition += "style='display:none;'> ";
-                divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
-                divedition += "</div>";
-                var diveditiondisplay = Y.Node.create(divedition);
-                divconteneurdisplay.append(diveditiondisplay);
-                var propositions = this.tooltype.texts;
-                //Y.log('draw_catridge : ' + propositions);
-                var divproposition = "<div></div>";
-                var divpropositiondisplay = Y.Node.create(divproposition);
-                if (propositions && propositions.length > 0) {
-                    var propositionarray = propositions.split('","');
-                    for (i = 0; i < propositionarray.length; i++) {
-                        var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
-                        var buttontmpdisplay = Y.Node.create(buttontmp);
-                        buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                        divpropositiondisplay.append(buttontmpdisplay);
-                    }
-
+                if (!this.editor.get('readonly')) {
+                    var diveditiondisplay = this.get_div_edition();
+                    diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
+                    divconteneurdisplay.append(diveditiondisplay);
                 }
-                diveditiondisplay.append(divpropositiondisplay);
 
                 //creation de la div palette
-                var divedition = "<div ";
-                divedition += "id='" + this.divcartridge + "_picker' ";
-                divedition += "class='assignfeedback_editpdfplus_frame_picker' ";
-                divedition += "style='display:none;text-align:right;'> ";
-                divedition += "</div>";
-                var diveditiondisplay = Y.Node.create(divedition);
-                divdisplay.append(diveditiondisplay);
-                var diveditioncolordisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
-                var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
-                diveditiondisplay.append(diveditioncolordisplay);
-                diveditiondisplay.append(diveditionframedisplay);
-                var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:#FFFFFF;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionwhitedisplay.on('click', this.change_color, this, 'white');
-                var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#FFCF35;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionyellowdisplay.on('click', this.change_color, this, '#FFCF35');
-                var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#EF4540;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionreddisplay.on('click', this.change_color, this, '#EF4540');
-                var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#99CA3E;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiongreendisplay.on('click', this.change_color, this, '#99CA3E');
-                var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#7D9FD3;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionbluedisplay.on('click', this.change_color, this, '#7D9FD3');
-                var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:#333333;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionblackdisplay.on('click', this.change_color, this, 'black');
-                diveditioncolordisplay.append(diveditionwhitedisplay);
-                diveditioncolordisplay.append(diveditionyellowdisplay);
-                diveditioncolordisplay.append(diveditionreddisplay);
-                diveditioncolordisplay.append(diveditiongreendisplay);
-                diveditioncolordisplay.append(diveditionbluedisplay);
-                diveditioncolordisplay.append(diveditionblackdisplay);
-                var diveditionsoliddisplay = Y.Node.create("<div style='margin:5px;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditionsoliddisplay.on('click', this.change_border, this, 'solid');
-                var diveditiondotteddisplay = Y.Node.create("<div style='margin:5px;border:2px dotted #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiondotteddisplay.on('click', this.change_border, this, 'dotted');
-                var diveditiondasheddisplay = Y.Node.create("<div style='margin:5px;border:2px dashed #ccc;min-width:20px;min-height:20px;'></div>");
-                diveditiondasheddisplay.on('click', this.change_border, this, 'dashed');
-                diveditionframedisplay.append(diveditionsoliddisplay);
-                diveditionframedisplay.append(diveditiondotteddisplay);
-                diveditionframedisplay.append(diveditiondasheddisplay);
+                if (!this.editor.get('readonly')) {
+                    var diveditionrender = "<div ";
+                    diveditionrender += "id='" + this.divcartridge + "_picker' ";
+                    diveditionrender += "class='assignfeedback_editpdfplus_frame_picker' ";
+                    diveditionrender += "style='display:none;text-align:right;'> ";
+                    diveditionrender += "</div>";
+                    var diveditionrenderdisplay = Y.Node.create(diveditionrender);
+                    divconteneurdisplay.append(diveditionrenderdisplay);
+                    var diveditioncolordisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
+                    var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
+                    diveditionrenderdisplay.append(diveditioncolordisplay);
+                    diveditionrenderdisplay.append(diveditionframedisplay);
+                    var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:#FFFFFF;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionwhitedisplay.on('click', this.change_color, this, 'white');
+                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#FFCF35;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionyellowdisplay.on('click', this.change_color, this, '#FFCF35');
+                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#EF4540;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionreddisplay.on('click', this.change_color, this, '#EF4540');
+                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#99CA3E;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiongreendisplay.on('click', this.change_color, this, '#99CA3E');
+                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#7D9FD3;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionbluedisplay.on('click', this.change_color, this, '#7D9FD3');
+                    var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:#333333;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionblackdisplay.on('click', this.change_color, this, 'black');
+                    diveditioncolordisplay.append(diveditionwhitedisplay);
+                    diveditioncolordisplay.append(diveditionyellowdisplay);
+                    diveditioncolordisplay.append(diveditionreddisplay);
+                    diveditioncolordisplay.append(diveditiongreendisplay);
+                    diveditioncolordisplay.append(diveditionbluedisplay);
+                    diveditioncolordisplay.append(diveditionblackdisplay);
+                    var diveditionsoliddisplay = Y.Node.create("<div style='margin:5px;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionsoliddisplay.on('click', this.change_border, this, 'solid');
+                    var diveditiondotteddisplay = Y.Node.create("<div style='margin:5px;border:2px dotted #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiondotteddisplay.on('click', this.change_border, this, 'dotted');
+                    var diveditiondasheddisplay = Y.Node.create("<div style='margin:5px;border:2px dashed #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiondasheddisplay.on('click', this.change_border, this, 'dashed');
+                    diveditionframedisplay.append(diveditionsoliddisplay);
+                    diveditionframedisplay.append(diveditiondotteddisplay);
+                    diveditionframedisplay.append(diveditiondasheddisplay);
+                }
 
                 //positionnement de la div par rapport a l'annotation
                 if (!this.cartridgex || this.cartridgex === 0) {
@@ -315,9 +302,13 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 drawingregion.append(divdisplay);
 
                 this.apply_visibility_annot();
+                if (!this.editor.get('readonly')) {
+                    var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+                    buttonplus.hide();
+                }
+
             } else {
                 var divid = '#' + this.divcartridge;
-                //Y.log('draw_catridge : ' + divid);
                 var divdisplay = this.editor.get_dialogue_element(divid);
                 divdisplay.setX(offsetcanvas[0] + this.cartridgex);
                 divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
@@ -336,8 +327,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-        //Y.log('move_cartridge : drag diff ' + diffx + ' - ' + diffy);
-        //Y.log('move_cartridge : drag deplacement ' + (offsetcanvas[0] + this.cartridgex) + ' - ' + (offsetcanvas[0] + this.cartridgex + diffx));
 
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.cartridgex + diffx);
@@ -358,8 +347,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-        //Y.log('move_cartridge : drag end ' + diffx + ' - ' + diffy);
-        //Y.log('move_cartridge : drag end ' + (offsetcanvas[0] + this.cartridgex) + ' - ' + (offsetcanvas[0] + this.cartridgex + diffx));
 
         this.cartridgex += diffx;
         this.cartridgey += diffy;
@@ -370,26 +357,30 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
-    apply_visibility_annot: function () {
+    /*apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         if (valref === '') {
-            divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            if (this.editor.get('readonly')) {
+                divdisplay.setContent('');
+            } else {
+                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
+            }
         } else if (valref !== '') {
             divdisplay.setContent(valref);
         }
-    },
+    },*/
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
     },
     display_picker: function () {
-        //Y.log('display_picker : ' + this.children.length);
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         divcartridge.setStyle('z-index', 1000);
         divpalette.show();
+        //divpalette.setStyle('z-index', 1000);
         buttonrenderdisplay.on('click', this.hide_picker, this);
     },
     hide_picker: function () {
@@ -397,6 +388,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divpalette.hide();
+        //divcartridge.setStyle('z-index', 0);
         divcartridge.setStyle('z-index', 0);
         buttonrenderdisplay.on('click', this.display_picker, this);
     },
@@ -505,7 +497,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         buttoncancel.hide();
         buttonrender.show();
         buttonadd.show();
-        divprincipale.setStyle('z-index', 1);
+        divdisplay.setStyle('z-index', 1);
 
         this.enabled_canvas_event();
     },
