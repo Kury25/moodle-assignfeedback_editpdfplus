@@ -538,7 +538,7 @@ Y.extend(ANNOTATION, Y.Base, {
             input.set('focus', 'on');
 
             this.disabled_canvas_event();
-            divprincipale.on('clickoutside', this.cancel_edit, this);
+            divprincipale.on('clickoutside', this.cancel_edit, this, 'clickoutside');
         }
     },
     fill_input_edition: function (e, unputtext) {
@@ -563,16 +563,24 @@ Y.extend(ANNOTATION, Y.Base, {
         this.hide_edit();
         this.apply_visibility_annot();
     },
-    cancel_edit: function () {
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        if (valref) {
-            var result = valref.get('value');
-            input.set('value', result);
+    cancel_edit: function (e, clickType) {
+        /*Y.log('cancel_edit : ' + clickType);
+        if (this.editor.currentannotation === this) {
+            Y.log('cancel_edit : mm');
+        } else {
+            Y.log('cancel_edit : different');
+        }*/
+        if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
+            var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+            var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+            if (valref) {
+                var result = valref.get('value');
+                input.set('value', result);
+            }
+            this.hide_edit();
+            var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+            divprincipale.detach();
         }
-        this.hide_edit();
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divprincipale.detach();
     },
     hide_edit: function () {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);

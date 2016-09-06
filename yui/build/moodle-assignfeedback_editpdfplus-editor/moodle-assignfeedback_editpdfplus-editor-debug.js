@@ -1079,7 +1079,7 @@ Y.extend(ANNOTATION, Y.Base, {
             input.set('focus', 'on');
 
             this.disabled_canvas_event();
-            divprincipale.on('clickoutside', this.cancel_edit, this);
+            divprincipale.on('clickoutside', this.cancel_edit, this, 'clickoutside');
         }
     },
     fill_input_edition: function (e, unputtext) {
@@ -1104,16 +1104,24 @@ Y.extend(ANNOTATION, Y.Base, {
         this.hide_edit();
         this.apply_visibility_annot();
     },
-    cancel_edit: function () {
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        if (valref) {
-            var result = valref.get('value');
-            input.set('value', result);
+    cancel_edit: function (e, clickType) {
+        /*Y.log('cancel_edit : ' + clickType);
+        if (this.editor.currentannotation === this) {
+            Y.log('cancel_edit : mm');
+        } else {
+            Y.log('cancel_edit : different');
+        }*/
+        if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
+            var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+            var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+            if (valref) {
+                var result = valref.get('value');
+                input.set('value', result);
+            }
+            this.hide_edit();
+            var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+            divprincipale.detach();
         }
-        this.hide_edit();
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divprincipale.detach();
     },
     hide_edit: function () {
         var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
@@ -3276,23 +3284,13 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
     },
     hide_edit: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+        ANNOTATIONFRAME.superclass.hide_edit.call(this);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
         var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
-        divdisplay.show();
         divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
-        divedit.hide();
-        buttonsave.hide();
-        buttoncancel.hide();
         buttonrender.show();
         buttonadd.show();
-        divdisplay.setStyle('z-index', 1);
-
-        this.enabled_canvas_event();
     },
     /**
      * Delete an annotation
@@ -6238,6 +6236,7 @@ EDITOR.prototype = {
                 }
                 this.currentdrawable = false;
                 if (annotation.init_from_edit(this.currentedit)) {
+                    this.currentannotation = annotation;
                     annotation.draw_catridge(this.currentedit);
                     annotation.edit_annot();
                     this.pages[this.currentpage].annotations.push(annotation);

@@ -904,6 +904,7 @@ EDITOR.prototype = {
                 }
                 this.currentdrawable = false;
                 if (annotation.init_from_edit(this.currentedit)) {
+                    this.currentannotation = annotation;
                     annotation.draw_catridge(this.currentedit);
                     annotation.edit_annot();
                     this.pages[this.currentpage].annotations.push(annotation);

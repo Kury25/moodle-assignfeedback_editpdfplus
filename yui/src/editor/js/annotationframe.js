@@ -482,23 +482,13 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
     },
     hide_edit: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+        ANNOTATIONFRAME.superclass.hide_edit.call(this);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
         var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
-        divdisplay.show();
         divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
-        divedit.hide();
-        buttonsave.hide();
-        buttoncancel.hide();
         buttonrender.show();
         buttonadd.show();
-        divdisplay.setStyle('z-index', 1);
-
-        this.enabled_canvas_event();
     },
     /**
      * Delete an annotation
