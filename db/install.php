@@ -31,7 +31,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     global $CFG;
 
     // List of default stamps.
-    $defaultstamps = array('smile.png', 'sad.png', 'tick.png', 'cross.png');
+    $defaultstamps = array('smile.png', 'sad.png', 'tick.png', 'cross.png', 'twoway_h.png', 'twoway_v.png');
 
     // Stamp file object.
     $filerecord = new stdClass;

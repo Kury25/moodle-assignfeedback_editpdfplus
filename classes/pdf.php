@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -27,8 +28,8 @@ namespace assignfeedback_editpdfplus;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->libdir.'/pdflib.php');
-require_once($CFG->dirroot.'/mod/assign/feedback/editpdf/fpdi/fpdi.php');
+require_once($CFG->libdir . '/pdflib.php');
+require_once($CFG->dirroot . '/mod/assign/feedback/editpdf/fpdi/fpdi.php');
 
 /**
  * Library code for manipulating PDFs
@@ -41,31 +42,43 @@ class pdf extends \FPDI {
 
     /** @var int the number of the current page in the PDF being processed */
     protected $currentpage = 0;
+
     /** @var int the total number of pages in the PDF being processed */
     protected $pagecount = 0;
+
     /** @var float used to scale the pixel position of annotations (in the database) to the position in the final PDF */
     protected $scale = 0.0;
+
     /** @var string the path in which to store generated page images */
     protected $imagefolder = null;
+
     /** @var string the path to the PDF currently being processed */
     protected $filename = null;
 
     /** No errors */
     const GSPATH_OK = 'ok';
+
     /** Not set */
     const GSPATH_EMPTY = 'empty';
+
     /** Does not exist */
     const GSPATH_DOESNOTEXIST = 'doesnotexist';
+
     /** Is a dir */
     const GSPATH_ISDIR = 'isdir';
+
     /** Not executable */
     const GSPATH_NOTEXECUTABLE = 'notexecutable';
+
     /** Test file missing */
     const GSPATH_NOTESTFILE = 'notestfile';
+
     /** Any other error */
     const GSPATH_ERROR = 'error';
+
     /** Min. width an annotation should have */
     const MIN_ANNOTATION_WIDTH = 5;
+
     /** Min. height an annotation should have */
     const MIN_ANNOTATION_HEIGHT = 5;
 
@@ -92,7 +105,7 @@ class pdf extends \FPDI {
         foreach ($pdflist as $file) {
             $pagecount = $this->setSourceFile($file);
             $totalpagecount += $pagecount;
-            for ($i = 1; $i<=$pagecount; $i++) {
+            for ($i = 1; $i <= $pagecount; $i++) {
                 $this->create_page_from_source($i);
             }
         }
@@ -171,7 +184,7 @@ class pdf extends \FPDI {
         if (!$this->filename) {
             return false;
         }
-        if ($this->currentpage>=$this->pagecount) {
+        if ($this->currentpage >= $this->pagecount) {
             return false;
         }
         $this->currentpage++;
@@ -273,40 +286,50 @@ class pdf extends \FPDI {
      * @param string $imagefolder - Folder containing stamp images.
      * @return bool true if successful (always)
      */
-    public function add_annotation($sx, $sy, $ex, $ey, $colour = 'yellow', $type = 'line', $path, $imagefolder) {
+    public function add_annotation(annotation $annotation, $path, $imagefolder) {
         global $CFG;
         if (!$this->filename) {
             return false;
         }
-        switch ($colour) {
-            case 'yellow':
-                $colourarray = array(255, 207, 53);
-                break;
-            case 'green':
-                $colourarray = array(153, 202, 62);
-                break;
-            case 'blue':
-                $colourarray = array(125, 159, 211);
-                break;
-            case 'white':
-                $colourarray = array(255, 255, 255);
-                break;
-            case 'black':
-                $colourarray = array(51, 51, 51);
-                break;
-            default: /* Red */
-                $colour = 'red';
-                $colourarray = array(239, 69, 64);
-                break;
+        $colour = $annotation->colour;
+        if (substr($colour, 0, 1) == '#') {
+            $colourarray = $annotation->getColorRGB();
+        } else {
+            switch ($colour) {
+                case 'yellow':
+                    $colourarray = array(255, 207, 53);
+                    break;
+                case 'green':
+                    $colourarray = array(153, 202, 62);
+                    break;
+                case 'blue':
+                    $colourarray = array(125, 159, 211);
+                    break;
+                case 'white':
+                    $colourarray = array(255, 255, 255);
+                    break;
+                case 'black':
+                    $colourarray = array(51, 51, 51);
+                    break;
+                default: /* Red */
+                    $colour = 'red';
+                    $colourarray = array(239, 69, 64);
+                    break;
+            }
         }
         $this->SetDrawColorArray($colourarray);
 
-        $sx *= $this->scale;
-        $sy *= $this->scale;
-        $ex *= $this->scale;
-        $ey *= $this->scale;
+        $sx = $this->scale * $annotation->x;
+        $sy = $this->scale * $annotation->y;
+        $ex = $this->scale * $annotation->endx;
+        $ey = $this->scale * $annotation->endy;
 
         $this->SetLineWidth(3.0 * $this->scale);
+        //$type = 'line';
+        $toolid = $annotation->toolid;
+        $toolObject = page_editor::get_tool($toolid);
+        $typetool = page_editor::get_type_tool($toolObject->type);
+        $type = $typetool->label;
         switch ($type) {
             case 'oval':
                 $rx = abs($sx - $ex) / 2;
@@ -378,6 +401,77 @@ class pdf extends \FPDI {
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
                 break;
+            case 'highlightplus':
+                $w = abs($sx - $ex);
+                $h = 8.0 * $this->scale;
+                $sx = min($sx, $ex);
+                $sy = min($sy, $ey) + ($h * 0.5);
+                $this->SetAlpha(0.5, 'Normal', 0.5, 'Normal');
+                $this->SetLineWidth(8.0 * $this->scale);
+
+                // width should be >= min width
+                if ($w < self::MIN_ANNOTATION_WIDTH) {
+                    $w = self::MIN_ANNOTATION_WIDTH;
+                }
+
+                $this->Rect($sx, $sy, $w, $h);
+                $this->SetAlpha(1.0, 'Normal', 1.0, 'Normal');
+                break;
+            case 'verticalline':
+                $this->Line($sx, $sy, $sx, $ey);
+                break;
+            case 'frame':
+                $w = abs($sx - $ex);
+                $h = abs($sy - $ey);
+                $sx = min($sx, $ex);
+                $sy = min($sy, $ey);
+
+                // Width or height should be >= min width and height
+                if ($w < self::MIN_ANNOTATION_WIDTH) {
+                    $w = self::MIN_ANNOTATION_WIDTH;
+                }
+                if ($h < self::MIN_ANNOTATION_HEIGHT) {
+                    $h = self::MIN_ANNOTATION_HEIGHT;
+                }
+                $this->Rect($sx, $sy, $w, $h);
+                break;
+            case 'stampcomment':
+                $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h.png';
+
+                $w = abs($sx - $ex);
+                $h = abs($sy - $ey);
+                $sx = min($sx, $ex);
+                $sy = min($sy, $ey);
+
+                // Stamp is always more than 40px, so no need to check width/height.
+                $this->Image($imgfile, $sx, $sy, $w, $h);
+                break;
+            case 'commentplus':
+                $imgfile = $CFG->dirroot . 'mod/assign/feedback/editpdfplus/pix/comment.png';
+
+                $w = abs(16);
+                $h = abs(16);
+                $sx = min($sx, $ex);
+                $sy = min($sy, $ey);
+
+                // Stamp is always more than 40px, so no need to check width/height.
+                $this->Image($imgfile, $sx, $sy, $w, $h);
+                break;
+            case 'stampplus':
+                $w = abs($sx - $ex);
+                $h = abs($sy - $ey);
+                $sx = min($sx, $ex);
+                $sy = min($sy, $ey);
+
+                // Width or height should be >= min width and height
+                if ($w < self::MIN_ANNOTATION_WIDTH) {
+                    $w = self::MIN_ANNOTATION_WIDTH;
+                }
+                if ($h < self::MIN_ANNOTATION_HEIGHT) {
+                    $h = self::MIN_ANNOTATION_HEIGHT;
+                }
+                $this->Rect($sx, $sy, $w, $h);
+                break;
             default: // Line.
                 $this->Line($sx, $sy, $ex, $ey);
                 break;
@@ -428,10 +522,10 @@ class pdf extends \FPDI {
             throw new \coding_exception('The specified image output folder is not a valid folder');
         }
 
-        $imagefile = $this->imagefolder.'/image_page' . $pageno . '.png';
+        $imagefile = $this->imagefolder . '/image_page' . $pageno . '.png';
         $generate = true;
         if (file_exists($imagefile)) {
-            if (filemtime($imagefile)>filemtime($this->filename)) {
+            if (filemtime($imagefile) > filemtime($this->filename)) {
                 // Make sure the image is newer than the PDF file.
                 $generate = false;
             }
@@ -444,23 +538,23 @@ class pdf extends \FPDI {
             $imagefilearg = \escapeshellarg($imagefile);
             $filename = \escapeshellarg($this->filename);
             $pagenoinc = \escapeshellarg($pageno + 1);
-            $command = "$gsexec -q -sDEVICE=png16m -dSAFER -dBATCH -dNOPAUSE -r$imageres -dFirstPage=$pagenoinc -dLastPage=$pagenoinc ".
-                "-dDOINTERPOLATE -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sOutputFile=$imagefilearg $filename";
+            $command = "$gsexec -q -sDEVICE=png16m -dSAFER -dBATCH -dNOPAUSE -r$imageres -dFirstPage=$pagenoinc -dLastPage=$pagenoinc " .
+                    "-dDOINTERPOLATE -dGraphicsAlphaBits=4 -dTextAlphaBits=4 -sOutputFile=$imagefilearg $filename";
 
             $output = null;
             $result = exec($command, $output);
             if (!file_exists($imagefile)) {
-                $fullerror = '<pre>'.get_string('command', 'assignfeedback_editpdfplus')."\n";
+                $fullerror = '<pre>' . get_string('command', 'assignfeedback_editpdfplus') . "\n";
                 $fullerror .= $command . "\n\n";
-                $fullerror .= get_string('result', 'assignfeedback_editpdfplus')."\n";
+                $fullerror .= get_string('result', 'assignfeedback_editpdfplus') . "\n";
                 $fullerror .= htmlspecialchars($result) . "\n\n";
-                $fullerror .= get_string('output', 'assignfeedback_editpdfplus')."\n";
-                $fullerror .= htmlspecialchars(implode("\n",$output)) . '</pre>';
+                $fullerror .= get_string('output', 'assignfeedback_editpdfplus') . "\n";
+                $fullerror .= htmlspecialchars(implode("\n", $output)) . '</pre>';
                 throw new \moodle_exception('errorgenerateimage', 'assignfeedback_editpdfplus', '', $fullerror);
             }
         }
 
-        return 'image_page'.$pageno.'.png';
+        return 'image_page' . $pageno . '.png';
     }
 
     /**
@@ -530,9 +624,9 @@ class pdf extends \FPDI {
     public static function test_gs_path($generateimage = true) {
         global $CFG;
 
-        $ret = (object)array(
-            'status' => self::GSPATH_OK,
-            'message' => null,
+        $ret = (object) array(
+                    'status' => self::GSPATH_OK,
+                    'message' => null,
         );
         $gspath = $CFG->pathtogs;
         if (empty($gspath)) {
@@ -556,14 +650,14 @@ class pdf extends \FPDI {
             return $ret;
         }
 
-        $testfile = $CFG->dirroot.'/mod/assign/feedback/editpdfplus/tests/fixtures/testgs.pdf';
+        $testfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/tests/fixtures/testgs.pdf';
         if (!file_exists($testfile)) {
             $ret->status = self::GSPATH_NOTESTFILE;
             return $ret;
         }
 
         $testimagefolder = \make_temp_directory('assignfeedback_editpdfplus_test');
-        @unlink($testimagefolder.'/image_page0.png'); // Delete any previous test images.
+        @unlink($testimagefolder . '/image_page0.png'); // Delete any previous test images.
 
         $pdf = new pdf();
         $pdf->set_pdf($testfile);
@@ -585,13 +679,12 @@ class pdf extends \FPDI {
     public static function send_test_image() {
         global $CFG;
         header('Content-type: image/png');
-        require_once($CFG->libdir.'/filelib.php');
+        require_once($CFG->libdir . '/filelib.php');
 
         $testimagefolder = \make_temp_directory('assignfeedback_editpdfplus_test');
-        $testimage = $testimagefolder.'/image_page0.png';
+        $testimage = $testimagefolder . '/image_page0.png';
         send_file($testimage, basename($testimage), 0);
         die();
     }
 
 }
-

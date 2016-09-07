@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -40,16 +41,22 @@ class document_services {
 
     /** File area for generated pdf */
     const FINAL_PDF_FILEAREA = 'download';
+
     /** File area for combined pdf */
     const COMBINED_PDF_FILEAREA = 'combined';
+
     /** File area for importing html */
     const IMPORT_HTML_FILEAREA = 'importhtml';
+
     /** File area for page images */
     const PAGE_IMAGE_FILEAREA = 'pages';
+
     /** File area for readonly page images */
     const PAGE_IMAGE_READONLY_FILEAREA = 'readonlypages';
+
     /** File area for the stamps */
     const STAMPS_FILEAREA = 'stamps';
+
     /** Filename for combined pdf */
     const COMBINED_PDF_FILENAME = 'combined.pdf';
 
@@ -363,8 +370,7 @@ EOD;
         if ($readonly) {
             $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
             $fs = get_file_storage();
-            $files = $fs->get_directory_files($assignment->get_context()->id, 'assignfeedback_editpdfplus',
-                self::PAGE_IMAGE_READONLY_FILEAREA, $grade->id, '/');
+            $files = $fs->get_directory_files($assignment->get_context()->id, 'assignfeedback_editpdfplus', self::PAGE_IMAGE_READONLY_FILEAREA, $grade->id, '/');
             $pagecount = count($files);
             if ($pagecount > 0) {
                 return $pagecount;
@@ -379,15 +385,13 @@ EOD;
 
         // Store the combined pdf file somewhere to be opened by tcpdf.
         $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/pagetotal/'
-            . self::hash($assignment, $userid, $attemptnumber));
+                . self::hash($assignment, $userid, $attemptnumber));
         $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
         $file->copy_content_to($combined); // Copy the file.
-
         // Get the total number of pages.
         $pdf = new pdf();
         $pagecount = $pdf->set_pdf($combined);
         $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-
         // Delete temporary folders and files.
         @unlink($combined);
         @rmdir($tmpdir);
@@ -525,14 +529,14 @@ EOD;
 
                 // Need to reorder the files following their name.
                 // because get_directory_files() return a different order than generate_page_images_for_attempt().
-                foreach($files as $file) {
+                foreach ($files as $file) {
                     // Extract the page number from the file name image_pageXXXX.png.
                     preg_match('/page([\d]+)\./', $file->get_filename(), $matches);
-                    if (empty($matches) or !is_numeric($matches[1])) {
+                    if (empty($matches) or ! is_numeric($matches[1])) {
                         throw new \coding_exception("'" . $file->get_filename()
-                            . "' file hasn't the expected format filename: image_pageXXXX.png.");
+                        . "' file hasn't the expected format filename: image_pageXXXX.png.");
                     }
-                    $pagenumber = (int)$matches[1];
+                    $pagenumber = (int) $matches[1];
 
                     // Save the page in the ordered array.
                     $pages[$pagenumber] = $file;
@@ -569,13 +573,13 @@ EOD;
         $groupname = '';
         if ($groupmode) {
             $groupid = groups_get_activity_group($assignment->get_course_module(), true);
-            $groupname = groups_get_group_name($groupid).'-';
+            $groupname = groups_get_group_name($groupid) . '-';
         }
         if ($groupname == '-') {
             $groupname = '';
         }
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-        $user = $DB->get_record('user', array('id'=>$userid), '*', MUST_EXIST);
+        $user = $DB->get_record('user', array('id' => $userid), '*', MUST_EXIST);
 
         if ($assignment->is_blind_marking()) {
             $prefix = $groupname . get_string('participant', 'assign');
@@ -625,20 +629,36 @@ EOD;
         $file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
+        
+        
+        /*$defaultstamps = array('twoway_h.png', 'twoway_v.png');
+            // Stamp file object.
+        $filerecord = new stdClass;
+        $filerecord->component = 'assignfeedback_editpdfplus';
+        $filerecord->contextid = context_system::instance()->id;
+        $filerecord->userid    = get_admin()->id;
+        $filerecord->filearea  = 'stamps';
+        $filerecord->filepath  = '/';
+        $filerecord->itemid    = 0;
+
+        $fs = \get_file_storage();
+
+        // Load all default stamps.
+        foreach ($defaultstamps as $stamp) {
+            $filerecord->filename = $stamp;
+            $fs->create_file_from_pathname($filerecord,
+                $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/' . $filerecord->filename);
+        }*/
 
         $fs = \get_file_storage();
         $stamptmpdir = \make_temp_directory('assignfeedback_editpdfplus/stamps/' . self::hash($assignment, $userid, $attemptnumber));
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
         // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($assignment->get_context()->id,
-                                         'assignfeedback_editpdfplus',
-                                         'stamps',
-                                         $grade->id,
-                                         "filename",
-                                         false)) {
+        if ($files = $fs->get_area_files($assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
             foreach ($files as $file) {
                 $filename = $stamptmpdir . '/' . $file->get_filename();
                 $file->copy_content_to($filename); // Copy the file.
+                debugging($filename);
             }
         }
 
@@ -652,22 +672,11 @@ EOD;
             $annotations = page_editor::get_annotations($grade->id, $i, false);
 
             foreach ($comments as $comment) {
-                $pdf->add_comment($comment->rawtext,
-                                  $comment->x,
-                                  $comment->y,
-                                  $comment->width,
-                                  $comment->colour);
+                $pdf->add_comment($comment->rawtext, $comment->x, $comment->y, $comment->width, $comment->colour);
             }
 
             foreach ($annotations as $annotation) {
-                $pdf->add_annotation($annotation->x,
-                                     $annotation->y,
-                                     $annotation->endx,
-                                     $annotation->endy,
-                                     $annotation->colour,
-                                     $annotation->type, //@TODO
-                                     $annotation->path,
-                                     $stamptmpdir);
+                $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir);
             }
         }
 
@@ -759,12 +768,7 @@ EOD;
         $filepath = '/';
 
         $fs = \get_file_storage();
-        $files = $fs->get_area_files($contextid,
-                                     $component,
-                                     $filearea,
-                                     $itemid,
-                                     "itemid, filepath, filename",
-                                     false);
+        $files = $fs->get_area_files($contextid, $component, $filearea, $itemid, "itemid, filepath, filename", false);
         if ($files) {
             return reset($files);
         }

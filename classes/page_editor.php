@@ -159,6 +159,34 @@ class page_editor {
         return $tools;
     }
 
+    /**
+     * Get a single tool by id.
+     * @param int $toolid
+     * @return tool or false
+     */
+    public static function get_tool($toolid) {
+        global $DB;
+        $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', IGNORE_MISSING);
+        if ($record) {
+            return new tool($record);
+        }
+        return false;
+    }
+
+    /**
+     * Get the tool with id tooltypeid.
+     * @param int $tooltypeid
+     * @return type_tool
+     */
+    public static function get_type_tool($tooltypeid) {
+        global $DB;
+        $record = $DB->get_record('assignfeedback_editpp_typet', array('id' => $tooltypeid));
+        if ($record) {
+            return new type_tool($record);
+        }
+        return false;
+    }
+
     public static function get_typetools($contextidlist) {
         global $DB;
         $typetools = array();
@@ -258,7 +286,7 @@ class page_editor {
             if ($newid) {
                 if ($currentdiv != '') {
                     $annotationdiv[$currentdiv] = $newid;
-                    debugging($currentdiv . ' -> ' . $newid);
+                    //debugging($currentdiv . ' -> ' . $newid);
                 }
                 $added++;
             }
@@ -383,7 +411,6 @@ class page_editor {
         global $DB;
 
         $annotation->id = null;
-        debugging('idparent : ' . $annotation->parent_annot);
         if ($annotation->parent_annot == 0) {
             $annotation->parent_annot = null;
         }
