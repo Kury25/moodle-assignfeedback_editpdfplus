@@ -166,47 +166,10 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
-            /*var divconteneur = "<div ";
-             divconteneur += "class='assignfeedback_editpdfplus_verticalline_conteneur' >";
-             divconteneur += "</div>";
-             var divconteneurdisplay = Y.Node.create(divconteneur);
-             var divinputdisplay = this.get_div_input(colorcartridge);
-             divinputdisplay.addClass('assignfeedback_editpdfplus_verticalline_input');
-             var inputvalref = this.get_input_valref();
-             var onof = 0;
-             if (this.displaylock === '1') {
-             onof = 1;
-             }
-             var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-             divinputdisplay.on('click', this.edit_annot, this);
-             var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-             buttonvisibility += "><img src='";
-             if (this.displaylock === 1) {
-             buttonvisibility += M.util.image_url('t/left', 'core');
-             } else {
-             buttonvisibility += M.util.image_url('t/right', 'core');
-             }
-             buttonvisibility += "' /></button>";
-             var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-             buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-             var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-             var buttonsavedisplay = Y.Node.create(buttonsave);
-             buttonsavedisplay.on('click', this.save_annot, this, null);
-             var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-             var buttoncanceldisplay = Y.Node.create(buttoncancel);
-             buttoncanceldisplay.on('click', this.cancel_edit, this);
-             divconteneurdisplay.append(divinputdisplay);
-             divconteneurdisplay.append(inputvalref);
-             divconteneurdisplay.append(inputonof);
-             divconteneurdisplay.append(buttonvisibilitydisplay);
-             divconteneurdisplay.append(buttonsavedisplay);
-             divconteneurdisplay.append(buttoncanceldisplay);
-             divdisplay.append(divconteneurdisplay);*/
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                //diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 

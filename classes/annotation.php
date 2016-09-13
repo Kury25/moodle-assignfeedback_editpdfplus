@@ -70,7 +70,7 @@ class annotation {
     public $colour = 'yellow';
 
     /** @var bool displaylock for displaying this annotation */
-    public $displaylock = 0;
+    public $displaylock = 1;
 
     /** @var bool displayrotation for displaying the sign of the annotation */
     public $displayrotation = 0;

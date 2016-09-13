@@ -293,8 +293,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 this.apply_visibility_annot();
                 if (!this.editor.get('readonly')) {
-                    var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
-                    buttonplus.hide();
+                    var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
+                    var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
+                    buttonplusr.hide();
+                    buttonplusl.hide();
                 }
 
             } else {
@@ -473,13 +475,15 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
-        var buttonplus = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit");
+        var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
+        var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
         divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
         buttonrender.show();
         buttonadd.show();
-        if (buttonplus) {
-            buttonplus.hide();
+        if (buttonplusr) {
+            buttonplusr.hide();
         }
+        buttonplusl.hide();
     },
     /**
      * Delete an annotation
