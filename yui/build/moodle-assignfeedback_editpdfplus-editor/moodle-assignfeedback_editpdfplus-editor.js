@@ -693,7 +693,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
             this.parent_annot = config.parent_annot_element.id;
             this.parent_annot_element = config.parent_annot_element;
-            config.parent_annot_element.children.push(this);
+            //config.parent_annot_element.children.push(this);
         } else {
             this.editor = config.editor || null;
             this.gradeid = parseInt(config.gradeid, 10) || 0;
@@ -915,6 +915,12 @@ Y.extend(ANNOTATION, Y.Base, {
         buttoncanceldisplay.on('click', this.cancel_edit, this);
         return buttoncanceldisplay;
     },
+    get_button_question: function () {
+        var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' ><img src='" + M.util.image_url('help', 'core') + "' /><img src='" + M.util.image_url('t/stop', 'core') + "' /></button>";
+        var buttonquestiondisplay = Y.Node.create(buttonquestion);
+        buttonquestiondisplay.on('click', this.change_question_status, this);
+        return buttonquestiondisplay;
+    },
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
             return this.textannot;
@@ -970,6 +976,9 @@ Y.extend(ANNOTATION, Y.Base, {
         this.apply_visibility_annot();
         this.editor.save_current_page();
     },
+    change_question_status: function () {
+        //var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+    },
     move_cartridge_begin: function (e) {
         e.preventDefault();
 
@@ -1020,7 +1029,6 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.shapes.push(shape);
 
             shape.editor = this.editor;
-            //shape.on('clickoutside', this.remove_selection, this);
             shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
 
             // Add a delete X to the annotation.
@@ -1048,11 +1056,6 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;
-    },
-    remove_selection: function (e) {
-        if (this.drawable) {
-            this.drawable.erase();
-        }
     },
     /**
      * Draw an annotation
@@ -1138,7 +1141,9 @@ Y.extend(ANNOTATION, Y.Base, {
             divdisplay.show();
             divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
         }
-        buttonplus.show();
+        if (buttonplus) {
+            buttonplus.show();
+        }
         divedit.hide();
         buttonsave.hide();
         buttoncancel.hide();
@@ -2111,6 +2116,9 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
              divconteneurdisplay.append(buttoncanceldisplay);*/
             var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            if (this.tooltype.reply===1) {
+                divconteneurdisplay.append(this.get_button_question());
+            }
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
@@ -2862,7 +2870,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         highlightcolour = this.get_color();
 
-        //var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         this.shape_id = 'ct_frame_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         shape = this.editor.graphic.addShape({
             id: this.shape_id,
@@ -2876,6 +2883,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             x: bounds.x,
             y: bounds.y
         });
+        if (this.parent_annot_element) {
+            shape.addClass('class_' + this.parent_annot_element.divcartridge);
+        }
         if (this.borderstyle === 'dashed') {
             shape.set("stroke", {
                 dashstyle: [5, 3]
@@ -2929,6 +2939,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             x: bounds.x,
             y: edit.start.y - 8
         });
+        if (this.parent_annot_element) {
+            shape.addClass('class_' + this.parent_annot_element.divcartridge);
+        }
         if (this.borderstyle === 'dashed') {
             shape.set("stroke", {
                 dashstyle: [5, 3]
@@ -2961,7 +2974,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.y = edit.start.y - 8;
         this.endx = bounds.x + bounds.width;
         this.endy = edit.start.y + 16 - 8;
-        //this.colour = edit.annotationcolour;
         this.page = '';
 
         return (bounds.has_min_width());
@@ -2997,6 +3009,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 this.init_div_cartridge_id();
                 var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
 
+                //rattachement de la shape
+                var shapechd = this.editor.graphic.getShapeById(this.shape_id);
+                if (shapechd) {
+                    shapechd.addClass('class_' + this.divcartridge);
+                }
+
                 //init cartridge
                 var colorcartridge = this.get_color();
                 var divdisplay = this.get_div_cartridge(colorcartridge);
@@ -3010,19 +3028,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
-                /*var divconteneur = "<div ";
-                 divconteneur += "class='assignfeedback_editpdfplus_frame_conteneur' >";
-                 divconteneur += "</div>";
-                 var divconteneurdisplay = Y.Node.create(divconteneur);
-                 var divinputdisplay = this.get_div_input(colorcartridge);
-                 divinputdisplay.addClass('assignfeedback_editpdfplus_frame_input');
-                 var inputvalref = this.get_input_valref();
-                 var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
-                 var buttonsavedisplay = Y.Node.create(buttonsave);
-                 buttonsavedisplay.on('click', this.save_annot, this, null);
-                 var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
-                 var buttoncanceldisplay = Y.Node.create(buttoncancel);
-                 buttoncanceldisplay.on('click', this.cancel_edit, this);*/
                 if (!this.editor.get('readonly')) {
                     var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
                     buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
@@ -3034,14 +3039,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     buttonadd += "' /></button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
-                    //divconteneurdisplay.append(divinputdisplay);
-                    //divconteneurdisplay.append(inputvalref);
-                    //divconteneurdisplay.append(buttonsavedisplay);
-                    //divconteneurdisplay.append(buttoncanceldisplay);
                     divconteneurdisplay.append(buttonrenderdisplay);
                     divconteneurdisplay.append(buttonadddisplay);
                 }
-                //divdisplay.append(divconteneurdisplay);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition
@@ -3188,10 +3188,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         shape.set("stroke", {
             color: this.colour
         });
-        for (var i = 0; i < this.children.length; i++) {
-            if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
-                this.children[i].colour = colour;
-                var shapechd = this.editor.graphic.getShapeById(this.children[i].shape_id);
+        var shapesChildren = null;
+        if (this.id) {
+            shapesChildren = this.editor.annotationsparent[this.id];
+        } else {
+            shapesChildren = this.editor.annotationsparent[this.divcartridge];
+        }
+        if (shapesChildren) {
+            for (var i = 0; i < shapesChildren.length; i++) {
+                shapesChildren[i].colour = colour;
+                var shapechd = this.editor.graphic.getShapeById(shapesChildren[i].shape_id);
                 if (shapechd) {
                     shapechd.set("stroke", {
                         color: this.colour
@@ -3232,10 +3238,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 dashstyle: [2, 2]
             });
         }
-        for (i = 0; i < this.children.length; i++) {
-            if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
-                this.children[i].borderstyle = border;
-                var shapechd = this.editor.graphic.getShapeById(this.children[i].shape_id);
+        var shapesChildren = [];
+        if (this.id) {
+            shapesChildren = this.editor.annotationsparent[this.id];
+        } else {
+            shapesChildren = this.editor.annotationsparent[this.divcartridge];
+        }
+        if (shapesChildren) {
+            for (var i = 0; i < shapesChildren.length; i++) {
+                shapesChildren[i].borderstyle = border;
+                var shapechd = this.editor.graphic.getShapeById(shapesChildren[i].shape_id);
                 if (shapechd) {
                     if (this.borderstyle === 'solid') {
                         shapechd.set("stroke", {
@@ -3308,20 +3320,33 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 if (this.drawable) {
                     this.drawable.erase();
                 }
-                if (this.children && this.children.length > 0) {
-                    for (i = 0; i < this.children.length; i++) {
-                        if (this.children[i] && (this.children[i].parent_annot === this.id || this.children[i].parent_annot_element.divcartridge === this.divcartridge)) {
-                            for (var j = 0; j < annotations.length; j++) {
-                                if (annotations[j] === this.children[i]) {
-                                    annotations.splice(j, 1);
-                                    if (this.children[i].drawable) {
-                                        this.children[i].drawable.erase();
-                                    }
+
+                var shapesChildren = [];
+                if (this.id) {
+                    shapesChildren = this.editor.annotationsparent[this.id];
+                } else {
+                    shapesChildren = this.editor.annotationsparent[this.divcartridge];
+                }
+                if (shapesChildren) {
+                    for (var i = 0; i < shapesChildren.length; i++) {
+                        for (var j = 0; j < annotations.length; j++) {
+                            if (annotations[j] === shapesChildren[i]) {
+                                annotations.splice(j, 1);
+                                if (shapesChildren[i].drawable) {
+                                    shapesChildren[i].drawable.erase();
                                 }
+                                //shapesChildren[i].destroy();
                             }
                         }
                     }
                 }
+                /*var children = Y.all('.class_' + this.divcartridge).get('nodes');
+                 for (var i = 0; i < children.length; i++) {
+                 var shapechd = this.editor.graphic.getShapeById(children[i].get('id'));
+                 if (shapechd) {
+                 shapechd.destroy();
+                 }
+                 }*/
                 this.editor.currentannotation = false;
                 this.editor.save_current_page();
                 return;
@@ -3330,7 +3355,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     }
 
 });
-
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationframe = ANNOTATIONFRAME;
 // This file is part of Moodle - http://moodle.org/
@@ -5507,6 +5531,7 @@ EDITOR.prototype = {
      * @public
      */
     editingcomment: false,
+    annotationsparent: [],
     /**
      * Called during the initialisation process of the object.
      * @method initializer
@@ -5795,7 +5820,7 @@ EDITOR.prototype = {
      * @method all_pages_loaded
      */
     all_pages_loaded: function (responsetext) {
-        var data, i, j, comment, error;
+        var data, i, j, k, comment, error;
         try {
             data = Y.JSON.parse(responsetext);
             if (data.error || !data.pagecount) {
@@ -5852,6 +5877,13 @@ EDITOR.prototype = {
                     data.parent_annot_element = parentannot[data.parent_annot];
                 }
                 var newannot = this.create_annotation(this.typetools[this.tools[data.toolid].type].label, data.toolid, data, this.tools[data.toolid]);
+                if (newannot.parent_annot_element) {
+                    if (this.annotationsparent[newannot.parent_annot_element.id]) {
+                        this.annotationsparent[newannot.parent_annot_element.id][this.annotationsparent[newannot.parent_annot_element.id].length] = newannot;
+                    } else {
+                        this.annotationsparent[newannot.parent_annot_element.id] = [newannot];
+                    }
+                }
                 parentannot[data.id] = newannot;
                 this.pages[i].annotations[j] = newannot;
             }
@@ -6229,6 +6261,19 @@ EDITOR.prototype = {
                     this.currentannotation = annotation;
                     annotation.draw_catridge(this.currentedit);
                     annotation.edit_annot();
+                    if (annotation.parent_annot_element) {
+                        var index = 0;
+                        if (annotation.parent_annot_element.id) {
+                            index = annotation.parent_annot_element.id;
+                        } else {
+                            index = annotation.parent_annot_element.divcartridge;
+                        }
+                        if (this.annotationsparent[index]) {
+                            this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
+                        } else {
+                            this.annotationsparent[index] = [annotation];
+                        }
+                    }
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
                     this.drawablesannotations.push(annotation);

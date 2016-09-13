@@ -192,6 +192,9 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
              divconteneurdisplay.append(buttoncanceldisplay);*/
             var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
+            if (this.tooltype.reply===1) {
+                divconteneurdisplay.append(this.get_button_question());
+            }
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {

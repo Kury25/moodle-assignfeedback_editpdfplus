@@ -152,7 +152,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
             this.parent_annot = config.parent_annot_element.id;
             this.parent_annot_element = config.parent_annot_element;
-            config.parent_annot_element.children.push(this);
+            //config.parent_annot_element.children.push(this);
         } else {
             this.editor = config.editor || null;
             this.gradeid = parseInt(config.gradeid, 10) || 0;
@@ -374,6 +374,12 @@ Y.extend(ANNOTATION, Y.Base, {
         buttoncanceldisplay.on('click', this.cancel_edit, this);
         return buttoncanceldisplay;
     },
+    get_button_question: function () {
+        var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' ><img src='" + M.util.image_url('help', 'core') + "' /><img src='" + M.util.image_url('t/stop', 'core') + "' /></button>";
+        var buttonquestiondisplay = Y.Node.create(buttonquestion);
+        buttonquestiondisplay.on('click', this.change_question_status, this);
+        return buttonquestiondisplay;
+    },
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
             return this.textannot;
@@ -428,6 +434,9 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         this.apply_visibility_annot();
         this.editor.save_current_page();
+    },
+    change_question_status: function () {
+        //var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
     },
     move_cartridge_begin: function (e) {
         e.preventDefault();
@@ -591,7 +600,9 @@ Y.extend(ANNOTATION, Y.Base, {
             divdisplay.show();
             divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
         }
-        buttonplus.show();
+        if (buttonplus) {
+            buttonplus.show();
+        }
         divedit.hide();
         buttonsave.hide();
         buttoncancel.hide();

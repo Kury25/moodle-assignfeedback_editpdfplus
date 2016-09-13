@@ -186,6 +186,7 @@ EDITOR.prototype = {
      * @public
      */
     editingcomment: false,
+    annotationsparent: [],
     /**
      * Called during the initialisation process of the object.
      * @method initializer
@@ -475,7 +476,7 @@ EDITOR.prototype = {
      * @method all_pages_loaded
      */
     all_pages_loaded: function (responsetext) {
-        var data, i, j, comment, error;
+        var data, i, j, k, comment, error;
         try {
             data = Y.JSON.parse(responsetext);
             if (data.error || !data.pagecount) {
@@ -532,6 +533,13 @@ EDITOR.prototype = {
                     data.parent_annot_element = parentannot[data.parent_annot];
                 }
                 var newannot = this.create_annotation(this.typetools[this.tools[data.toolid].type].label, data.toolid, data, this.tools[data.toolid]);
+                if (newannot.parent_annot_element) {
+                    if (this.annotationsparent[newannot.parent_annot_element.id]) {
+                        this.annotationsparent[newannot.parent_annot_element.id][this.annotationsparent[newannot.parent_annot_element.id].length] = newannot;
+                    } else {
+                        this.annotationsparent[newannot.parent_annot_element.id] = [newannot];
+                    }
+                }
                 parentannot[data.id] = newannot;
                 this.pages[i].annotations[j] = newannot;
             }
@@ -633,7 +641,7 @@ EDITOR.prototype = {
      * @method handle_tool_button
      */
     handle_tool_button: function (e, tool, toolid, has_parent) {
-        Y.log('handle_tool_button : ' + tool + ' - ' + toolid);
+        Y.log('handle_tool_button : ' + tool + ' - ' + toolid + ' - ' + has_parent);
         e.preventDefault();
         this.handle_tool_button_action(tool, toolid, has_parent);
     },
@@ -910,6 +918,19 @@ EDITOR.prototype = {
                     this.currentannotation = annotation;
                     annotation.draw_catridge(this.currentedit);
                     annotation.edit_annot();
+                    if (annotation.parent_annot_element) {
+                        var index = 0;
+                        if (annotation.parent_annot_element.id) {
+                            index = annotation.parent_annot_element.id;
+                        } else {
+                            index = annotation.parent_annot_element.divcartridge;
+                        }
+                        if (this.annotationsparent[index]) {
+                            this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
+                        } else {
+                            this.annotationsparent[index] = [annotation];
+                        }
+                    }
                     this.pages[this.currentpage].annotations.push(annotation);
                     this.drawables.push(annotation.draw());
                     this.drawablesannotations.push(annotation);
