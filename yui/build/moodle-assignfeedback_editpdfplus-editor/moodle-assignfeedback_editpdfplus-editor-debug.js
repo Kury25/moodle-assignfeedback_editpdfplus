@@ -841,8 +841,10 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_edition: function () {
         var divedition = "<div ";
         divedition += "id='" + this.divcartridge + "_edit' ";
+        divedition += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_edition' ";
         divedition += "style='display:none;'> ";
-        divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
+        divedition += "<textarea id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" >" + this.get_valref() + "</textarea>";
+        //divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
         divedition += "</div>";
         var diveditiondisplay = Y.Node.create(divedition);
         var propositions = this.tooltype.texts;
@@ -2123,7 +2125,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                diveditiondisplay.addClass('assignfeedback_editpdfplus_hightlightplus_edition');
+                //diveditiondisplay.addClass('assignfeedback_editpdfplus_hightlightplus_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 
@@ -2720,7 +2722,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                diveditiondisplay.addClass('assignfeedback_editpdfplus_stampcomment_edition');
+                //diveditiondisplay.addClass('assignfeedback_editpdfplus_stampcomment_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 
@@ -2896,7 +2898,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 dashstyle: [2, 2]
             });
         }
-        //Y.log('draw : ' + this.shape_id);
 
         drawable.shapes.push(shape);
         this.drawable = drawable;
@@ -3049,7 +3050,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 //creation de la div d'edition
                 if (!this.editor.get('readonly')) {
                     var diveditiondisplay = this.get_div_edition();
-                    diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
+                    //diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
                     divconteneurdisplay.append(diveditiondisplay);
                 }
 
@@ -3172,7 +3173,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         divcartridge.setStyle('z-index', 1000);
         divpalette.show();
-        //divpalette.setStyle('z-index', 1000);
         buttonrenderdisplay.on('click', this.hide_picker, this);
     },
     hide_picker: function () {
@@ -3180,7 +3180,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divpalette.hide();
-        //divcartridge.setStyle('z-index', 0);
         divcartridge.setStyle('z-index', 0);
         buttonrenderdisplay.on('click', this.display_picker, this);
     },
@@ -3337,18 +3336,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                                 if (shapesChildren[i].drawable) {
                                     shapesChildren[i].drawable.erase();
                                 }
-                                //shapesChildren[i].destroy();
                             }
                         }
                     }
                 }
-                /*var children = Y.all('.class_' + this.divcartridge).get('nodes');
-                 for (var i = 0; i < children.length; i++) {
-                 var shapechd = this.editor.graphic.getShapeById(children[i].get('id'));
-                 if (shapechd) {
-                 shapechd.destroy();
-                 }
-                 }*/
                 this.editor.currentannotation = false;
                 this.editor.save_current_page();
                 return;
@@ -3567,7 +3558,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
+                //diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 
@@ -3859,7 +3850,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                diveditiondisplay.addClass('assignfeedback_editpdfplus_commentplus_edition');
+                //diveditiondisplay.addClass('assignfeedback_editpdfplus_commentplus_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 

@@ -206,7 +206,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
-                diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
+                //diveditiondisplay.addClass('assignfeedback_editpdfplus_verticalline_edition');
                 divconteneurdisplay.append(diveditiondisplay);
             }
 

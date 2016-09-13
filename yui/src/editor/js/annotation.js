@@ -300,8 +300,10 @@ Y.extend(ANNOTATION, Y.Base, {
     get_div_edition: function () {
         var divedition = "<div ";
         divedition += "id='" + this.divcartridge + "_edit' ";
+        divedition += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_edition' ";
         divedition += "style='display:none;'> ";
-        divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
+        divedition += "<textarea id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" >" + this.get_valref() + "</textarea>";
+        //divedition += "<input id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" />";
         divedition += "</div>";
         var diveditiondisplay = Y.Node.create(divedition);
         var propositions = this.tooltype.texts;

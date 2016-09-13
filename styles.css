@@ -415,7 +415,7 @@ ul.assignfeedback_editpdfplus_menu {
     width:200px;
     z-index: 51;
 }
-.assignfeedback_editpdfplus_hightlightplus_edition,
+.assignfeedback_editpdfplus_highlightplus_edition,
 .assignfeedback_editpdfplus_frame_edition,
 .assignfeedback_editpdfplus_verticalline_edition,
 .assignfeedback_editpdfplus_stampcomment_edition,
@@ -424,14 +424,14 @@ ul.assignfeedback_editpdfplus_menu {
     padding-right:2px;
     font-size:12px;
 }
-.assignfeedback_editpdfplus_hightlightplus_edition > div,
+.assignfeedback_editpdfplus_highlightplus_edition > div,
 .assignfeedback_editpdfplus_frame_edition > div,
 .assignfeedback_editpdfplus_verticalline_edition > div,
 .assignfeedback_editpdfplus_stampcomment_edition > div,
 .assignfeedback_editpdfplus_commentplus_edition > div {
     width:220px;
 }
-.assignfeedback_editpdfplus_hightlightplus_edition > div > p,
+.assignfeedback_editpdfplus_highlightplus_edition > div > p,
 .assignfeedback_editpdfplus_frame_edition > div > p,
 .assignfeedback_editpdfplus_verticalline_edition > div > p,
 .assignfeedback_editpdfplus_stampcomment_edition > div > p,
