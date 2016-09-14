@@ -354,6 +354,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (this.tooltype.reply === 1) {
                 divconteneurdisplay.append(this.get_button_question());
             }
+            divconteneurdisplay.append(this.get_button_remove());
         }
 
         return divconteneurdisplay;
@@ -394,6 +395,12 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonquestiondisplay.on('click', this.change_question_status, this);
         return buttonquestiondisplay;
     },
+    get_button_remove: function () {
+        var buttontrash = "<button id='" + this.divcartridge + "_buttonremove' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('trash', 'assignfeedback_editpdfplus') + "' /></button>";
+        var buttontrashdisplay = Y.Node.create(buttontrash);
+        buttontrashdisplay.on('click', this.remove, this);
+        return buttontrashdisplay;
+    },
     get_input_question: function () {
         var qst = 0;
         if (this.answerrequested && this.answerrequested === 1) {
@@ -416,30 +423,34 @@ Y.extend(ANNOTATION, Y.Base, {
         //var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-        if (interrupt.get('value') === '1') {
-            if (buttonplusr) {
-                buttonplusr.show();
-            }
-            if (buttonplusl) {
-                buttonplusl.show();
-            }
-        } else if (interrupt.get('value') === '0') {
-            if (buttonplusr) {
-                buttonplusr.show();
-            }
-            if (buttonplusl) {
-                buttonplusl.hide();
-            }
-        } else {
-            if (buttonplusr) {
-                buttonplusr.hide();
-            }
-            if (buttonplusl) {
-                buttonplusl.show();
+        if (interrupt) {
+            if (interrupt.get('value') === '1') {
+                if (buttonplusr) {
+                    buttonplusr.show();
+                }
+                if (buttonplusl) {
+                    buttonplusl.show();
+                }
+            } else if (interrupt.get('value') === '0') {
+                if (buttonplusr) {
+                    buttonplusr.show();
+                }
+                if (buttonplusl) {
+                    buttonplusl.hide();
+                }
+            } else {
+                if (buttonplusr) {
+                    buttonplusr.hide();
+                }
+                if (buttonplusl) {
+                    buttonplusl.show();
+                }
             }
         }
-        divdisplay.setContent(this.get_text_to_diplay_in_cartridge());
-        if (this.tooltypefamille.label === 'frame') {
+        if (divdisplay) {
+            divdisplay.setContent(this.get_text_to_diplay_in_cartridge());
+        }
+        if (this.tooltypefamille.label === 'frame' && buttonplusr) {
             buttonplusr.hide();
             buttonplusl.hide();
         }
@@ -492,7 +503,10 @@ Y.extend(ANNOTATION, Y.Base, {
     apply_question_status: function () {
         var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
-        var value = parseInt(questionvalue.get('value'));
+        var value = 0;
+        if (questionvalue) {
+            value = parseInt(questionvalue.get('value'));
+        }
         if (buttonquestion) {
             if (value === 1) {
                 buttonquestion.one('img').setAttribute('src', M.util.image_url('help', 'core'));
@@ -605,6 +619,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
             var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
             var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
             if (buttonplusr) {
@@ -622,6 +637,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (buttonquestion) {
                 buttonquestion.show();
             }
+            buttonremove.show();
             divprincipale.setStyle('z-index', 1000);
             input.set('focus', 'on');
 
@@ -662,7 +678,9 @@ Y.extend(ANNOTATION, Y.Base, {
             this.hide_edit();
             this.apply_visibility_annot();
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-            divprincipale.detach();
+            if (divprincipale) {
+                divprincipale.detach();
+            }
         }
         return;
     },
@@ -674,6 +692,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
         var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
         var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+        var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
         if (divdisplay) {
             divdisplay.show();
             divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
@@ -681,16 +700,24 @@ Y.extend(ANNOTATION, Y.Base, {
         if (buttonrotation) {
             buttonrotation.show();
         }
-        divedit.hide();
-        buttonsave.hide();
-        buttoncancel.hide();
+        if (divedit) {
+            divedit.hide();
+            buttonsave.hide();
+            buttoncancel.hide();
+        }
         if (buttonquestion) {
             buttonquestion.hide();
         }
-        divprincipale.setStyle('z-index', 1);
+        if (buttonremove) {
+            buttonremove.hide();
+        }
+        if (divprincipale) {
+            divprincipale.setStyle('z-index', 1);
+        }
 
         this.enabled_canvas_event();
-    },
+    }
+    ,
     /**
      * Delete an annotation
      * @protected
@@ -700,9 +727,7 @@ Y.extend(ANNOTATION, Y.Base, {
     remove: function (e) {
         var annotations,
                 i;
-
         e.preventDefault();
-
         annotations = this.editor.pages[this.editor.currentpage].annotations;
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
