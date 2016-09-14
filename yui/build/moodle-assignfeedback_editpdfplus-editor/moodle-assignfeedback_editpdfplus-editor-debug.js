@@ -665,6 +665,7 @@ Y.extend(ANNOTATION, Y.Base, {
     shape_id: '',
     cartridgex: 0,
     cartridgey: 0,
+    answerrequested: 0,
     /**
      * Initialise the annotation.
      *
@@ -715,6 +716,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.borderstyle = config.borderstyle || 'solid';
             this.parent_annot = config.parent_annot;
             this.id = config.id;
+            this.answerrequested = parseInt(config.answerrequested, 10) || 0;
         }
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
@@ -765,7 +767,8 @@ Y.extend(ANNOTATION, Y.Base, {
             borderstyle: this.borderstyle,
             parent_annot: this.parent_annot,
             divcartridge: this.divcartridge,
-            parent_annot_div: ''
+            parent_annot_div: '',
+            answerrequested: parseInt(this.answerrequested)
         };
     },
     get_color: function () {
@@ -881,6 +884,7 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(divinputdisplay);
         divconteneurdisplay.append(inputvalref);
         divconteneurdisplay.append(inputonof);
+        divconteneurdisplay.append(this.get_input_question());
 
         var readonly = this.editor.get('readonly');
         if (!readonly) {
@@ -888,6 +892,9 @@ Y.extend(ANNOTATION, Y.Base, {
             divconteneurdisplay.append(this.get_button_visibility_right());
             divconteneurdisplay.append(this.get_button_save());
             divconteneurdisplay.append(this.get_button_cancel());
+            if (this.tooltype.reply === 1) {
+                divconteneurdisplay.append(this.get_button_question());
+            }
         }
 
         return divconteneurdisplay;
@@ -910,19 +917,6 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'l');
         return buttonvisibilitydisplay;
     },
-    /*get_button_visibility: function () {
-     var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit' ";
-     buttonvisibility += "><img src='";
-     if (this.displaylock === 1) {
-     buttonvisibility += M.util.image_url('t/left', 'core');
-     } else {
-     buttonvisibility += M.util.image_url('t/right', 'core');
-     }
-     buttonvisibility += "' /></button>";
-     var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-     buttonvisibilitydisplay.on('click', this.change_visibility_annot, this);
-     return buttonvisibilitydisplay;
-     },*/
     get_button_save: function () {
         var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
@@ -936,10 +930,17 @@ Y.extend(ANNOTATION, Y.Base, {
         return buttoncanceldisplay;
     },
     get_button_question: function () {
-        var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' ><img src='" + M.util.image_url('help', 'core') + "' /><img src='" + M.util.image_url('t/stop', 'core') + "' /></button>";
+        var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('help_no', 'assignfeedback_editpdfplus') + "' /></button>";
         var buttonquestiondisplay = Y.Node.create(buttonquestion);
         buttonquestiondisplay.on('click', this.change_question_status, this);
         return buttonquestiondisplay;
+    },
+    get_input_question: function () {
+        var qst = 0;
+        if (this.answerrequested && this.answerrequested === 1) {
+            qst = 1;
+        }
+        return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>");
     },
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
@@ -953,20 +954,10 @@ Y.extend(ANNOTATION, Y.Base, {
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        //var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-        if (valref === '') {
-            if (this.editor.get('readonly')) {
-                divdisplay.setContent('');
-            } else {
-                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-            }
-        }
         if (interrupt.get('value') === '1') {
-            if (valref !== '') {
-                divdisplay.setContent(valref.substr(0, 20));
-            }
             if (buttonplusr) {
                 buttonplusr.show();
             }
@@ -974,9 +965,6 @@ Y.extend(ANNOTATION, Y.Base, {
                 buttonplusl.show();
             }
         } else if (interrupt.get('value') === '0') {
-            if (valref !== '') {
-                divdisplay.setContent('...');
-            }
             if (buttonplusr) {
                 buttonplusr.show();
             }
@@ -984,9 +972,6 @@ Y.extend(ANNOTATION, Y.Base, {
                 buttonplusl.hide();
             }
         } else {
-            if (valref !== '') {
-                divdisplay.setContent(valref);
-            }
             if (buttonplusr) {
                 buttonplusr.hide();
             }
@@ -994,10 +979,31 @@ Y.extend(ANNOTATION, Y.Base, {
                 buttonplusl.show();
             }
         }
+        divdisplay.setContent(this.get_text_to_diplay_in_cartridge());
         if (this.tooltypefamille.label === 'frame') {
             buttonplusr.hide();
             buttonplusl.hide();
         }
+        this.apply_question_status();
+    },
+    get_text_to_diplay_in_cartridge: function () {
+        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
+        var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
+        var finalcontent = "";
+        if (valref === '' && !this.editor.get('readonly')) {
+            finalcontent = '&nbsp;&nbsp;&nbsp;&nbsp';
+        }
+        if (interrupt.get('value') === '1' && valref !== '') {
+            finalcontent = valref.substr(0, 20);
+        } else if (interrupt.get('value') === '0' && valref !== '') {
+            finalcontent = '...';
+        } else if (valref !== '') {
+            finalcontent = valref;
+        }
+        if (!this.editor.get('readonly') && this.answerrequested === 1) {
+            finalcontent += '&nbsp;<span style="color:red;">[?]</span>';
+        }
+        return finalcontent;
     },
     change_visibility_annot: function (e, sens) {
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
@@ -1013,7 +1019,29 @@ Y.extend(ANNOTATION, Y.Base, {
         this.editor.save_current_page();
     },
     change_question_status: function () {
-        //var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+        var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
+        var value = parseInt(questionvalue.get('value'));
+        var finalvalue = 0;
+        if (value === 0) {
+            finalvalue = 1;
+        }
+        questionvalue.set('value', finalvalue);
+        this.answerrequested = finalvalue;
+        this.apply_question_status();
+        this.editor.save_current_page();
+    },
+    apply_question_status: function () {
+        var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+        var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
+        var value = parseInt(questionvalue.get('value'));
+        if (buttonquestion) {
+            if (value === 1) {
+                buttonquestion.one('img').setAttribute('src', M.util.image_url('help', 'core'));
+            } else {
+                buttonquestion.one('img').setAttribute('src', M.util.image_url('help_no', 'assignfeedback_editpdfplus'));
+            }
+        }
+        return;
     },
     move_cartridge_begin: function (e) {
         e.preventDefault();
@@ -1116,6 +1144,8 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
             var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+            var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+            var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
             if (buttonplusr) {
@@ -1124,9 +1154,15 @@ Y.extend(ANNOTATION, Y.Base, {
             if (buttonplusl) {
                 buttonplusl.hide();
             }
+            if (buttonrotation) {
+                buttonrotation.hide();
+            }
             divedit.show();
             buttonsave.show();
             buttoncancel.show();
+            if (buttonquestion) {
+                buttonquestion.show();
+            }
             divprincipale.setStyle('z-index', 1000);
             input.set('focus', 'on');
 
@@ -1177,13 +1213,21 @@ Y.extend(ANNOTATION, Y.Base, {
         var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
         var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
         var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+        var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+        var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
         if (divdisplay) {
             divdisplay.show();
             divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
         }
+        if (buttonrotation) {
+            buttonrotation.show();
+        }
         divedit.hide();
         buttonsave.hide();
         buttoncancel.hide();
+        if (buttonquestion) {
+            buttonquestion.hide();
+        }
         divprincipale.setStyle('z-index', 1);
 
         this.enabled_canvas_event();
@@ -2117,9 +2161,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
             divdisplay.append(divconteneurdisplay);
-            if (this.tooltype.reply===1) {
-                divconteneurdisplay.append(this.get_button_question());
-            }
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
@@ -3755,36 +3796,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         return true;
     },
     apply_visibility_annot: function () {
+        ANNOTATIONCOMMENTPLUS.superclass.apply_visibility_annot.apply(this);
+        
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-        if (valref === '') {
-            if (this.editor.get('readonly')) {
-                divdisplay.setContent('');
-            } else {
-                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-            }
-        }
-        if (interrupt.get('value') === '0') {
-            if (valref !== '') {
-                divdisplay.setContent(valref.substr(0, 20));
-            }
-            if (buttonplusr) {
-                buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
-                buttonplusr.show();
-            }
-            buttonplusl.hide();
-        } else {
-            if (valref !== '') {
-                divdisplay.setContent('<table><tr><td>' + valref.replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
-            }
-            if (buttonplusl) {
-                buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
-                buttonplusl.show();
-            }
-            buttonplusr.hide();
+        buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+        buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+        if (interrupt.get('value') === '2'){
+            divdisplay.setContent('<table><tr><td>' + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
+        } else if (interrupt.get('value') === '1'){
+            buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+        } else if (interrupt.get('value') === '0'){
+            buttonplusr.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
         }
     },
     save_annot: function () {

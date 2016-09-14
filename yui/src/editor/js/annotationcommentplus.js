@@ -169,36 +169,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         return true;
     },
     apply_visibility_annot: function () {
+        ANNOTATIONCOMMENTPLUS.superclass.apply_visibility_annot.apply(this);
+        
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-        if (valref === '') {
-            if (this.editor.get('readonly')) {
-                divdisplay.setContent('');
-            } else {
-                divdisplay.setContent('&nbsp;&nbsp;&nbsp;&nbsp');
-            }
-        }
-        if (interrupt.get('value') === '0') {
-            if (valref !== '') {
-                divdisplay.setContent(valref.substr(0, 20));
-            }
-            if (buttonplusr) {
-                buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
-                buttonplusr.show();
-            }
-            buttonplusl.hide();
-        } else {
-            if (valref !== '') {
-                divdisplay.setContent('<table><tr><td>' + valref.replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
-            }
-            if (buttonplusl) {
-                buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
-                buttonplusl.show();
-            }
-            buttonplusr.hide();
+        buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+        buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+        if (interrupt.get('value') === '2'){
+            divdisplay.setContent('<table><tr><td>' + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
+        } else if (interrupt.get('value') === '1'){
+            buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+        } else if (interrupt.get('value') === '0'){
+            buttonplusr.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
         }
     },
     save_annot: function () {
