@@ -57,8 +57,11 @@ class assignfeedback_editpdfplus_widget implements renderable {
     /** @var integer $pagetotal */
     public $pagetotal = 0;
 
-    /** @var string[] $toolbars */
+    /** @var tool[] $toolbars */
     public $toolbars = array();
+    
+    /** @var axis[] $toolbars */
+    public $axis = array();
 
     /**
      * Constructor
@@ -71,7 +74,7 @@ class assignfeedback_editpdfplus_widget implements renderable {
      * @param bool $readonly - Show the readonly interface (no tools).
      * @param integer $pagetotal - The total number of pages.
      */
-    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $pagetotal, $toolbars) {
+    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $pagetotal, $toolbars, $axis) {
         $this->assignment = $assignment;
         $this->userid = $userid;
         $this->attemptnumber = $attemptnumber;
@@ -81,6 +84,7 @@ class assignfeedback_editpdfplus_widget implements renderable {
         $this->readonly = $readonly;
         $this->pagetotal = $pagetotal;
         $this->toolbars = $toolbars;
+        $this->axis = $axis;
     }
 
 }

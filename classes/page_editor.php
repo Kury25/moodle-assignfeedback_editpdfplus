@@ -205,7 +205,7 @@ class page_editor {
      * Get all tools for a page.
      * @param int $contextid
      * @param int $axis
-     * @return tool[]
+     * @return axis[]
      */
     public static function get_axis($contextidlist) {
         global $DB;
@@ -216,7 +216,7 @@ class page_editor {
             $records = $DB->get_records('assignfeedback_editpp_axis');
         }
         foreach ($records as $record) {
-            array_push($axis, new tool($record));
+            array_push($axis, new axis($record));
         }
         usort($axis, function($a, $b) {
             $al = $a->order;

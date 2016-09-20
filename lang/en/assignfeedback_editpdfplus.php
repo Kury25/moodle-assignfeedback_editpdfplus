@@ -99,5 +99,6 @@ $string['tool'] = 'Tool';
 $string['viewfeedbackonline'] = 'View annotated PDF...';
 $string['white'] = 'White';
 $string['yellow'] = 'Yellow';
+$string['yellowlemon'] = 'Lemon yellow';
 $string['draftchangessaved'] = 'Draft annotations saved';
 $string['preparesubmissionsforannotation'] = 'Prepare submissions for annotation';

@@ -97,8 +97,10 @@ if ($action == 'loadallpages') {
 
     $tools = page_editor::get_tools();
     $typetools = page_editor::get_typetools();
+    $axis = page_editor::get_axis();
     $response->tools = $tools;
     $response->typetools = $typetools;
+    $response->axis = $axis;
 
     echo json_encode($response);
     die();

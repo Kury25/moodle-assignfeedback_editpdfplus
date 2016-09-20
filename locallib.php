@@ -84,12 +84,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
                 }
             }
         }
-        /*foreach ($tools as $tool) {
-            if ($tool->axis > 0) {
-                $toolbars[$tool->axis - 1][] = $tool;
-            }
-        }*/
-        //debugging(sizeof($toolbars[0]) . ' ' . sizeof($toolbars[1]) . ' ' . sizeof($toolbars[2]));
         // Copy any new stamps to this instance.
         if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {
             foreach ($files as $file) {
@@ -128,7 +122,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         // Retrieve total number of pages.
         $pagetotal = document_services::page_number_for_attempt($this->assignment->get_instance()->id, $userid, $attempt, $readonly);
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $pagetotal, $toolbars);
+        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $pagetotal, $toolbars, $axis);
         return $widget;
     }
 

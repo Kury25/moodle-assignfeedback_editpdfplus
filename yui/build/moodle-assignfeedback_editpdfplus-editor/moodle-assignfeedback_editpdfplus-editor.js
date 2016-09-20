@@ -5761,7 +5761,7 @@ EDITOR.prototype = {
      * @method all_pages_loaded
      */
     all_pages_loaded: function (responsetext) {
-        var data, i, j, k, comment, error;
+        var data, i, j, comment, error;
         try {
             data = Y.JSON.parse(responsetext);
             if (data.error || !data.pagecount) {
@@ -5797,6 +5797,13 @@ EDITOR.prototype = {
         for (i = 0; i < data.typetools.length; i++) {
             var typetooltmp = data.typetools[i];
             this.typetools[typetooltmp.id] = typetooltmp;
+        }
+
+        this.axis = [];
+        for (i = 0; i < data.axis.length; i++) {
+            var axistmp = data.axis[i];
+            axistmp.visibility = true;
+            this.axis[axistmp.id] = axistmp;
         }
 
         for (i = 0; i < this.pages.length; i++) {
@@ -5857,6 +5864,10 @@ EDITOR.prototype = {
 
         return fullurl;
     },
+    handle_axis_button: function (edit, axis, axe) {
+        axis.visibility = axe.get('checked');
+        this.redraw();
+    },
     /**
      * Attach listeners and enable the color picker buttons.
      * @protected
@@ -5868,6 +5879,13 @@ EDITOR.prototype = {
                 picker;
 
         if (this.get('readonly')) {
+            // Setup the tool buttons.
+            for (var i = 1; i < this.axis.length; i++) {
+                var axis = this.axis[i];
+                var axe = this.get_dialogue_element('#ctaxis' + axis.id);
+                axe.set('checked', 'true');
+                axe.on('click', this.handle_axis_button, this, axis, axe);
+            }
             return;
         }
 
@@ -6451,8 +6469,12 @@ EDITOR.prototype = {
         }
 
         for (i = 0; i < page.annotations.length; i++) {
-            this.drawables.push(page.annotations[i].draw());
-            this.drawablesannotations.push(page.annotations[i]);
+            var annot = page.annotations[i];
+            var tool = annot.tooltype;
+            if (this.get('readonly') && tool.axis && this.axis[tool.axis] && this.axis[tool.axis].visibility || !this.get('readonly')) {
+                this.drawables.push(annot.draw());
+                this.drawablesannotations.push(annot);
+            }
         }
         for (i = 0; i < page.comments.length; i++) {
             this.drawables.push(page.comments[i].draw(false));

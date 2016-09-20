@@ -142,6 +142,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         return html_writer::tag('button', $iconhtml, $iconparams);
     }
 
+    private function render_toolbar_axis(assignfeedback_editpdfplus\axis $axis) {
+        $iconhtml = $axis->label;
+        $iconparams = array('type' => 'checkbox', 'class' => 'axis', 'id' => 'ctaxis' . $axis->id, 'value' => $axis->id);
+        return html_writer::tag('input', $iconhtml, $iconparams);
+    }
+
     /**
      * Render the editpdf widget in the grading form.
      *
@@ -168,7 +174,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $body = '';
         // Create the page navigation.
         $navigation1 = '';
-        $navigation2 = '';
+        //$navigation2 = '';
         //$divToolbar;
         // Pick the correct arrow icons for right to left mode.
         if (right_to_left()) {
@@ -193,13 +199,15 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $divnavigation1 = html_writer::div($navigation1, 'navigation', array('role' => 'navigation'));
 
-        $navigation2 .= $this->render_toolbar_button('comment_search', 'searchcomments', null, $this->get_shortcut('searchcomments'));
-        $divnavigation2 = html_writer::div($navigation2, 'navigation-search', array('role' => 'navigation'));
+        //$navigation2 .= $this->render_toolbar_button('comment_search', 'searchcomments', null, $this->get_shortcut('searchcomments'));
+        //$divnavigation2 = html_writer::div($navigation2, 'navigation-search', array('role' => 'navigation'));
 
         $toolbar001 = '';
         $toolbar002 = '';
         $toolbarCostumdiv = '';
+        $toolbaraxis = '';
         $clearfix = html_writer::div('', 'clearfix');
+
         if (!$widget->readonly) {
 
             /** Toolbar n°0 : basic tools * */
@@ -237,21 +245,28 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 return ($al > $bl) ? +1 : -1;
             });
             $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
-            
             foreach ($toolbarCostum as $toolbarCostumUnit) {
                 $toolbarCostumdiv.= $toolbarCostumUnit;
             }
             $toolbarCostumdiv.= $axischoice;
+        } else {
+            $toolbaraxis = "<div class='navigation' style='padding-left:10px;margin-left:10px;'><div style='display:inline;margin-right:5px;text-align:left;'>";
+            $axis = $widget->axis;
+            $compteur = 0;
+            foreach ($axis as $ax) {
+                $toolbaraxis .= $this->render_toolbar_axis($ax);
+                $toolbaraxis .= "</div><div style='display:inline;margin-left:5px;margin-right:5px;text-align:left;'>";
+            }
+            $toolbaraxis .= "</div></div>";
         }
 
         // Toobars written in reverse order because they are floated right.
         $pageheader = html_writer::div($divnavigation1 .
-        //                $divnavigation2 .
                         $toolbar002 .
+                        $toolbaraxis .
                         $toolbarCostumdiv .
                         $toolbar001 .
                         $clearfix, 'pageheader');
-        //debugging($pageheader);
 
         $body .= $pageheader;
 
@@ -286,8 +301,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 'stampfiles' => $widget->stampfiles,
                 'readonly' => $widget->readonly,
                 'pagetotal' => $widget->pagetotal));
-
-        //$this->page->requires->js_call_amd('assignfeedback_editpdfplus/toolbar', 'setup');
 
         $this->page->requires->yui_module('moodle-assignfeedback_editpdfplus-editor', 'M.assignfeedback_editpdfplus.editor.init', $editorparams);
 
