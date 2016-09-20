@@ -171,6 +171,9 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
                 divconteneurdisplay.append(diveditiondisplay);
+            } else {
+                var divvisudisplay = this.get_div_visu(colorcartridge);
+                divconteneurdisplay.append(divvisudisplay);
             }
 
             //positionnement de la div par rapport a l'annotation

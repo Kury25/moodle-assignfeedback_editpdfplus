@@ -236,6 +236,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     var diveditiondisplay = this.get_div_edition();
                     //diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
                     divconteneurdisplay.append(diveditiondisplay);
+                } else {
+                    var divvisudisplay = this.get_div_visu(colorcartridge);
+                    divconteneurdisplay.append(divvisudisplay);
                 }
 
                 //creation de la div palette
@@ -465,8 +468,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
             var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
             this.hide_picker();
-            buttonrender.hide();
-            buttonadd.hide();
+            if (buttonrender) {
+                buttonrender.hide();
+                buttonadd.hide();
+            }
             ANNOTATIONFRAME.superclass.edit_annot.call(this);
         }
     },
@@ -479,12 +484,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
         if (divdisplay) {
             divdisplay.set('style', 'display:inline;color:' + this.get_color() + ';');
-            buttonrender.show();
-            buttonadd.show();
+            if (buttonrender) {
+                buttonrender.show();
+                buttonadd.show();
+            }
             if (buttonplusr) {
                 buttonplusr.hide();
             }
-            buttonplusl.hide();
+            if (buttonplusl) {
+                buttonplusl.hide();
+            }
         }
     },
     /**

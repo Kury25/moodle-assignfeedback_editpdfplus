@@ -439,3 +439,14 @@ ul.assignfeedback_editpdfplus_menu {
     margin:0;
     width:195px;
 }
+.assignfeedback_editpdfplus_highlightplus_visu,
+.assignfeedback_editpdfplus_frame_visu,
+.assignfeedback_editpdfplus_verticalline_visu,
+.assignfeedback_editpdfplus_stampcomment_visu,
+.assignfeedback_editpdfplus_commentplus_visu {
+    padding-left:2px;
+    padding-right:2px;
+    font-size:12px;
+    color:inherit;
+    cursor:default;
+}

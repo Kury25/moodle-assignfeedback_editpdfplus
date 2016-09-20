@@ -154,6 +154,9 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             if (!this.editor.get('readonly')) {
                 var diveditiondisplay = this.get_div_edition();
                 divconteneurdisplay.append(diveditiondisplay);
+            } else {
+                var divvisudisplay = this.get_div_visu(colorcartridge);
+                divconteneurdisplay.append(divvisudisplay);
             }
 
             divdisplay.setX(this.x + 20);
