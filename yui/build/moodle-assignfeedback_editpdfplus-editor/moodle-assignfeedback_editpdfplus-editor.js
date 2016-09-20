@@ -6443,6 +6443,9 @@ EDITOR.prototype = {
                 }
                 annot.divcartridge = "";
             }
+            if (annot.drawable) {
+                annot.drawable.erase();
+            }
         }
 
         for (i = 0; i < page.annotations.length; i++) {
