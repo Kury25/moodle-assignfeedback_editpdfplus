@@ -35,7 +35,7 @@
         <FIELD NAME="endy" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="y-position of the end of the annotation"/>
         <FIELD NAME="path" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="SVG path describing the freehand line"/>
         <FIELD NAME="toolid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="colour" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="black" SEQUENCE="false" COMMENT="Can be red, yellow, green, blue, white, black"/>
+        <FIELD NAME="colour" TYPE="char" LENGTH="15" NOTNULL="false" DEFAULT="black" SEQUENCE="false" COMMENT="Can be red, yellow, green, blue, white, black"/>
         <FIELD NAME="draft" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Is this a draft annotation?"/>
         <FIELD NAME="answerrequested" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="studentanswer" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>

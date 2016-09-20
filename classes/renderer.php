@@ -293,6 +293,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $this->page->requires->strings_for_js(array(
             'yellow',
+            'yellowlemon',
             'white',
             'red',
             'blue',

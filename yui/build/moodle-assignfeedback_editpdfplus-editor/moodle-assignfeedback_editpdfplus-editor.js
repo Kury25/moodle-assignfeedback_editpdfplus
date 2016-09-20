@@ -55,6 +55,7 @@ SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
         COMMENTTEXTCOLOUR = 'rgb(51, 51, 51)',
         COMMENTCOLOUR = {
             'white': 'rgb(255,255,255)',
+            'yellowlemon': 'rgb(255,255,0)',
             'yellow': 'rgb(255,236,174)',
             'red': 'rgb(249,181,179)',
             'green': 'rgb(214,234,178)',
@@ -63,6 +64,7 @@ SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
         },
 ANNOTATIONCOLOUR = {
     'white': 'rgb(255,255,255)',
+    'yellowlemon': 'rgb(255,255,0)',
     'yellow': 'rgb(255,207,53)',
     'red': 'rgb(239,69,64)',
     'green': 'rgb(152,202,62)',
@@ -107,7 +109,7 @@ TOOLTYPELIB = {
     'OVAL': 'oval',
     'HIGHLIGHT': 'highlight'
 },
-STROKEWEIGHT = 4;// This file is part of Moodle - http://moodle.org/
+STROKEWEIGHT = 2;// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
