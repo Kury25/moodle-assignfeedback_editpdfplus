@@ -252,12 +252,13 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         } else {
             $toolbaraxis = "<div class='navigation' style='padding-left:10px;margin-left:10px;'><div style='display:inline;margin-right:5px;text-align:left;'>";
             $axis = $widget->axis;
-            $compteur = 0;
             foreach ($axis as $ax) {
                 $toolbaraxis .= $this->render_toolbar_axis($ax);
                 $toolbaraxis .= "</div><div style='display:inline;margin-left:5px;margin-right:5px;text-align:left;'>";
             }
             $toolbaraxis .= "</div></div>";
+            $axischoice = html_writer::div(html_writer::select(["Tous","Non traité", "OK","non OK"], 'statutselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
+            $toolbaraxis .= $axischoice;
         }
 
         // Toobars written in reverse order because they are floated right.

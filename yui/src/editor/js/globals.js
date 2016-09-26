@@ -47,7 +47,8 @@ SELECTOR = {
     CUSTOMTOOLBARID: '#toolbaraxis',
     CUSTOMTOOLBARS: '.customtoolbar',
     AXISCUSTOMTOOLBAR: '.menuaxisselection',
-    CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton'
+    CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton',
+    STATUTSELECTOR: '#menustatutselection'
 },
 SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
         SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',

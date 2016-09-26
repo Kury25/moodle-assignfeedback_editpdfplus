@@ -187,6 +187,7 @@ EDITOR.prototype = {
      */
     editingcomment: false,
     annotationsparent: [],
+    studentstatut: -1,
     /**
      * Called during the initialisation process of the object.
      * @method initializer
@@ -601,6 +602,10 @@ EDITOR.prototype = {
                 axe.set('checked', 'true');
                 axe.on('click', this.handle_axis_button, this, axis, axe);
             }
+
+            var statutselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR);
+            statutselector.on('change', this.update_visu_annotation, this);
+
             return;
         }
 
@@ -643,6 +648,12 @@ EDITOR.prototype = {
             },
             context: this
         });
+    },
+    update_visu_annotation: function () {
+        var statusselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR + ' option:checked');
+        var statusid = parseInt(statusselector.get('value')) - 1;
+        this.studentstatut = statusid;
+        this.redraw();
     },
     update_custom_toolbars: function () {
         Y.all(SELECTOR.CUSTOMTOOLBARS).each(function (toolbar) {
@@ -724,7 +735,7 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
-    stringify_current_page_edited: function (){
+    stringify_current_page_edited: function () {
         var annotations = [],
                 page,
                 i = 0;
@@ -1152,7 +1163,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
-    save_current_page_edited: function (e){
+    save_current_page_edited: function (e) {
         var ajaxurl = AJAXBASE,
                 config;
 
@@ -1198,7 +1209,7 @@ EDITOR.prototype = {
         };
 
         Y.io(ajaxurl, config);
-        
+
     },
     /**
      * Event handler to open the comment search interface.
@@ -1250,7 +1261,8 @@ EDITOR.prototype = {
         for (i = 0; i < page.annotations.length; i++) {
             var annot = page.annotations[i];
             var tool = annot.tooltype;
-            if (this.get('readonly') && tool.axis && this.axis[tool.axis] && this.axis[tool.axis].visibility || !this.get('readonly')) {
+            if (this.get('readonly') && tool.axis && this.axis[tool.axis] && this.axis[tool.axis].visibility && (this.studentstatut < 0 || this.studentstatut == annot.studentstatus)
+                    || !this.get('readonly')) {
                 this.drawables.push(annot.draw());
                 this.drawablesannotations.push(annot);
             }
