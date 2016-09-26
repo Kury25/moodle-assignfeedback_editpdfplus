@@ -43,6 +43,7 @@ SELECTOR = {
     DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
     UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
     UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
+    UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
     STAMPSBUTTON: '.currentstampbutton',
     DIALOGUE: '.' + CSS.DIALOGUE,
     CUSTOMTOOLBARID: '#toolbaraxis',
@@ -572,10 +573,8 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
 var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
-
 ANNOTATION.NAME = "annotation";
 ANNOTATION.ATTRS = {};
-
 Y.extend(ANNOTATION, Y.Base, {
     /**
      * Reference to M.assignfeedback_editpdfplus.editor.
@@ -668,6 +667,7 @@ Y.extend(ANNOTATION, Y.Base, {
     cartridgex: 0,
     cartridgey: 0,
     answerrequested: 0,
+    studentstatus: 0,
     /**
      * Initialise the annotation.
      *
@@ -719,6 +719,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.parent_annot = config.parent_annot;
             this.id = config.id;
             this.answerrequested = parseInt(config.answerrequested, 10) || 0;
+            this.studentstatus = parseInt(config.studentstatus, 10) || 0;
         }
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
@@ -770,8 +771,81 @@ Y.extend(ANNOTATION, Y.Base, {
             parent_annot: this.parent_annot,
             divcartridge: this.divcartridge,
             parent_annot_div: '',
-            answerrequested: parseInt(this.answerrequested)
+            answerrequested: parseInt(this.answerrequested),
+            studentstatus: parseInt(this.studentstatus)
         };
+    },
+    light_clean: function () {
+        return {
+            id: this.id,
+            studentstatus: parseInt(this.studentstatus)
+        };
+    },
+    /**
+     * Draw a selection around this annotation if it is selected.
+     * @public
+     * @method draw_highlight
+     * @return M.assignfeedback_editpdfplus.drawable
+     */
+    draw_highlight: function () {
+        var bounds,
+                drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
+                offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
+                shape;
+        if (this.editor.currentannotation === this) {
+            // Draw a highlight around the annotation.
+            bounds = new M.assignfeedback_editpdfplus.rect();
+            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x - 10, this.y - 10),
+                new M.assignfeedback_editpdfplus.point(this.endx + 10, this.endy + 10)]);
+            shape = this.editor.graphic.addShape({
+                type: Y.Rect,
+                width: bounds.width,
+                height: bounds.height,
+                stroke: {
+                    weight: STROKEWEIGHT,
+                    color: SELECTEDBORDERCOLOUR
+                },
+                fill: {
+                    color: SELECTEDFILLCOLOUR
+                },
+                x: bounds.x,
+                y: bounds.y
+            });
+            this.drawable.shapes.push(shape);
+            shape.editor = this.editor;
+            shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
+            // Add a delete X to the annotation.
+            var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
+                    deletelink = Y.Node.create('<a href="#" role="button"></a>');
+            deleteicon.setAttrs({
+                'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
+            });
+            deleteicon.setStyles({
+                'backgroundColor': 'white'
+            });
+            deletelink.addClass('deleteannotationbutton');
+            deletelink.append(deleteicon);
+            drawingregion.append(deletelink);
+            deletelink.setData('annotation', this);
+            deletelink.setStyle('zIndex', '200');
+            deletelink.on('click', this.remove, this);
+            deletelink.on('key', this.remove, 'space,enter', this);
+            deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
+            deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
+            this.drawable.nodes.push(deletelink);
+        }
+        return this.drawable;
+    },
+    /**
+     * Draw an annotation
+     * @public
+     * @method draw
+     * @return M.assignfeedback_editpdfplus.drawable|false
+     */
+    draw: function () {
+        // Should be overridden by the subclass.
+        this.draw_highlight();
+        return this.drawable;
     },
     get_color: function () {
         var color = ANNOTATIONCOLOUR[this.colour];
@@ -899,7 +973,6 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(inputvalref);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
-
         var readonly = this.editor.get('readonly');
         if (!readonly) {
             divconteneurdisplay.append(this.get_button_visibility_left());
@@ -910,9 +983,29 @@ Y.extend(ANNOTATION, Y.Base, {
                 divconteneurdisplay.append(this.get_button_question());
             }
             divconteneurdisplay.append(this.get_button_remove());
+        } else {
+            divconteneurdisplay.append(this.get_button_student_status());
         }
 
         return divconteneurdisplay;
+    },
+    get_button_student_status: function () {
+        var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=0 >non traité</label>';
+        var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=1 ><img style="width:15px;" src=\'' + M.util.image_url('tick', 'assignfeedback_editpdfplus') + '\' /></label>';
+        var buttonstatus3 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=2 ><img style="width:15px;" src=\'' + M.util.image_url('cross', 'assignfeedback_editpdfplus') + '\' /></label> ';
+        var buttonstatus1display = Y.Node.create(buttonstatus1);
+        var buttonstatus2display = Y.Node.create(buttonstatus2);
+        var buttonstatus3display = Y.Node.create(buttonstatus3);
+
+        buttonstatus1display.on('click', this.change_status, this, 0);
+        buttonstatus2display.on('click', this.change_status, this, 1);
+        buttonstatus3display.on('click', this.change_status, this, 2);
+
+        var buttonstatusdisplay = Y.Node.create("<div id='" + this.divcartridge + "_radioContainer' style='display:inline;'></div>");
+        buttonstatusdisplay.append(buttonstatus1display);
+        buttonstatusdisplay.append(buttonstatus2display);
+        buttonstatusdisplay.append(buttonstatus3display);
+        return buttonstatusdisplay;
     },
     get_button_visibility_right: function () {
         var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' ";
@@ -978,6 +1071,7 @@ Y.extend(ANNOTATION, Y.Base, {
         //var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
+        var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
         if (interrupt) {
             if (interrupt.get('value') === '1') {
                 if (buttonplusr) {
@@ -1008,6 +1102,9 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.tooltypefamille.label === 'frame' && buttonplusr) {
             buttonplusr.hide();
             buttonplusl.hide();
+        }
+        if (buttonstatus) {
+            buttonstatus.hide();
         }
         this.apply_question_status();
     },
@@ -1055,6 +1152,11 @@ Y.extend(ANNOTATION, Y.Base, {
         this.apply_question_status();
         this.editor.save_current_page();
     },
+    change_status: function (e, idclick) {
+        this.studentstatus = idclick;
+        this.editor.save_current_page_edited();
+        this.hide_edit();
+    },
     apply_question_status: function () {
         var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
@@ -1073,92 +1175,15 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     move_cartridge_begin: function (e) {
         e.preventDefault();
-
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
                 clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                         e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
-
         this.oldx = point.x;
         this.oldy = point.y;
-
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
         divcartridge.on('mousemove', this.move_cartridge_continue, this);
         divcartridge.on('mouseup', this.move_cartridge_stop, this);
-    },
-    /**
-     * Draw a selection around this annotation if it is selected.
-     * @public
-     * @method draw_highlight
-     * @return M.assignfeedback_editpdfplus.drawable
-     */
-    draw_highlight: function () {
-        var bounds,
-                drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
-                offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
-                shape;
-
-        if (this.editor.currentannotation === this) {
-            // Draw a highlight around the annotation.
-            bounds = new M.assignfeedback_editpdfplus.rect();
-            bounds.bound([new M.assignfeedback_editpdfplus.point(this.x - 10, this.y - 10),
-                new M.assignfeedback_editpdfplus.point(this.endx + 10, this.endy + 10)]);
-
-            shape = this.editor.graphic.addShape({
-                type: Y.Rect,
-                width: bounds.width,
-                height: bounds.height,
-                stroke: {
-                    weight: STROKEWEIGHT,
-                    color: SELECTEDBORDERCOLOUR
-                },
-                fill: {
-                    color: SELECTEDFILLCOLOUR
-                },
-                x: bounds.x,
-                y: bounds.y
-            });
-            this.drawable.shapes.push(shape);
-
-            shape.editor = this.editor;
-            shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
-
-            // Add a delete X to the annotation.
-            var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
-                    deletelink = Y.Node.create('<a href="#" role="button"></a>');
-
-            deleteicon.setAttrs({
-                'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
-            });
-            deleteicon.setStyles({
-                'backgroundColor': 'white'
-            });
-            deletelink.addClass('deleteannotationbutton');
-            deletelink.append(deleteicon);
-
-            drawingregion.append(deletelink);
-            deletelink.setData('annotation', this);
-            deletelink.setStyle('zIndex', '200');
-
-            deletelink.on('click', this.remove, this);
-            deletelink.on('key', this.remove, 'space,enter', this);
-
-            deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
-            deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
-            this.drawable.nodes.push(deletelink);
-        }
-        return this.drawable;
-    },
-    /**
-     * Draw an annotation
-     * @public
-     * @method draw
-     * @return M.assignfeedback_editpdfplus.drawable|false
-     */
-    draw: function () {
-        // Should be overridden by the subclass.
-        this.draw_highlight();
-        return this.drawable;
     },
     draw_catridge: function (edit) {
         return true;
@@ -1168,10 +1193,21 @@ Y.extend(ANNOTATION, Y.Base, {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
             var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
+            var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
+            var studentstatusinput = Y.all("[name=" + this.divcartridge + "_status]");
             divdisplay.hide();
             divvisu.show();
+            for (var i = 0; i < studentstatusinput.size(); i++) {
+                var tmp = studentstatusinput.item(i);
+                if (parseInt(tmp.get('value')) === this.studentstatus) {
+                    tmp.set('checked', true);
+                } else {
+                    tmp.set('checked', false);
+                }
+            }
+            buttonstatus.show();
+            buttonstatus.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
             divprincipale.setStyle('z-index', 1000);
-
             this.disabled_canvas_event();
             divprincipale.on('clickoutside', this.hide_edit, this);
         }
@@ -1208,7 +1244,6 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonremove.show();
             divprincipale.setStyle('z-index', 1000);
             input.set('focus', 'on');
-
             this.disabled_canvas_event();
             divprincipale.on('clickoutside', this.cancel_edit, this, 'clickoutside');
         }
@@ -1262,6 +1297,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
         var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
         var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
+        var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
         if (divdisplay) {
             divdisplay.show();
             divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
@@ -1286,8 +1322,12 @@ Y.extend(ANNOTATION, Y.Base, {
         if (divprincipale) {
             divprincipale.setStyle('z-index', 1);
         }
-
-        this.enabled_canvas_event();
+        if (divedit) {
+            this.enabled_canvas_event();
+        }
+        if (buttonstatus){
+            buttonstatus.hide();
+        }
     }
     ,
     /**
@@ -1325,12 +1365,10 @@ Y.extend(ANNOTATION, Y.Base, {
                 diffy = newy - this.y,
                 newpath, oldpath, xy,
                 x, y;
-
         this.x += diffx;
         this.y += diffy;
         this.endx += diffx;
         this.endy += diffy;
-
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
@@ -1340,9 +1378,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 y = parseInt(xy[1], 10);
                 newpath.push((x + diffx) + ',' + (y + diffy));
             });
-
             this.path = newpath.join(':');
-
         }
         if (this.drawable) {
             this.drawable.erase();
@@ -1372,7 +1408,6 @@ Y.extend(ANNOTATION, Y.Base, {
     init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
-
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
@@ -1395,7 +1430,6 @@ Y.extend(ANNOTATION, Y.Base, {
     }
 
 });
-
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotation = ANNOTATION;
 // This file is part of Moodle - http://moodle.org/
@@ -3874,16 +3908,6 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    /*get_div_visu: function (colorcartridge) {
-        var divvisu = "<div ";
-        divvisu += "id='" + this.divcartridge + "_visu' ";
-        divvisu += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_visu' ";
-        divvisu += "style='display:none;color:" + colorcartridge + ";'> ";
-        divvisu += '<table><tr><td>' + this.get_valref().replace(/\n/g, "<br/>") + '</td></tr></table><br/>';
-        divvisu += "</div>";
-        var divvisudisplay = Y.Node.create(divvisu);
-        return divvisudisplay;
-    },*/
     apply_visibility_annot: function () {
         ANNOTATIONCOMMENTPLUS.superclass.apply_visibility_annot.apply(this);
 
@@ -6073,6 +6097,19 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+    stringify_current_page_edited: function (){
+        var annotations = [],
+                page,
+                i = 0;
+
+        for (i = 0; i < this.pages[this.currentpage].annotations.length; i++) {
+            annotations[i] = this.pages[this.currentpage].annotations[i].light_clean();
+        }
+
+        page = {annotations: annotations};
+
+        return Y.JSON.stringify(page);
+    },
     /**
      * Generate a drawable from the current in progress edit.
      * @protected
@@ -6487,6 +6524,54 @@ EDITOR.prototype = {
 
         Y.io(ajaxurl, config);
 
+    },
+    save_current_page_edited: function (e){
+        var ajaxurl = AJAXBASE,
+                config;
+
+        config = {
+            method: 'post',
+            context: this,
+            sync: false,
+            data: {
+                'sesskey': M.cfg.sesskey,
+                'action': 'updatestudentview',
+                'index': this.currentpage,
+                'userid': this.get('userid'),
+                'attemptnumber': this.get('attemptnumber'),
+                'assignmentid': this.get('assignmentid'),
+                'page': this.stringify_current_page_edited()
+            },
+            on: {
+                success: function (tid, response) {
+                    var jsondata;
+                    try {
+                        jsondata = Y.JSON.parse(response.responseText);
+                        if (jsondata.error) {
+                            return new M.core.ajaxException(jsondata);
+                        }
+                        Y.one(SELECTOR.UNSAVEDCHANGESINPUT).set('value', 'true');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('opacity', 1);
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'inline-block');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).transition({
+                            duration: 1,
+                            delay: 2,
+                            opacity: 0
+                        }, function () {
+                            Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'none');
+                        });
+                    } catch (e) {
+                        return new M.core.exception(e);
+                    }
+                },
+                failure: function (tid, response) {
+                    return new M.core.exception(response.responseText);
+                }
+            }
+        };
+
+        Y.io(ajaxurl, config);
+        
     },
     /**
      * Event handler to open the comment search interface.

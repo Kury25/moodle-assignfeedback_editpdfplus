@@ -724,6 +724,19 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+    stringify_current_page_edited: function (){
+        var annotations = [],
+                page,
+                i = 0;
+
+        for (i = 0; i < this.pages[this.currentpage].annotations.length; i++) {
+            annotations[i] = this.pages[this.currentpage].annotations[i].light_clean();
+        }
+
+        page = {annotations: annotations};
+
+        return Y.JSON.stringify(page);
+    },
     /**
      * Generate a drawable from the current in progress edit.
      * @protected
@@ -1138,6 +1151,54 @@ EDITOR.prototype = {
 
         Y.io(ajaxurl, config);
 
+    },
+    save_current_page_edited: function (e){
+        var ajaxurl = AJAXBASE,
+                config;
+
+        config = {
+            method: 'post',
+            context: this,
+            sync: false,
+            data: {
+                'sesskey': M.cfg.sesskey,
+                'action': 'updatestudentview',
+                'index': this.currentpage,
+                'userid': this.get('userid'),
+                'attemptnumber': this.get('attemptnumber'),
+                'assignmentid': this.get('assignmentid'),
+                'page': this.stringify_current_page_edited()
+            },
+            on: {
+                success: function (tid, response) {
+                    var jsondata;
+                    try {
+                        jsondata = Y.JSON.parse(response.responseText);
+                        if (jsondata.error) {
+                            return new M.core.ajaxException(jsondata);
+                        }
+                        Y.one(SELECTOR.UNSAVEDCHANGESINPUT).set('value', 'true');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('opacity', 1);
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'inline-block');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).transition({
+                            duration: 1,
+                            delay: 2,
+                            opacity: 0
+                        }, function () {
+                            Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'none');
+                        });
+                    } catch (e) {
+                        return new M.core.exception(e);
+                    }
+                },
+                failure: function (tid, response) {
+                    return new M.core.exception(response.responseText);
+                }
+            }
+        };
+
+        Y.io(ajaxurl, config);
+        
     },
     /**
      * Event handler to open the comment search interface.

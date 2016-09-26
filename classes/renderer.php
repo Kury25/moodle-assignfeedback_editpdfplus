@@ -283,9 +283,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $changesmessage = html_writer::tag('div', get_string('draftchangessaved', 'assignfeedback_editpdfplus'), array(
                     'class' => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
         ));
-
         $changesmessage = html_writer::div($changesmessage, 'unsaved-changes');
         $canvas .= $changesmessage;
+        
+        $changesmessage2 = html_writer::tag('div', get_string('nodraftchangessaved', 'assignfeedback_editpdfplus'), array(
+                    'class' => 'assignfeedback_editpdfplus_unsavedchanges_edit warning label label-info'
+        ));
+        $changesmessage2 = html_writer::div($changesmessage2, 'unsaved-changes');
+        $canvas .= $changesmessage2;
 
         $body .= $canvas;
 

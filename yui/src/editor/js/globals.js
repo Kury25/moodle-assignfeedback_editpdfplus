@@ -41,6 +41,7 @@ SELECTOR = {
     DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
     UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
     UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
+    UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
     STAMPSBUTTON: '.currentstampbutton',
     DIALOGUE: '.' + CSS.DIALOGUE,
     CUSTOMTOOLBARID: '#toolbaraxis',

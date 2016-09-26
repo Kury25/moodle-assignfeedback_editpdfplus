@@ -295,6 +295,21 @@ class page_editor {
         return $added;
     }
 
+    public static function update_annotations_status($gradeid, $annotations) {
+        global $DB;
+        $added = 0;
+        foreach ($annotations as $recordtmp) {
+            $record = page_editor::get_annotation($recordtmp->id);
+            $old = $record->studentstatus;
+            $record->studentstatus = $recordtmp->studentstatus;
+            $DB->update_record('assignfeedback_editpp_annot', $record);
+            $added++;
+            debugging($recordtmp->id . ' - ' . $record->id . ' - ' .$old. ' - ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus);
+        }
+
+        return $added;
+    }
+
     /**
      * Get a single annotation by id.
      * @param int $annotationid

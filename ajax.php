@@ -95,9 +95,9 @@ if ($action == 'loadallpages') {
         array_push($response->pages, $page);
     }
 
-    $tools = page_editor::get_tools();
-    $typetools = page_editor::get_typetools();
-    $axis = page_editor::get_axis();
+    $tools = page_editor::get_tools(null);
+    $typetools = page_editor::get_typetools(null);
+    $axis = page_editor::get_axis(null);
     $response->tools = $tools;
     $response->typetools = $typetools;
     $response->axis = $axis;
@@ -186,6 +186,24 @@ if ($action == 'loadallpages') {
 
     $result = $result && page_editor::unrelease_drafts($grade->id);
     echo json_encode($result);
+    die();
+} else if ($action == 'updatestudentview') {
+    require_capability('mod/assign:grade', $context);
+
+    $response = new stdClass();
+    $response->errors = array();
+
+    $grade = $assignment->get_user_grade($userid, true);
+
+    $pagejson = required_param('page', PARAM_RAW);
+    $page = json_decode($pagejson);
+    $index = required_param('index', PARAM_INT);
+
+    $added = page_editor::update_annotations_status($grade->id, $page->annotations);
+    if ($added != count($page->annotations)) {
+        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
+    }
+    echo json_encode($response);
     die();
 }
 

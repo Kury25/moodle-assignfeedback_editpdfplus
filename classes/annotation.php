@@ -78,9 +78,14 @@ class annotation {
     /** @var string borderstyle */
     public $borderstyle = '';
 
-    /** @var int $parent_annot */
+    /** @var int parent_annot */
     public $parent_annot = 0;
+    
+    /** @var int answerrequested */
     public $answerrequested = 0;
+    
+    /** @var int studentstatus */
+    public $studentstatus = 0;
 
     /**
      * Convert a compatible stdClass into an instance of this class.
