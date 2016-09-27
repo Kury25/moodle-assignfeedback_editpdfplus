@@ -86,6 +86,9 @@ class annotation {
     
     /** @var int studentstatus */
     public $studentstatus = 0;
+    
+    /** @var string studentanswer */
+    public $studentanswer = "";
 
     /**
      * Convert a compatible stdClass into an instance of this class.

@@ -537,7 +537,8 @@ EDITOR.prototype = {
             var parentannot = [];
             for (j = 0; j < this.pages[i].annotations.length; j++) {
                 data = this.pages[i].annotations[j];
-                if (data.parent_annot) {
+                Y.log('all_pages_loaded : ' + data.id + " - " +data.parent_annot);
+                if (data.parent_annot && parseInt(data.parent_annot) !== 0) {
                     data.parent_annot_element = parentannot[data.parent_annot];
                 }
                 var newannot = this.create_annotation(this.typetools[this.tools[data.toolid].type].label, data.toolid, data, this.tools[data.toolid]);

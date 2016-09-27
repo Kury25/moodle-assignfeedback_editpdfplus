@@ -124,6 +124,7 @@ Y.extend(ANNOTATION, Y.Base, {
     cartridgey: 0,
     answerrequested: 0,
     studentstatus: 0,
+    studentanswer: "",
     /**
      * Initialise the annotation.
      *
@@ -135,48 +136,43 @@ Y.extend(ANNOTATION, Y.Base, {
             this.editor = config.parent_annot_element.editor || null;
             this.gradeid = parseInt(config.parent_annot_element.gradeid, 10) || 0;
             this.pageno = parseInt(config.parent_annot_element.pageno, 10) || 0;
-            this.x = parseInt(config.x, 10) || 0;
-            this.y = parseInt(config.y, 10) || 0;
-            this.endx = parseInt(config.endx, 10) || 0;
-            this.endy = parseInt(config.endy, 10) || 0;
             this.cartridgex = parseInt(config.parent_annot_element.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.parent_annot_element.cartridgey, 10) || 0;
-            this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.parent_annot_element.colour || 'red';
-            this.drawable = false;
             this.tooltype = config.tooltype;
             this.textannot = config.parent_annot_element.textannot;
             this.displaylock = parseInt(config.parent_annot_element.displaylock);
             this.displayrotation = config.parent_annot_element.displayrotation;
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
-            this.parent_annot = config.parent_annot_element.id;
+            this.parent_annot = parseInt(config.parent_annot_element.id);
+            this.studentstatus = parseInt(config.parent_annot_element.studentstatus, 10) || 0;
             this.parent_annot_element = config.parent_annot_element;
             //config.parent_annot_element.children.push(this);
         } else {
             this.editor = config.editor || null;
             this.gradeid = parseInt(config.gradeid, 10) || 0;
             this.pageno = parseInt(config.pageno, 10) || 0;
-            this.x = parseInt(config.x, 10) || 0;
-            this.y = parseInt(config.y, 10) || 0;
-            this.endx = parseInt(config.endx, 10) || 0;
-            this.endy = parseInt(config.endy, 10) || 0;
             this.cartridgex = parseInt(config.cartridgex, 10) || 0;
             this.cartridgey = parseInt(config.cartridgey, 10) || 0;
-            this.path = config.path || '';
-            this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
             this.colour = config.colour || 'red';
-            this.drawable = false;
             this.tooltype = config.tooltype;
             this.textannot = config.textannot;
             this.displaylock = parseInt(config.displaylock);
             this.displayrotation = config.displayrotation;
             this.borderstyle = config.borderstyle || 'solid';
-            this.parent_annot = config.parent_annot;
-            this.id = config.id;
+            this.parent_annot = parseInt(config.parent_annot);
             this.answerrequested = parseInt(config.answerrequested, 10) || 0;
             this.studentstatus = parseInt(config.studentstatus, 10) || 0;
+            this.studentanswer = config.studentanswer;
         }
+        this.id = config.id;
+        this.x = parseInt(config.x, 10) || 0;
+        this.y = parseInt(config.y, 10) || 0;
+        this.endx = parseInt(config.endx, 10) || 0;
+        this.endy = parseInt(config.endy, 10) || 0;
+        this.path = config.path || '';
+        this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
+        this.drawable = false;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
     /**
@@ -203,7 +199,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 displaylock: parseInt(this.displaylock, 10),
                 displayrotation: parseInt(this.displayrotation, 10),
                 borderstyle: this.borderstyle,
-                parent_annot: this.parent_annot,
+                parent_annot: parseInt(this.parent_annot, 10),
                 divcartridge: this.divcartridge,
                 parent_annot_div: this.parent_annot_element.divcartridge
             };
@@ -224,7 +220,7 @@ Y.extend(ANNOTATION, Y.Base, {
             displaylock: parseInt(this.displaylock, 10),
             displayrotation: parseInt(this.displayrotation, 10),
             borderstyle: this.borderstyle,
-            parent_annot: this.parent_annot,
+            parent_annot: parseInt(this.parent_annot, 10),
             divcartridge: this.divcartridge,
             parent_annot_div: '',
             answerrequested: parseInt(this.answerrequested),
@@ -234,7 +230,8 @@ Y.extend(ANNOTATION, Y.Base, {
     light_clean: function () {
         return {
             id: this.id,
-            studentstatus: parseInt(this.studentstatus)
+            studentstatus: parseInt(this.studentstatus),
+            studentanswer: this.studentanswer
         };
     },
     /**
@@ -338,7 +335,11 @@ Y.extend(ANNOTATION, Y.Base, {
         div += "class='assignfeedback_editpdfplus_cartridge' ";
         div += "style='border-color: " + colorcartridge + ";'> ";
         div += "</div>";
-        return Y.Node.create(div);
+        var divdisplay = Y.Node.create(div);
+        if (this.editor.get('readonly')) {
+            divdisplay.on('click', this.view_annot, this);
+        }
+        return divdisplay;
     },
     get_div_cartridge_label: function (colorcartridge, draggable) {
         var divcartridge = "<div ";
@@ -371,7 +372,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (!this.editor.get('readonly')) {
             divinputdisplay.on('click', this.edit_annot, this);
         } else {
-            divinputdisplay.on('click', this.view_annot, this);
+            //divinputdisplay.on('click', this.view_annot, this);
         }
         return divinputdisplay;
     },
@@ -406,6 +407,27 @@ Y.extend(ANNOTATION, Y.Base, {
         divvisu += this.get_valref().replace(/\n/g, "<br/>");
         divvisu += "</div>";
         var divvisudisplay = Y.Node.create(divvisu);
+
+        if (this.answerrequested === 1) {
+            var divinput = Y.Node.create("<div></div>");
+            var hr = Y.Node.create("<hr style='margin-bottom:0px;'/>");
+            var label = Y.Node.create("<label style='display:inline;'>Réponse</label>");
+            var rep = "";
+            if (this.studentanswer && this.studentanswer !== "0" && this.studentanswer !== "1") {
+                rep = this.studentanswer;
+            }
+            var textarea = Y.Node.create("<br/><textarea id='" + this.divcartridge + "_studentanswer' type='text' value=\"" + rep + "\" >" + rep + "</textarea>");
+            rep = this.studentanswer;
+            var buttonsave = "<button id='" + this.divcartridge + "_buttonsavestudentanswer' style='margin-left:110px;'><img src='" + M.util.image_url('e/save', 'core') + "' /></button>";
+            var buttonsavedisplay = Y.Node.create(buttonsave);
+            buttonsavedisplay.on('click', this.save_studentanswer, this, null);
+
+            divinput.append(hr);
+            divinput.append(label);
+            divinput.append(buttonsavedisplay);
+            divinput.append(textarea);
+            divvisudisplay.append(divinput);
+        }
         return divvisudisplay;
     },
     get_div_container: function (colorcartridge) {
@@ -578,7 +600,7 @@ Y.extend(ANNOTATION, Y.Base, {
         } else if (valref !== '') {
             finalcontent = valref;
         }
-        if (!this.editor.get('readonly') && this.answerrequested === 1) {
+        if (this.answerrequested === 1) {
             finalcontent += '&nbsp;<span style="color:red;">[?]</span>';
         }
         return finalcontent;
@@ -610,6 +632,14 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     change_status: function (e, idclick) {
         this.studentstatus = idclick;
+
+        var shapesChildren = this.editor.annotationsparent[this.id];
+        if (shapesChildren) {
+            for (var i = 0; i < shapesChildren.length; i++) {
+                shapesChildren[i].studentstatus = idclick;
+            }
+        }
+
         this.editor.save_current_page_edited();
         this.hide_edit();
     },
@@ -644,28 +674,35 @@ Y.extend(ANNOTATION, Y.Base, {
     draw_catridge: function (edit) {
         return true;
     },
-    view_annot: function (e) {
-        if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
-            var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-            var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
-            var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
-            var studentstatusinput = Y.all("[name=" + this.divcartridge + "_status]");
-            divdisplay.hide();
-            divvisu.show();
-            for (var i = 0; i < studentstatusinput.size(); i++) {
-                var tmp = studentstatusinput.item(i);
-                if (parseInt(tmp.get('value')) === this.studentstatus) {
-                    tmp.set('checked', true);
-                } else {
-                    tmp.set('checked', false);
+    view_annot: function (e, clickType) {
+        if (!clickType || !(clickType === 'click')) {
+            if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
+                var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+                var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+                var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
+                var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
+                var studentstatusinput = Y.all("[name=" + this.divcartridge + "_status]");
+                divdisplay.hide();
+                divvisu.show();
+                if (this.answerrequested === 1) {
+                    var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
+                    input.set(this.studentanswer);
                 }
+                for (var i = 0; i < studentstatusinput.size(); i++) {
+                    var tmp = studentstatusinput.item(i);
+                    if (parseInt(tmp.get('value')) === this.studentstatus) {
+                        tmp.set('checked', true);
+                    } else {
+                        tmp.set('checked', false);
+                    }
+                }
+                buttonstatus.show();
+                buttonstatus.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+                divprincipale.setStyle('z-index', 1000);
+                this.disabled_canvas_event();
+                divprincipale.detach();
+                divprincipale.on('clickoutside', this.hide_edit, this, 'clickoutside');
             }
-            buttonstatus.show();
-            buttonstatus.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
-            divprincipale.setStyle('z-index', 1000);
-            this.disabled_canvas_event();
-            divprincipale.on('clickoutside', this.hide_edit, this);
         }
     },
     edit_annot: function (e) {
@@ -726,6 +763,14 @@ Y.extend(ANNOTATION, Y.Base, {
         this.hide_edit();
         this.apply_visibility_annot();
     },
+    save_studentanswer: function (e) {
+        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
+        this.studentanswer = input.get('value');
+        Y.log('save_studentanswer : ' + this.studentanswer);
+        this.editor.save_current_page_edited();
+        this.hide_edit();
+        this.apply_visibility_annot();
+    },
     cancel_edit: function (e, clickType) {
         if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
             var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
@@ -743,49 +788,54 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return;
     },
-    hide_edit: function () {
-        var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-        var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-        var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
-        var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-        var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-        var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
-        var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
-        var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
-        var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
-        if (divdisplay) {
-            divdisplay.show();
-            divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+    hide_edit: function (e, clickType) {
+        if (!clickType || !(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
+            var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
+            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+            var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
+            var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
+            var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
+            var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
+            var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
+            var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
+            var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
+            if (divdisplay) {
+                divdisplay.show();
+                divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+            }
+            if (buttonrotation) {
+                buttonrotation.show();
+            }
+            if (divedit) {
+                divedit.hide();
+                buttonsave.hide();
+                buttoncancel.hide();
+            }
+            if (divvisu) {
+                divvisu.hide();
+            }
+            if (buttonquestion) {
+                buttonquestion.hide();
+            }
+            if (buttonremove) {
+                buttonremove.hide();
+            }
+            if (divprincipale) {
+                divprincipale.setStyle('z-index', 1);
+                if (this.editor.get('readonly')) {
+                    divprincipale.detach();
+                    divprincipale.on('click', this.view_annot, this, 'click');
+                }
+            }
+            if (divedit) {
+                this.enabled_canvas_event();
+            }
+            if (buttonstatus) {
+                buttonstatus.hide();
+            }
         }
-        if (buttonrotation) {
-            buttonrotation.show();
-        }
-        if (divedit) {
-            divedit.hide();
-            buttonsave.hide();
-            buttoncancel.hide();
-        }
-        if (divvisu) {
-            divvisu.hide();
-        }
-        if (buttonquestion) {
-            buttonquestion.hide();
-        }
-        if (buttonremove) {
-            buttonremove.hide();
-        }
-        if (divprincipale) {
-            divprincipale.setStyle('z-index', 1);
-        }
-        if (divedit) {
-            this.enabled_canvas_event();
-        }
-        if (buttonstatus){
-            buttonstatus.hide();
-        }
-    }
-    ,
+    },
     /**
      * Delete an annotation
      * @protected

@@ -302,9 +302,10 @@ class page_editor {
             $record = page_editor::get_annotation($recordtmp->id);
             $old = $record->studentstatus;
             $record->studentstatus = $recordtmp->studentstatus;
+            $record->studentanswer = $recordtmp->studentanswer;
+            debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus. ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
             $DB->update_record('assignfeedback_editpp_annot', $record);
             $added++;
-            debugging($recordtmp->id . ' - ' . $record->id . ' - ' .$old. ' - ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus);
         }
 
         return $added;
@@ -352,11 +353,19 @@ class page_editor {
         $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0));
 
         // Copy all the draft annotations and comments to non-drafts.
+        $parentlink = [];
         $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 1));
         foreach ($records as $record) {
+            $oldid = $record->id;
             unset($record->id);
             $record->draft = 0;
-            $DB->insert_record('assignfeedback_editpp_annot', $record);
+            $oldparentrecord = $record->parent_annot;
+            if ($record->parent_annot > 0) {
+                $record->parent_annot = $parentlink[$record->parent_annot];
+            }
+            $newid = $DB->insert_record('assignfeedback_editpp_annot', $record);
+            $parentlink[$oldid] = $newid;
+            //debugging("release_drafts : " . $oldid . ' - ' . $newid . ' | ' . $oldparentrecord . ' - ' . $record->parent_annot);
         }
         $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
         foreach ($records as $record) {
