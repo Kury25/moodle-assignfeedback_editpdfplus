@@ -629,26 +629,26 @@ EOD;
         $file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
-        
-        
-        /*$defaultstamps = array('twoway_h.png', 'twoway_v.png');
-            // Stamp file object.
-        $filerecord = new stdClass;
-        $filerecord->component = 'assignfeedback_editpdfplus';
-        $filerecord->contextid = context_system::instance()->id;
-        $filerecord->userid    = get_admin()->id;
-        $filerecord->filearea  = 'stamps';
-        $filerecord->filepath  = '/';
-        $filerecord->itemid    = 0;
 
-        $fs = \get_file_storage();
 
-        // Load all default stamps.
-        foreach ($defaultstamps as $stamp) {
-            $filerecord->filename = $stamp;
-            $fs->create_file_from_pathname($filerecord,
-                $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/' . $filerecord->filename);
-        }*/
+        /* $defaultstamps = array('twoway_h.png', 'twoway_v.png');
+          // Stamp file object.
+          $filerecord = new stdClass;
+          $filerecord->component = 'assignfeedback_editpdfplus';
+          $filerecord->contextid = context_system::instance()->id;
+          $filerecord->userid    = get_admin()->id;
+          $filerecord->filearea  = 'stamps';
+          $filerecord->filepath  = '/';
+          $filerecord->itemid    = 0;
+
+          $fs = \get_file_storage();
+
+          // Load all default stamps.
+          foreach ($defaultstamps as $stamp) {
+          $filerecord->filename = $stamp;
+          $fs->create_file_from_pathname($filerecord,
+          $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/' . $filerecord->filename);
+          } */
 
         $fs = \get_file_storage();
         $stamptmpdir = \make_temp_directory('assignfeedback_editpdfplus/stamps/' . self::hash($assignment, $userid, $attemptnumber));
@@ -658,13 +658,16 @@ EOD;
             foreach ($files as $file) {
                 $filename = $stamptmpdir . '/' . $file->get_filename();
                 $file->copy_content_to($filename); // Copy the file.
-                debugging($filename);
+                //debugging($filename);
             }
         }
 
         $pagecount = $pdf->set_pdf($combined);
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
         page_editor::release_drafts($grade->id);
+
+        $annotation_index = [];
+        $compteur = 1;
 
         for ($i = 0; $i < $pagecount; $i++) {
             $pdf->copy_page();
@@ -676,7 +679,9 @@ EOD;
             }
 
             foreach ($annotations as $annotation) {
-                $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir);
+                $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
+                $annotation_index[$compteur] = $annotation->id;
+                $compteur++;
             }
         }
 

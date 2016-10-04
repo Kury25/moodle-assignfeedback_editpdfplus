@@ -273,31 +273,19 @@ class pdf extends \FPDI {
         return true;
     }
 
-    /**
-     * Add an annotation to the current page
-     * @param int $sx starting x-coordinate (in pixels)
-     * @param int $sy starting y-coordinate (in pixels)
-     * @param int $ex ending x-coordinate (in pixels)
-     * @param int $ey ending y-coordinate (in pixels)
-     * @param string $colour optional the colour of the annotation (red, yellow, green, blue, white, black)
-     * @param string $type optional the type of annotation (line, oval, rectangle, highlight, pen, stamp)
-     * @param int[]|string $path optional for 'pen' annotations this is an array of x and y coordinates for
-     *              the line, for 'stamp' annotations it is the name of the stamp file (without the path)
-     * @param string $imagefolder - Folder containing stamp images.
-     * @return bool true if successful (always)
-     */
-    public function add_annotation(annotation $annotation, $path, $imagefolder) {
-        global $CFG;
-        if (!$this->filename) {
-            return false;
-        }
-        $colour = $annotation->colour;
+    private function get_colour_for_pdf($colour) {
         if (substr($colour, 0, 1) == '#') {
-            $colourarray = $annotation->getColorRGB();
+            $colourarray = $this->hex2RGB($colour, false);
         } else {
             switch ($colour) {
+                case 'orange':
+                    $colourarray = array(255, 207, 53);
+                    break;
                 case 'yellow':
                     $colourarray = array(255, 207, 53);
+                    break;
+                case 'yellowlemon':
+                    $colourarray = array(255, 255, 0);
                     break;
                 case 'green':
                     $colourarray = array(153, 202, 62);
@@ -311,12 +299,60 @@ class pdf extends \FPDI {
                 case 'black':
                     $colourarray = array(51, 51, 51);
                     break;
-                default: /* Red */
-                    $colour = 'red';
+                default:
                     $colourarray = array(239, 69, 64);
                     break;
             }
         }
+        return $colourarray;
+    }
+
+    /**
+     * Convert a hexa decimal color code to its RGB equivalent
+     *
+     * @param string $hexStr (hexadecimal color value)
+     * @param boolean $returnAsString (if set true, returns the value separated by the separator character. Otherwise returns associative array)
+     * @param string $seperator (to separate RGB values. Applicable only if second parameter is true.)
+     * @return array or string (depending on second parameter. Returns False if invalid hex color value)
+     */
+    private function hex2RGB($hexStr, $returnAsString = false, $seperator = ',') {
+        $hexStr = preg_replace("/[^0-9A-Fa-f]/", '', $hexStr); // Gets a proper hex string
+        $rgbArray = array();
+        if (strlen($hexStr) == 6) { //If a proper hex code, convert using bitwise operation. No overhead... faster
+            $colorVal = hexdec($hexStr);
+            $rgbArray['red'] = 0xFF & ($colorVal >> 0x10);
+            $rgbArray['green'] = 0xFF & ($colorVal >> 0x8);
+            $rgbArray['blue'] = 0xFF & $colorVal;
+        } elseif (strlen($hexStr) == 3) { //if shorthand notation, need some string manipulations
+            $rgbArray['red'] = hexdec(str_repeat(substr($hexStr, 0, 1), 2));
+            $rgbArray['green'] = hexdec(str_repeat(substr($hexStr, 1, 1), 2));
+            $rgbArray['blue'] = hexdec(str_repeat(substr($hexStr, 2, 1), 2));
+        } else {
+            return false; //Invalid hex color code
+        }
+        return $returnAsString ? implode($seperator, $rgbArray) : $rgbArray; // returns the rgb string or the associative array
+    }
+
+    /**
+     * Add an annotation to the current page
+     * @param int $sx starting x-coordinate (in pixels)
+     * @param int $sy starting y-coordinate (in pixels)
+     * @param int $ex ending x-coordinate (in pixels)
+     * @param int $ey ending y-coordinate (in pixels)
+     * @param string $colour optional the colour of the annotation (red, yellow, green, blue, white, black)
+     * @param string $type optional the type of annotation (line, oval, rectangle, highlight, pen, stamp)
+     * @param int[]|string $path optional for 'pen' annotations this is an array of x and y coordinates for
+     *              the line, for 'stamp' annotations it is the name of the stamp file (without the path)
+     * @param string $imagefolder - Folder containing stamp images.
+     * @return bool true if successful (always)
+     */
+    public function add_annotation(annotation $annotation, $path, $imagefolder,$annotation_index) {
+        global $CFG;
+        if (!$this->filename) {
+            return false;
+        }
+        $colour = $annotation->colour;
+        $colourarray = $this->get_colour_for_pdf($colour);
         $this->SetDrawColorArray($colourarray);
 
         $sx = $this->scale * $annotation->x;
@@ -324,12 +360,20 @@ class pdf extends \FPDI {
         $ex = $this->scale * $annotation->endx;
         $ey = $this->scale * $annotation->endy;
 
-        $this->SetLineWidth(3.0 * $this->scale);
+        $this->SetLineWidth(2.0 * $this->scale);
         //$type = 'line';
         $toolid = $annotation->toolid;
         $toolObject = page_editor::get_tool($toolid);
         $typetool = page_editor::get_type_tool($toolObject->type);
         $type = $typetool->label;
+        $colourcartridge = $toolObject->cartridge_color;
+        if (!$colourcartridge) {
+            $colourcartridge = $typetool->cartridge_color;
+        }
+        $colourcartridgearray = $this->get_colour_for_pdf($colourcartridge);
+        $this->SetTextColorArray($colourcartridgearray);
+        $this->SetFontSize(10);
+
         switch ($type) {
             case 'oval':
                 $rx = abs($sx - $ex) / 2;
@@ -416,9 +460,22 @@ class pdf extends \FPDI {
 
                 $this->Rect($sx, $sy, $w, $h);
                 $this->SetAlpha(1.0, 'Normal', 1.0, 'Normal');
+
+                $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
+                $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
+                $this->SetXY($scartx, $scarty);
+                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                //$this->writeHTML("<span style=border:solid;>".$toolObject->cartridge . ' [' . $annotation->id . ']'.'</span>',false);
+                //$this->SetLineWidth(1);
+                //$this->Cell(10, 5, $toolObject->cartridge . ' [' . $annotation->id . ']',1);
                 break;
             case 'verticalline':
                 $this->Line($sx, $sy, $sx, $ey);
+
+                $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
+                $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
+                $this->SetXY($scartx, $scarty);
+                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'frame':
                 $w = abs($sx - $ex);
@@ -434,25 +491,50 @@ class pdf extends \FPDI {
                     $h = self::MIN_ANNOTATION_HEIGHT;
                 }
                 $this->Rect($sx, $sy, $w, $h);
+
+                if (!$annotation->parent_annot) {
+                    $scartx = ($annotation->cartridgex) * $this->scale;
+                    $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
+                    $this->SetXY($scartx, $scarty);
+                    $this->SetTextColorArray($colourarray);
+                    $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                }
                 break;
             case 'stampcomment':
-                $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h.png';
+                if ($annotation->displayrotation == 1) {
+                    $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
+                    $h = abs($sy - $ey);
+                    $w = $h * 37 / 96;
+                    $sx = min($sx, $ex) + 8;
+                    $sy = min($sy, $ey) + 2;
+                } else {
+                    $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
+                    $w = abs($sx - $ex);
+                    $h = $w * 37 / 96;
+                    $sx = min($sx, $ex) + 2;
+                    $sy = min($sy, $ey) + 8;
+                }
 
-                $w = abs($sx - $ex);
-                $h = abs($sy - $ey);
-                $sx = min($sx, $ex);
-                $sy = min($sy, $ey);
-
+                //$w = /*abs($annotation->x - $annotation->endx)*/ 10 * $this->scale;
+                //$h = /*abs($annotation->y - $annotation->endy)*/ 4 * $this->scale;
+                //debugging('stampcomment ' . $annotation->id . ' - ' . $sx . ':' . $sy . ' -  ' . $imgfile);
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
+
+                $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
+                $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
+                $this->SetXY($scartx, $scarty);
+                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'commentplus':
-                $imgfile = $CFG->dirroot . 'mod/assign/feedback/editpdfplus/pix/comment.png';
-
-                $w = abs(16);
-                $h = abs(16);
+                $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
+                $w = 16 * $this->scale;
+                $h = 16 * $this->scale;
                 $sx = min($sx, $ex);
                 $sy = min($sy, $ey);
+                //debugging('commentplus ' . $annotation->id . ' - ' . $sx . ':' . $sy . ' -  ' . $imgfile);
+                $this->SetXY($sx + $w + 2, $sy);
+                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
 
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
@@ -470,7 +552,9 @@ class pdf extends \FPDI {
                 if ($h < self::MIN_ANNOTATION_HEIGHT) {
                     $h = self::MIN_ANNOTATION_HEIGHT;
                 }
-                $this->Rect($sx, $sy, $w, $h);
+                $this->SetXY($sx, $sy);
+                $this->Write(5, $toolObject->cartridge);
+                //$this->Rect($sx, $sy, $w, $h);
                 break;
             default: // Line.
                 $this->Line($sx, $sy, $ex, $ey);
