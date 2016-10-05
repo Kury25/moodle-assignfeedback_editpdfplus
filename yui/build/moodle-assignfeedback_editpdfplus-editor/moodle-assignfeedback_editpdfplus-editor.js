@@ -1221,7 +1221,8 @@ Y.extend(ANNOTATION, Y.Base, {
         return true;
     },
     view_annot: function (e, clickType) {
-        if (!clickType || !(clickType === 'click')) {
+        if (!clickType || !(clickType === 'click' && this.editor.currentannotationreview === this)) {
+            this.editor.currentannotationreview = this;
             if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
                 var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
                 var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -1249,6 +1250,8 @@ Y.extend(ANNOTATION, Y.Base, {
                 divprincipale.detach();
                 divprincipale.on('clickoutside', this.hide_edit, this, 'clickoutside');
             }
+        } else {
+            this.editor.currentannotationreview = null;
         }
     },
     edit_annot: function (e) {
@@ -5609,6 +5612,7 @@ EDITOR.prototype = {
     editingcomment: false,
     annotationsparent: [],
     studentstatut: -1,
+    currentannotationreview: null,
     /**
      * Called during the initialisation process of the object.
      * @method initializer
@@ -6072,7 +6076,7 @@ EDITOR.prototype = {
             context: this
         });
     },
-    update_student_feedback: function (){
+    update_student_feedback: function () {
         this.refresh_pdf();
     },
     update_visu_annotation: function () {
@@ -6558,14 +6562,14 @@ EDITOR.prototype = {
                             return new M.core.ajaxException(jsondata);
                         }
                         Y.one(SELECTOR.UNSAVEDCHANGESINPUT).set('value', 'true');
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('opacity', 1);
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'inline-block');
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).transition({
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('opacity', 1);
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'inline-block');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).transition({
                             duration: 1,
                             delay: 2,
                             opacity: 0
                         }, function () {
-                            Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'none');
+                            Y.one(SELECTOR.UNSAVEDCHANGESDIVEDIT).setStyle('display', 'none');
                         });
                     } catch (e) {
                         return new M.core.exception(e);

@@ -675,7 +675,8 @@ Y.extend(ANNOTATION, Y.Base, {
         return true;
     },
     view_annot: function (e, clickType) {
-        if (!clickType || !(clickType === 'click')) {
+        if (!clickType || !(clickType === 'click' && this.editor.currentannotationreview === this)) {
+            this.editor.currentannotationreview = this;
             if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
                 var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
                 var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -703,6 +704,8 @@ Y.extend(ANNOTATION, Y.Base, {
                 divprincipale.detach();
                 divprincipale.on('clickoutside', this.hide_edit, this, 'clickoutside');
             }
+        } else {
+            this.editor.currentannotationreview = null;
         }
     },
     edit_annot: function (e) {
