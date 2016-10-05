@@ -680,10 +680,43 @@ EOD;
 
             foreach ($annotations as $annotation) {
                 $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
-                $annotation_index[$compteur] = $annotation->id;
-                $compteur++;
+                if ($annotation->textannot && !$annotation->parent_annot) {
+                    $annotation_index[$annotation->id] = $compteur;
+                    $compteur++;
+                }
             }
         }
+        $pdf->AddPage();
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Write(10, "", '', false, 'L', true);
+        $pdf->SetFontSize(14);
+        $pdf->SetLeftMargin(20);
+        $pdf->Write(5, "Références des annotations", '', false, 'L', true);
+        $pdf->Write(10, "", '', false, 'L', true);
+        $pdf->SetFontSize(10);
+        foreach ($annotation_index as $id => $index) {
+            $annot = page_editor::get_annotation($id);
+            if ($annot->textannot && !$annot->parent_annot) {
+                $pdf->Write(5, $index . " : ", '', false, 'L', false);
+                if ($annot->answerrequested) {
+                    $pdf->SetTextColor(255, 0, 0);
+                    $pdf->Write(5, "[réponse attendue] ", '', false, 'L', true);
+                    $pdf->SetTextColor(0, 0, 0);
+                }
+                $pdf->Write(5, $annot->textannot, '', false, 'L', true);
+                $pdf->Write(0, "", '', false, 'L', true);
+            }
+        }
+        $pdf->AddPage();
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Write(10, "", '', false, 'L', true);
+        $pdf->SetFontSize(14);
+        $pdf->SetLeftMargin(20);
+        $pdf->Write(5, "Feedback global", '', false, 'L', true);
+        $pdf->Write(10, "", '', false, 'L', true);
+        $pdf->SetFontSize(10);
+        $finalcomment = page_editor::get_feedback_comments($grade->id);
+        $pdf->writeHTMLCell(0, 0, 20, 50, $finalcomment->commenttext);
 
         fulldelete($stamptmpdir);
 

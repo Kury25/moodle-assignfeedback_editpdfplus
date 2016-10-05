@@ -346,7 +346,7 @@ class pdf extends \FPDI {
      * @param string $imagefolder - Folder containing stamp images.
      * @return bool true if successful (always)
      */
-    public function add_annotation(annotation $annotation, $path, $imagefolder,$annotation_index) {
+    public function add_annotation(annotation $annotation, $path, $imagefolder, $annotation_index) {
         global $CFG;
         if (!$this->filename) {
             return false;
@@ -464,7 +464,7 @@ class pdf extends \FPDI {
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 //$this->writeHTML("<span style=border:solid;>".$toolObject->cartridge . ' [' . $annotation->id . ']'.'</span>',false);
                 //$this->SetLineWidth(1);
                 //$this->Cell(10, 5, $toolObject->cartridge . ' [' . $annotation->id . ']',1);
@@ -475,7 +475,7 @@ class pdf extends \FPDI {
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'frame':
                 $w = abs($sx - $ex);
@@ -493,11 +493,11 @@ class pdf extends \FPDI {
                 $this->Rect($sx, $sy, $w, $h);
 
                 if (!$annotation->parent_annot) {
-                    $scartx = ($annotation->cartridgex) * $this->scale;
+                    $scartx = max(($annotation->cartridgex) * $this->scale, 0);
                     $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                     $this->SetXY($scartx, $scarty);
                     $this->SetTextColorArray($colourarray);
-                    $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                    //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 }
                 break;
             case 'stampcomment':
@@ -524,7 +524,7 @@ class pdf extends \FPDI {
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
+                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'commentplus':
                 $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
@@ -534,8 +534,7 @@ class pdf extends \FPDI {
                 $sy = min($sy, $ey);
                 //debugging('commentplus ' . $annotation->id . ' - ' . $sx . ':' . $sy . ' -  ' . $imgfile);
                 $this->SetXY($sx + $w + 2, $sy);
-                $this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
-
+                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
                 break;
@@ -553,13 +552,21 @@ class pdf extends \FPDI {
                     $h = self::MIN_ANNOTATION_HEIGHT;
                 }
                 $this->SetXY($sx, $sy);
-                $this->Write(5, $toolObject->cartridge);
+                //$this->Write(5, $toolObject->cartridge);
                 //$this->Rect($sx, $sy, $w, $h);
                 break;
             default: // Line.
                 $this->Line($sx, $sy, $ex, $ey);
                 break;
         }
+        if ($type == 'stampplus' || $type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
+            $cartouche = $toolObject->cartridge;
+            if ($annotation->textannot) {
+                $cartouche.= ' [' . $annotation_index . ']';
+            }
+            $this->Write(5, $cartouche);
+        }
+
         $this->SetDrawColor(0, 0, 0);
         $this->SetLineWidth(1.0 * $this->scale);
 

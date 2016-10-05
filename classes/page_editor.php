@@ -538,4 +538,16 @@ class page_editor {
         return $result;
     }
 
+    /**
+     * Get the feedback comment from the database.
+     *
+     * @param int $gradeid
+     * @return stdClass|false The feedback comments for the given grade if it exists.
+     *                        False if it doesn't.
+     */
+    public function get_feedback_comments($gradeid) {
+        global $DB;
+        return $DB->get_record('assignfeedback_comments', array('grade'=>$gradeid));
+    }
+
 }
