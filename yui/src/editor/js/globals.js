@@ -48,7 +48,8 @@ SELECTOR = {
     CUSTOMTOOLBARS: '.customtoolbar',
     AXISCUSTOMTOOLBAR: '.menuaxisselection',
     CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton',
-    STATUTSELECTOR: '#menustatutselection'
+    STATUTSELECTOR: '#menustatutselection',
+    STUDENTVALIDATION: '#student_valide_button'
 },
 SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
         SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',

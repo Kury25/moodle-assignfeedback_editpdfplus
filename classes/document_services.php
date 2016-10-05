@@ -607,7 +607,7 @@ EOD;
      * @param int $attemptnumber (-1 means latest attempt)
      * @return stored_file
      */
-    public static function generate_feedback_document($assignment, $userid, $attemptnumber) {
+    public static function generate_feedback_document($assignment, $userid, $attemptnumber, $refresh = false) {
 
         $assignment = self::get_assignment_from_param($assignment);
 
@@ -630,26 +630,6 @@ EOD;
 
         $pdf = new pdf();
 
-
-        /* $defaultstamps = array('twoway_h.png', 'twoway_v.png');
-          // Stamp file object.
-          $filerecord = new stdClass;
-          $filerecord->component = 'assignfeedback_editpdfplus';
-          $filerecord->contextid = context_system::instance()->id;
-          $filerecord->userid    = get_admin()->id;
-          $filerecord->filearea  = 'stamps';
-          $filerecord->filepath  = '/';
-          $filerecord->itemid    = 0;
-
-          $fs = \get_file_storage();
-
-          // Load all default stamps.
-          foreach ($defaultstamps as $stamp) {
-          $filerecord->filename = $stamp;
-          $fs->create_file_from_pathname($filerecord,
-          $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/' . $filerecord->filename);
-          } */
-
         $fs = \get_file_storage();
         $stamptmpdir = \make_temp_directory('assignfeedback_editpdfplus/stamps/' . self::hash($assignment, $userid, $attemptnumber));
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -664,7 +644,9 @@ EOD;
 
         $pagecount = $pdf->set_pdf($combined);
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-        page_editor::release_drafts($grade->id);
+        if (!$refresh) {
+            page_editor::release_drafts($grade->id);
+        }
 
         $annotation_index = [];
         $compteur = 1;
@@ -700,10 +682,16 @@ EOD;
                 $pdf->Write(5, $index . " : ", '', false, 'L', false);
                 if ($annot->answerrequested) {
                     $pdf->SetTextColor(255, 0, 0);
-                    $pdf->Write(5, "[réponse attendue] ", '', false, 'L', true);
+                    $pdf->Write(5, "[question] ", '', false, 'L', true);
                     $pdf->SetTextColor(0, 0, 0);
                 }
                 $pdf->Write(5, $annot->textannot, '', false, 'L', true);
+                if ($annot->studentanswer) {
+                    $pdf->SetTextColor(0, 0, 255);
+                    $pdf->Write(5, "[réponse]", '', false, 'L', true);
+                    $pdf->Write(5, $annot->studentanswer, '', false, 'L', true);
+                    $pdf->SetTextColor(0, 0, 0);
+                }
                 $pdf->Write(0, "", '', false, 'L', true);
             }
         }

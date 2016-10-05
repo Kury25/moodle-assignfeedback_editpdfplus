@@ -131,7 +131,8 @@ if ($action == 'loadallpages') {
     require_capability('mod/assign:grade', $context);
     $response = new stdClass();
     $grade = $assignment->get_user_grade($userid, true);
-    $file = document_services::generate_feedback_document($assignment, $userid, $attemptnumber);
+    $refresh = optional_param('refresh', false, PARAM_BOOL);
+    $file = document_services::generate_feedback_document($assignment, $userid, $attemptnumber, $refresh);
 
     $response->url = '';
     if ($file) {

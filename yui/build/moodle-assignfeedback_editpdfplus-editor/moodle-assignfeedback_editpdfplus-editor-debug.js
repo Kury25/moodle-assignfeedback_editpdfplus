@@ -50,7 +50,8 @@ SELECTOR = {
     CUSTOMTOOLBARS: '.customtoolbar',
     AXISCUSTOMTOOLBAR: '.menuaxisselection',
     CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton',
-    STATUTSELECTOR: '#menustatutselection'
+    STATUTSELECTOR: '#menustatutselection',
+    STUDENTVALIDATION: '#student_valide_button'
 },
 SELECTEDBORDERCOLOUR = 'rgba(200, 200, 255, 0.9)',
         SELECTEDFILLCOLOUR = 'rgba(200, 200, 255, 0.5)',
@@ -6031,6 +6032,9 @@ EDITOR.prototype = {
             var statutselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR);
             statutselector.on('change', this.update_visu_annotation, this);
 
+            var studentvalidation = this.get_dialogue_element(SELECTOR.STUDENTVALIDATION);
+            studentvalidation.on('click', this.update_student_feedback, this);
+
             return;
         }
 
@@ -6073,6 +6077,9 @@ EDITOR.prototype = {
             },
             context: this
         });
+    },
+    update_student_feedback: function (){
+        this.refresh_pdf();
     },
     update_visu_annotation: function () {
         var statusselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR + ' option:checked');
@@ -6534,6 +6541,53 @@ EDITOR.prototype = {
             }
         }
         return false;
+    },
+    refresh_pdf: function () {
+        var ajaxurl = AJAXBASE,
+                config;
+
+        config = {
+            method: 'post',
+            context: this,
+            sync: false,
+            data: {
+                'sesskey': M.cfg.sesskey,
+                'action': 'generatepdf',
+                'userid': this.get('userid'),
+                'attemptnumber': this.get('attemptnumber'),
+                'assignmentid': this.get('assignmentid'),
+                'refresh': true
+            },
+            on: {
+                success: function (tid, response) {
+                    var jsondata;
+                    try {
+                        jsondata = Y.JSON.parse(response.responseText);
+                        if (jsondata.error) {
+                            return new M.core.ajaxException(jsondata);
+                        }
+                        Y.one(SELECTOR.UNSAVEDCHANGESINPUT).set('value', 'true');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('opacity', 1);
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'inline-block');
+                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).transition({
+                            duration: 1,
+                            delay: 2,
+                            opacity: 0
+                        }, function () {
+                            Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'none');
+                        });
+                    } catch (e) {
+                        return new M.core.exception(e);
+                    }
+                },
+                failure: function (tid, response) {
+                    return new M.core.exception(response.responseText);
+                }
+            }
+        };
+
+        Y.io(ajaxurl, config);
+
     },
     /**
      * Save all the annotations and comments for the current page.
