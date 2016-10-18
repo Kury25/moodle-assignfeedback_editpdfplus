@@ -188,6 +188,7 @@ EDITOR.prototype = {
     editingcomment: false,
     annotationsparent: [],
     studentstatut: -1,
+    questionstatut: -1,
     currentannotationreview: null,
     /**
      * Called during the initialisation process of the object.
@@ -605,6 +606,9 @@ EDITOR.prototype = {
                 axe.on('click', this.handle_axis_button, this, axis, axe);
             }
 
+            var questionselector = this.get_dialogue_element(SELECTOR.QUESTIONSELECTOR);
+            questionselector.on('change', this.update_visu_annotation_q, this);
+
             var statutselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR);
             statutselector.on('change', this.update_visu_annotation, this);
 
@@ -656,6 +660,12 @@ EDITOR.prototype = {
     },
     update_student_feedback: function () {
         this.refresh_pdf();
+    },
+    update_visu_annotation_q: function () {
+        var questionselector = this.get_dialogue_element(SELECTOR.QUESTIONSELECTOR + ' option:checked');
+        var questionid = parseInt(questionselector.get('value')) - 1;
+        this.questionstatut = questionid;
+        this.redraw();
     },
     update_visu_annotation: function () {
         var statusselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR + ' option:checked');
@@ -1316,7 +1326,12 @@ EDITOR.prototype = {
         for (i = 0; i < page.annotations.length; i++) {
             var annot = page.annotations[i];
             var tool = annot.tooltype;
-            if (this.get('readonly') && tool.axis && this.axis[tool.axis] && this.axis[tool.axis].visibility && (this.studentstatut < 0 || this.studentstatut == annot.studentstatus)
+            if (this.get('readonly') 
+                    && tool.axis 
+                    && this.axis[tool.axis] 
+                    && this.axis[tool.axis].visibility 
+                    && (this.studentstatut < 0 || this.studentstatut === annot.studentstatus)
+                    && (this.questionstatut < 0 || this.questionstatut === annot.answerrequested)
                     || !this.get('readonly')) {
                 this.drawables.push(annot.draw());
                 this.drawablesannotations.push(annot);

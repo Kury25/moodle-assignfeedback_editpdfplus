@@ -257,11 +257,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 $toolbaraxis .= "</div><div style='display:inline;margin-left:5px;text-align:left;'>";
             }
             $toolbaraxis .= "</div></div>";
-            $axischoice = html_writer::select(["Tous", "Non traité", "OK", "non OK"], 'statutselection', 0, FALSE);
-            //$toolbaraxis .= $axischoice;
-            $validatebutton = html_writer::tag('button', 'Valider feedback', array('class' => 'button', 'id' => 'student_valide_button'));
+            $questionchoice = html_writer::select(["Question", "Sans", "Avec"], 'questionselection', 0, FALSE);
+            $axischoice = html_writer::select(["Statut", "Non traité", "OK", "non OK"], 'statutselection', 0, FALSE);
+            $validatebutton = html_writer::tag('button', 'Envoyer', array('class' => 'button', 'id' => 'student_valide_button'));
             $toolbaraxis .= html_writer::div($validatebutton, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($axischoice, 'toolbar ', array('role' => 'toolbar'));
+            $toolbaraxis .= html_writer::div($questionchoice, 'toolbar ', array('role' => 'toolbar'));
         }
 
         // Toobars written in reverse order because they are floated right.
@@ -270,7 +271,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                         $toolbaraxis .
                         $toolbarCostumdiv .
                         $toolbar001 .
-                        $clearfix, 'pageheader');
+                        $clearfix, 'pageheader', array('style' => 'padding:0'));
 
         $body .= $pageheader;
 

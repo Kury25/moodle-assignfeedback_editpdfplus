@@ -106,7 +106,7 @@
     -webkit-appearance: none;
     -moz-appearance: menulist-text;
     background-color: #fff;
-    padding: 0px 10px;
+    padding: 0px 2px;
 }
 .assignfeedback_editpdfplus_widget .pageheader select::-ms-expand {
     display: none;

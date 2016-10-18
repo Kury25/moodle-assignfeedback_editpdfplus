@@ -147,9 +147,13 @@ if ($action == 'loadallpages') {
 
     if ($refresh) {
         $teachers = get_users_by_capability($context, 'mod/assign:grade');
-        $body = "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : " . $response->url . "\n\nCeci est un mail automatique.";
+        $body = "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : "
+                . $response->url
+                . "\n\nCeci est un mail automatique.";
         $bodyhtml = "<html><b>Information Moodle</b><br/>"
-                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='" . $response->url . "'>lien</a></p>"
+                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='"
+                . $response->url
+                . "'>lien</a></p>"
                 . "<i>Ceci est un mail automatique.</i></html>";
         foreach ($teachers as $teacher) {
             $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
