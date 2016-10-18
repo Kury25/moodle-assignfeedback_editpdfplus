@@ -1071,7 +1071,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_remove: function () {
         var buttontrash = "<button id='" + this.divcartridge + "_buttonremove' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('trash', 'assignfeedback_editpdfplus') + "' /></button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
-        buttontrashdisplay.on('click', this.remove, this);
+        buttontrashdisplay.on('click', this.remove_by_trash, this);
         return buttontrashdisplay;
     },
     get_input_question: function () {
@@ -1425,6 +1425,10 @@ Y.extend(ANNOTATION, Y.Base, {
                 buttonstatus.hide();
             }
         }
+    },
+    remove_by_trash: function (e) {
+        this.cancel_edit();
+        this.remove(e);
     },
     /**
      * Delete an annotation
