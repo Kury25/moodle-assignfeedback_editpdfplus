@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,19 +16,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the version information for the comments feedback plugin
+ * Capability definitions for this module.
  *
- * @package assignfeedback_editpdfplus
- * @copyright  2012 Davo Smith
+ * @package   mod_assign
+ * @copyright 2012 NetSpot {@link http://www.netspot.com.au}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2016101700;
-$plugin->requires  = 2016051900;
-$plugin->dependencies = array(
-    'assignfeedback_editpdf' => 2016052300
+$capabilities = array(
+    'mod/assignfeedback_editpdf:use' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+        )
+    )
 );
-$plugin->component = 'assignfeedback_editpdfplus';
 

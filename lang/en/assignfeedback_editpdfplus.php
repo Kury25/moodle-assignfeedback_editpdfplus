@@ -103,3 +103,4 @@ $string['yellowlemon'] = 'Lemon yellow';
 $string['draftchangessaved'] = 'Draft annotations saved';
 $string['nodraftchangessaved'] = 'Changes saved';
 $string['preparesubmissionsforannotation'] = 'Prepare submissions for annotation';
+$string['mod/assignfeedback_editpdf:use'] = 'Utiliser le plugin';

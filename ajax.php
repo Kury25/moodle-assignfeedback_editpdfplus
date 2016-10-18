@@ -127,11 +127,15 @@ if ($action == 'loadallpages') {
     echo json_encode($response);
     die();
 } else if ($action == 'generatepdf') {
+    $refresh = optional_param('refresh', false, PARAM_BOOL);
 
-    require_capability('mod/assign:grade', $context);
+    if (!$refresh) {
+        require_capability('mod/assign:grade', $context);
+    } else {
+        require_capability('mod/assign:submit', $context);
+    }
     $response = new stdClass();
     $grade = $assignment->get_user_grade($userid, true);
-    $refresh = optional_param('refresh', false, PARAM_BOOL);
     $file = document_services::generate_feedback_document($assignment, $userid, $attemptnumber, $refresh);
 
     $response->url = '';
@@ -139,6 +143,17 @@ if ($action == 'loadallpages') {
         $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, 'assignfeedback_editpdfplus', document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
         $response->url = $url->out(true);
         $response->filename = $file->get_filename();
+    }
+
+    if ($refresh) {
+        $teachers = get_users_by_capability($context, 'mod/assign:grade');
+        $body = "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : " . $response->url . "\n\nCeci est un mail automatique.";
+        $bodyhtml = "<html><b>Information Moodle</b><br/>"
+                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='" . $response->url . "'>lien</a></p>"
+                . "<i>Ceci est un mail automatique.</i></html>";
+        foreach ($teachers as $teacher) {
+            $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
+        }
     }
 
     echo json_encode($response);
@@ -189,7 +204,7 @@ if ($action == 'loadallpages') {
     echo json_encode($result);
     die();
 } else if ($action == 'updatestudentview') {
-    require_capability('mod/assign:grade', $context);
+    require_capability('mod/assign:submit', $context);
 
     $response = new stdClass();
     $response->errors = array();

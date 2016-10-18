@@ -611,10 +611,10 @@ EOD;
 
         $assignment = self::get_assignment_from_param($assignment);
 
-        if (!$assignment->can_view_submission($userid)) {
+        if (!$refresh && !$assignment->can_view_submission($userid)) {
             \print_error('nopermission');
         }
-        if (!$assignment->can_grade()) {
+        if (!$refresh && !$assignment->can_grade()) {
             \print_error('nopermission');
         }
 

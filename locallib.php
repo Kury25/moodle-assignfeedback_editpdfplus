@@ -317,11 +317,10 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool
      */
     public function is_enabled() {
-        if ($this->enabledcache === null) {
-            $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
-            $this->enabledcache = ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && $this->get_config('enabled');
+        if ($this->assignment->get_context()) {
+            return has_capability('mod/assignfeedback_editpdf:use', $this->assignment->get_context());
         }
-        return $this->enabledcache;
+        return false;
     }
 
     /**
@@ -330,7 +329,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool false
      */
     public function is_configurable() {
-        return true;
+        return false;
     }
 
     /**
