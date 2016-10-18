@@ -1218,6 +1218,47 @@ Y.extend(ANNOTATION, Y.Base, {
         divcartridge.on('mousemove', this.move_cartridge_continue, this);
         divcartridge.on('mouseup', this.move_cartridge_stop, this);
     },
+    move_cartridge_continue: function (e) {
+        e.preventDefault();
+
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+                        e.clientY + canvas.get('docScrollY')),
+                point = this.editor.get_canvas_coordinates(clientpoint);
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+
+        var diffx = point.x - this.oldx;
+        var diffy = point.y - this.oldy;
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
+        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
+    },
+    move_cartridge_stop: function (e) {
+        e.preventDefault();
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
+        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
+        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
+
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+                        e.clientY + canvas.get('docScrollY')),
+                point = this.editor.get_canvas_coordinates(clientpoint);
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+
+        var diffx = point.x - this.oldx;
+        var diffy = point.y - this.oldy;
+
+        this.cartridgex += diffx;
+        this.cartridgey += diffy;
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
+        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
+
+        this.editor.save_current_page();
+    },
     draw_catridge: function (edit) {
         return true;
     },
@@ -2746,24 +2787,19 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        node = Y.Node.create('<div id="' + this.shape_id + '"/>');
+        var fleche = '<img id="' + this.shape_id + '_img" src=\'' + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus') + '\' style="width:30px;" />';
+        if (this.displayrotation > 0) {
+            fleche = '<img id="' + this.shape_id + '_img" src=\'' + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus') + '\' style="height:30px;" />';
+        }
+        node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
             'position': 'absolute',
-            'display': 'inline-block',
-            'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
-            'width': (this.endx - this.x),
-            'height': (this.endy - this.y),
-            'backgroundSize': '100% 100%'
+            'display': 'inline-block'
         });
-        if (this.displayrotation > 0) {
-            node.setStyles({
-                'backgroundImage': 'url(' + M.util.image_url('twoway_v', 'assignfeedback_editpdfplus') + ')'
-            });
-        }
 
         drawingcanvas.append(node);
-        node.setX(position.x);
-        node.setY(position.y);
+            node.setY(position.y);
+            node.setX(position.x);
         drawable.store_position(node, position.x, position.y);
         drawable.nodes.push(node);
 
@@ -2789,19 +2825,15 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([edit.start, edit.end]);
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
 
-        node = Y.Node.create('<div/>');
+        node = Y.Node.create('<div><img src=\'' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + '\' /></div>');
         node.setStyles({
             'position': 'absolute',
-            'display': 'inline-block',
-            'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')',
-            'width': bounds.width,
-            'height': bounds.height,
-            'backgroundSize': '100% 100%'
+            'display': 'inline-block'
         });
 
         drawingregion.append(node);
         node.setX(position.x);
-        node.setY(position.y);
+        node.setY(position.y );
         drawable.store_position(node, position.x, position.y);
 
         drawable.nodes.push(node);
@@ -2832,8 +2864,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         this.y = bounds.y - 25;
         this.endx = bounds.x + bounds.width - 20;
         this.endy = bounds.y + bounds.height - 25;
-        this.colour = edit.annotationcolour;
-        this.path = edit.stampcomment;
 
         // Min width and height is always more than 40px.
         return true;
@@ -2850,7 +2880,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             divdisplay.addClass('assignfeedback_editpdfplus_stampcomment');
 
             // inscription entete
-            var divcartridge = this.get_div_cartridge_label(colorcartridge);
+            var divcartridge = this.get_div_cartridge_label(colorcartridge, true);
             divdisplay.append(divcartridge);
 
             //creation input
@@ -2899,18 +2929,14 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
     },
     change_stamp: function () {
         var rotationstate = this.editor.get_dialogue_element('#' + this.divcartridge + "_rotation");
-        var divstamp = this.editor.get_dialogue_element('#' + this.shape_id);
+        var img = this.editor.get_dialogue_element('#' + this.shape_id + "_img");
         if (rotationstate.get('value') === '0') {
             this.displayrotation = 1;
             rotationstate.set('value', 1);
-            divstamp.setStyles({
-                'backgroundImage': 'url(' + M.util.image_url('twoway_v', 'assignfeedback_editpdfplus') + ')'
-            });
+            img.set('src', M.util.image_url('twoway_v', 'assignfeedback_editpdfplus'));
         } else {
             rotationstate.set('value', 0);
-            divstamp.setStyles({
-                'backgroundImage': 'url(' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + ')'
-            });
+            img.set('src', M.util.image_url('twoway_h', 'assignfeedback_editpdfplus'));
             this.displayrotation = 0;
         }
         this.editor.save_current_page();
@@ -2960,7 +2986,48 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                 return;
             }
         }
-    }
+    },
+    /*move_cartridge_continue: function (e) {
+        e.preventDefault();
+
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+                        e.clientY + canvas.get('docScrollY')),
+                point = this.editor.get_canvas_coordinates(clientpoint);
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+
+        var diffx = point.x - this.oldx;
+        var diffy = point.y - this.oldy;
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
+        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
+    },*/
+    /*move_cartridge_stop: function (e) {
+        e.preventDefault();
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
+        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
+        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
+
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+                        e.clientY + canvas.get('docScrollY')),
+                point = this.editor.get_canvas_coordinates(clientpoint);
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+
+        var diffx = point.x - this.oldx;
+        var diffy = point.y - this.oldy;
+
+        this.cartridgex += diffx;
+        this.cartridgey += diffy;
+
+        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
+        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
+        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
+
+        this.editor.save_current_page();
+    }*/
 
 });
 
@@ -3714,7 +3781,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    move_cartridge_continue: function (e) {
+    /*move_cartridge_continue: function (e) {
         e.preventDefault();
 
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
@@ -3754,7 +3821,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
 
         this.editor.save_current_page();
-    },
+    },*/
     /**
      * Delete an annotation
      * @protected

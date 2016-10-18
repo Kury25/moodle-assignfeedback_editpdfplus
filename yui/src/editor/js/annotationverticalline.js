@@ -195,7 +195,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    move_cartridge_continue: function (e) {
+    /*move_cartridge_continue: function (e) {
         e.preventDefault();
 
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
@@ -235,7 +235,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
 
         this.editor.save_current_page();
-    },
+    },*/
     /**
      * Delete an annotation
      * @protected
