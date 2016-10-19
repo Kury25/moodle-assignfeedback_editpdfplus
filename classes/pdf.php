@@ -464,10 +464,6 @@ class pdf extends \FPDI {
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
-                //$this->writeHTML("<span style=border:solid;>".$toolObject->cartridge . ' [' . $annotation->id . ']'.'</span>',false);
-                //$this->SetLineWidth(1);
-                //$this->Cell(10, 5, $toolObject->cartridge . ' [' . $annotation->id . ']',1);
                 break;
             case 'verticalline':
                 $this->Line($sx, $sy, $sx, $ey);
@@ -475,7 +471,6 @@ class pdf extends \FPDI {
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'frame':
                 $w = abs($sx - $ex);
@@ -497,34 +492,28 @@ class pdf extends \FPDI {
                     $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                     $this->SetXY($scartx, $scarty);
                     $this->SetTextColorArray($colourarray);
-                    //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 }
                 break;
             case 'stampcomment':
                 if ($annotation->displayrotation == 1) {
                     $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
-                    $h = abs($sy - $ey);
+                    $h = 20;//abs($sy - $ey);
                     $w = $h * 37 / 96;
                     $sx = min($sx, $ex) + 8;
                     $sy = min($sy, $ey) + 2;
                 } else {
                     $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
-                    $w = abs($sx - $ex);
+                    $w = 20;//abs($sx - $ex);
                     $h = $w * 37 / 96;
                     $sx = min($sx, $ex) + 2;
                     $sy = min($sy, $ey) + 8;
                 }
-
-                //$w = /*abs($annotation->x - $annotation->endx)*/ 10 * $this->scale;
-                //$h = /*abs($annotation->y - $annotation->endy)*/ 4 * $this->scale;
-                //debugging('stampcomment ' . $annotation->id . ' - ' . $sx . ':' . $sy . ' -  ' . $imgfile);
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
 
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
-                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 break;
             case 'commentplus':
                 $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
@@ -532,9 +521,7 @@ class pdf extends \FPDI {
                 $h = 16 * $this->scale;
                 $sx = min($sx, $ex);
                 $sy = min($sy, $ey);
-                //debugging('commentplus ' . $annotation->id . ' - ' . $sx . ':' . $sy . ' -  ' . $imgfile);
                 $this->SetXY($sx + $w + 2, $sy);
-                //$this->Write(5, $toolObject->cartridge . ' [' . $annotation_index . ']');
                 // Stamp is always more than 40px, so no need to check width/height.
                 $this->Image($imgfile, $sx, $sy, $w, $h);
                 break;
@@ -552,8 +539,6 @@ class pdf extends \FPDI {
                     $h = self::MIN_ANNOTATION_HEIGHT;
                 }
                 $this->SetXY($sx, $sy);
-                //$this->Write(5, $toolObject->cartridge);
-                //$this->Rect($sx, $sy, $w, $h);
                 break;
             default: // Line.
                 $this->Line($sx, $sy, $ex, $ey);
