@@ -1179,6 +1179,10 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     change_status: function (e, idclick) {
         this.studentstatus = idclick;
+        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
+        if (input) {
+            this.studentanswer = input.get('value');
+        }
 
         var shapesChildren = this.editor.annotationsparent[this.id];
         if (shapesChildren) {
