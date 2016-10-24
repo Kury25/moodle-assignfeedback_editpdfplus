@@ -275,7 +275,6 @@ class page_editor {
         $added = 0;
         $annotationdiv = array();
         foreach ($annotations as $record) {
-            //debugging($record->divcartridge . ' - ' . $record->parent_annot_div);
             $currentdiv = $record->divcartridge;
             if ($record->parent_annot_div != '') {
                 //on est dans le cas d'une annotation liee
@@ -295,7 +294,6 @@ class page_editor {
             if ($newid) {
                 if ($currentdiv != '') {
                     $annotationdiv[$currentdiv] = $newid;
-                    //debugging($currentdiv . ' -> ' . $newid);
                 }
                 $added++;
             }
@@ -315,10 +313,10 @@ class page_editor {
         $added = 0;
         foreach ($annotations as $recordtmp) {
             $record = page_editor::get_annotation($recordtmp->id);
-            $old = $record->studentstatus;
+            //$old = $record->studentstatus;
             $record->studentstatus = $recordtmp->studentstatus;
             $record->studentanswer = $recordtmp->studentanswer;
-            debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus . ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
+            //debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus . ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
             $DB->update_record('assignfeedback_editpp_annot', $record);
             $added++;
         }
@@ -380,7 +378,6 @@ class page_editor {
             }
             $newid = $DB->insert_record('assignfeedback_editpp_annot', $record);
             $parentlink[$oldid] = $newid;
-            //debugging("release_drafts : " . $oldid . ' - ' . $newid . ' | ' . $oldparentrecord . ' - ' . $record->parent_annot);
         }
         $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
         foreach ($records as $record) {

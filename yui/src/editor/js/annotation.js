@@ -1,3 +1,5 @@
+/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -109,21 +111,117 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable: false,
+    /**
+     * Reference to M.assignfeedback_editpdfplus.tool
+     * @property tooltype
+     * @type M.assignfeedback_editpdfplus.tool
+     * @public
+     */
     tooltype: null,
+    /**
+     * Reference to M.assignfeedback_editpdfplus.type_tool
+     * @property tooltypefamille
+     * @type M.assignfeedback_editpdfplus.type_tool
+     * @public
+     */
     tooltypefamille: null,
+    /**
+     * HTML id for the cartridge.
+     * @property divcartridge
+     * @type String
+     * @public
+     */
     divcartridge: '',
+    /**
+     * Text annotation
+     * @property textannot
+     * @type String
+     * @public
+     */
     textannot: '',
+    /**
+     * Get the information of display (3 positions).
+     * @property displaylock
+     * @type Int
+     * @public
+     */
     displaylock: 1,
+    /**
+     * Display the orientation of the stamp
+     * @property displayrotation
+     * @type Int
+     * @public
+     */
     displayrotation: 0,
+    /**
+     * Border style for cartridge and other element (frame...)
+     * @property borderstyle
+     * @type String
+     * @public
+     */
     borderstyle: '',
+    /**
+     * Parent annotation ID.
+     * @property parent_annot
+     * @type Int
+     * @public
+     */
     parent_annot: 0,
+    /**
+     * Reference to M.assignfeedback_editpdfplus.annotation
+     * @property parent_annot_element
+     * @type M.assignfeedback_editpdfplus.annotation
+     * @public
+     */
     parent_annot_element: null,
+    /**
+     * id of the annotation in BDD.
+     * @property id
+     * @type Int
+     * @public
+     */
     id: 0,
+    /**
+     * Shape HTML id
+     * @property shape_id
+     * @type String
+     * @public
+     */
     shape_id: '',
+    /**
+     * position x of the cartridge.
+     * @property cartridgex
+     * @type Int
+     * @public
+     */
     cartridgex: 0,
+    /**
+     * position y of the cartridge.
+     * @property cartridgey
+     * @type Int
+     * @public
+     */
     cartridgey: 0,
+    /**
+     * If the annotation is an question or not.
+     * @property answerrequested
+     * @type Int
+     * @public
+     */
     answerrequested: 0,
+    /**
+     * Student status of the annotation.
+     * @property studentstatus
+     * @type Int
+     * @public
+     */
     studentstatus: 0,
+    /**
+     * Student answer for the comment in this annotation
+     * @property studentanswer
+     * @type String
+     * @public
+     */
     studentanswer: "",
     /**
      * Initialise the annotation.
@@ -227,6 +325,12 @@ Y.extend(ANNOTATION, Y.Base, {
             studentstatus: parseInt(this.studentstatus)
         };
     },
+    /**
+     * Clean a comment record, returning an oject with only fields that are valid.
+     * @public
+     * @method clean
+     * @return {}
+     */
     light_clean: function () {
         return {
             id: this.id,
@@ -300,6 +404,11 @@ Y.extend(ANNOTATION, Y.Base, {
         this.draw_highlight();
         return this.drawable;
     },
+    /**
+     * Get the final color for the annotation
+     * @return string
+     * @protected
+     */
     get_color: function () {
         var color = ANNOTATIONCOLOUR[this.colour];
         if (!color) {
@@ -311,6 +420,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return color;
     },
+    /**
+     * Get the final color for the cartridge
+     * @return string
+     * @protected
+     */
     get_color_cartridge: function () {
         var color = ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
         if (!color) {
@@ -325,10 +439,19 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return color;
     },
+    /**
+     * Init the HTML id for the annotation
+     * @protected
+     */
     init_div_cartridge_id: function () {
         var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
     },
+    /**
+     * get the html node for the cartridge
+     * @param {string} colorcartridge
+     * @return node
+     */
     get_div_cartridge: function (colorcartridge) {
         var div = "<div ";
         div += "id='" + this.divcartridge + "' ";
@@ -341,6 +464,12 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return divdisplay;
     },
+    /**
+     * get the html node for the label cartridge
+     * @param {string} colorcartridge
+     * @param {boolean} draggable
+     * @return node
+     */
     get_div_cartridge_label: function (colorcartridge, draggable) {
         var divcartridge = "<div ";
         divcartridge += "id='" + this.divcartridge + "_cartridge' ";
@@ -360,6 +489,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return divcartridgedisplay;
     },
+    /**
+     * get the html node for the textannot associated to the annotation
+     * @param {string} colorcartridge
+     * @return node
+     */
     get_div_input: function (colorcartridge) {
         var divinput = "<div ";
         divinput += "id='" + this.divcartridge + "_display' ";
@@ -371,11 +505,13 @@ Y.extend(ANNOTATION, Y.Base, {
         var divinputdisplay = Y.Node.create(divinput);
         if (!this.editor.get('readonly')) {
             divinputdisplay.on('click', this.edit_annot, this);
-        } else {
-            //divinputdisplay.on('click', this.view_annot, this);
         }
         return divinputdisplay;
     },
+    /**
+     * get the html node for the edition of comment and parameters
+     * @return node
+     */
     get_div_edition: function () {
         var divedition = "<div ";
         divedition += "id='" + this.divcartridge + "_edit' ";
@@ -399,6 +535,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return diveditiondisplay;
     },
+    /**
+     * get the html node for the visualisation of comment and question
+     * @param {string} colorcartridge
+     * @return node
+     */
     get_div_visu: function (colorcartridge) {
         var divvisu = "<div ";
         divvisu += "id='" + this.divcartridge + "_visu' ";
@@ -430,6 +571,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return divvisudisplay;
     },
+    /**
+     * get the html node for the text annotation, tools and options
+     * @param {string} colorcartridge
+     * @return node
+     */
     get_div_container: function (colorcartridge) {
         var divconteneur = "<div ";
         divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_conteneur' >";
@@ -467,6 +613,10 @@ Y.extend(ANNOTATION, Y.Base, {
 
         return divconteneurdisplay;
     },
+    /**
+     * get the html node for student button to set status
+     * @return node
+     */
     get_button_student_status: function () {
         var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=0 >' + M.util.get_string('student_statut_nc', 'assignfeedback_editpdfplus') + '</label>';
         var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=1 ><img style="width:15px;" src=\'' + M.util.image_url('tick', 'assignfeedback_editpdfplus') + '\' /></label>';
@@ -485,6 +635,10 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonstatusdisplay.append(buttonstatus3display);
         return buttonstatusdisplay;
     },
+    /**
+     * get the html node for the button to set visibility on right
+     * @return node
+     */
     get_button_visibility_right: function () {
         var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' ";
         buttonvisibility += "><img src='";
@@ -494,6 +648,10 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'r');
         return buttonvisibilitydisplay;
     },
+    /**
+     * get the html node for the button to set visibility on left
+     * @return node
+     */
     get_button_visibility_left: function () {
         var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_left' ";
         buttonvisibility += "><img src='";
@@ -503,30 +661,50 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'l');
         return buttonvisibilitydisplay;
     },
+    /**
+     * get the html node for the button to save the text in the annotation
+     * @return node
+     */
     get_button_save: function () {
         var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
         buttonsavedisplay.on('click', this.save_annot, this, null);
         return buttonsavedisplay;
     },
+    /**
+     * get the html node for the button to cancel the text edition of the annotation
+     * @return node
+     */
     get_button_cancel: function () {
         var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
         var buttoncanceldisplay = Y.Node.create(buttoncancel);
         buttoncanceldisplay.on('click', this.cancel_edit, this);
         return buttoncanceldisplay;
     },
+    /**
+     * get the html node for the button to set a question
+     * @return node
+     */
     get_button_question: function () {
         var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('help_no', 'assignfeedback_editpdfplus') + "' /></button>";
         var buttonquestiondisplay = Y.Node.create(buttonquestion);
         buttonquestiondisplay.on('click', this.change_question_status, this);
         return buttonquestiondisplay;
     },
+    /**
+     * get the html node for the button to remove the annotation
+     * @return node
+     */
     get_button_remove: function () {
         var buttontrash = "<button id='" + this.divcartridge + "_buttonremove' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('trash', 'assignfeedback_editpdfplus') + "' /></button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
         buttontrashdisplay.on('click', this.remove_by_trash, this);
         return buttontrashdisplay;
     },
+    /**
+     * get the html node for the hidden input to keep information about question state
+     * @return node
+     */
     get_input_question: function () {
         var qst = 0;
         if (this.answerrequested && this.answerrequested === 1) {
@@ -534,19 +712,30 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>");
     },
+    /**
+     * get the final reference text value
+     * @return node
+     */
     get_valref: function () {
         if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
             return this.textannot;
         }
         return '';
     },
+    /**
+     * get the html node for the hidden input to keep real reference text value
+     * @return node
+     */
     get_input_valref: function () {
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_valref' value=\"" + this.get_valref() + "\"/>");
     },
+    /**
+     * display the annotation according to parameters and profile
+     * @return node
+     */
     apply_visibility_annot: function () {
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        //var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
         var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
@@ -586,6 +775,10 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         this.apply_question_status();
     },
+    /**
+     * get the html node for the text to display for the annotation, according to parameters
+     * @return node
+     */
     get_text_to_diplay_in_cartridge: function () {
         var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref").get('value');
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
@@ -605,6 +798,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return finalcontent;
     },
+    /**
+     * change the visibility of the annotation according to parameters and variable sens
+     * @param {type} e
+     * @param {char} sens
+     */
     change_visibility_annot: function (e, sens) {
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
         var finalvalue = parseInt(interrupt.get('value'));
@@ -618,6 +816,9 @@ Y.extend(ANNOTATION, Y.Base, {
         this.apply_visibility_annot();
         this.editor.save_current_page();
     },
+    /**
+     * change question status of the annotation (with or not)
+     */
     change_question_status: function () {
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
         var value = parseInt(questionvalue.get('value'));
@@ -630,6 +831,11 @@ Y.extend(ANNOTATION, Y.Base, {
         this.apply_question_status();
         this.editor.save_current_page();
     },
+    /**
+     * change student status of the annotation
+     * @param {type} e
+     * @param {int} idclick value of new status
+     */
     change_status: function (e, idclick) {
         this.studentstatus = idclick;
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
@@ -647,6 +853,10 @@ Y.extend(ANNOTATION, Y.Base, {
         this.editor.save_current_page_edited();
         this.hide_edit();
     },
+    /**
+     * change question set of the annotation
+     * @return null
+     */
     apply_question_status: function () {
         var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
@@ -663,6 +873,10 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return;
     },
+    /**
+     * drag-and-drop start
+     * @param {type} e
+     */
     move_cartridge_begin: function (e) {
         e.preventDefault();
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
@@ -675,6 +889,10 @@ Y.extend(ANNOTATION, Y.Base, {
         divcartridge.on('mousemove', this.move_cartridge_continue, this);
         divcartridge.on('mouseup', this.move_cartridge_stop, this);
     },
+    /**
+     * drag-and-drop process
+     * @param {type} e
+     */
     move_cartridge_continue: function (e) {
         e.preventDefault();
 
@@ -691,6 +909,10 @@ Y.extend(ANNOTATION, Y.Base, {
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
     },
+    /**
+     * drag-and-drop stop
+     * @param {type} e
+     */
     move_cartridge_stop: function (e) {
         e.preventDefault();
 
@@ -716,9 +938,18 @@ Y.extend(ANNOTATION, Y.Base, {
 
         this.editor.save_current_page();
     },
+    /**
+     * global method, draw empty cartridge
+     * @param {type} edit
+     */
     draw_catridge: function (edit) {
         return true;
     },
+    /**
+     * display annotation view
+     * @param {type} e
+     * @param {string} clickType
+     */
     view_annot: function (e, clickType) {
         if (!clickType || !(clickType === 'click' && this.editor.currentannotationreview === this)) {
             this.editor.currentannotationreview = this;
@@ -753,6 +984,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.editor.currentannotationreview = null;
         }
     },
+    /**
+     * display annotation edditing view
+     * @param {type} e
+     */
     edit_annot: function (e) {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
@@ -789,6 +1024,11 @@ Y.extend(ANNOTATION, Y.Base, {
             divprincipale.on('clickoutside', this.cancel_edit, this, 'clickoutside');
         }
     },
+    /**
+     * fill input edition with new text
+     * @param {type} e
+     * @param {string} unputtext
+     */
     fill_input_edition: function (e, unputtext) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
         if (input) {
@@ -796,6 +1036,10 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         this.save_annot(unputtext);
     },
+    /**
+     * save text annotation
+     * @param {string} result
+     */
     save_annot: function (result) {
         if (typeof result !== 'string') {
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
@@ -811,14 +1055,22 @@ Y.extend(ANNOTATION, Y.Base, {
         this.hide_edit();
         this.apply_visibility_annot();
     },
+    /**
+     * save student answer
+     * @param {type} e
+     */
     save_studentanswer: function (e) {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
         this.studentanswer = input.get('value');
-        Y.log('save_studentanswer : ' + this.studentanswer);
         this.editor.save_current_page_edited();
         this.hide_edit();
         this.apply_visibility_annot();
     },
+    /**
+     * cancel annotation detail view
+     * @param {type} e
+     * @param {string} clickType
+     */
     cancel_edit: function (e, clickType) {
         if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
             var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
@@ -836,6 +1088,11 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         return;
     },
+    /**
+     * remove annotation detail view
+     * @param {type} e
+     * @param {string} clickType
+     */
     hide_edit: function (e, clickType) {
         if (!clickType || !(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
@@ -884,6 +1141,10 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
+    /**
+     * remove annotation by clicking on a button
+     * @param {type} e
+     */
     remove_by_trash: function (e) {
         this.cancel_edit();
         this.remove(e);
@@ -976,10 +1237,16 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
     },
+    /**
+     * Disable canvas event (click on other tool or annotation)
+     */
     disabled_canvas_event: function () {
         var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         drawingcanvas.detach();
     },
+    /**
+     * Enable canvas event (click on other tool or annotation)
+     */
     enabled_canvas_event: function () {
         var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         drawingcanvas.on('gesturemovestart', this.editor.edit_start, null, this.editor);

@@ -256,14 +256,14 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     diveditionrenderdisplay.append(diveditionframedisplay);
                     var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:white;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
                     diveditionwhitedisplay.on('click', this.change_color, this, 'white');
-                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:orange;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionyellowdisplay.on('click', this.change_color, this, 'orange');
-                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:red;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionreddisplay.on('click', this.change_color, this, 'red');
-                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:green;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditiongreendisplay.on('click', this.change_color, this, 'green');
-                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:blue;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionbluedisplay.on('click', this.change_color, this, 'blue');
+                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#E69F00;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionyellowdisplay.on('click', this.change_color, this, '#E69F00');//orange
+                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#D55E00;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionreddisplay.on('click', this.change_color, this, '#D55E00');//red
+                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#009E73;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditiongreendisplay.on('click', this.change_color, this, '#009E73');//green
+                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#0072B2;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    diveditionbluedisplay.on('click', this.change_color, this, '#0072B2');//blue
                     var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:black;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
                     diveditionblackdisplay.on('click', this.change_color, this, 'black');
                     diveditioncolordisplay.append(diveditionwhitedisplay);

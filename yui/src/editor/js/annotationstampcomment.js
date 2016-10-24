@@ -234,7 +234,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
             if (annotations[i] === this) {
                 if (this.divcartridge !== '') {
                     var divid = '#' + this.divcartridge;
-                    //Y.log('draw_catridge : ' + divid);
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }

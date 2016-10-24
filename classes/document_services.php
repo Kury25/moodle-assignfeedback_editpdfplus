@@ -638,7 +638,6 @@ EOD;
             foreach ($files as $file) {
                 $filename = $stamptmpdir . '/' . $file->get_filename();
                 $file->copy_content_to($filename); // Copy the file.
-                //debugging($filename);
             }
         }
 

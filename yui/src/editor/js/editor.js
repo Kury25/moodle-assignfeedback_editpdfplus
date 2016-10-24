@@ -186,9 +186,29 @@ EDITOR.prototype = {
      * @public
      */
     editingcomment: false,
+    /**
+     * The parents annotations
+     * @type Array
+     * @protected
+     */
     annotationsparent: [],
+    /**
+     * The student statut to display
+     * @type Number
+     * @protected
+     */
     studentstatut: -1,
+    /**
+     * The type of annotation (question or not) to display
+     * @type Number
+     * @protected
+     */
     questionstatut: -1,
+    /**
+     * current annotation which is reviewed
+     * @type annotation
+     * @protected
+     */
     currentannotationreview: null,
     /**
      * Called during the initialisation process of the object.
@@ -230,23 +250,10 @@ EDITOR.prototype = {
     refresh_button_state: function () {
         var button, currenttoolnode, imgurl, drawingregion;
 
-        // Initalise the colour buttons.
-        /*button = this.get_dialogue_element(SELECTOR.COMMENTCOLOURBUTTON);
-         
-         imgurl = M.util.image_url('background_colour_' + this.currentedit.commentcolour, 'assignfeedback_editpdfplus');
-         button.one('img').setAttribute('src', imgurl);
-         
-         if (this.currentedit.commentcolour === 'clear') {
-         button.one('img').setStyle('borderStyle', 'dashed');
-         } else {
-         button.one('img').setStyle('borderStyle', 'solid');
-         }*/
-
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         button.one('img').setAttribute('src', imgurl);
 
-        //Y.log(this.currentedit.tool);
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
         } else {
@@ -256,11 +263,6 @@ EDITOR.prototype = {
         currenttoolnode.setAttribute('aria-pressed', 'true');
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
-
-        /* button = this.get_dialogue_element(SELECTOR.STAMPSBUTTON);
-         button.one('img').setAttrs({'src': this.get_stamp_image_url(this.currentedit.stamp),
-         'height': '16',
-         'width': '16'});*/
     },
     /**
      * Called to get the bounds of the drawing region.
@@ -503,7 +505,6 @@ EDITOR.prototype = {
 
         this.pagecount = data.pagecount;
         this.pages = data.pages;
-        //this.tools = data.tools;
 
         this.tools = [];
         for (i = 0; i < data.tools.length; i++) {
@@ -524,22 +525,11 @@ EDITOR.prototype = {
             this.axis[axistmp.id] = axistmp;
         }
 
+        //memorisation des annotations et des annotations parentes (pour annotation frame)
         for (i = 0; i < this.pages.length; i++) {
-            for (j = 0; j < this.pages[i].comments.length; j++) {
-                comment = this.pages[i].comments[j];
-                this.pages[i].comments[j] = new M.assignfeedback_editpdfplus.comment(this,
-                        comment.gradeid,
-                        comment.pageno,
-                        comment.x,
-                        comment.y,
-                        comment.width,
-                        comment.colour,
-                        comment.rawtext);
-            }
             var parentannot = [];
             for (j = 0; j < this.pages[i].annotations.length; j++) {
                 data = this.pages[i].annotations[j];
-                Y.log('all_pages_loaded : ' + data.id + " - " + data.parent_annot);
                 if (data.parent_annot && parseInt(data.parent_annot) !== 0) {
                     data.parent_annot_element = parentannot[data.parent_annot];
                 }
@@ -583,6 +573,14 @@ EDITOR.prototype = {
 
         return fullurl;
     },
+    /**
+     * Show only annotations from selected axis
+     * 
+     * @public
+     * @param {type} edit
+     * @param array axis
+     * @param html_element axe
+     */
     handle_axis_button: function (edit, axis, axe) {
         axis.visibility = axe.get('checked');
         this.redraw();
@@ -602,26 +600,38 @@ EDITOR.prototype = {
             for (var i = 1; i < this.axis.length; i++) {
                 var axis = this.axis[i];
                 var axe = this.get_dialogue_element('#ctaxis' + axis.id);
-                axe.set('checked', 'true');
-                axe.on('click', this.handle_axis_button, this, axis, axe);
+                if (axe) {
+                    axe.set('checked', 'true');
+                    axe.on('click', this.handle_axis_button, this, axis, axe);
+                }
             }
 
             var questionselector = this.get_dialogue_element(SELECTOR.QUESTIONSELECTOR);
-            questionselector.on('change', this.update_visu_annotation_q, this);
+            if (questionselector) {
+                questionselector.on('change', this.update_visu_annotation_q, this);
+            }
 
             var statutselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR);
-            statutselector.on('change', this.update_visu_annotation, this);
+            if (statutselector) {
+                statutselector.on('change', this.update_visu_annotation, this);
+            }
 
             var studentvalidation = this.get_dialogue_element(SELECTOR.STUDENTVALIDATION);
-            studentvalidation.on('click', this.update_student_feedback, this);
+            if (studentvalidation) {
+                studentvalidation.on('click', this.update_student_feedback, this);
+            }
 
             return;
         }
 
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '1');
-        customtoolbar.show();
+        if (customtoolbar) {
+            customtoolbar.show();
+        }
         var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR);
-        axisselector.on('change', this.update_custom_toolbars, this);
+        if (axisselector) {
+            axisselector.on('change', this.update_custom_toolbars, this);
+        }
         Y.all(SELECTOR.CUSTOMTOOLBARBUTTONS).each(function (toolnode) {
             var toolid = toolnode.get('id');
             var toollib = toolnode.getAttribute('data-tool');
@@ -658,21 +668,37 @@ EDITOR.prototype = {
             context: this
         });
     },
+    /**
+     * Re-create new PDF from all fresh data
+     * @protected
+     */
     update_student_feedback: function () {
         this.refresh_pdf();
     },
+    /**
+     * Refresh view with option on question shown or not
+     * @protected
+     */
     update_visu_annotation_q: function () {
         var questionselector = this.get_dialogue_element(SELECTOR.QUESTIONSELECTOR + ' option:checked');
         var questionid = parseInt(questionselector.get('value')) - 1;
         this.questionstatut = questionid;
         this.redraw();
     },
+    /**
+     * Refresh view with option on student status
+     * @protected
+     */
     update_visu_annotation: function () {
         var statusselector = this.get_dialogue_element(SELECTOR.STATUTSELECTOR + ' option:checked');
         var statusid = parseInt(statusselector.get('value')) - 1;
         this.studentstatut = statusid;
         this.redraw();
     },
+    /**
+     * Refresh toolbar from axis selected
+     * @protected
+     */
     update_custom_toolbars: function () {
         Y.all(SELECTOR.CUSTOMTOOLBARS).each(function (toolbar) {
             toolbar.hide();
@@ -683,15 +709,21 @@ EDITOR.prototype = {
         customtoolbar.show();
     },
     /**
-     * Change the current tool.
+     * Change the current tool from a button's call.
      * @protected
      * @method handle_tool_button
      */
     handle_tool_button: function (e, tool, toolid, has_parent) {
-        Y.log('handle_tool_button : ' + tool + ' - ' + toolid + ' - ' + has_parent);
         e.preventDefault();
         this.handle_tool_button_action(tool, toolid, has_parent);
     },
+    /**
+     * Change the current tool
+     * @param tool tool
+     * @param int toolid
+     * @param boolean has_parent
+     * @protected
+     */
     handle_tool_button_action: function (tool, toolid, has_parent) {
         var currenttoolnode;
         // Change style of the pressed button.
@@ -719,6 +751,10 @@ EDITOR.prototype = {
 
         this.refresh_button_state();
     },
+    /**
+     * Refresh the display of each annotation
+     * @protected
+     */
     redraw_annotation: function (e) {
         this.currentannotation = null;
         var annotations = this.pages[this.currentpage].annotations;
@@ -753,17 +789,20 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+    /**
+     * JSON encode the current page data - stripping out drawable references which cannot be encoded (light, only for student information).
+     * @protected
+     * @method stringify_current_page
+     * @return string
+     */
     stringify_current_page_edited: function () {
         var annotations = [],
                 page,
                 i = 0;
-
         for (i = 0; i < this.pages[this.currentpage].annotations.length; i++) {
             annotations[i] = this.pages[this.currentpage].annotations[i].light_clean();
         }
-
         page = {annotations: annotations};
-
         return Y.JSON.stringify(page);
     },
     /**
@@ -1042,14 +1081,13 @@ EDITOR.prototype = {
      * @public
      * @method create_annotation
      * 
-     * @param {type} type label du type de tool
-     * @param {type} toolid id du tool en cours
-     * @param {type} data annotation complete si elle existe
-     * @param {type} toolobjet le tool
+     * @param string type label du type de tool
+     * @param int toolid id du tool en cours
+     * @param annotation data annotation complete si elle existe
+     * @param tool toolobjet le tool
      * @returns {M.assignfeedback_editpdfplus.annotationrectangle|M.assignfeedback_editpdfplus.annotationhighlight|M.assignfeedback_editpdfplus.annotationoval|Boolean|M.assignfeedback_editpdfplus.annotationstampplus|M.assignfeedback_editpdfplus.annotationframe|M.assignfeedback_editpdfplus.annotationline|M.assignfeedback_editpdfplus.annotationstampcomment|M.assignfeedback_editpdfplus.annotationhighlightplus|M.assignfeedback_editpdfplus.annotationverticalline|M.assignfeedback_editpdfplus.annotationpen}
      */
     create_annotation: function (type, toolid, data, toolobjet) {
-        Y.log('create_annotation : ' + type + ' - ' + toolid);
 
         /*pour fonctionnement des anciens outils*/
         if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
@@ -1074,7 +1112,6 @@ EDITOR.prototype = {
 
         data.tool = type;
         data.editor = this;
-        Y.log('create_annotation post analyse : ' + data.tool + ' - ' + data.toolid + ' - ' + data.parent_annot);
         if (data.tool === TOOLTYPE.LINE + '' || data.tool === TOOLTYPELIB.LINE) {
             return new M.assignfeedback_editpdfplus.annotationline(data);
         } else if (data.tool === TOOLTYPE.RECTANGLE + '' || data.tool === TOOLTYPELIB.RECTANGLE) {
@@ -1128,6 +1165,10 @@ EDITOR.prototype = {
         }
         return false;
     },
+    /**
+     * AJAX call for refresh PDF with last annotations and comments/status
+     * @returns {undefined}
+     */
     refresh_pdf: function () {
         var ajaxurl = AJAXBASE,
                 config;
@@ -1228,10 +1269,14 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+    /**
+     * Save all the annotations and comments for the current page fot student view.
+     * @protected
+     * @method save_current_page_edited
+     */
     save_current_page_edited: function (e) {
         var ajaxurl = AJAXBASE,
                 config;
-
         config = {
             method: 'post',
             context: this,
@@ -1272,9 +1317,7 @@ EDITOR.prototype = {
                 }
             }
         };
-
         Y.io(ajaxurl, config);
-
     },
     /**
      * Event handler to open the comment search interface.
@@ -1326,10 +1369,10 @@ EDITOR.prototype = {
         for (i = 0; i < page.annotations.length; i++) {
             var annot = page.annotations[i];
             var tool = annot.tooltype;
-            if (this.get('readonly') 
-                    && tool.axis 
-                    && this.axis[tool.axis] 
-                    && this.axis[tool.axis].visibility 
+            if (this.get('readonly')
+                    && tool.axis
+                    && this.axis[tool.axis]
+                    && this.axis[tool.axis].visibility
                     && (this.studentstatut < 0 || this.studentstatut === annot.studentstatus)
                     && (this.questionstatut < 0 || this.questionstatut === annot.answerrequested)
                     || !this.get('readonly')) {
