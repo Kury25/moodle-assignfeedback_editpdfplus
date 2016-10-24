@@ -31,6 +31,7 @@ namespace assignfeedback_editpdfplus;
  * @package   assignfeedback_editpdfplus
  * @copyright 2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated since version 2016101700
  */
 class comments_quick_list {
 

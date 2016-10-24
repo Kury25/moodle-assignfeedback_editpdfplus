@@ -653,12 +653,12 @@ EOD;
 
         for ($i = 0; $i < $pagecount; $i++) {
             $pdf->copy_page();
-            $comments = page_editor::get_comments($grade->id, $i, false);
+            //$comments = page_editor::get_comments($grade->id, $i, false);
             $annotations = page_editor::get_annotations($grade->id, $i, false);
 
-            foreach ($comments as $comment) {
+            /*foreach ($comments as $comment) {
                 $pdf->add_comment($comment->rawtext, $comment->x, $comment->y, $comment->width, $comment->colour);
-            }
+            }*/
 
             foreach ($annotations as $annotation) {
                 $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
@@ -668,6 +668,8 @@ EOD;
                 }
             }
         }
+        
+        //add feedback by annotation
         $pdf->AddPage();
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Write(10, "", '', false, 'L', true);
@@ -708,6 +710,7 @@ EOD;
                 $pdf->Write(0, "", '', false, 'L', true);
             }
         }
+        //add general feedback in last page
         $pdf->AddPage();
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Write(10, "", '', false, 'L', true);

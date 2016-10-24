@@ -28,6 +28,7 @@ namespace assignfeedback_editpdfplus;
  * This class represents a comment box on a page of feedback.
  * @copyright 2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated since version 2016101700
  */
 class comment {
 

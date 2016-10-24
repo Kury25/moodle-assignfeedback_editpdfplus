@@ -73,6 +73,8 @@ class assignfeedback_editpdfplus_widget implements renderable {
      * @param string[] $stampfiles - The file names of the stamps.
      * @param bool $readonly - Show the readonly interface (no tools).
      * @param integer $pagetotal - The total number of pages.
+     * @param tool[] $toolbars - the different tool to display
+     * @param axis[] $axis - the different axis to display
      */
     public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $pagetotal, $toolbars, $axis) {
         $this->assignment = $assignment;

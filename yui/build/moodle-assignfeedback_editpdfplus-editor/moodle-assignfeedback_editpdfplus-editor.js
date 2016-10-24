@@ -958,7 +958,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.answerrequested === 1) {
             var divinput = Y.Node.create("<div></div>");
             var hr = Y.Node.create("<hr style='margin-bottom:0px;'/>");
-            var label = Y.Node.create("<label style='display:inline;'>Réponse</label>");
+            var label = Y.Node.create("<label style='display:inline;'>" + M.util.get_string('student_answer_lib', 'assignfeedback_editpdfplus') + "</label>");
             var rep = "";
             if (this.studentanswer && this.studentanswer !== "0" && this.studentanswer !== "1") {
                 rep = this.studentanswer;
@@ -1015,7 +1015,7 @@ Y.extend(ANNOTATION, Y.Base, {
         return divconteneurdisplay;
     },
     get_button_student_status: function () {
-        var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=0 >non traité</label>';
+        var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=0 >' + M.util.get_string('student_statut_nc', 'assignfeedback_editpdfplus') + '</label>';
         var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=1 ><img style="width:15px;" src=\'' + M.util.image_url('tick', 'assignfeedback_editpdfplus') + '\' /></label>';
         var buttonstatus3 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=2 ><img style="width:15px;" src=\'' + M.util.image_url('cross', 'assignfeedback_editpdfplus') + '\' /></label> ';
         var buttonstatus1display = Y.Node.create(buttonstatus1);

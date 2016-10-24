@@ -23,7 +23,8 @@ class axis {
 
     /** @var int axis for this annotation */
     public $label = '';
-    
+
+    /** @var int order in toolbar */    
     public $order = 1000;
 
     /**

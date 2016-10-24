@@ -44,7 +44,11 @@ class tool {
 
     /** @var boolean, allow reply or not */
     public $reply = 0;
+    
+    /** @var boolean, if tool is actived or not */
     public $enabled = 1;
+    
+    /** @var boolean, order in toolbar */
     public $order = 1000;
 
     /**

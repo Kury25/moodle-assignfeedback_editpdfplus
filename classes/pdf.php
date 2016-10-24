@@ -231,6 +231,7 @@ class pdf extends \FPDI {
      * @param int $width the width of the comment (in pixels)
      * @param string $colour optional the background colour of the comment (red, yellow, green, blue, white, clear)
      * @return bool true if successful (always)
+     * @deprecated since version 2016101700
      */
     public function add_comment($text, $x, $y, $width, $colour = 'yellow') {
         if (!$this->filename) {
@@ -273,6 +274,11 @@ class pdf extends \FPDI {
         return true;
     }
 
+    /**
+     * Get RGB color from label of color or hexa code
+     * @param string $colour
+     * @return array()
+     */
     private function get_colour_for_pdf($colour) {
         if (substr($colour, 0, 1) == '#') {
             $colourarray = $this->hex2RGB($colour, false);
@@ -497,13 +503,13 @@ class pdf extends \FPDI {
             case 'stampcomment':
                 if ($annotation->displayrotation == 1) {
                     $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
-                    $h = 20;//abs($sy - $ey);
+                    $h = 20; //abs($sy - $ey);
                     $w = $h * 37 / 96;
                     $sx = min($sx, $ex) + 8;
                     $sy = min($sy, $ey) + 2;
                 } else {
                     $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
-                    $w = 20;//abs($sx - $ex);
+                    $w = 20; //abs($sx - $ex);
                     $h = $w * 37 / 96;
                     $sx = min($sx, $ex) + 2;
                     $sy = min($sy, $ey) + 8;

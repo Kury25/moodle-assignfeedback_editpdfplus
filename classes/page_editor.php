@@ -44,6 +44,7 @@ class page_editor {
      * @param int $pageno
      * @param bool $draft
      * @return comment[]
+     * @deprecated since version 2016101700
      */
     public static function get_comments($gradeid, $pageno, $draft) {
         global $DB;
@@ -67,6 +68,7 @@ class page_editor {
      * @param int $pageno
      * @param comment[] $comments
      * @return int - the number of comments.
+     * @deprecated since version 2016101700
      */
     public static function set_comments($gradeid, $pageno, $comments) {
         global $DB;
@@ -99,6 +101,7 @@ class page_editor {
      * Get a single comment by id.
      * @param int $commentid
      * @return comment or false
+     * @deprecated since version 2016101700
      */
     public static function get_comment($commentid) {
         $record = $DB->get_record('assignfeedback_editpp_cmnt', array('id' => $commentid), '*', IGNORE_MISSING);
@@ -112,6 +115,7 @@ class page_editor {
      * Add a comment to a page.
      * @param comment $comment
      * @return bool
+     * @deprecated since version 2016101700
      */
     public static function add_comment(comment $comment) {
         global $DB;
@@ -123,6 +127,7 @@ class page_editor {
      * Remove a comment from a page.
      * @param int $commentid
      * @return bool
+     * @deprecated since version 2016101700
      */
     public static function remove_comment($commentid) {
         global $DB;
@@ -174,7 +179,7 @@ class page_editor {
     }
 
     /**
-     * Get the tool with id tooltypeid.
+     * Get the tool type with id tooltypeid.
      * @param int $tooltypeid
      * @return type_tool
      */
@@ -187,6 +192,11 @@ class page_editor {
         return false;
     }
 
+    /**
+     * Get all the type tools.
+     * @param array $contextidlist
+     * @return type_tool
+     */
     public static function get_typetools($contextidlist) {
         global $DB;
         $typetools = array();
@@ -202,9 +212,8 @@ class page_editor {
     }
 
     /**
-     * Get all tools for a page.
-     * @param int $contextid
-     * @param int $axis
+     * Get all axis for contextid.
+     * @param array $contextidlist optional
      * @return axis[]
      */
     public static function get_axis($contextidlist) {
@@ -295,7 +304,13 @@ class page_editor {
         return $added;
     }
 
-    public static function update_annotations_status($gradeid, $annotations) {
+    /**
+     * Update a set of annotations to database
+     * @global $DB
+     * @param annotation[] $annotations
+     * @return int number of rows updated
+     */
+    public static function update_annotations_status($annotations) {
         global $DB;
         $added = 0;
         foreach ($annotations as $recordtmp) {
@@ -303,7 +318,7 @@ class page_editor {
             $old = $record->studentstatus;
             $record->studentstatus = $recordtmp->studentstatus;
             $record->studentanswer = $recordtmp->studentanswer;
-            debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus. ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
+            debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus . ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
             $DB->update_record('assignfeedback_editpp_annot', $record);
             $added++;
         }
@@ -547,7 +562,7 @@ class page_editor {
      */
     public function get_feedback_comments($gradeid) {
         global $DB;
-        return $DB->get_record('assignfeedback_comments', array('grade'=>$gradeid));
+        return $DB->get_record('assignfeedback_comments', array('grade' => $gradeid));
     }
 
 }

@@ -54,7 +54,11 @@ class annotation {
 
     /** @var int ending location in pixels. Image resolution is 100 pixels per inch */
     public $endy = 0;
+    
+    /** @var int starting location of cartridge in pixels. Image resolution is 100 pixels per inch */    
     public $cartridgex = 0;
+
+    /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */    
     public $cartridgey = 0;
 
     /** @var string path information for drawing the annotation. */

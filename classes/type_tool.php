@@ -29,8 +29,11 @@ class type_tool {
 
     /** @var string colors used */
     public $cartridge_color = '';
-    
+
+    /** @var int starting location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridge_x = 0;
+
+    /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridge_y = 0;
 
     /**
