@@ -669,6 +669,7 @@ EOD;
         }
         
         //add feedback by annotation
+        $pdf->SetAutoPageBreak(true);
         $pdf->AddPage();
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Write(10, "", '', false, 'L', true);
