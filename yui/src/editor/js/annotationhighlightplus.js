@@ -1,3 +1,5 @@
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -138,6 +140,11 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return (bounds.has_min_width());
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {

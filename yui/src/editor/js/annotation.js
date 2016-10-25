@@ -1153,7 +1153,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * Delete an annotation
      * @protected
      * @method remove
-     * @param event
+     * @param {event} e
      */
     remove: function (e) {
         var annotations,
@@ -1175,8 +1175,8 @@ Y.extend(ANNOTATION, Y.Base, {
     /**
      * Move an annotation to a new location.
      * @public
-     * @param int newx
-     * @param int newy
+     * @param {int} newx
+     * @param {int} newy
      * @method move_annotation
      */
     move: function (newx, newy) {
@@ -1209,7 +1209,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method draw_current_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
+     * @param {M.assignfeedback_editpdfplus.edit} edit
      */
     draw_current_edit: function (edit) {
         var noop = edit && false;
@@ -1221,7 +1221,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method init_from_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
+     * @param {M.assignfeedback_editpdfplus.edit} edit
      * @return bool if width/height is more than min. required.
      */
     init_from_edit: function (edit) {

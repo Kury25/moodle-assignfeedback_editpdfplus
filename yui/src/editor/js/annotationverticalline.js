@@ -1,3 +1,5 @@
+/* global M, Y, STROKEWEIGHT, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -48,9 +50,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                 verticallinecolour;
 
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
-        /*bounds = new M.assignfeedback_editpdfplus.rect();
-         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-         new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);*/
 
         verticallinecolour = this.get_color();
 
@@ -148,6 +147,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -195,47 +199,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    /*move_cartridge_continue: function (e) {
-        e.preventDefault();
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
-    },
-    move_cartridge_stop: function (e) {
-        e.preventDefault();
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        this.cartridgex += diffx;
-        this.cartridgey += diffy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-
-        this.editor.save_current_page();
-    },*/
     /**
      * Delete an annotation
      * @protected

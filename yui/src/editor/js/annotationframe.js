@@ -1,3 +1,5 @@
+/* global M, Y */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -186,9 +188,18 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
         this.editor.drawables.push(this.draw());
     },
+    /**
+     * Get the color of the element, depend of data on DB
+     * @return {string} color
+     */
     get_color: function () {
         return this.colour;
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
@@ -311,6 +322,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
+    /**
+     * drag-and-drop process
+     * @param {type} e
+     */
     move_cartridge_continue: function (e) {
         e.preventDefault();
 
@@ -327,6 +342,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setX(offsetcanvas[0] + this.cartridgex + diffx);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
     },
+    /**
+     * drag-and-drop stop
+     * @param {type} e
+     */
     move_cartridge_stop: function (e) {
         e.preventDefault();
 
@@ -352,10 +371,17 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
+    /**
+     * Add child annotation (new associed frame)
+     * @param {type} e
+     */
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
     },
+    /**
+     * Display color/border picker toolbar
+     */
     display_picker: function () {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
@@ -364,6 +390,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divpalette.show();
         buttonrenderdisplay.on('click', this.hide_picker, this);
     },
+    /**
+     * Hide color/border picker toolbar
+     */
     hide_picker: function () {
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
@@ -372,6 +401,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setStyle('z-index', 0);
         buttonrenderdisplay.on('click', this.display_picker, this);
     },
+    /**
+     * Apply "change color" on element and children
+     * 
+     * @param {type} e
+     * @param {string} colour
+     */
     change_color: function (e, colour) {
         this.colour = colour;
         var shape = this.editor.graphic.getShapeById(this.shape_id);
@@ -412,6 +447,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.hide_picker();
         this.editor.save_current_page();
     },
+    /**
+     * Apply "change border" on element and children
+     * 
+     * @param {type} e
+     * @param {string} colour
+     */
     change_border: function (e, border) {
         this.borderstyle = border;
         var shape = this.editor.graphic.getShapeById(this.shape_id);
@@ -463,6 +504,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divpalette.hide();
         this.editor.save_current_page();
     },
+    /**
+     * display annotation edditing view
+     * @param {type} e
+     */
     edit_annot: function (e) {
         if (!this.parent_annot_element) {
             var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
@@ -475,6 +520,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             ANNOTATIONFRAME.superclass.edit_annot.call(this);
         }
     },
+    /**
+     * remove annotation detail view
+     * @param {type} e
+     * @param {string} clickType
+     */
     hide_edit: function () {
         ANNOTATIONFRAME.superclass.hide_edit.call(this);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -497,7 +547,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
     },
     /**
-     * Delete an annotation
+     * Delete an annotation and its children
      * @protected
      * @method remove
      * @param event

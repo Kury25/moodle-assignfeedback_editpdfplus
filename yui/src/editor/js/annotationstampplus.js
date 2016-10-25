@@ -1,3 +1,5 @@
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -130,6 +132,11 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
+    /**
+     * display annotation edditing view
+     * No edit annot for this annotation
+     * @param {type} e
+     */
     edit_annot: function (e) {
         return true;
     },

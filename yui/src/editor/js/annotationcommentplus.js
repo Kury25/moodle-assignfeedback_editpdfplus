@@ -1,3 +1,5 @@
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -131,6 +133,11 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -171,6 +178,9 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
+    /**
+     * Display the annotation according to current parameters
+     */
     apply_visibility_annot: function () {
         ANNOTATIONCOMMENTPLUS.superclass.apply_visibility_annot.apply(this);
 
@@ -190,20 +200,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             }
         }
     },
-    save_annot: function () {
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        var result = input.get('value');
-        this.textannot = result;
-        this.editor.save_current_page();
-        if (result.length === 0) {
-            result = "&nbsp;&nbsp;";
-        }
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
-        valref.set('value', result);
-        this.apply_visibility_annot();
-        this.hide_edit();
-        return;
-    },
+    /*save_annot: function () {
+     var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+     var result = input.get('value');
+     this.textannot = result;
+     this.editor.save_current_page();
+     if (result.length === 0) {
+     result = "&nbsp;&nbsp;";
+     }
+     var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+     valref.set('value', result);
+     this.apply_visibility_annot();
+     this.hide_edit();
+     return;
+     },*/
     /**
      * Move an annotation to a new location.
      * @public
