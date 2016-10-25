@@ -113,4 +113,4 @@ $string['statut_select_ko'] = 'no OK';
 $string['send_pdf_update'] = 'Send';
 $string['student_statut_nc'] = 'Todo';
 $string['student_answer_lib'] = 'Answer';
-$string['mod/assignfeedback_editpdf:use'] = 'Use the plugin';
+$string['assignfeedback_editpdf:use'] = 'Use the plugin';
