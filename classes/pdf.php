@@ -498,6 +498,14 @@ class pdf extends \FPDI {
                     $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                     $this->SetXY($scartx, $scarty);
                     $this->SetTextColorArray($colourarray);
+                    //ne pas effacer, pour afficher du dash dans les encadrements
+                    /*$this->writeHTMLCell(20, 20, $scartx, $scarty, "test", array(
+                        'LRTB' => array(
+                            'width' => 1, // careful, this is not px but the unit you declared
+                            'dash' => 1,
+                            'color' => array(0, 0, 0)
+                        )
+                            ), false, false, false, 'L', false);*/
                 }
                 break;
             case 'stampcomment':

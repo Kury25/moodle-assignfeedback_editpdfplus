@@ -1371,8 +1371,8 @@ EDITOR.prototype = {
             var tool = annot.tooltype;
             if (this.get('readonly')
                     && tool.axis
-                    && this.axis[tool.axis]
-                    && this.axis[tool.axis].visibility
+                    && (this.axis[tool.axis] && this.axis[tool.axis].visibility
+                            || tool.axis === "0")
                     && (this.studentstatut < 0 || this.studentstatut === annot.studentstatus)
                     && (this.questionstatut < 0 || this.questionstatut === annot.answerrequested)
                     || !this.get('readonly')) {

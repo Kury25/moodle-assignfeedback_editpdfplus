@@ -1700,7 +1700,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * Delete an annotation
      * @protected
      * @method remove
-     * @param event
+     * @param {event} e
      */
     remove: function (e) {
         var annotations,
@@ -1722,8 +1722,8 @@ Y.extend(ANNOTATION, Y.Base, {
     /**
      * Move an annotation to a new location.
      * @public
-     * @param int newx
-     * @param int newy
+     * @param {int} newx
+     * @param {int} newy
      * @method move_annotation
      */
     move: function (newx, newy) {
@@ -1756,7 +1756,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method draw_current_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
+     * @param {M.assignfeedback_editpdfplus.edit} edit
      */
     draw_current_edit: function (edit) {
         var noop = edit && false;
@@ -1768,7 +1768,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method init_from_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
+     * @param {M.assignfeedback_editpdfplus.edit} edit
      * @return bool if width/height is more than min. required.
      */
     init_from_edit: function (edit) {
@@ -2465,6 +2465,8 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationhighlight = ANNOTATIONHIGHLIGHT;
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -2605,6 +2607,11 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
         return (bounds.has_min_width());
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -2851,6 +2858,8 @@ Y.extend(ANNOTATIONSTAMP, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationstamp = ANNOTATIONSTAMP;
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -2983,6 +2992,11 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
+    /**
+     * display annotation edditing view
+     * No edit annot for this annotation
+     * @param {type} e
+     */
     edit_annot: function (e) {
         return true;
     },
@@ -3012,6 +3026,8 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationstampplus = ANNOTATIONSTAMPPLUS;
+/* global Y, M, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -3143,6 +3159,11 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -3237,6 +3258,12 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         }
         this.editor.drawables.push(this.draw());
     },
+    /**
+     * Delete an annotation
+     * @protected
+     * @method remove
+     * @param {event} e
+     */
     remove: function (e) {
         var annotations,
                 i;
@@ -3260,53 +3287,14 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                 return;
             }
         }
-    },
-    /*move_cartridge_continue: function (e) {
-        e.preventDefault();
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
-    },*/
-    /*move_cartridge_stop: function (e) {
-        e.preventDefault();
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        this.cartridgex += diffx;
-        this.cartridgey += diffy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-
-        this.editor.save_current_page();
-    }*/
+    }
 
 });
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationstampcomment = ANNOTATIONSTAMPCOMMENT;
+/* global M, Y */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -3495,9 +3483,18 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
         this.editor.drawables.push(this.draw());
     },
+    /**
+     * Get the color of the element, depend of data on DB
+     * @return {string} color
+     */
     get_color: function () {
         return this.colour;
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
@@ -3620,6 +3617,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
+    /**
+     * drag-and-drop process
+     * @param {type} e
+     */
     move_cartridge_continue: function (e) {
         e.preventDefault();
 
@@ -3636,6 +3637,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setX(offsetcanvas[0] + this.cartridgex + diffx);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
     },
+    /**
+     * drag-and-drop stop
+     * @param {type} e
+     */
     move_cartridge_stop: function (e) {
         e.preventDefault();
 
@@ -3661,10 +3666,17 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
         this.editor.save_current_page();
     },
+    /**
+     * Add child annotation (new associed frame)
+     * @param {type} e
+     */
     add_annot: function (e) {
         this.editor.currentedit.parent_annot_element = this;
         this.editor.handle_tool_button(e, TOOLTYPELIB.FRAME, 'ctbutton' + this.toolid, 1);
     },
+    /**
+     * Display color/border picker toolbar
+     */
     display_picker: function () {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
@@ -3673,6 +3685,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divpalette.show();
         buttonrenderdisplay.on('click', this.hide_picker, this);
     },
+    /**
+     * Hide color/border picker toolbar
+     */
     hide_picker: function () {
         var divpalette = this.editor.get_dialogue_element('#' + this.divcartridge + "_picker");
         var buttonrenderdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
@@ -3681,6 +3696,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divcartridge.setStyle('z-index', 0);
         buttonrenderdisplay.on('click', this.display_picker, this);
     },
+    /**
+     * Apply "change color" on element and children
+     * 
+     * @param {type} e
+     * @param {string} colour
+     */
     change_color: function (e, colour) {
         this.colour = colour;
         var shape = this.editor.graphic.getShapeById(this.shape_id);
@@ -3721,6 +3742,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.hide_picker();
         this.editor.save_current_page();
     },
+    /**
+     * Apply "change border" on element and children
+     * 
+     * @param {type} e
+     * @param {string} colour
+     */
     change_border: function (e, border) {
         this.borderstyle = border;
         var shape = this.editor.graphic.getShapeById(this.shape_id);
@@ -3772,6 +3799,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         divpalette.hide();
         this.editor.save_current_page();
     },
+    /**
+     * display annotation edditing view
+     * @param {type} e
+     */
     edit_annot: function (e) {
         if (!this.parent_annot_element) {
             var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
@@ -3784,6 +3815,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             ANNOTATIONFRAME.superclass.edit_annot.call(this);
         }
     },
+    /**
+     * remove annotation detail view
+     * @param {type} e
+     * @param {string} clickType
+     */
     hide_edit: function () {
         ANNOTATIONFRAME.superclass.hide_edit.call(this);
         var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -3806,7 +3842,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         }
     },
     /**
-     * Delete an annotation
+     * Delete an annotation and its children
      * @protected
      * @method remove
      * @param event
@@ -3858,6 +3894,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 });
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationframe = ANNOTATIONFRAME;
+/* global M, Y, STROKEWEIGHT, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -3908,9 +3946,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                 verticallinecolour;
 
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
-        /*bounds = new M.assignfeedback_editpdfplus.rect();
-         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-         new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);*/
 
         verticallinecolour = this.get_color();
 
@@ -4008,6 +4043,11 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.page = '';
         return !(((this.endx - this.x) === 0) && ((this.endy - this.y) === 0));
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -4055,47 +4095,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
-    /*move_cartridge_continue: function (e) {
-        e.preventDefault();
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
-    },
-    move_cartridge_stop: function (e) {
-        e.preventDefault();
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
-
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
-                point = this.editor.get_canvas_coordinates(clientpoint);
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
-        var diffx = point.x - this.oldx;
-        var diffy = point.y - this.oldy;
-
-        this.cartridgex += diffx;
-        this.cartridgey += diffy;
-
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
-        divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
-        divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-
-        this.editor.save_current_page();
-    },*/
     /**
      * Delete an annotation
      * @protected
@@ -4131,6 +4130,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationverticalline = ANNOTATIONVERTICALLINE;
+/* global M, Y, SELECTOR */
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -4264,6 +4265,11 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         // Min width and height is always more than 40px.
         return true;
     },
+    /**
+     * Display cartridge and toolbox for the annotation
+     * @param {type} edit
+     * @returns {Boolean} res
+     */
     draw_catridge: function (edit) {
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
@@ -4304,6 +4310,9 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         return true;
     },
+    /**
+     * Display the annotation according to current parameters
+     */
     apply_visibility_annot: function () {
         ANNOTATIONCOMMENTPLUS.superclass.apply_visibility_annot.apply(this);
 
@@ -4323,20 +4332,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             }
         }
     },
-    save_annot: function () {
-        var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-        var result = input.get('value');
-        this.textannot = result;
-        this.editor.save_current_page();
-        if (result.length === 0) {
-            result = "&nbsp;&nbsp;";
-        }
-        var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
-        valref.set('value', result);
-        this.apply_visibility_annot();
-        this.hide_edit();
-        return;
-    },
+    /*save_annot: function () {
+     var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+     var result = input.get('value');
+     this.textannot = result;
+     this.editor.save_current_page();
+     if (result.length === 0) {
+     result = "&nbsp;&nbsp;";
+     }
+     var valref = this.editor.get_dialogue_element('#' + this.divcartridge + "_valref");
+     valref.set('value', result);
+     this.apply_visibility_annot();
+     this.hide_edit();
+     return;
+     },*/
     /**
      * Move an annotation to a new location.
      * @public
@@ -7139,8 +7148,8 @@ EDITOR.prototype = {
             var tool = annot.tooltype;
             if (this.get('readonly')
                     && tool.axis
-                    && this.axis[tool.axis]
-                    && this.axis[tool.axis].visibility
+                    && (this.axis[tool.axis] && this.axis[tool.axis].visibility
+                            || tool.axis === "0")
                     && (this.studentstatut < 0 || this.studentstatut === annot.studentstatus)
                     && (this.questionstatut < 0 || this.questionstatut === annot.answerrequested)
                     || !this.get('readonly')) {
