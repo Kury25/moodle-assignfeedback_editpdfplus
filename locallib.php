@@ -318,7 +318,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function is_enabled() {
         if ($this->assignment->get_context()) {
-            return has_capability('mod/assignfeedback_editpdf:use', $this->assignment->get_context());
+            return has_capability('mod/assignfeedback_editpdf:use', $this->assignment->get_context(),null, false);
         }
         return false;
     }
