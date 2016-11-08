@@ -50,11 +50,8 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         // Now we have the list of comments and annotations per grade.
-        $elename = $this->get_namefor('comment');
-        $elepath = $this->get_pathfor('/feedback_editpdfplus_comments/comment');
-        $paths[] = new restore_path_element($elename, $elepath);
-        $elename = $this->get_namefor('annotation');
-        $elepath = $this->get_pathfor('/feedback_editpdfplus_annotations/annotation');
+        $elename = $this->get_namefor('feedback_editpdfplus_annotation');
+        $elepath = $this->get_pathfor('/feedback_editpdfplus_annotations/feedback_editpdfplus_annotation');
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths;
@@ -79,7 +76,7 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
      * Processes one feedback_editpdfplus_annotations/annotation element
      * @param mixed $data
      */
-    public function process_assignfeedback_editpdfplus_annotation($data) {
+    public function process_assignfeedback_editpdfplus_feedback_editpdfplus_annotation($data) {
         global $DB;
 
         $data = (object)$data;
@@ -89,23 +86,6 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $data->gradeid = $this->get_mappingid('grade', $data->gradeid);
 
         $DB->insert_record('assignfeedback_editpp_annot', $data);
-
-    }
-
-    /**
-     * Processes one feedback_editpdfplus_comments/comment element
-     * @param mixed $data
-     */
-    public function process_assignfeedback_editpdfplus_comment($data) {
-        global $DB;
-
-        $data = (object)$data;
-        $oldgradeid = $data->gradeid;
-        // The mapping is set in the restore for the core assign activity
-        // when a grade node is processed.
-        $data->gradeid = $this->get_mappingid('grade', $data->gradeid);
-
-        $DB->insert_record('assignfeedback_editpp_cmnt', $data);
 
     }
 
