@@ -232,7 +232,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 $axis[] = $toolbar['label'];
                 $toolbartmp = '';
                 foreach ($toolbar['tool'] as $tool) {
-                    $toolbartmp .= $this->render_toolbar_button('', '', $tool);
+                    if ($tool->enabled) {
+                        $toolbartmp .= $this->render_toolbar_button('', '', $tool);
+                    }
                 }
                 $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $tool->axis, 'style' => 'display:none;'));
             }

@@ -124,7 +124,7 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
         }
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
-        this.x = bounds.x - 20;
+        this.x = bounds.x - 5;
         this.y = bounds.y - 10;
         this.endx = bounds.x + bounds.width;
         this.endy = bounds.y + bounds.height;

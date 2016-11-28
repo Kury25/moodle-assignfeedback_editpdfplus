@@ -149,9 +149,9 @@ class page_editor {
             $records = $DB->get_records('assignfeedback_editpp_tool');
         }
         foreach ($records as $record) {
-            if ($record->enabled == 1) {
+            //if ($record->enabled == 1) {
                 array_push($tools, new tool($record));
-            }
+            //}
         }
         usort($tools, function($a, $b) {
             $al = $a->order;

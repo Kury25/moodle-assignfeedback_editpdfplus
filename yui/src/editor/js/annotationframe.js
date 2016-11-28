@@ -349,12 +349,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     move_cartridge_stop: function (e) {
         e.preventDefault();
 
-        var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
+        /*var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
         divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);
+        divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
+        
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        canvas.detach('mousemove', this.move_cartridge_continue, this);
+        canvas.detach('mouseup', this.move_cartridge_stop, this);
 
-        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-                clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
+        //var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
+        var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                         e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();

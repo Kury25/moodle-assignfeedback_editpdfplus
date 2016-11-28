@@ -70,7 +70,8 @@ ANNOTATIONCOLOUR = {
     'yellow': 'rgb(255,207,53)',
     'red': 'rgb(239,69,64)',
     'green': 'rgb(152,202,62)',
-    'blue': 'rgb(125,159,211)',
+    //'blue': 'rgb(125,159,211)',
+    'blue': 'rgb(0,0,255)',
     'black': 'rgb(51,51,51)'
 },
 CLICKTIMEOUT = 300,

@@ -37,7 +37,7 @@
         <FIELD NAME="cartridgey" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="y-position of the start of the cartridge (in pixels - image resolution is set to 100 pixels per inch)"/>
         <FIELD NAME="path" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="SVG path describing the freehand line"/>
         <FIELD NAME="toolid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="textannot" TYPE="char" LENGTH="500" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="textannot" TYPE="char" LENGTH="1000" NOTNULL="false" SEQUENCE="false"/>
         <FIELD NAME="colour" TYPE="char" LENGTH="15" NOTNULL="false" DEFAULT="black" SEQUENCE="false" COMMENT="Can be red, yellow, green, blue, white, black"/>
         <FIELD NAME="draft" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Is this a draft annotation?"/>
         <FIELD NAME="answerrequested" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

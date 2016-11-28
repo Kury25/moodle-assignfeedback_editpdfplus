@@ -248,21 +248,31 @@ EDITOR.prototype = {
      * @method refresh_button_state
      */
     refresh_button_state: function () {
-        var button, currenttoolnode, imgurl, drawingregion;
+        var currenttoolnode, drawingregion;
 
-        button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
-        imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
-        button.one('img').setAttribute('src', imgurl);
+        this.refresh_button_color_state();
 
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
         } else {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
-        currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
-        currenttoolnode.setAttribute('aria-pressed', 'true');
+        if (currenttoolnode) {
+            currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.setAttribute('aria-pressed', 'true');
+        }
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
+    },
+    /**
+     * Called to set the current colours
+     * @method refresh_button_color_state
+     */
+    refresh_button_color_state: function () {
+        var button, imgurl;
+        button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
+        imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
+        button.one('img').setAttribute('src', imgurl);
     },
     /**
      * Called to get the bounds of the drawing region.
@@ -659,11 +669,12 @@ EDITOR.prototype = {
                     colour = e.target.ancestor().getAttribute('data-colour');
                 }
                 this.currentedit.annotationcolour = colour;
-                if (this.lastannotationtool) {
+                /*if (this.lastannotationtool && this.lastannotationtool !== 'select') {
                     this.handle_tool_button(e, this.lastannotationtool);
                 } else {
                     this.handle_tool_button(e, "pen");
-                }
+                }*/
+                this.refresh_button_color_state();
             },
             context: this
         });
@@ -732,8 +743,10 @@ EDITOR.prototype = {
         } else {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
-        currenttoolnode.removeClass('assignfeedback_editpdfplus_selectedbutton');
-        currenttoolnode.setAttribute('aria-pressed', 'false');
+        if (currenttoolnode) {
+            currenttoolnode.removeClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.setAttribute('aria-pressed', 'false');
+        }
         //update le currentedit object with the new tool
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
