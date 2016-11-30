@@ -146,15 +146,38 @@ if ($action == 'loadallpages') {
     }
 
     if ($refresh) {
-        $teachers = get_users_by_capability($context, 'mod/assign:grade');
-        $body = "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : "
+        $teachers = get_users_by_capability($context, 'mod/assignfeedback_editpdf:notify');
+        $contextb = $assignment->get_context();
+        $course = $assignment->get_course();
+        $coursemodule = $assignment->get_course_module();
+        $modulename = get_string('modulename', 'assign');
+        $assignmentname = $assignment->get_instance()->name;
+        $formatparams = array('context' => $contextb->get_course_context());
+        $body = format_string($course->shortname, true, $formatparams)
+                . ' -> '
+                . $modulename 
+                . ' -> '
+                . format_string($assignmentname, true, $formatparams) . "\n"
+                . "\n---------------------------------------------------------------------\n"
+                . "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : "
                 . $response->url
                 . "\n\nCeci est un mail automatique.";
-        $bodyhtml = "<html><b>Information Moodle</b><br/>"
+        $bodyhtml = '<p><font face="sans-serif">'
+                .'<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $course->id . '">'
+                .format_string($course->shortname, true, $formatparams)
+                .'</a> ->'
+                .'<a href="' . $CFG->wwwroot . '/mod/assign/index.php?id=' . $course->id . '">'
+                .$modulename
+                .'</a> ->' 
+                .'<a href="' . $CFG->wwwroot . '/mod/assign/view.php?id=' . $coursemodule->id . '">'
+                .format_string($assignmentname, true, $formatparams)
+                .'</a></font></p>'
+                .'<hr /><font face="sans-serif">'
+                ."<b>Information Moodle</b><br/>"
                 . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='"
                 . $response->url
                 . "'>lien</a></p>"
-                . "<i>Ceci est un mail automatique.</i></html>";
+                . "<i>Ceci est un mail automatique.</i>";
         foreach ($teachers as $teacher) {
             $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
         }

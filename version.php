@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016101700;
+$plugin->version   = 2016112900;
 $plugin->requires  = 2016051900;
 $plugin->dependencies = array(
     'assignfeedback_editpdf' => 2016052300
