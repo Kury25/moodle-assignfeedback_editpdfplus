@@ -1436,8 +1436,8 @@ Y.extend(ANNOTATION, Y.Base, {
         this.oldx = point.x;
         this.oldy = point.y;
         /*var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.on('mousemove', this.move_cartridge_continue, this);
-        divcartridge.on('mouseup', this.move_cartridge_stop, this);*/
+         divcartridge.on('mousemove', this.move_cartridge_continue, this);
+         divcartridge.on('mouseup', this.move_cartridge_stop, this);*/
         canvas.on('mousemove', this.move_cartridge_continue, this);
         canvas.on('mouseup', this.move_cartridge_stop, this);
     },
@@ -1469,8 +1469,8 @@ Y.extend(ANNOTATION, Y.Base, {
         e.preventDefault();
 
         /*var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
+         divcartridge.detach('mousemove', this.move_cartridge_continue, this);
+         divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         //var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         canvas.detach('mousemove', this.move_cartridge_continue, this);
@@ -1478,7 +1478,7 @@ Y.extend(ANNOTATION, Y.Base, {
 
         //var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
         var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
+                e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
 
@@ -1581,7 +1581,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 input.set('focus', 'on');
             }
             this.disabled_canvas_event();
-            divprincipale.on('clickoutside', this.save_annot, this, 'clickoutside');
+            divprincipale.on('clickoutside', this.save_annot_clickout, this, 'clickoutside');
         }
     },
     /**
@@ -1595,6 +1595,12 @@ Y.extend(ANNOTATION, Y.Base, {
             input.set('value', unputtext);
         }
         this.save_annot(unputtext);
+    },
+    save_annot_clickout: function (e, clickType) {
+        if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
+            this.save_annot(null);
+        }
+        return;
     },
     /**
      * save text annotation
@@ -1694,8 +1700,8 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             if (divprincipale) {
                 divprincipale.setStyle('z-index', 1);
+                divprincipale.detach();
                 if (this.editor.get('readonly')) {
-                    divprincipale.detach();
                     divprincipale.on('click', this.view_annot, this, 'click');
                 }
             }
