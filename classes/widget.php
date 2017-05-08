@@ -19,7 +19,7 @@
  * This file contains the definition for the library class for edit PDF renderer.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2012 Davo Smith
+ * @copyright  2016 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
