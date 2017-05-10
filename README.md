@@ -11,6 +11,6 @@ Welcome to EditPdfPlus: fork of Moodle/editpdf module, developped by UNIL/RISET
 ## Active and use EditPdfPlus
 //TODO
 
-#Authors
+# Authors
 RISET @ UNIL
 EditPdfPlus is a free software released under GPL3 licence.
