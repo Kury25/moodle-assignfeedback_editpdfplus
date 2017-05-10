@@ -8,7 +8,6 @@ Welcome to EditPdfPlus: fork of Moodle/editpdf module, developped by UNIL/RISET
 
 ## Active and use EditPdfPlus
 
-##
 
 #Authors
 RISET @ UNIL
