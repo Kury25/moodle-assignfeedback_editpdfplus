@@ -18,18 +18,22 @@ This tool is a moodle plugin wich allows:
 
 ## Easy start
 ### Install a release
+#### On frontend
+- Download zip sources
+- Open moodle on web
+- Go to administration site, into plugin menu
+- Install plugin from zip
+
+
 #### On server
-- Copy repertory into ***moodle_home***/mod/assign/feedback/
-- Patch editpdf plugin files
+Patch editpdf plugin files
+
+This patch allow users to use either editpdf or editpdfplus.
+
+By default, it's the origin editpdf annotation tool which will be activated for all courses.
 
 //TODO patch or script on editpdf files
 
-#### On frontend
-- Open moodle on web
-- Go to administration site, into plugin menu
-- Install new plugin
-
-By default, it's the origin editpdf annotation tool which will be activated for all courses.
 
 ### Configuration
 //TODO
