@@ -19,7 +19,7 @@ This tool is a moodle plugin wich allows:
 ## Easy start
 ### Install a release
 #### On server
-- Copy repertory into <moodle_home>/mod/assign/feedback/
+- Copy repertory into ***moodle_home***/mod/assign/feedback/
 - Patch editpdf plugin files
 
 //TODO patch or script on editpdf files
