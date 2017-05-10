@@ -36,7 +36,7 @@ By default, it's the origin editpdf annotation tool which will be activated for 
 
 
 ### Configuration
-//TODO
+See <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/configuration">wiki page</a> for this part.
 
 ### Active and use EditPdfPlus
 //TODO
