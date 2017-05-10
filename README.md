@@ -1,6 +1,8 @@
 # EditPdfPlus : fork of Moodle/editpdf, with customs options
 Welcome to EditPdfPlus: fork of Moodle/editpdf module, developped by UNIL/RISET
 
+Compatible with Moodle v3.1
+
 ## Synopsis
 ### Description
 This tool is a moodle plugin wich allows:
@@ -16,7 +18,18 @@ This tool is a moodle plugin wich allows:
 
 ## Easy start
 ### Install a release
-//TODO
+#### On server
+- Copy repertory into <moodle_home>/mod/assign/feedback/
+- Patch editpdf plugin files
+
+//TODO patch or script on editpdf files
+
+#### On frontend
+- Open moodle on web
+- Go to administration site, into plugin menu
+- Install new plugin
+
+By default, it's the origin editpdf annotation tool which will be activated for all courses.
 
 ### Configuration
 //TODO
