@@ -39,7 +39,14 @@ By default, it's the origin editpdf annotation tool which will be activated for 
 See <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/configuration">wiki page</a> for this part.
 
 ### Active and use EditPdfPlus
-//TODO
+An administrator profile will be able to give to a course the right to use this plugin or not.
+- go to the permissions course
+- look for ***mod/assignfeedback_editpdf:use***
+- add manager, teacher and student roles to it
+
+When a student give back a homework, the editpdfplus will automatically be used.
+
+For usage application, please follow this documentation. //TODO
 
 ## What's next?
 Develop interface for teacher, in order to allow them to customize their own palettes.
