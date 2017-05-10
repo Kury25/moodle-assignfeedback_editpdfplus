@@ -3,11 +3,13 @@ Welcome to EditPdfPlus: fork of Moodle/editpdf module, developped by UNIL/RISET
 
 # Easy start
 ## Install a release
+//TODO
 
 ## Configuration
+//TODO
 
 ## Active and use EditPdfPlus
-
+//TODO
 
 #Authors
 RISET @ UNIL
