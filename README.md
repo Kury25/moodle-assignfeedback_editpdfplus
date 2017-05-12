@@ -48,8 +48,6 @@ When a student give back a homework, the editpdfplus will automatically be used.
 
 For usage application, please follow <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/user-guide">this documentation</a>.
 
-//TODO
-
 ## What's next?
 Develop interface for teacher, in order to allow them to customize their own palettes.
 
