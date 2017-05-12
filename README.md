@@ -14,7 +14,7 @@ This tool is a moodle plugin wich allows:
 - to generate a PDF with annotations, and questions / answers
 
 ### Screenshots
-//TODO
+See <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/home">wiki page</a> for this part.
 
 ## Easy start
 ### Install a release
@@ -46,7 +46,9 @@ An administrator profile will be able to give to a course the right to use this 
 
 When a student give back a homework, the editpdfplus will automatically be used.
 
-For usage application, please follow this documentation. //TODO
+For usage application, please follow this documentation.
+
+//TODO
 
 ## What's next?
 Develop interface for teacher, in order to allow them to customize their own palettes.
