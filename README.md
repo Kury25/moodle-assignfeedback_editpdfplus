@@ -46,7 +46,7 @@ An administrator profile will be able to give to a course the right to use this 
 
 When a student give back a homework, the editpdfplus will automatically be used.
 
-For usage application, please follow this documentation.
+For usage application, please follow <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/user-guide">this documentation</a>.
 
 //TODO
 
