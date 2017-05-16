@@ -23,12 +23,6 @@
         "annotationcommentplus.js",
         "dropdown.js",
         "colourpicker.js",
-        "stamppicker.js",
-        "commentmenu.js",
-        "commentsearch.js",
-        "comment.js",
-        "quickcomment.js",
-        "quickcommentlist.js",
         "editor.js"
       ]
     }

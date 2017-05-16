@@ -4,26 +4,6 @@
     xsi:noNamespaceSchemaLocation="../../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="assignfeedback_editpp_cmnt" COMMENT="Stores comments added to pdfs">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="gradeid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="x" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="x-position of the top-left corner of the comment (in pixels - image resolution is set to 100 pixels per inch)"/>
-        <FIELD NAME="y" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="y-position of the top-left corner of the comment (in pixels - image resolution is set to 100 pixels per inch)"/>
-        <FIELD NAME="width" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="120" SEQUENCE="false" COMMENT="width, in pixels, of the comment box"/>
-        <FIELD NAME="rawtext" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Raw text of the comment"/>
-        <FIELD NAME="pageno" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The page in the PDF that this comment appears on"/>
-        <FIELD NAME="colour" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="black" SEQUENCE="false" COMMENT="Can be red, yellow, green, blue, white, black"/>
-        <FIELD NAME="draft" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="Is this a draft comment?"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="gradeid" TYPE="foreign" FIELDS="gradeid" REFTABLE="assign_grades" REFFIELDS="id"/>
-      </KEYS>
-      <INDEXES>
-        <INDEX NAME="gradeid_pageno" UNIQUE="false" FIELDS="gradeid, pageno"/>
-      </INDEXES>
-    </TABLE>
     <TABLE NAME="assignfeedback_editpp_annot" COMMENT="stores annotations added to pdfs submitted by students">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -58,19 +38,6 @@
         <INDEX NAME="gradeid_pageno" UNIQUE="false" FIELDS="gradeid, pageno"/>
         <INDEX NAME="parent_annot" UNIQUE="false" FIELDS="parent_annot"/>
       </INDEXES>
-    </TABLE>
-    <TABLE NAME="assignfeedback_editpp_quick" COMMENT="Stores teacher specified quicklist comments">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="rawtext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="width" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="120" SEQUENCE="false"/>
-        <FIELD NAME="colour" TYPE="char" LENGTH="10" NOTNULL="false" DEFAULT="yellow" SEQUENCE="false"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
-      </KEYS>
     </TABLE>
     <TABLE NAME="assignfeedback_editpp_queue" COMMENT="Queue for processing.">
       <FIELDS>

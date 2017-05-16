@@ -20,6 +20,7 @@
  * @package   assignfeedback_editpdfplus
  * @copyright 2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @deprecated since version 2017051600
  */
 
 namespace assignfeedback_editpdfplus;

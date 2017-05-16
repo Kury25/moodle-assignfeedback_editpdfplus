@@ -135,9 +135,8 @@ Y.extend(ANNOTATIONSTAMPPLUS, M.assignfeedback_editpdfplus.annotation, {
     /**
      * display annotation edditing view
      * No edit annot for this annotation
-     * @param {type} e
      */
-    edit_annot: function (e) {
+    edit_annot: function () {
         return true;
     },
     /**

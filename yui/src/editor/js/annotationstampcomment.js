@@ -50,9 +50,15 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        var fleche = '<img id="' + this.shape_id + '_img" src=\'' + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus') + '\' style="width:30px;" />';
+        var fleche = '<img id="'
+                + this.shape_id
+                + '_img" src=\''
+                + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
+                + '\' style="width:30px;" />';
         if (this.displayrotation > 0) {
-            fleche = '<img id="' + this.shape_id + '_img" src=\'' + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus') + '\' style="height:30px;" />';
+            fleche = '<img id="' + this.shape_id + '_img" src=\''
+                    + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
+                    + '\' style="height:30px;" />';
         }
         node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
@@ -133,10 +139,10 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Display cartridge and toolbox for the annotation
-     * @param {type} edit
      * @returns {Boolean} res
      */
-    draw_catridge: function (edit) {
+    draw_catridge: function () {
+        var divdisplay;
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
@@ -144,7 +150,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
-            var divdisplay = this.get_div_cartridge(colorcartridge);
+            divdisplay = this.get_div_cartridge(colorcartridge);
             divdisplay.addClass('assignfeedback_editpdfplus_stampcomment');
 
             // inscription entete
@@ -159,9 +165,17 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                 if (this.displayrotation > 0) {
                     rotationvalue = 1;
                 }
-                var inputrotationdisplay = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_rotation' value=" + rotationvalue + " />");
+                var inputrotationdisplay = Y.Node.create("<input type='hidden' id='"
+                        + this.divcartridge
+                        + "_rotation' value="
+                        + rotationvalue
+                        + " />");
                 divconteneurdisplay.append(inputrotationdisplay);
-                var buttonrotation = "<button id='" + this.divcartridge + "_buttonrotation'><img src='" + M.util.image_url('e/restore_draft', 'core') + "' /></button>";
+                var buttonrotation = "<button id='"
+                        + this.divcartridge
+                        + "_buttonrotation'><img src='"
+                        + M.util.image_url('e/restore_draft', 'core')
+                        + "' /></button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
                 divconteneurdisplay.append(buttonrotationdisplay);
@@ -178,10 +192,10 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
             }
             divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
@@ -189,7 +203,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }

@@ -239,10 +239,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.colour = config.parent_annot_element.colour || 'red';
             this.tooltype = config.tooltype;
             this.textannot = config.parent_annot_element.textannot;
-            this.displaylock = parseInt(config.parent_annot_element.displaylock);
+            this.displaylock = parseInt(config.parent_annot_element.displaylock, 10);
             this.displayrotation = config.parent_annot_element.displayrotation;
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
-            this.parent_annot = parseInt(config.parent_annot_element.id);
+            this.parent_annot = parseInt(config.parent_annot_element.id, 10);
             this.studentstatus = parseInt(config.parent_annot_element.studentstatus, 10) || 0;
             this.parent_annot_element = config.parent_annot_element;
             //config.parent_annot_element.children.push(this);
@@ -255,10 +255,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.colour = config.colour || 'red';
             this.tooltype = config.tooltype;
             this.textannot = config.textannot;
-            this.displaylock = parseInt(config.displaylock);
+            this.displaylock = parseInt(config.displaylock, 10);
             this.displayrotation = config.displayrotation;
             this.borderstyle = config.borderstyle || 'solid';
-            this.parent_annot = parseInt(config.parent_annot);
+            this.parent_annot = parseInt(config.parent_annot, 10);
             this.answerrequested = parseInt(config.answerrequested, 10) || 0;
             this.studentstatus = parseInt(config.studentstatus, 10) || 0;
             this.studentanswer = config.studentanswer;
@@ -321,8 +321,8 @@ Y.extend(ANNOTATION, Y.Base, {
             parent_annot: parseInt(this.parent_annot, 10),
             divcartridge: this.divcartridge,
             parent_annot_div: '',
-            answerrequested: parseInt(this.answerrequested),
-            studentstatus: parseInt(this.studentstatus)
+            answerrequested: parseInt(this.answerrequested, 10),
+            studentstatus: parseInt(this.studentstatus, 10)
         };
     },
     /**
@@ -334,7 +334,7 @@ Y.extend(ANNOTATION, Y.Base, {
     light_clean: function () {
         return {
             id: this.id,
-            studentstatus: parseInt(this.studentstatus),
+            studentstatus: parseInt(this.studentstatus, 10),
             studentanswer: this.studentanswer
         };
     },
@@ -517,7 +517,11 @@ Y.extend(ANNOTATION, Y.Base, {
         divedition += "id='" + this.divcartridge + "_edit' ";
         divedition += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_edition' ";
         divedition += "style='display:none;'> ";
-        divedition += "<textarea id='" + this.divcartridge + "_editinput' type='text' value=\"" + this.get_valref() + "\" >" + this.get_valref() + "</textarea>";
+        divedition += "<textarea id='"
+                + this.divcartridge
+                + "_editinput' type='text' value=\""
+                + this.get_valref() + "\" >"
+                + this.get_valref() + "</textarea>";
         divedition += "</div>";
         var diveditiondisplay = Y.Node.create(divedition);
         var propositions = this.tooltype.texts;
@@ -525,7 +529,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var divproposition = "<div></div>";
             var divpropositiondisplay = Y.Node.create(divproposition);
             var propositionarray = propositions.split('","');
-            for (i = 0; i < propositionarray.length; i++) {
+            for (var i = 0; i < propositionarray.length; i++) {
                 var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
                 var buttontmpdisplay = Y.Node.create(buttontmp);
                 buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
@@ -552,14 +556,25 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.answerrequested === 1) {
             var divinput = Y.Node.create("<div></div>");
             var hr = Y.Node.create("<hr style='margin-bottom:0px;'/>");
-            var label = Y.Node.create("<label style='display:inline;'>" + M.util.get_string('student_answer_lib', 'assignfeedback_editpdfplus') + "</label>");
+            var label = Y.Node.create("<label style='display:inline;'>"
+                    + M.util.get_string('student_answer_lib', 'assignfeedback_editpdfplus')
+                    + "</label>");
             var rep = "";
             if (this.studentanswer && this.studentanswer !== "0" && this.studentanswer !== "1") {
                 rep = this.studentanswer;
             }
-            var textarea = Y.Node.create("<br/><textarea id='" + this.divcartridge + "_studentanswer' type='text' value=\"" + rep + "\" >" + rep + "</textarea>");
+            var textarea = Y.Node.create("<br/><textarea id='"
+                    + this.divcartridge
+                    + "_studentanswer' type='text' value=\""
+                    + rep + "\" >"
+                    + rep
+                    + "</textarea>");
             rep = this.studentanswer;
-            var buttonsave = "<button id='" + this.divcartridge + "_buttonsavestudentanswer' style='margin-left:110px;'><img src='" + M.util.image_url('e/save', 'core') + "' /></button>";
+            var buttonsave = "<button id='"
+                    + this.divcartridge
+                    + "_buttonsavestudentanswer' style='margin-left:110px;'><img src='"
+                    + M.util.image_url('e/save', 'core')
+                    + "' /></button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_studentanswer, this, null);
 
@@ -597,7 +612,7 @@ Y.extend(ANNOTATION, Y.Base, {
         //divconteneurdisplay.append(inputvalref);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
-        var readonly = this.editor.get('readonly');
+        readonly = this.editor.get('readonly');
         if (!readonly) {
             divconteneurdisplay.append(this.get_button_visibility_left());
             divconteneurdisplay.append(this.get_button_visibility_right());
@@ -618,9 +633,21 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_student_status: function () {
-        var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=0 >' + M.util.get_string('student_statut_nc', 'assignfeedback_editpdfplus') + '</label>';
-        var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=1 ><img style="width:15px;" src=\'' + M.util.image_url('tick', 'assignfeedback_editpdfplus') + '\' /></label>';
-        var buttonstatus3 = '<label class="radio-inline"><input type="radio" name="' + this.divcartridge + '_status" value=2 ><img style="width:15px;" src=\'' + M.util.image_url('cross', 'assignfeedback_editpdfplus') + '\' /></label> ';
+        var buttonstatus1 = '<label style="padding-left:20px;" class="radio-inline"><input type="radio" name="'
+                + this.divcartridge
+                + '_status" value=0 >'
+                + M.util.get_string('student_statut_nc', 'assignfeedback_editpdfplus')
+                + '</label>';
+        var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="'
+                + this.divcartridge
+                + '_status" value=1 ><img style="width:15px;" src=\''
+                + M.util.image_url('tick', 'assignfeedback_editpdfplus')
+                + '\' /></label>';
+        var buttonstatus3 = '<label class="radio-inline"><input type="radio" name="'
+                + this.divcartridge
+                + '_status" value=2 ><img style="width:15px;" src=\''
+                + M.util.image_url('cross', 'assignfeedback_editpdfplus')
+                + '\' /></label> ';
         var buttonstatus1display = Y.Node.create(buttonstatus1);
         var buttonstatus2display = Y.Node.create(buttonstatus2);
         var buttonstatus3display = Y.Node.create(buttonstatus3);
@@ -629,7 +656,9 @@ Y.extend(ANNOTATION, Y.Base, {
         buttonstatus2display.on('click', this.change_status, this, 1);
         buttonstatus3display.on('click', this.change_status, this, 2);
 
-        var buttonstatusdisplay = Y.Node.create("<div id='" + this.divcartridge + "_radioContainer' style='display:inline;'></div>");
+        var buttonstatusdisplay = Y.Node.create("<div id='"
+                + this.divcartridge
+                + "_radioContainer' style='display:inline;'></div>");
         buttonstatusdisplay.append(buttonstatus1display);
         buttonstatusdisplay.append(buttonstatus2display);
         buttonstatusdisplay.append(buttonstatus3display);
@@ -666,7 +695,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_save: function () {
-        var buttonsave = "<button id='" + this.divcartridge + "_buttonsave' style='display:none;margin-left:110px;'><img src='" + M.util.image_url('t/check', 'core') + "' /></button>";
+        var buttonsave = "<button id='"
+                + this.divcartridge
+                + "_buttonsave' style='display:none;margin-left:110px;'><img src='"
+                + M.util.image_url('t/check', 'core')
+                + "' /></button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
         buttonsavedisplay.on('click', this.save_annot, this, null);
         return buttonsavedisplay;
@@ -676,7 +709,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_cancel: function () {
-        var buttoncancel = "<button id='" + this.divcartridge + "_buttoncancel' style='display:none;'><img src='" + M.util.image_url('t/reset', 'core') + "' /></button>";
+        var buttoncancel = "<button id='"
+                + this.divcartridge
+                + "_buttoncancel' style='display:none;'><img src='"
+                + M.util.image_url('t/reset', 'core')
+                + "' /></button>";
         var buttoncanceldisplay = Y.Node.create(buttoncancel);
         buttoncanceldisplay.on('click', this.cancel_edit, this);
         return buttoncanceldisplay;
@@ -686,7 +723,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_question: function () {
-        var buttonquestion = "<button id='" + this.divcartridge + "_buttonquestion' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('help_no', 'assignfeedback_editpdfplus') + "' /></button>";
+        var buttonquestion = "<button id='"
+                + this.divcartridge
+                + "_buttonquestion' style='display:none;margin-left:10px;'><img src='"
+                + M.util.image_url('help_no', 'assignfeedback_editpdfplus')
+                + "' /></button>";
         var buttonquestiondisplay = Y.Node.create(buttonquestion);
         buttonquestiondisplay.on('click', this.change_question_status, this);
         return buttonquestiondisplay;
@@ -696,7 +737,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_remove: function () {
-        var buttontrash = "<button id='" + this.divcartridge + "_buttonremove' style='display:none;margin-left:10px;'><img src='" + M.util.image_url('trash', 'assignfeedback_editpdfplus') + "' /></button>";
+        var buttontrash = "<button id='"
+                + this.divcartridge
+                + "_buttonremove' style='display:none;margin-left:10px;'><img src='"
+                + M.util.image_url('trash', 'assignfeedback_editpdfplus')
+                + "' /></button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
         buttontrashdisplay.on('click', this.remove_by_trash, this);
         return buttontrashdisplay;
@@ -807,7 +852,7 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     change_visibility_annot: function (e, sens) {
         var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-        var finalvalue = parseInt(interrupt.get('value'));
+        var finalvalue = parseInt(interrupt.get('value'), 10);
         if (sens === 'r') {
             finalvalue += 1;
         } else {
@@ -823,7 +868,7 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     change_question_status: function () {
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
-        var value = parseInt(questionvalue.get('value'));
+        var value = parseInt(questionvalue.get('value'), 10);
         var finalvalue = 0;
         if (value === 0) {
             finalvalue = 1;
@@ -864,7 +909,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
         var value = 0;
         if (questionvalue) {
-            value = parseInt(questionvalue.get('value'));
+            value = parseInt(questionvalue.get('value'), 10);
         }
         if (buttonquestion) {
             if (value === 1) {
@@ -948,9 +993,8 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     /**
      * global method, draw empty cartridge
-     * @param {type} edit
      */
-    draw_catridge: function (edit) {
+    draw_catridge: function () {
         return true;
     },
     /**
@@ -977,7 +1021,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 }
                 for (var i = 0; i < studentstatusinput.size(); i++) {
                     var tmp = studentstatusinput.item(i);
-                    if (parseInt(tmp.get('value')) === this.studentstatus) {
+                    if (parseInt(tmp.get('value'), 10) === this.studentstatus) {
                         tmp.set('checked', true);
                     } else {
                         tmp.set('checked', false);
@@ -996,9 +1040,8 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     /**
      * display annotation edditing view
-     * @param {type} e
      */
-    edit_annot: function (e) {
+    edit_annot: function () {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
@@ -1077,9 +1120,8 @@ Y.extend(ANNOTATION, Y.Base, {
     },
     /**
      * save student answer
-     * @param {type} e
      */
-    save_studentanswer: function (e) {
+    save_studentanswer: function () {
         var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_studentanswer");
         if (input) {
             this.studentanswer = input.get('value');

@@ -82,6 +82,9 @@ class pdf extends \FPDI {
     /** Min. height an annotation should have */
     const MIN_ANNOTATION_HEIGHT = 5;
 
+    /** Blank PDF file used during error. */
+    const BLANK_PDF = '/mod/assign/feedback/editpdf/fixtures/blank.pdf';
+
     /**
      * Combine the given PDF files into a single PDF. Optionally add a coversheet and coversheet fields.
      * @param string[] $pdflist  the filenames of the files to combine
@@ -221,57 +224,6 @@ class pdf extends \FPDI {
         while ($morepages) {
             $morepages = $this->copy_page();
         }
-    }
-
-    /**
-     * Add a comment to the current page
-     * @param string $text the text of the comment
-     * @param int $x the x-coordinate of the comment (in pixels)
-     * @param int $y the y-coordinate of the comment (in pixels)
-     * @param int $width the width of the comment (in pixels)
-     * @param string $colour optional the background colour of the comment (red, yellow, green, blue, white, clear)
-     * @return bool true if successful (always)
-     * @deprecated since version 2016101700
-     */
-    public function add_comment($text, $x, $y, $width, $colour = 'yellow') {
-        if (!$this->filename) {
-            return false;
-        }
-        $this->SetDrawColor(51, 51, 51);
-        switch ($colour) {
-            case 'red':
-                $this->SetFillColor(249, 181, 179);
-                break;
-            case 'green':
-                $this->SetFillColor(214, 234, 178);
-                break;
-            case 'blue':
-                $this->SetFillColor(203, 217, 237);
-                break;
-            case 'white':
-                $this->SetFillColor(255, 255, 255);
-                break;
-            default: /* Yellow */
-                $this->SetFillColor(255, 236, 174);
-                break;
-        }
-
-        $x *= $this->scale;
-        $y *= $this->scale;
-        $width *= $this->scale;
-        $text = str_replace('&lt;', '<', $text);
-        $text = str_replace('&gt;', '>', $text);
-        // Draw the text with a border, but no background colour (using a background colour would cause the fill to
-        // appear behind any existing content on the page, hence the extra filled rectangle drawn below).
-        $this->MultiCell($width, 1.0, $text, 0, 'L', 0, 4, $x, $y); /* width, height, text, border, justify, fill, ln, x, y */
-        if ($colour != 'clear') {
-            $newy = $this->GetY();
-            // Now we know the final size of the comment, draw a rectangle with the background colour.
-            $this->Rect($x, $y, $width, $newy - $y, 'DF');
-            // Re-draw the text over the top of the background rectangle.
-            $this->MultiCell($width, 1.0, $text, 0, 'L', 0, 4, $x, $y); /* width, height, text, border, justify, fill, ln, x, y */
-        }
-        return true;
     }
 
     /**
@@ -499,13 +451,13 @@ class pdf extends \FPDI {
                     $this->SetXY($scartx, $scarty);
                     $this->SetTextColorArray($colourarray);
                     //ne pas effacer, pour afficher du dash dans les encadrements
-                    /*$this->writeHTMLCell(20, 20, $scartx, $scarty, "test", array(
-                        'LRTB' => array(
-                            'width' => 1, // careful, this is not px but the unit you declared
-                            'dash' => 1,
-                            'color' => array(0, 0, 0)
-                        )
-                            ), false, false, false, 'L', false);*/
+                    /* $this->writeHTMLCell(20, 20, $scartx, $scarty, "test", array(
+                      'LRTB' => array(
+                      'width' => 1, // careful, this is not px but the unit you declared
+                      'dash' => 1,
+                      'color' => array(0, 0, 0)
+                      )
+                      ), false, false, false, 'L', false); */
                 }
                 break;
             case 'stampcomment':
@@ -561,7 +513,7 @@ class pdf extends \FPDI {
         if ($type == 'stampplus' || $type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
             $cartouche = $toolObject->cartridge;
             if ($annotation->textannot) {
-                $cartouche.= ' [' . $annotation_index . ']';
+                $cartouche .= ' [' . $annotation_index . ']';
             }
             $this->Write(5, $cartouche);
         }
@@ -649,17 +601,76 @@ class pdf extends \FPDI {
 
     /**
      * Check to see if PDF is version 1.4 (or below); if not: use ghostscript to convert it
+     * 
      * @param stored_file $file
      * @return string path to copy or converted pdf (false == fail)
      */
     public static function ensure_pdf_compatible(\stored_file $file) {
         global $CFG;
 
-        $temparea = \make_temp_directory('assignfeedback_editpdfplus');
-        $hash = $file->get_contenthash(); // Use the contenthash to make sure the temp files have unique names.
-        $tempsrc = $temparea . "/src-$hash.pdf";
-        $tempdst = $temparea . "/dst-$hash.pdf";
+        //$temparea = make_temp_directory('assignfeedback_editpdfplus');
+        $temparea = make_temp_directory();
+        //$hash = $file->get_contenthash(); // Use the contenthash to make sure the temp files have unique names.
+        //$tempsrc = $temparea . "/src-$hash.pdf";
+        //$tempdst = $temparea . "/dst-$hash.pdf";
+        $tempsrc = $temparea . "/source.pdf";
         $file->copy_content_to($tempsrc); // Copy the file.
+
+        return self::ensure_pdf_file_compatible($tempsrc);
+
+        /* $pdf = new pdf();
+          $pagecount = 0;
+          try {
+          $pagecount = $pdf->load_pdf($tempsrc);
+          } catch (\Exception $e) {
+          // PDF was not valid - try running it through ghostscript to clean it up.
+          $pagecount = 0;
+          }
+          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
+
+          if ($pagecount > 0) {
+          // Page is valid and can be read by tcpdf.
+          return $tempsrc;
+          }
+
+          $gsexec = \escapeshellarg($CFG->pathtogs);
+          $tempdstarg = \escapeshellarg($tempdst);
+          $tempsrcarg = \escapeshellarg($tempsrc);
+          $command = "$gsexec -q -sDEVICE=pdfwrite -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
+          exec($command);
+          @unlink($tempsrc);
+          if (!file_exists($tempdst)) {
+          // Something has gone wrong in the conversion.
+          return false;
+          }
+
+          $pdf = new pdf();
+          $pagecount = 0;
+          try {
+          $pagecount = $pdf->load_pdf($tempdst);
+          } catch (\Exception $e) {
+          // PDF was not valid - try running it through ghostscript to clean it up.
+          $pagecount = 0;
+          }
+          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
+
+          if ($pagecount <= 0) {
+          @unlink($tempdst);
+          // Could not parse the converted pdf.
+          return false;
+          }
+
+          return $tempdst; */
+    }
+
+    /**
+     * Check to see if PDF is version 1.4 (or below); if not: use ghostscript to convert it
+     *
+     * @param   string $tempsrc The path to the file on disk.
+     * @return  string path to copy or converted pdf (false == fail)
+     */
+    public static function ensure_pdf_file_compatible($tempsrc) {
+        global $CFG;
 
         $pdf = new pdf();
         $pagecount = 0;
@@ -672,16 +683,18 @@ class pdf extends \FPDI {
         $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
 
         if ($pagecount > 0) {
-            // Page is valid and can be read by tcpdf.
+            // PDF is already valid and can be read by tcpdf.
             return $tempsrc;
         }
+
+        $temparea = make_request_directory();
+        $tempdst = $temparea . "/target.pdf";
 
         $gsexec = \escapeshellarg($CFG->pathtogs);
         $tempdstarg = \escapeshellarg($tempdst);
         $tempsrcarg = \escapeshellarg($tempsrc);
         $command = "$gsexec -q -sDEVICE=pdfwrite -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
         exec($command);
-        @unlink($tempsrc);
         if (!file_exists($tempdst)) {
             // Something has gone wrong in the conversion.
             return false;
@@ -698,12 +711,48 @@ class pdf extends \FPDI {
         $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
 
         if ($pagecount <= 0) {
-            @unlink($tempdst);
             // Could not parse the converted pdf.
             return false;
         }
 
         return $tempdst;
+    }
+
+    /**
+     * Generate an localised error image for the given pagenumber.
+     *
+     * @param string $errorimagefolder path of the folder where error image needs to be created.
+     * @param int $pageno page number for which error image needs to be created.
+     *
+     * @return string File name
+     * @throws \coding_exception
+     */
+    public static function get_error_image($errorimagefolder, $pageno) {
+        global $CFG;
+
+        $errorfile = $CFG->dirroot . self::BLANK_PDF;
+        if (!file_exists($errorfile)) {
+            throw new \coding_exception("Blank PDF not found", "File path" . $errorfile);
+        }
+
+        $tmperrorimagefolder = make_request_directory();
+
+        $pdf = new pdf();
+        $pdf->set_pdf($errorfile);
+        $pdf->copy_page();
+        $pdf->add_comment(get_string('errorpdfpage', 'assignfeedback_editpdf'), 250, 300, 200, "red");
+        $generatedpdf = $tmperrorimagefolder . '/' . 'error.pdf';
+        $pdf->save_pdf($generatedpdf);
+
+        $pdf = new pdf();
+        $pdf->set_pdf($generatedpdf);
+        $pdf->set_image_folder($tmperrorimagefolder);
+        $image = $pdf->get_image(0);
+        $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
+        $newimg = 'image_page' . $pageno . '.png';
+
+        copy($tmperrorimagefolder . '/' . $image, $errorimagefolder . '/' . $newimg);
+        return $newimg;
     }
 
     /**

@@ -197,11 +197,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Display cartridge and toolbox for the annotation
-     * @param {type} edit
      * @returns {Boolean} res
      */
-    draw_catridge: function (edit) {
+    draw_catridge: function () {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
+            var divdisplay;
             var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
             if (this.divcartridge === '') {
                 this.init_div_cartridge_id();
@@ -215,7 +215,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //init cartridge
                 var colorcartridge = this.get_color();
-                var divdisplay = this.get_div_cartridge(colorcartridge);
+                divdisplay = this.get_div_cartridge(colorcartridge);
                 divdisplay.addClass('assignfeedback_editpdfplus_frame');
                 divdisplay.setStyles({'border-style': this.borderstyle});
                 //divdisplay.set('draggable', 'true');
@@ -254,6 +254,9 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //creation de la div palette
                 if (!this.editor.get('readonly')) {
+                    var styleEditionHtml = "margin:5px;border:2px #ccc ";
+                    var styleEditionMinHtml = "min-width:20px;min-height:20px;";
+
                     var diveditionrender = "<div ";
                     diveditionrender += "id='" + this.divcartridge + "_picker' ";
                     diveditionrender += "class='assignfeedback_editpdfplus_frame_picker' ";
@@ -265,17 +268,41 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     var diveditionframedisplay = Y.Node.create("<div style='display:inline-block;vertical-align:top;'></div>");
                     diveditionrenderdisplay.append(diveditioncolordisplay);
                     diveditionrenderdisplay.append(diveditionframedisplay);
-                    var diveditionwhitedisplay = Y.Node.create("<div style='margin:5px;background-color:white;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionwhitedisplay = Y.Node.create("<div style='background-color:white;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditionwhitedisplay.on('click', this.change_color, this, 'white');
-                    var diveditionyellowdisplay = Y.Node.create("<div style='margin:5px;background-color:#E69F00;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionyellowdisplay = Y.Node.create("<div style='background-color:#E69F00;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditionyellowdisplay.on('click', this.change_color, this, '#E69F00');//orange
-                    var diveditionreddisplay = Y.Node.create("<div style='margin:5px;background-color:#D55E00;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionreddisplay = Y.Node.create("<div style='background-color:#D55E00;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditionreddisplay.on('click', this.change_color, this, '#D55E00');//red
-                    var diveditiongreendisplay = Y.Node.create("<div style='margin:5px;background-color:#009E73;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditiongreendisplay = Y.Node.create("<div style='background-color:#009E73;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditiongreendisplay.on('click', this.change_color, this, '#009E73');//green
-                    var diveditionbluedisplay = Y.Node.create("<div style='margin:5px;background-color:#0072B2;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionbluedisplay = Y.Node.create("<div style='background-color:#0072B2;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditionbluedisplay.on('click', this.change_color, this, '#0072B2');//blue
-                    var diveditionblackdisplay = Y.Node.create("<div style='margin:5px;background-color:black;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditionblackdisplay = Y.Node.create("<div style='background-color:black;"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
                     diveditionblackdisplay.on('click', this.change_color, this, 'black');
                     diveditioncolordisplay.append(diveditionwhitedisplay);
                     diveditioncolordisplay.append(diveditionyellowdisplay);
@@ -283,23 +310,36 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     diveditioncolordisplay.append(diveditiongreendisplay);
                     diveditioncolordisplay.append(diveditionbluedisplay);
                     diveditioncolordisplay.append(diveditionblackdisplay);
-                    var diveditionsoliddisplay = Y.Node.create("<div style='margin:5px;border:2px solid #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditionsoliddisplay.on('click', this.change_border, this, 'solid');
-                    var diveditiondotteddisplay = Y.Node.create("<div style='margin:5px;border:2px dotted #ccc;min-width:20px;min-height:20px;'></div>");
-                    diveditiondotteddisplay.on('click', this.change_border, this, 'dotted');
-                    var diveditiondasheddisplay = Y.Node.create("<div style='margin:5px;border:2px dashed #ccc;min-width:20px;min-height:20px;'></div>");
+                    var diveditsoliddisplay = Y.Node.create("<div style='"
+                            + styleEditionHtml
+                            + "solid;"
+                            + styleEditionMinHtml
+                            + "'></div>");
+                    diveditsoliddisplay.on('click', this.change_border, this, 'solid');
+                    var diveditdotteddisplay = Y.Node.create("<div style='"
+                            + styleEditionHtml
+                            + "dotted;"
+                            + styleEditionMinHtml
+                            + "'></div>");
+                    diveditdotteddisplay.on('click', this.change_border, this, 'dotted');
+                    var diveditdasheddisplayhtml = "<div style='"
+                            + styleEditionHtml
+                            + "dashed;"
+                            + styleEditionMinHtml + "'>"
+                            + "</div>";
+                    var diveditiondasheddisplay = Y.Node.create(diveditdasheddisplayhtml);
                     diveditiondasheddisplay.on('click', this.change_border, this, 'dashed');
-                    diveditionframedisplay.append(diveditionsoliddisplay);
-                    diveditionframedisplay.append(diveditiondotteddisplay);
+                    diveditionframedisplay.append(diveditsoliddisplay);
+                    diveditionframedisplay.append(diveditdotteddisplay);
                     diveditionframedisplay.append(diveditiondasheddisplay);
                 }
 
                 //positionnement de la div par rapport a l'annotation
                 if (!this.cartridgex || this.cartridgex === 0) {
-                    this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
+                    this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
                 }
                 if (!this.cartridgey || this.cartridgey === 0) {
-                    this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
+                    this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
                 }
                 divdisplay.setX(this.cartridgex);
                 divdisplay.setY(this.y + this.cartridgey);
@@ -315,7 +355,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
             } else {
                 var divid = '#' + this.divcartridge;
-                var divdisplay = this.editor.get_dialogue_element(divid);
+                divdisplay = this.editor.get_dialogue_element(divid);
                 divdisplay.setX(offsetcanvas[0] + this.cartridgex);
                 divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
             }
@@ -348,18 +388,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
      */
     move_cartridge_stop: function (e) {
         e.preventDefault();
-
         /*var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-        divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-        divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
-        
+         divcartridge.detach('mousemove', this.move_cartridge_continue, this);
+         divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         canvas.detach('mousemove', this.move_cartridge_continue, this);
         canvas.detach('mouseup', this.move_cartridge_stop, this);
 
         //var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
         var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
-                        e.clientY + canvas.get('docScrollY')),
+                e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
 
@@ -407,7 +445,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Apply "change color" on element and children
-     * 
      * @param {type} e
      * @param {string} colour
      */
@@ -453,7 +490,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Apply "change border" on element and children
-     * 
      * @param {type} e
      * @param {string} colour
      */
@@ -510,9 +546,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * display annotation edditing view
-     * @param {type} e
      */
-    edit_annot: function (e) {
+    edit_annot: function () {
         if (!this.parent_annot_element) {
             var buttonrender = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpencil");
             var buttonadd = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonadd");
@@ -557,20 +592,19 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
      * @param event
      */
     remove: function (e) {
-        var annotations,
-                i;
+        var annotations;
 
         e.preventDefault();
 
         annotations = this.editor.pages[this.editor.currentpage].annotations;
-        for (i = 0; i < annotations.length; i++) {
-            if (annotations[i] === this) {
+        for (var k = 0; k < annotations.length; k++) {
+            if (annotations[k] === this) {
                 if (this.divcartridge !== '') {
                     var divid = '#' + this.divcartridge;
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
-                annotations.splice(i, 1);
+                annotations.splice(k, 1);
                 if (this.drawable) {
                     this.drawable.erase();
                 }

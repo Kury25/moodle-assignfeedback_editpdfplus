@@ -44,9 +44,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $shortcuts = array('navigate-previous-button' => 'j',
             'navigate-page-select' => 'k',
             'navigate-next-button' => 'l',
-            'searchcomments' => 'h',
-            'comment' => 'z',
-            'commentcolour' => 'x',
             'select' => 'c',
             'drag' => 'd',
             'pen' => 'y',
@@ -85,7 +82,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             }
             $iconalt = get_string('toolbarbutton', 'assignfeedback_editpdfplus', $alttext);
 
-            $iconhtml = $this->pix_icon($icon, $iconalt, 'assignfeedback_editpdfplus');
+            $iconhtml = $this->image_icon($icon, $iconalt, 'assignfeedback_editpdfplus');
             $iconparams = array('data-tool' => $tool, 'class' => $tool . 'button');
             if ($disabled) {
                 $iconparams['disabled'] = 'true';
@@ -174,8 +171,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $body = '';
         // Create the page navigation.
         $navigation1 = '';
-        //$navigation2 = '';
-        //$divToolbar;
+        
         // Pick the correct arrow icons for right to left mode.
         if (right_to_left()) {
             $nav_prev = 'nav_next';
@@ -186,21 +182,18 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         }
 
         $iconalt = get_string('navigateprevious', 'assignfeedback_editpdfplus');
-        $iconhtml = $this->pix_icon($nav_prev, $iconalt, 'assignfeedback_editpdfplus');
+        $iconhtml = $this->image_icon($nav_prev, $iconalt, 'assignfeedback_editpdfplus');
         $navigation1 .= html_writer::tag('button', $iconhtml, array('disabled' => 'true',
                     'class' => 'navigate-previous-button', 'accesskey' => $this->get_shortcut('navigate-previous-button')));
         $navigation1 .= html_writer::tag('select', null, array('disabled' => 'true',
                     'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => 'navigate-page-select',
                     'accesskey' => $this->get_shortcut('navigate-page-select')));
         $iconalt = get_string('navigatenext', 'assignfeedback_editpdfplus');
-        $iconhtml = $this->pix_icon($nav_next, $iconalt, 'assignfeedback_editpdfplus');
+        $iconhtml = $this->image_icon($nav_next, $iconalt, 'assignfeedback_editpdfplus');
         $navigation1 .= html_writer::tag('button', $iconhtml, array('disabled' => 'true',
                     'class' => 'navigate-next-button', 'accesskey' => $this->get_shortcut('navigate-next-button')));
 
         $divnavigation1 = html_writer::div($navigation1, 'navigation', array('role' => 'navigation'));
-
-        //$navigation2 .= $this->render_toolbar_button('comment_search', 'searchcomments', null, $this->get_shortcut('searchcomments'));
-        //$divnavigation2 = html_writer::div($navigation2, 'navigation-search', array('role' => 'navigation'));
 
         $toolbar001 = '';
         $toolbar002 = '';
@@ -290,14 +283,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $changesmessage = html_writer::tag('div', get_string('draftchangessaved', 'assignfeedback_editpdfplus'), array(
                     'class' => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
         ));
-        $changesmessage = html_writer::div($changesmessage, 'unsaved-changes');
-        $canvas .= $changesmessage;
-
+        $changesmessageDiv = html_writer::div($changesmessage, 'unsaved-changes');
+        $canvas .= $changesmessageDiv;
+        
         $changesmessage2 = html_writer::tag('div', get_string('nodraftchangessaved', 'assignfeedback_editpdfplus'), array(
                     'class' => 'assignfeedback_editpdfplus_unsavedchanges_edit warning label label-info'
         ));
-        $changesmessage2 = html_writer::div($changesmessage2, 'unsaved-changes');
-        $canvas .= $changesmessage2;
+        $changesmessage2Div = html_writer::div($changesmessage2, 'unsaved-changes');
+        $canvas .= $changesmessage2Div;
 
         $body .= $canvas;
 
@@ -311,8 +304,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 'userid' => $widget->userid,
                 'attemptnumber' => $widget->attemptnumber,
                 'stampfiles' => $widget->stampfiles,
-                'readonly' => $widget->readonly,
-                'pagetotal' => $widget->pagetotal));
+                'readonly' => $widget->readonly));
 
         $this->page->requires->yui_module('moodle-assignfeedback_editpdfplus-editor', 'M.assignfeedback_editpdfplus.editor.init', $editorparams);
 
@@ -328,11 +320,8 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             'colourpicker',
             'loadingeditor',
             'pagexofy',
-            'deletecomment',
             'addtoquicklist',
             'filter',
-            'searchcomments',
-            'commentcontextmenu',
             'deleteannotation',
             'stamp',
             'stamppicker',

@@ -39,102 +39,6 @@ use assignfeedback_editpdfplus\tool;
 class page_editor {
 
     /**
-     * Get all comments for a page.
-     * @param int $gradeid
-     * @param int $pageno
-     * @param bool $draft
-     * @return comment[]
-     * @deprecated since version 2016101700
-     */
-    public static function get_comments($gradeid, $pageno, $draft) {
-        global $DB;
-
-        $comments = array();
-        $params = array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1);
-        if (!$draft) {
-            $params['draft'] = 0;
-        }
-        $records = $DB->get_records('assignfeedback_editpp_cmnt', $params);
-        foreach ($records as $record) {
-            array_push($comments, new comment($record));
-        }
-
-        return $comments;
-    }
-
-    /**
-     * Set all comments for a page.
-     * @param int $gradeid
-     * @param int $pageno
-     * @param comment[] $comments
-     * @return int - the number of comments.
-     * @deprecated since version 2016101700
-     */
-    public static function set_comments($gradeid, $pageno, $comments) {
-        global $DB;
-
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1));
-
-        $added = 0;
-        foreach ($comments as $record) {
-            // Force these.
-            if (!($record instanceof comment)) {
-                $comment = new comment($record);
-            } else {
-                $comment = $record;
-            }
-            if (trim($comment->rawtext) === '') {
-                continue;
-            }
-            $comment->gradeid = $gradeid;
-            $comment->pageno = $pageno;
-            $comment->draft = 1;
-            if (self::add_comment($comment)) {
-                $added++;
-            }
-        }
-
-        return $added;
-    }
-
-    /**
-     * Get a single comment by id.
-     * @param int $commentid
-     * @return comment or false
-     * @deprecated since version 2016101700
-     */
-    public static function get_comment($commentid) {
-        $record = $DB->get_record('assignfeedback_editpp_cmnt', array('id' => $commentid), '*', IGNORE_MISSING);
-        if ($record) {
-            return new comment($record);
-        }
-        return false;
-    }
-
-    /**
-     * Add a comment to a page.
-     * @param comment $comment
-     * @return bool
-     * @deprecated since version 2016101700
-     */
-    public static function add_comment(comment $comment) {
-        global $DB;
-        $comment->id = null;
-        return $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
-    }
-
-    /**
-     * Remove a comment from a page.
-     * @param int $commentid
-     * @return bool
-     * @deprecated since version 2016101700
-     */
-    public static function remove_comment($commentid) {
-        global $DB;
-        return $DB->delete_records('assignfeedback_editpp_cmnt', array('id' => $commentid));
-    }
-
-    /**
      * Get all tools for a page.
      * @param int $contextid
      * @param int $axis
@@ -150,7 +54,7 @@ class page_editor {
         }
         foreach ($records as $record) {
             //if ($record->enabled == 1) {
-                array_push($tools, new tool($record));
+            array_push($tools, new tool($record));
             //}
         }
         usort($tools, function($a, $b) {
@@ -379,12 +283,12 @@ class page_editor {
             $newid = $DB->insert_record('assignfeedback_editpp_annot', $record);
             $parentlink[$oldid] = $newid;
         }
-        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
-        foreach ($records as $record) {
-            unset($record->id);
-            $record->draft = 0;
-            $DB->insert_record('assignfeedback_editpp_cmnt', $record);
-        }
+        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
+          foreach ($records as $record) {
+          unset($record->id);
+          $record->draft = 0;
+          $DB->insert_record('assignfeedback_editpp_cmnt', $record);
+          } */
 
         return true;
     }
@@ -428,12 +332,12 @@ class page_editor {
             $record->draft = 0;
             $DB->insert_record('assignfeedback_editpp_annot', $record);
         }
-        $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
-        foreach ($records as $record) {
-            unset($record->id);
-            $record->draft = 0;
-            $DB->insert_record('assignfeedback_editpp_annot', $record);
-        }
+        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
+          foreach ($records as $record) {
+          unset($record->id);
+          $record->draft = 0;
+          $DB->insert_record('assignfeedback_editpp_annot', $record);
+          } */
 
         return true;
     }
@@ -478,11 +382,11 @@ class page_editor {
 
         // Delete any existing annotations and comments from current user.
         $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $grade->id));
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id));
+        //$DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id));
         // Get gradeid, annotations and comments from sourceuserid.
         $sourceusergrade = $assignment->get_user_grade($sourceuserid, true, $grade->attemptnumber);
         $annotations = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
-        $comments = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
+        //$comments = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
         $contextid = $assignment->get_context()->id;
         $sourceitemid = $sourceusergrade->id;
 
@@ -491,10 +395,10 @@ class page_editor {
             $annotation->gradeid = $grade->id;
             $DB->insert_record('assignfeedback_editpp_annot', $annotation);
         }
-        foreach ($comments as $comment) {
+        /*foreach ($comments as $comment) {
             $comment->gradeid = $grade->id;
             $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
-        }
+        }*/
 
         $fs = get_file_storage();
 

@@ -142,10 +142,10 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Display cartridge and toolbox for the annotation
-     * @param {type} edit
      * @returns {Boolean} res
      */
-    draw_catridge: function (edit) {
+    draw_catridge: function () {
+        var divdisplay;
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
@@ -153,7 +153,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
-            var divdisplay = this.get_div_cartridge(colorcartridge);
+            divdisplay = this.get_div_cartridge(colorcartridge);
             divdisplay.addClass('assignfeedback_editpdfplus_hightlightplus');
 
             // inscription entete
@@ -175,10 +175,10 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //positionnement de la div par rapport a l'annotation
             if (!this.cartridgex || this.cartridgex === 0) {
-                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x);
+                this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
             }
             if (!this.cartridgey || this.cartridgey === 0) {
-                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y);
+                this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
             }
             divdisplay.setX(this.x + this.cartridgex);
             divdisplay.setY(this.y + this.cartridgey);
@@ -186,7 +186,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }

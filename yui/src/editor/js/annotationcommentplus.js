@@ -135,10 +135,10 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
     },
     /**
      * Display cartridge and toolbox for the annotation
-     * @param {type} edit
      * @returns {Boolean} res
      */
-    draw_catridge: function (edit) {
+    draw_catridge: function () {
+        var divdisplay;
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
@@ -146,7 +146,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //init cartridge
             var colorcartridge = this.get_color_cartridge();
-            var divdisplay = this.get_div_cartridge(colorcartridge);
+            divdisplay = this.get_div_cartridge(colorcartridge);
             divdisplay.addClass('assignfeedback_editpdfplus_commentplus');
 
             // inscription entete
@@ -172,7 +172,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
@@ -192,7 +192,9 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
             buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
             buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
             if (interrupt.get('value') === '2') {
-                divdisplay.setContent('<table><tr><td>' + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>") + '</td></tr></table><br/>');
+                divdisplay.setContent('<table><tr><td>'
+                        + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>")
+                        + '</td></tr></table><br/>');
             } else if (interrupt.get('value') === '1') {
                 buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
             } else if (interrupt.get('value') === '0') {

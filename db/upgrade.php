@@ -62,11 +62,30 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         }
 
         // Editpdf savepoint reached.
-        upgrade_plugin_savepoint(true, 2016021600, 'assignfeedback', 'editpdf');
+        upgrade_plugin_savepoint(true, 2016021600, 'assignfeedback', 'editpdfplus');
     }
 
     // Moodle v3.1.0 release upgrade line.
     // Put any upgrade step following this.
+
+    // Automatically generated Moodle v3.2.0 release upgrade line.
+    // Put any upgrade step following this.
+
+    if ($oldversion < 2017022700) {
+
+        // Get orphaned, duplicate files and delete them.
+        $fs = get_file_storage();
+        $sqllike = $DB->sql_like("filename", "?");
+        $where = "component='assignfeedback_editpdfplus' AND filearea = 'importhtml' AND " . $sqllike;
+        $filerecords = $DB->get_records_select("files", $where, ["onlinetext-%"]);
+        foreach ($filerecords as $filerecord) {
+            $file = $fs->get_file_instance($filerecord);
+            $file->delete();
+        }
+
+        // Editpdf savepoint reached.
+        upgrade_plugin_savepoint(true, 2017022700, 'assignfeedback', 'editpdfplus');
+    }
 
     return true;
 }

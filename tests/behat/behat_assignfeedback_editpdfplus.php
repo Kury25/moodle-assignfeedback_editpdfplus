@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,7 +23,6 @@
  * @copyright  2013 Jerome Mouneyrac
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
 require_once(__DIR__ . '/../../../../../../lib/behat/behat_base.php');
@@ -45,7 +45,7 @@ class behat_assignfeedback_editpdfplus extends behat_base {
     public function ghostscript_is_installed() {
         $testpath = assignfeedback_editpdfplus\pdf::test_gs_path();
         if (!extension_loaded('zlib') or
-            $testpath->status !== assignfeedback_editpdfplus\pdf::GSPATH_OK) {
+                $testpath->status !== assignfeedback_editpdfplus\pdf::GSPATH_OK) {
             throw new \Moodle\BehatExtension\Exception\SkippedException;
         }
     }
@@ -78,4 +78,29 @@ class behat_assignfeedback_editpdfplus extends behat_base {
         $this->getSession()->executeScript($js);
         sleep(1);
     }
+
+    /**
+     * I wait for all pages in the PDF document to be converted to images and loaded.
+     *
+     * @Given /^I wait for the complete PDF to load$/
+     */
+    public function i_wait_for_all_editpdf_pages_to_load() {
+        // No need to wait if not running JS.
+        if (!$this->running_javascript()) {
+            return;
+        }
+
+        // Ensure that the document is ready, and all pages are loaded.
+        $conditions = [
+            'typeof M !== "undefined"',
+            'typeof M.assignfeedback_editpdfplus !== "undefined"',
+            'typeof M.assignfeedback_editpdfplus.instance !== "undefined"',
+            'M.assignfeedback_editpdfplus.instance.documentstatus === 2',
+            'M.assignfeedback_editpdfplus.instance.pagecount === M.assignfeedback_editpdfplus.instance.pages.length',
+        ];
+        $js = implode(' && ', $conditions);
+
+        $this->getSession()->wait(self::TIMEOUT * 1000, "({$js})");
+    }
+
 }

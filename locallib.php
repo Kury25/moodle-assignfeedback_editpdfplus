@@ -84,6 +84,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
                 }
             }
         }
+
         // Copy any new stamps to this instance.
         if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {
             foreach ($files as $file) {
@@ -120,9 +121,9 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         }
 
         // Retrieve total number of pages.
-        $pagetotal = document_services::page_number_for_attempt($this->assignment->get_instance()->id, $userid, $attempt, $readonly);
+        //$pagetotal = document_services::page_number_for_attempt($this->assignment->get_instance()->id, $userid, $attempt, $readonly);
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $pagetotal, $toolbars, $axis);
+        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $toolbars, $axis);
         return $widget;
     }
 
@@ -197,28 +198,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
                         return true;
                     }
                 }
-                // Select all comments.
-                $draftcomments = page_editor::get_comments($sourcegrade->id, $i, true);
-                $nondraftcomments = page_editor::get_comments($grade->id, $i, false);
-                if (count($draftcomments) != count($nondraftcomments)) {
-                    return true;
-                } else {
-                    // Go for a closer inspection.
-                    $matches = 0;
-                    foreach ($nondraftcomments as $ndcomment) {
-                        foreach ($draftcomments as $dcomment) {
-                            foreach ($ndcomment as $key => $value) {
-                                if ($key != 'id' && $value != $dcomment->{$key}) {
-                                    continue 2;
-                                }
-                            }
-                            $matches++;
-                        }
-                    }
-                    if ($matches !== count($nondraftcomments)) {
-                        return true;
-                    }
-                }
             }
         }
         return false;
@@ -289,9 +268,8 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     public function is_empty(stdClass $grade) {
         global $DB;
 
-        $comments = $DB->count_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id, 'draft' => 0));
         $annotations = $DB->count_records('assignfeedback_editpp_annot', array('gradeid' => $grade->id, 'draft' => 0));
-        return $comments == 0 && $annotations == 0;
+        return $annotations == 0;
     }
 
     /**
@@ -305,7 +283,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         if ($grades) {
             list($gradeids, $params) = $DB->get_in_or_equal(array_keys($grades), SQL_PARAMS_NAMED);
             $DB->delete_records_select('assignfeedback_editpp_annot', 'gradeid ' . $gradeids, $params);
-            $DB->delete_records_select('assignfeedback_editpp_cmnt', 'gradeid ' . $gradeids, $params);
         }
         return true;
     }
@@ -317,10 +294,15 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool
      */
     public function is_enabled() {
-        if ($this->assignment->get_context()) {
-            return has_capability('mod/assignfeedback_editpdf:use', $this->assignment->get_context(),null, false);
+        if ($this->enabledcache === null) {
+            $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
+            if ($this->assignment->get_context()) {
+                $this->enabledcache = ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('mod/assignfeedback_editpdf:use', $this->assignment->get_context(), null, false);
+            } else {
+                $this->enabledcache = false;
+            }
         }
-        return false;
+        return $this->enabledcache;
     }
 
     /**
@@ -347,6 +329,16 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function supports_review_panel() {
         return true;
+    }
+
+    /**
+     * Return the plugin configs for external functions.
+     *
+     * @return array the list of settings
+     * @since Moodle 3.2
+     */
+    public function get_config_for_external() {
+        return (array) $this->get_config();
     }
 
 }

@@ -25,11 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use \assignfeedback_editpdfplus\comments_quick_list;
 use \assignfeedback_editpdfplus\document_services;
 use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\pdf;
-use \assignfeedback_editpdfplus\comment;
 use \assignfeedback_editpdfplus\annotation;
 
 global $CFG;
@@ -85,33 +83,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
         return $assign;
     }
 
-    public function test_comments_quick_list() {
-
-        $this->setUser($this->teachers[0]);
-
-        $comments = comments_quick_list::get_comments();
-
-        $this->assertEmpty($comments);
-
-        $comment = comments_quick_list::add_comment('test', 45, 'red');
-
-        $comments = comments_quick_list::get_comments();
-
-        $this->assertEquals(count($comments), 1);
-        $first = reset($comments);
-        $this->assertEquals($comment, $first);
-
-        $commentbyid = comments_quick_list::get_comment($comment->id);
-        $this->assertEquals($comment, $commentbyid);
-
-        $result = comments_quick_list::remove_comment($comment->id);
-
-        $this->assertTrue($result);
-
-        $comments = comments_quick_list::get_comments();
-        $this->assertEmpty($comments);
-    }
-
     public function test_page_editor() {
 
         $assign = $this->create_assign_and_submit_pdf();
@@ -121,24 +92,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         $notempty = page_editor::has_annotations_or_comments($grade->id, false);
         $this->assertFalse($notempty);
-
-        $comment = new comment();
-
-        $comment->rawtext = 'Comment text';
-        $comment->width = 100;
-        $comment->x = 100;
-        $comment->y = 100;
-        $comment->colour = 'red';
-
-        $comment2 = new comment();
-
-        $comment2->rawtext = 'Comment text 2';
-        $comment2->width = 100;
-        $comment2->x = 200;
-        $comment2->y = 100;
-        $comment2->colour = 'clear';
-
-        page_editor::set_comments($grade->id, 0, array($comment, $comment2));
 
         $annotation = new annotation();
 
@@ -166,14 +119,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
         // Still empty because all edits are still drafts.
         $this->assertFalse($notempty);
 
-        $comments = page_editor::get_comments($grade->id, 0, false);
-
-        $this->assertEmpty($comments);
-
-        $comments = page_editor::get_comments($grade->id, 0, true);
-
-        $this->assertEquals(count($comments), 2);
-
         $annotations = page_editor::get_annotations($grade->id, 0, false);
 
         $this->assertEmpty($annotations);
@@ -182,15 +127,9 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         $this->assertEquals(count($annotations), 2);
 
-        $comment = reset($comments);
         $annotation = reset($annotations);
 
-        page_editor::remove_comment($comment->id);
         page_editor::remove_annotation($annotation->id);
-
-        $comments = page_editor::get_comments($grade->id, 0, true);
-
-        $this->assertEquals(count($comments), 1);
 
         $annotations = page_editor::get_annotations($grade->id, 0, true);
 
@@ -218,16 +157,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         $notempty = page_editor::has_annotations_or_comments($grade->id, false);
         $this->assertFalse($notempty);
-
-        $comment = new comment();
-
-        $comment->rawtext = 'Comment text';
-        $comment->width = 100;
-        $comment->x = 100;
-        $comment->y = 100;
-        $comment->colour = 'red';
-
-        page_editor::set_comments($grade->id, 0, array($comment));
 
         $annotations = array();
 
@@ -315,16 +244,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
         $notempty = page_editor::has_annotations_or_comments($grade->id, false);
         $this->assertFalse($notempty);
 
-        $comment = new comment();
-
-        $comment->rawtext = 'Comment text';
-        $comment->width = 100;
-        $comment->x = 100;
-        $comment->y = 100;
-        $comment->colour = 'red';
-
-        page_editor::set_comments($grade->id, 0, array($comment));
-
         $annotations = array();
 
         $annotation = new annotation();
@@ -358,24 +277,11 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         $yellowannotationid = page_editor::add_annotation($annotation);
 
-        // Add a comment as well.
-        $comment = new comment();
-        $comment->gradeid = $grade->id;
-        $comment->pageno = 0;
-        $comment->rawtext = 'Second Comment text';
-        $comment->width = 100;
-        $comment->x = 100;
-        $comment->y = 100;
-        $comment->colour = 'red';
-        page_editor::add_comment($comment);
-
         $this->assertTrue($plugin->is_feedback_modified($grade, $data));
         $plugin->save($grade, $data);
 
         // We should have two annotations.
         $this->assertCount(2, page_editor::get_annotations($grade->id, 0, false));
-        // And two comments.
-        $this->assertCount(2, page_editor::get_comments($grade->id, 0, false));
 
         // Add one annotation and delete another.
         $annotation = new annotation();
@@ -397,26 +303,6 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         // We should have two annotations.
         $this->assertCount(2, page_editor::get_annotations($grade->id, 0, false));
-        // And two comments.
-        $this->assertCount(2, page_editor::get_comments($grade->id, 0, false));
-
-        // Add a comment and then remove it. Should not be considered as modified.
-        $comment = new comment();
-        $comment->gradeid = $grade->id;
-        $comment->pageno = 0;
-        $comment->rawtext = 'Third Comment text';
-        $comment->width = 400;
-        $comment->x = 57;
-        $comment->y = 205;
-        $comment->colour = 'black';
-        $comment->id = page_editor::add_comment($comment);
-
-        // We should now have three comments.
-        $this->assertCount(3, page_editor::get_comments($grade->id, 0, true));
-        // Now delete the newest record.
-        page_editor::remove_comment($comment->id);
-        // Back to two comments.
-        $this->assertCount(2, page_editor::get_comments($grade->id, 0, true));
         // No modification.
         $this->assertFalse($plugin->is_feedback_modified($grade, $data));
     }
