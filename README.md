@@ -1,7 +1,7 @@
 # EditPdfPlus : fork of Moodle/editpdf, with customs options
 Welcome to EditPdfPlus: fork of Moodle/editpdf module, developped by UNIL/RISET
 
-Compatible with Moodle v3.1
+Compatible with Moodle v3.3
 
 ## Synopsis
 ### Description
