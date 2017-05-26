@@ -267,7 +267,7 @@ EOD;
         }
 
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdf';
+        $component = 'assignfeedback_editpdfplus';
         $filearea = self::COMBINED_PDF_FILEAREA;
         $itemid = $grade->id;
         $filepath = '/';

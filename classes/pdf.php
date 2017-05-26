@@ -609,7 +609,7 @@ class pdf extends \FPDI {
         global $CFG;
 
         //$temparea = make_temp_directory('assignfeedback_editpdfplus');
-        $temparea = make_temp_directory();
+        $temparea = make_request_directory();
         //$hash = $file->get_contenthash(); // Use the contenthash to make sure the temp files have unique names.
         //$tempsrc = $temparea . "/src-$hash.pdf";
         //$tempdst = $temparea . "/dst-$hash.pdf";
