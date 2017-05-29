@@ -71,11 +71,6 @@ if ($action === 'pollconversions') {
                 'pages' => [],
     ];
 
-    //$pages = document_services::get_page_images_for_attempt($assignment, $userid, $attemptnumber, $readonly);
-    //$response = new stdClass();
-    //$response->pagecount = count($pages);
-    //$response->pages = array();
-
     $combineddocument = document_services::get_combined_document_for_attempt($assignment, $userid, $attemptnumber);
     $response->status = $combineddocument->get_status();
     $response->filecount = $combineddocument->get_document_count();
@@ -215,25 +210,7 @@ if ($action === 'pollconversions') {
 
     echo json_encode($response);
     die();
-} /* else if ($action == 'loadquicklist') {
-  require_capability('mod/assign:grade', $context);
-
-  $result = comments_quick_list::get_comments();
-
-  echo json_encode($result);
-  die();
-  } *//* else if ($action == 'addtoquicklist') {
-  require_capability('mod/assign:grade', $context);
-
-  $comment = required_param('commenttext', PARAM_RAW);
-  $width = required_param('width', PARAM_INT);
-  $colour = required_param('colour', PARAM_ALPHA);
-
-  $result = comments_quick_list::add_comment($comment, $width, $colour);
-
-  echo json_encode($result);
-  die();
-  } */ else if ($action == 'revertchanges') {
+} else if ($action == 'revertchanges') {
     require_capability('mod/assign:grade', $context);
 
     $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -242,16 +219,7 @@ if ($action === 'pollconversions') {
 
     echo json_encode($result);
     die();
-}/* else if ($action == 'removefromquicklist') {
-  require_capability('mod/assign:grade', $context);
-
-  $commentid = required_param('commentid', PARAM_INT);
-
-  $result = comments_quick_list::remove_comment($commentid);
-
-  echo json_encode($result);
-  die();
-  } */ else if ($action == 'deletefeedbackdocument') {
+} else if ($action == 'deletefeedbackdocument') {
     require_capability('mod/assign:grade', $context);
 
     $grade = $assignment->get_user_grade($userid, true);
