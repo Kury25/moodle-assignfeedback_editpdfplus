@@ -91,7 +91,7 @@
 .assignfeedback_editpdfplus_widget .pageheader select,
 .assignfeedback_editpdfplus_widget .pageheader button {
     background: none;
-    padding: 0 7px;
+    padding: 4px 7px;
     border: 0;
     border-radius: 0;
     margin: 0;
@@ -233,7 +233,6 @@
 }
 ul.assignfeedback_editpdfplus_menu {
     margin: 0;
-    padding-left: 0;
 }
 .assignfeedback_editpdfplus_menu li {
     list-style-type: none;
