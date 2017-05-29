@@ -19,7 +19,7 @@
  * Install code for the feedback_editpdfplus module.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Jerome Mouneyrac
+ * @copyright 2017 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -31,7 +31,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     global $CFG, $DB;
 
     // List of default stamps.
-    $defaultstamps = array(/* 'smile.png', 'sad.png', 'tick.png', 'cross.png', */'twoway_h.png', 'twoway_v.png');
+    $defaultstamps = array(/* 'smile.png', 'sad.png', 'tick.png', 'cross.png', 'twoway_h.png', 'twoway_v.png' */);
 
     // Stamp file object.
     $filerecord = new stdClass;
