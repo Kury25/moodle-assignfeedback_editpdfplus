@@ -907,7 +907,8 @@ Y.extend(ANNOTATION, Y.Base, {
             shape.editor = this.editor;
             shape.on('clickoutside', Y.rbind(this.editor.redraw_annotation, this.editor));
             // Add a delete X to the annotation.
-            var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
+            //var deleteicon = Y.Node.create('<img src="' + M.util.image_url('trash', 'assignfeedback_editpdfplus') + '"/>'),
+            var deleteicon = Y.Node.create('<i class="fa fa-trash" aria-hidden="true"></i>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
@@ -1055,7 +1056,7 @@ Y.extend(ANNOTATION, Y.Base, {
         divedition += "<textarea id='"
                 + this.divcartridge
                 + "_editinput' type='text' value=\""
-                + this.get_valref() + "\" >"
+                + this.get_valref() + "\" class='form-control' style='margin-bottom:5px;' >"
                 + this.get_valref() + "</textarea>";
         divedition += "</div>";
         var diveditiondisplay = Y.Node.create(divedition);
@@ -1065,10 +1066,13 @@ Y.extend(ANNOTATION, Y.Base, {
             var divpropositiondisplay = Y.Node.create(divproposition);
             var propositionarray = propositions.split('","');
             for (var i = 0; i < propositionarray.length; i++) {
-                var buttontmp = "<p class='btn btn-default'>" + propositionarray[i].replace('"', '') + "</p>";
+                var buttontmp = "<button class='btn btn-default' type='button' style='width:100%;font-size: x-small;'>"
+                        + propositionarray[i].replace('"', '')
+                        + "</button>";
                 var buttontmpdisplay = Y.Node.create(buttontmp);
                 buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
                 divpropositiondisplay.append(buttontmpdisplay);
+                divpropositiondisplay.append("<br/>");
             }
             diveditiondisplay.append(divpropositiondisplay);
         }
@@ -1107,9 +1111,10 @@ Y.extend(ANNOTATION, Y.Base, {
             rep = this.studentanswer;
             var buttonsave = "<button id='"
                     + this.divcartridge
-                    + "_buttonsavestudentanswer' style='margin-left:110px;'><img src='"
-                    + M.util.image_url('e/save', 'core')
-                    + "' /></button>";
+                    + "_buttonsavestudentanswer' style='margin-left:110px;' class='btn btn-default' type='button'>"
+                    //+ M.util.image_url('e/save', 'core')
+                    + "<i class='fa fa-floppy-o' aria-hidden='true'></i>"
+                    + "</button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_studentanswer, this, null);
 
@@ -1204,10 +1209,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_right: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' ";
-        buttonvisibility += "><img src='";
-        buttonvisibility += M.util.image_url('t/right', 'core');
-        buttonvisibility += "' /></button>";
+        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' class='btn btn-default' type='button'>";
+        //buttonvisibility += "<img src='";
+        //buttonvisibility += M.util.image_url('t/right', 'core');
+        buttonvisibility += "<i class='fa fa-arrow-right' aria-hidden='true'></i>";
+        buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
         buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'r');
         return buttonvisibilitydisplay;
@@ -1217,10 +1223,11 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_left: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_left' ";
-        buttonvisibility += "><img src='";
-        buttonvisibility += M.util.image_url('t/left', 'core');
-        buttonvisibility += "' /></button>";
+        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_left' class='btn btn-default' type='button'>";
+        //buttonvisibility += "><img src='";
+        //buttonvisibility += M.util.image_url('t/left', 'core');
+        buttonvisibility += "<i class='fa fa-arrow-left' aria-hidden='true'></i>";
+        buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
         buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'l');
         return buttonvisibilitydisplay;
@@ -1232,9 +1239,10 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_save: function () {
         var buttonsave = "<button id='"
                 + this.divcartridge
-                + "_buttonsave' style='display:none;margin-left:110px;'><img src='"
-                + M.util.image_url('t/check', 'core')
-                + "' /></button>";
+                + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-default' type='button'>"
+                //+ M.util.image_url('t/check', 'core')
+                + "<i class='fa fa-check' aria-hidden='true'></i>"
+                + "</button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
         buttonsavedisplay.on('click', this.save_annot, this, null);
         return buttonsavedisplay;
@@ -1246,9 +1254,10 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_cancel: function () {
         var buttoncancel = "<button id='"
                 + this.divcartridge
-                + "_buttoncancel' style='display:none;'><img src='"
-                + M.util.image_url('t/reset', 'core')
-                + "' /></button>";
+                + "_buttoncancel' style='display:none;' class='btn btn-default' type='button'>"
+                //+ M.util.image_url('t/reset', 'core')
+                + "<i class='fa fa-undo' aria-hidden='true'></i>"
+                + "</button>";
         var buttoncanceldisplay = Y.Node.create(buttoncancel);
         buttoncanceldisplay.on('click', this.cancel_edit, this);
         return buttoncanceldisplay;
@@ -1260,9 +1269,14 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_question: function () {
         var buttonquestion = "<button id='"
                 + this.divcartridge
-                + "_buttonquestion' style='display:none;margin-left:10px;'><img src='"
-                + M.util.image_url('help_no', 'assignfeedback_editpdfplus')
-                + "' /></button>";
+                + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                //+ M.util.image_url('help_no', 'assignfeedback_editpdfplus')
+                + '<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
+                + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
+                + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
+                + '</span>'
+                //+ "<i class='fa fa-question-circle-o' aria-hidden='true'></i>"
+                + "</button>";
         var buttonquestiondisplay = Y.Node.create(buttonquestion);
         buttonquestiondisplay.on('click', this.change_question_status, this);
         return buttonquestiondisplay;
@@ -1274,9 +1288,10 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_remove: function () {
         var buttontrash = "<button id='"
                 + this.divcartridge
-                + "_buttonremove' style='display:none;margin-left:10px;'><img src='"
-                + M.util.image_url('trash', 'assignfeedback_editpdfplus')
-                + "' /></button>";
+                + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                //+ M.util.image_url('trash', 'assignfeedback_editpdfplus')
+                + "<i class='fa fa-trash' aria-hidden='true'></i>"
+                + "</button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
         buttontrashdisplay.on('click', this.remove_by_trash, this);
         return buttontrashdisplay;
@@ -1448,9 +1463,16 @@ Y.extend(ANNOTATION, Y.Base, {
         }
         if (buttonquestion) {
             if (value === 1) {
-                buttonquestion.one('img').setAttribute('src', M.util.image_url('help', 'core'));
+                buttonquestion.setHTML('<i class="fa fa-question-circle-o"></i>');
+
+                //buttonquestion.one('img').setAttribute('src', M.util.image_url('help', 'core'));
             } else {
-                buttonquestion.one('img').setAttribute('src', M.util.image_url('help_no', 'assignfeedback_editpdfplus'));
+                buttonquestion.setHTML('<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
+                        + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
+                        + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
+                        + '</span>');
+
+                //buttonquestion.one('img').setAttribute('src', M.util.image_url('help_no', 'assignfeedback_editpdfplus'));
             }
         }
         return;
@@ -3131,15 +3153,25 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        var fleche = '<img id="'
+        /*var fleche = '<img id="'
+         + this.shape_id
+         + '_img" src=\''
+         + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
+         + '\' style="width:30px;" />';*/
+        var fleche = '<i id="'
                 + this.shape_id
-                + '_img" src=\''
-                + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
-                + '\' style="width:30px;" />';
+                + '_img" '
+                //+ M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
+                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>';
+        //+ ' style="width:30px;" />';
         if (this.displayrotation > 0) {
-            fleche = '<img id="' + this.shape_id + '_img" src=\''
-                    + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
-                    + '\' style="height:30px;" />';
+            /*fleche = '<img id="' + this.shape_id + '_img" src=\''
+             + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
+             + '\' style="height:30px;" />';*/
+            fleche = '<i id="' + this.shape_id + '_img" '
+                    //+ M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
+                    //+ '\' style="height:30px;" />';
+                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>';
         }
         node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
@@ -3148,8 +3180,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         });
 
         drawingcanvas.append(node);
-            node.setY(position.y);
-            node.setX(position.x);
+        node.setY(position.y);
+        node.setX(position.x);
         drawable.store_position(node, position.x, position.y);
         drawable.nodes.push(node);
 
@@ -3175,7 +3207,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([edit.start, edit.end]);
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
 
-        node = Y.Node.create('<div><img src=\'' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + '\' /></div>');
+        //node = Y.Node.create('<div><img src=\'' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + '\' /></div>');
+        node = Y.Node.create('<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>></div>');
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block'
@@ -3183,7 +3216,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         drawingregion.append(node);
         node.setX(position.x);
-        node.setY(position.y );
+        node.setY(position.y);
         drawable.store_position(node, position.x, position.y);
 
         drawable.nodes.push(node);
@@ -3254,9 +3287,10 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                 divconteneurdisplay.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation'><img src='"
-                        + M.util.image_url('e/restore_draft', 'core')
-                        + "' /></button>";
+                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        //+ M.util.image_url('e/restore_draft', 'core')
+                        + '<i class="fa fa-refresh" aria-hidden="true"></i>'
+                        + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
                 divconteneurdisplay.append(buttonrotationdisplay);
@@ -3296,10 +3330,13 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         if (rotationstate.get('value') === '0') {
             this.displayrotation = 1;
             rotationstate.set('value', 1);
-            img.set('src', M.util.image_url('twoway_v', 'assignfeedback_editpdfplus'));
+            img.removeClass("fa-arrows-h");
+            img.addClass("fa-arrows-v"); //set('src', M.util.image_url('twoway_v', 'assignfeedback_editpdfplus'));
         } else {
             rotationstate.set('value', 0);
-            img.set('src', M.util.image_url('twoway_h', 'assignfeedback_editpdfplus'));
+            img.removeClass("fa-arrows-v");
+            img.addClass("fa-arrows-h");
+            //img.set('src', M.util.image_url('twoway_h', 'assignfeedback_editpdfplus'));
             this.displayrotation = 0;
         }
         this.editor.save_current_page();
@@ -3589,14 +3626,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
                 if (!this.editor.get('readonly')) {
-                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
-                    buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
-                    buttonrender += "' /></button>";
+                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
+                    //buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
+                    buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
+                    buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
-                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
-                    buttonadd += M.util.image_url('t/add', 'core');
-                    buttonadd += "' /></button>";
+                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
+                    //buttonadd += M.util.image_url('t/add', 'core');
+                    buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
+                    buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
                     divconteneurdisplay.append(buttonrenderdisplay);
@@ -4285,7 +4324,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 position;
 
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        node = Y.Node.create('<div><img src=\'' + M.util.image_url('comment', 'assignfeedback_editpdfplus') + '\' /></div>');
+        //node = Y.Node.create('<div><img src=\'' + M.util.image_url('comment', 'assignfeedback_editpdfplus') + '\' /></div>');
+        node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:black;"></i></div>');
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
@@ -4425,16 +4465,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
         if (buttonplusr) {
-            buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
-            buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            //buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
+            buttonplusr.setHTML('<i class="fa fa-arrow-down" aria-hidden="true"></i>');
+            //buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
+            buttonplusl.setHTML('<i class="fa fa-arrow-up" aria-hidden="true"></i>');
             if (interrupt.get('value') === '2') {
                 divdisplay.setContent('<table><tr><td>'
                         + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>")
                         + '</td></tr></table><br/>');
             } else if (interrupt.get('value') === '1') {
-                buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+                //buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
+                buttonplusl.setHTML('<i class="fa fa-arrow-left" aria-hidden="true"></i>');
             } else if (interrupt.get('value') === '0') {
-                buttonplusr.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+                //buttonplusr.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
+                buttonplusr.setHTML('<i class="fa fa-arrow-right" aria-hidden="true"></i>');
             }
         }
     },
@@ -5016,9 +5060,9 @@ EDITOR.prototype = {
      * @method refresh_button_color_state
      */
     refresh_button_color_state: function () {
-        var button, imgurl;
+        var button;
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
-        imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
+        //imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         //button.one('img').setAttribute('src', imgurl);
         if (this.currentedit.annotationcolour === "white") {
             button.one('i').setStyle('color', this.currentedit.annotationcolour);
