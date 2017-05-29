@@ -50,15 +50,25 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        var fleche = '<img id="'
+        /*var fleche = '<img id="'
+         + this.shape_id
+         + '_img" src=\''
+         + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
+         + '\' style="width:30px;" />';*/
+        var fleche = '<i id="'
                 + this.shape_id
-                + '_img" src=\''
-                + M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
-                + '\' style="width:30px;" />';
+                + '_img" '
+                //+ M.util.image_url('twoway_h_pdf', 'assignfeedback_editpdfplus')
+                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>';
+        //+ ' style="width:30px;" />';
         if (this.displayrotation > 0) {
-            fleche = '<img id="' + this.shape_id + '_img" src=\''
-                    + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
-                    + '\' style="height:30px;" />';
+            /*fleche = '<img id="' + this.shape_id + '_img" src=\''
+             + M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
+             + '\' style="height:30px;" />';*/
+            fleche = '<i id="' + this.shape_id + '_img" '
+                    //+ M.util.image_url('twoway_v_pdf', 'assignfeedback_editpdfplus')
+                    //+ '\' style="height:30px;" />';
+                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>';
         }
         node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
@@ -67,8 +77,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         });
 
         drawingcanvas.append(node);
-            node.setY(position.y);
-            node.setX(position.x);
+        node.setY(position.y);
+        node.setX(position.x);
         drawable.store_position(node, position.x, position.y);
         drawable.nodes.push(node);
 
@@ -94,7 +104,8 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([edit.start, edit.end]);
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
 
-        node = Y.Node.create('<div><img src=\'' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + '\' /></div>');
+        //node = Y.Node.create('<div><img src=\'' + M.util.image_url('twoway_h', 'assignfeedback_editpdfplus') + '\' /></div>');
+        node = Y.Node.create('<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>></div>');
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block'
@@ -102,7 +113,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         drawingregion.append(node);
         node.setX(position.x);
-        node.setY(position.y );
+        node.setY(position.y);
         drawable.store_position(node, position.x, position.y);
 
         drawable.nodes.push(node);
@@ -173,9 +184,10 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                 divconteneurdisplay.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation'><img src='"
-                        + M.util.image_url('e/restore_draft', 'core')
-                        + "' /></button>";
+                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        //+ M.util.image_url('e/restore_draft', 'core')
+                        + '<i class="fa fa-refresh" aria-hidden="true"></i>'
+                        + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
                 divconteneurdisplay.append(buttonrotationdisplay);
@@ -215,10 +227,13 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         if (rotationstate.get('value') === '0') {
             this.displayrotation = 1;
             rotationstate.set('value', 1);
-            img.set('src', M.util.image_url('twoway_v', 'assignfeedback_editpdfplus'));
+            img.removeClass("fa-arrows-h");
+            img.addClass("fa-arrows-v"); //set('src', M.util.image_url('twoway_v', 'assignfeedback_editpdfplus'));
         } else {
             rotationstate.set('value', 0);
-            img.set('src', M.util.image_url('twoway_h', 'assignfeedback_editpdfplus'));
+            img.removeClass("fa-arrows-v");
+            img.addClass("fa-arrows-h");
+            //img.set('src', M.util.image_url('twoway_h', 'assignfeedback_editpdfplus'));
             this.displayrotation = 0;
         }
         this.editor.save_current_page();

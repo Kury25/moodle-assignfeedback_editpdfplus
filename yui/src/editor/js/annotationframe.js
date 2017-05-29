@@ -227,14 +227,16 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
                 if (!this.editor.get('readonly')) {
-                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil'><img src='";
-                    buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
-                    buttonrender += "' /></button>";
+                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
+                    //buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
+                    buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
+                    buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
-                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd'><img src='";
-                    buttonadd += M.util.image_url('t/add', 'core');
-                    buttonadd += "' /></button>";
+                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
+                    //buttonadd += M.util.image_url('t/add', 'core');
+                    buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
+                    buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
                     divconteneurdisplay.append(buttonrenderdisplay);

@@ -248,9 +248,9 @@ EDITOR.prototype = {
      * @method refresh_button_color_state
      */
     refresh_button_color_state: function () {
-        var button, imgurl;
+        var button;
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
-        imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
+        //imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
         //button.one('img').setAttribute('src', imgurl);
         if (this.currentedit.annotationcolour === "white") {
             button.one('i').setStyle('color', this.currentedit.annotationcolour);
