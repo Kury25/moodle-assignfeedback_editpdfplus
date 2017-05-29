@@ -1,5 +1,5 @@
 var COLOURPICKER_NAME = "Colourpicker",
-    COLOURPICKER;
+        COLOURPICKER;
 
 /**
  * Provides an in browser PDF editor.
@@ -16,7 +16,7 @@ var COLOURPICKER_NAME = "Colourpicker",
  * @constructor
  * @extends M.assignfeedback_editpdfplus.dropdown
  */
-COLOURPICKER = function(config) {
+COLOURPICKER = function (config) {
     COLOURPICKER.superclass.constructor.apply(this, [config]);
 };
 
@@ -28,18 +28,36 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         var colourlist = Y.Node.create('<ul role="menu" class="assignfeedback_editpdfplus_menu"/>'),
-            body;
+                body;
+        var iconGoutte;
 
         // Build a list of coloured buttons.
-        Y.each(this.get('colours'), function(rgb, colour) {
-            var button, listitem, title, img, iconname;
+        Y.each(this.get('colours'), function (rgb, colour) {
+            var button, listitem, title;
 
             title = M.util.get_string(colour, 'assignfeedback_editpdfplus');
-            iconname = this.get('iconprefix') + colour;
-            img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
-            button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
+            //iconname = this.get('iconprefix') + colour;
+            //img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
+            //button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
+            if (colour === "white" || colour === "yellowlemon") {
+                iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
+                        + '<i class="fa fa-square fa-stack-2x" style="color:#E3E3E3;"></i>'
+                        + '<i class="fa fa-tint fa-stack-1x fa-inverse" aria-hidden="true" '
+                        + 'style="color:' + rgb + ';">'
+                        + '</i>'
+                        + '</span>');
+            } else {
+                iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
+                        + '<i class="fa fa-square-o fa-stack-2x" style="color:#E3E3E3;"></i>'
+                        + '<i class="fa fa-tint fa-stack-1x" aria-hidden="true" '
+                        + 'style="color:' + rgb + ';">'
+                        + '</i>'
+                        + '</span>');
+            }
+            button = Y.Node.create('<button class="btn btn-default btn-sm" type="button"></button>');
+            button.append(iconGoutte);
             button.setAttribute('data-colour', colour);
             button.setAttribute('data-rgb', rgb);
             button.setStyle('backgroundImage', 'none');
@@ -63,12 +81,12 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
 
         COLOURPICKER.superclass.initializer.call(this, config);
     },
-    callback_handler : function(e) {
+    callback_handler: function (e) {
         e.preventDefault();
 
         var callback = this.get('callback'),
-            callbackcontext = this.get('context'),
-            bind;
+                callbackcontext = this.get('context'),
+                bind;
 
         this.hide();
 
@@ -78,8 +96,8 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
         bind();
     }
 }, {
-    NAME : COLOURPICKER_NAME,
-    ATTRS : {
+    NAME: COLOURPICKER_NAME,
+    ATTRS: {
         /**
          * The list of colours this colour picker supports.
          *
@@ -87,8 +105,8 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
          * @type {String: String} (The keys of the array are the colour names and the values are localized strings)
          * @default {}
          */
-        colours : {
-            value : {}
+        colours: {
+            value: {}
         },
 
         /**
@@ -98,8 +116,8 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
          * @type function
          * @default null
          */
-        callback : {
-            value : null
+        callback: {
+            value: null
         },
 
         /**
@@ -109,8 +127,8 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
          * @type Y.Node
          * @default null
          */
-        context : {
-            value : null
+        context: {
+            value: null
         },
 
         /**
@@ -120,8 +138,8 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
          * @type String
          * @default 'colour_'
          */
-        iconprefix : {
-            value : 'colour_'
+        iconprefix: {
+            value: 'colour_'
         }
     }
 });

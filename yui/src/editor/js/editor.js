@@ -251,7 +251,24 @@ EDITOR.prototype = {
         var button, imgurl;
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
         imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
-        button.one('img').setAttribute('src', imgurl);
+        //button.one('img').setAttribute('src', imgurl);
+        if (this.currentedit.annotationcolour === "white") {
+            button.one('i').setStyle('color', this.currentedit.annotationcolour);
+            button.setStyle('background-color', '#EEEEEE');
+        } else {
+            switch (this.currentedit.annotationcolour) {
+                case "yellowlemon":
+                    button.one('i').setStyle('color', "#fff44f");
+                    break;
+                case "yellow":
+                    button.one('i').setStyle('color', "rgb(255,207,53)");
+                    break;
+                default:
+                    button.one('i').setStyle('color', this.currentedit.annotationcolour);
+                    break;
+            }
+            button.setStyle('background-color', 'transparent');
+        }
     },
     /**
      * Called to get the bounds of the drawing region.
