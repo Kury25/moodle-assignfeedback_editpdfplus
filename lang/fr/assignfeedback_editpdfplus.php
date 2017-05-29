@@ -104,4 +104,7 @@ $string['statut_select_ko'] = 'non OK';
 $string['send_pdf_update'] = 'Envoyer';
 $string['student_statut_nc'] = 'non traité';
 $string['student_answer_lib'] = 'Réponse';
-$string['assignfeedback_editpdf:use'] = 'Utiliser le plugin';
+$string['editpdfplus:use'] = 'Utiliser le plugin';
+$string['editpdfplus:notify'] = 'Recevoir les notifications';
+
+
