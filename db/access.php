@@ -26,13 +26,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'mod/assignfeedback_editpdf:use' => array(
+    'mod/assignfeedback_editpdfplus:use' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
         )
     ),
-    'mod/assignfeedback_editpdf:notify' => array(
+    'mod/assignfeedback_editpdfplus:notify' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
