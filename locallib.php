@@ -246,6 +246,9 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function view(stdClass $grade) {
         global $PAGE;
+        
+        //$PAGE->requires->js_call_amd('assignfeedback_editpdfplus/editplus', 'init');
+        
         $html = '';
         // Show a link to download the pdf.
         if (page_editor::has_annotations_or_comments($grade->id, false)) {

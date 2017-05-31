@@ -27,13 +27,17 @@
 }
 .assignfeedback_editpdfplus_widget .drawingregion {
     border: 1px solid #ccc;
-    left: 1em;
+    left: 0.1em;
     right: 1em;
-    top: 52px;
+    /*top: 52px;*/
     bottom: 0;
     position: absolute;
     overflow: auto;
     background-color: #ccc;
+}
+
+.assignfeedback_editpdfplus_widget[data-region="review-panel-content"] .drawingregion {
+    top: 52px;
 }
 
 .assignfeedback_editpdfplus_widget {

@@ -570,7 +570,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var textarea = Y.Node.create("<br/><textarea id='"
                     + this.divcartridge
                     + "_studentanswer' type='text' value=\""
-                    + rep + "\" >"
+                    + rep + "\" class='form-control'>"
                     + rep
                     + "</textarea>");
             rep = this.studentanswer;
@@ -645,14 +645,16 @@ Y.extend(ANNOTATION, Y.Base, {
                 + '</label>';
         var buttonstatus2 = '<label class="radio-inline"><input type="radio" name="'
                 + this.divcartridge
-                + '_status" value=1 ><img style="width:15px;" src=\''
-                + M.util.image_url('tick', 'assignfeedback_editpdfplus')
-                + '\' /></label>';
+                + '_status" value=1 >'
+                //+ M.util.image_url('tick', 'assignfeedback_editpdfplus')
+                + '<i style="color:green;" class="fa fa-check" aria-hidden="true"></i>'
+                + '</label>';
         var buttonstatus3 = '<label class="radio-inline"><input type="radio" name="'
                 + this.divcartridge
-                + '_status" value=2 ><img style="width:15px;" src=\''
-                + M.util.image_url('cross', 'assignfeedback_editpdfplus')
-                + '\' /></label> ';
+                + '_status" value=2 >'
+                //+ M.util.image_url('cross', 'assignfeedback_editpdfplus')
+                + '<i style="color:red;" class="fa fa-times" aria-hidden="true"></i>'
+                + '</label> ';
         var buttonstatus1display = Y.Node.create(buttonstatus1);
         var buttonstatus2display = Y.Node.create(buttonstatus2);
         var buttonstatus3display = Y.Node.create(buttonstatus3);

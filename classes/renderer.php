@@ -296,9 +296,13 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 $toolbaraxis .= "</div><div style='display:inline;margin-left:5px;text-align:left;'>";
             }
             $toolbaraxis .= "</div></div>";
-            $questionchoice = html_writer::select([get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')], 'questionselection', 0, FALSE);
-            $axischoice = html_writer::select([get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')], 'statutselection', 0, FALSE);
-            $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'button', 'id' => 'student_valide_button'));
+            $questionchoice = html_writer::select(
+                    [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')],
+                    'questionselection', 0, FALSE, array('class' => 'form-control'));
+            $axischoice = html_writer::select(
+                    [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')],
+                    'statutselection', 0, FALSE, array('class' => 'form-control'));
+            $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'button btn btn-default', 'id' => 'student_valide_button'));
             $toolbaraxis .= html_writer::div($validatebutton, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($axischoice, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($questionchoice, 'toolbar ', array('role' => 'toolbar'));

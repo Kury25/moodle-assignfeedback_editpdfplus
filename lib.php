@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +22,6 @@
  * @copyright  2012 Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -36,32 +36,26 @@ defined('MOODLE_INTERNAL') || die();
  * @param array $options - List of options affecting file serving.
  * @return bool false if file not found, does not return if found - just send the file
  */
-function assignfeedback_editpdfplus_pluginfile($course,
-                                           $cm,
-                                           context $context,
-                                           $filearea,
-                                           $args,
-                                           $forcedownload,
-                                           array $options=array()) {
+function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $USER, $DB, $CFG;
 
     if ($context->contextlevel == CONTEXT_MODULE) {
 
         require_login($course, false, $cm);
-        $itemid = (int)array_shift($args);
+        $itemid = (int) array_shift($args);
 
-        if (!$assign = $DB->get_record('assign', array('id'=>$cm->instance))) {
+        if (!$assign = $DB->get_record('assign', array('id' => $cm->instance))) {
             return false;
         }
 
-        $record = $DB->get_record('assign_grades', array('id'=>$itemid), 'userid,assignment', MUST_EXIST);
+        $record = $DB->get_record('assign_grades', array('id' => $itemid), 'userid,assignment', MUST_EXIST);
         $userid = $record->userid;
         if ($assign->id != $record->assignment) {
             return false;
         }
 
         // Check is users feedback or has grading permission.
-        if ($USER->id != $userid and !has_capability('mod/assign:grade', $context)) {
+        if ($USER->id != $userid and ! has_capability('mod/assign:grade', $context)) {
             return false;
         }
 
@@ -74,7 +68,30 @@ function assignfeedback_editpdfplus_pluginfile($course,
             return false;
         }
         // Download MUST be forced - security!
-        send_stored_file($file, 0, 0, true, $options);// Check if we want to retrieve the stamps.
+        send_stored_file($file, 0, 0, true, $options); // Check if we want to retrieve the stamps.
     }
-
 }
+
+/**
+ * 
+ * @param navigation_node $navigation
+ * @param stdClass $course
+ * @param context_course $context
+ */
+function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
+    global $PAGE;
+
+    $url = new moodle_url('/admin/tool/devcourse/index.php');
+    $devcoursenode = navigation_node::create('Development course', $url, navigation_node::TYPE_CUSTOM, 'Dev course', 'devcourse');
+    $navigation->add_node($devcoursenode);
+
+    /* $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
+      $thingnode = $coursenode->add(get_string('Name of thing'), new moodle_url('/a/link/if/you/want/one.php'));
+      $thingnode->make_active(); */
+}
+/*function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $parentnode, $course, $context) {
+    $url = new moodle_url('/course/view.php', array('courseid' => $course->id));
+    $settingsnode = navigation_node::create('test ND navigation node', $url,
+            navigation_node::TYPE_SETTING, null, null, new pix_icon('i/settings', ''));
+    $parentnode->add_node($settingsnode);
+}*/

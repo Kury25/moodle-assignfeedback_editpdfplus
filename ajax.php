@@ -140,10 +140,6 @@ if ($action === 'pollconversions') {
     $page = json_decode($pagejson);
     $index = required_param('index', PARAM_INT);
 
-    /* $added = page_editor::set_comments($grade->id, $index, $page->comments);
-      if ($added != count($page->comments)) {
-      array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
-      } */
     $added = page_editor::set_annotations($grade->id, $index, $page->annotations);
     if ($added != count($page->annotations)) {
         array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
