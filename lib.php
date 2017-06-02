@@ -79,16 +79,11 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
  * @param context_course $context
  */
 function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    global $PAGE;
-
-    $url = new moodle_url('/admin/tool/devcourse/index.php');
-    $devcoursenode = navigation_node::create('Development course', $url, navigation_node::TYPE_CUSTOM, 'Dev course', 'devcourse');
-    $navigation->add_node($devcoursenode);
-
-    /* $coursenode = $PAGE->navigation->find($courseid, navigation_node::TYPE_COURSE);
-      $thingnode = $coursenode->add(get_string('Name of thing'), new moodle_url('/a/link/if/you/want/one.php'));
-      $thingnode->make_active(); */
+    $url = new moodle_url('/mod/assign/feedback/editpdfplus/admin/view.php');
+    $feedbackadminnode = navigation_node::create('Feedback : configuration', $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
+    $navigation->add_node($feedbackadminnode);
 }
+
 /*function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $parentnode, $course, $context) {
     $url = new moodle_url('/course/view.php', array('courseid' => $course->id));
     $settingsnode = navigation_node::create('test ND navigation node', $url,

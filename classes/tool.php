@@ -66,7 +66,7 @@ class tool {
     public $enabled = 1;
     
     /** @var boolean, order in toolbar */
-    public $order = 1000;
+    public $order_tool = 1000;
 
     /**
      * Convert a compatible stdClass into an instance of this class.

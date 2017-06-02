@@ -58,8 +58,8 @@ class page_editor {
             //}
         }
         usort($tools, function($a, $b) {
-            $al = $a->order;
-            $bl = $b->order;
+            $al = $a->order_axis;
+            $bl = $b->order_axis;
             if ($al == $bl) {
                 return 0;
             }
@@ -132,8 +132,8 @@ class page_editor {
             array_push($axis, new axis($record));
         }
         usort($axis, function($a, $b) {
-            $al = $a->order;
-            $bl = $b->order;
+            $al = $a->order_axis;
+            $bl = $b->order_axis;
             if ($al == $bl) {
                 return 0;
             }
