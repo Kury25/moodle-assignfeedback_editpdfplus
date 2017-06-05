@@ -58,8 +58,8 @@ class page_editor {
             //}
         }
         usort($tools, function($a, $b) {
-            $al = $a->order_axis;
-            $bl = $b->order_axis;
+            $al = $a->order_tool;
+            $bl = $b->order_tool;
             if ($al == $bl) {
                 return 0;
             }
