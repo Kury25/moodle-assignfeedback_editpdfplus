@@ -49,7 +49,6 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 position;
 
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        //node = Y.Node.create('<div><img src=\'' + M.util.image_url('comment', 'assignfeedback_editpdfplus') + '\' /></div>');
         node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:black;"></i></div>');
         node.setStyles({
             'position': 'absolute',
@@ -190,19 +189,15 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
         var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
         var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
         if (buttonplusr) {
-            //buttonplusr.one('img').setAttribute('src', M.util.image_url('t/down', 'core'));
             buttonplusr.setHTML('<i class="fa fa-arrow-down" aria-hidden="true"></i>');
-            //buttonplusl.one('img').setAttribute('src', M.util.image_url('t/up', 'core'));
             buttonplusl.setHTML('<i class="fa fa-arrow-up" aria-hidden="true"></i>');
             if (interrupt.get('value') === '2') {
                 divdisplay.setContent('<table><tr><td>'
                         + this.get_text_to_diplay_in_cartridge().replace(/\n/g, "<br/>")
                         + '</td></tr></table><br/>');
             } else if (interrupt.get('value') === '1') {
-                //buttonplusl.one('img').setAttribute('src', M.util.image_url('t/left', 'core'));
                 buttonplusl.setHTML('<i class="fa fa-arrow-left" aria-hidden="true"></i>');
             } else if (interrupt.get('value') === '0') {
-                //buttonplusr.one('img').setAttribute('src', M.util.image_url('t/right', 'core'));
                 buttonplusr.setHTML('<i class="fa fa-arrow-right" aria-hidden="true"></i>');
             }
         }

@@ -228,13 +228,11 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
                 if (!this.editor.get('readonly')) {
                     var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
-                    //buttonrender += M.util.image_url('e/text_highlight_picker', 'core');
                     buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                     buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
                     var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
-                    //buttonadd += M.util.image_url('t/add', 'core');
                     buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                     buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
@@ -247,7 +245,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 //creation de la div d'edition
                 if (!this.editor.get('readonly')) {
                     var diveditiondisplay = this.get_div_edition();
-                    //diveditiondisplay.addClass('assignfeedback_editpdfplus_frame_edition');
                     divconteneurdisplay.append(diveditiondisplay);
                 } else {
                     var divvisudisplay = this.get_div_visu(colorcartridge);
@@ -390,14 +387,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
      */
     move_cartridge_stop: function (e) {
         e.preventDefault();
-        /*var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge + "_cartridge");
-         divcartridge.detach('mousemove', this.move_cartridge_continue, this);
-         divcartridge.detach('mouseup', this.move_cartridge_stop, this);*/
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         canvas.detach('mousemove', this.move_cartridge_continue, this);
         canvas.detach('mouseup', this.move_cartridge_stop, this);
 
-        //var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
         var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                 e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);

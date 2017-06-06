@@ -250,8 +250,6 @@ EDITOR.prototype = {
     refresh_button_color_state: function () {
         var button;
         button = this.get_dialogue_element(SELECTOR.ANNOTATIONCOLOURBUTTON);
-        //imgurl = M.util.image_url('colour_' + this.currentedit.annotationcolour, 'assignfeedback_editpdfplus');
-        //button.one('img').setAttribute('src', imgurl);
         if (this.currentedit.annotationcolour === "white") {
             button.one('i').setStyle('color', this.currentedit.annotationcolour);
             button.setStyle('background-color', '#EEEEEE');
@@ -336,7 +334,6 @@ EDITOR.prototype = {
             this.refresh_button_state();
         }
 
-        //this.load_all_pages();
         this.start_generation();
     },
     /**
@@ -378,7 +375,6 @@ EDITOR.prototype = {
                 this.refresh_button_state();
             }
 
-            //this.load_all_pages();
             this.start_generation();
             drawingcanvas.on('windowresize', this.resize, this);
 
@@ -470,92 +466,6 @@ EDITOR.prototype = {
         });
     },
     /**
-     * Called to load the information and annotations for all pages.
-     * @method load_all_pages
-     */
-    /*load_all_pages: function () {
-     var ajaxurl = AJAXBASE,
-     config,
-     checkconversionstatus,
-     ajax_error_total;
-     config = {
-     method: 'get',
-     context: this,
-     sync: false,
-     data: {
-     sesskey: M.cfg.sesskey,
-     action: 'loadallpages',
-     userid: this.get('userid'),
-     attemptnumber: this.get('attemptnumber'),
-     assignmentid: this.get('assignmentid'),
-     readonly: this.get('readonly') ? 1 : 0
-     },
-     on: {
-     success: function (tid, response) {
-     this.all_pages_loaded(response.responseText);
-     },
-     failure: function (tid, response) {
-     return new M.core.exception(response.responseText);
-     }
-     }
-     };
-     Y.io(ajaxurl, config);
-     // If pages are not loaded, check PDF conversion status for the progress bar.
-     if (this.pagecount <= 0) {
-     checkconversionstatus = {
-     method: 'get',
-     context: this,
-     sync: false,
-     data: {
-     sesskey: M.cfg.sesskey,
-     action: 'conversionstatus',
-     userid: this.get('userid'),
-     attemptnumber: this.get('attemptnumber'),
-     assignmentid: this.get('assignmentid')
-     },
-     on: {
-     success: function (tid, response) {
-     ajax_error_total = 0;
-     if (this.pagecount === 0) {
-     var pagetotal = this.get('pagetotal');
-     // Update the progress bar.
-     var progressbarcontainer = this.get_dialogue_element(SELECTOR.PROGRESSBARCONTAINER);
-     var progressbar = progressbarcontainer.one('.bar');
-     if (progressbar) {
-     // Calculate progress.
-     var progress = (response.response / pagetotal) * 100;
-     progressbar.setStyle('width', progress + '%');
-     progressbarcontainer.setAttribute('aria-valuenow', progress);
-     }
-     // New ajax request delayed of a second.
-     Y.later(1000, this, function () {
-     Y.io(AJAXBASEPROGRESS, checkconversionstatus);
-     });
-     }
-     },
-     failure: function (tid, response) {
-     ajax_error_total = ajax_error_total + 1;
-     // We only continue on error if the all pages were not generated,
-     // and if the ajax call did not produce 5 errors in the row.
-     if (this.pagecount === 0 && ajax_error_total < 5) {
-     Y.later(1000, this, function () {
-     Y.io(AJAXBASEPROGRESS, checkconversionstatus);
-     });
-     }
-     return new M.core.exception(response.responseText);
-     }
-     }
-     };
-     // We start the AJAX "generated page total number" call a second later to give a chance to
-     // the AJAX "combined pdf generation" call to clean the previous submission images.
-     Y.later(1000, this, function () {
-     ajax_error_total = 0;
-     Y.io(AJAXBASEPROGRESS, checkconversionstatus);
-     });
-     }
-     },*/
-
-    /**
      * Spwan the PDF to Image conversion on the server.
      *
      * @method get_images_for_documents
@@ -611,27 +521,6 @@ EDITOR.prototype = {
             error.show();
             return;
         }
-
-        /*try {
-         data = Y.JSON.parse(responsetext);
-         if (data.error || !data.pagecount) {
-         if (this.dialogue) {
-         this.dialogue.hide();
-         }
-         // Display alert dialogue.
-         error = new M.core.alert({message: M.util.get_string('cannotopenpdf', 'assignfeedback_editpdfplus')});
-         error.show();
-         return;
-         }
-         } catch (e) {
-         if (this.dialogue) {
-         this.dialogue.hide();
-         }
-         // Display alert dialogue.
-         error = new M.core.alert({title: M.util.get_string('cannotopenpdf', 'assignfeedback_editpdfplus')});
-         error.show();
-         return;
-         }*/
 
         this.pagecount = data.pagecount;
         this.pages = data.pages;
@@ -910,11 +799,6 @@ EDITOR.prototype = {
                     colour = e.target.ancestor().getAttribute('data-colour');
                 }
                 this.currentedit.annotationcolour = colour;
-                /*if (this.lastannotationtool && this.lastannotationtool !== 'select') {
-                 this.handle_tool_button(e, this.lastannotationtool);
-                 } else {
-                 this.handle_tool_button(e, "pen");
-                 }*/
                 this.refresh_button_color_state();
             },
             context: this
@@ -1112,7 +996,6 @@ EDITOR.prototype = {
      * @method edit_start
      */
     edit_start: function (e) {
-        //e.preventDefault();
         var canvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
                 offset = canvas.getXY(),
                 scrolltop = canvas.get('docScrollY'),
@@ -1366,7 +1249,6 @@ EDITOR.prototype = {
                 if (!data.parent_annot && !data.parent_annot_element) {
                     if (this.currentedit.parent_annot_element) {
                         data.parent_annot_element = this.currentedit.parent_annot_element;
-                        //this.currentedit.parent_annot_element = null;
                     } else {
                         data.parent_annot_element = null;
                         data.parent_annot = 0;
