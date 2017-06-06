@@ -56,6 +56,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
                         + '</i>'
                         + '</span>');
             }
+            iconGoutte.setAttribute('data-colour', colour);
             button = Y.Node.create('<button class="btn btn-default btn-sm" type="button"></button>');
             button.append(iconGoutte);
             button.setAttribute('data-colour', colour);
