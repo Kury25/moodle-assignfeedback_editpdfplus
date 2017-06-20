@@ -24,15 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Stamp files setting.
-$name = 'assignfeedback_editpdfplus/stamps';
-$title = get_string('stamps','assignfeedback_editpdfplus');
-$description = get_string('stampsdesc', 'assignfeedback_editpdfplus');
-
-$setting = new admin_setting_configstoredfile($name, $title, $description, 'stamps', 0,
-    array('maxfiles' => 8, 'accepted_types' => array('image')));
-$settings->add($setting);
-
 // Ghostscript setting.
 $systempathslink = new moodle_url('/admin/settings.php', array('section' => 'systempaths'));
 $systempathlink = html_writer::link($systempathslink, get_string('systempaths', 'admin'));

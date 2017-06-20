@@ -1,0 +1,47 @@
+{{!
+    @template assignfeedback_editpdfplus/axis_form
+}}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {{title}}
+    </div>
+    <div class="panel-body" style="text-align: center;">
+        {{{render}}}
+        <button type="button" class="btn btn-primary" id="axisFormSubmit">Sauver</button>
+        <button type="button" class="btn btn-default" id="axisFormCancel">Annuler</button>
+    </div>
+</div>
+{{# js }}
+require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
+    var formid='{{id}}';
+    $("#axisFormSubmit").on("click", function () {
+        var form = $('#'+formid);
+        var data = form.serialize()+"&courseid="+{{courseid}};
+        ajax.call([
+            {
+                methodname: 'assignfeedback_editpdfplus_submit_axis_form',
+                args: {jsonformdata: JSON.stringify(data)}
+            }
+        ])[0].done(function(axe) {
+            if ('{{action}}' === 'add'){
+                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+                $("#editpdlplus_axes").append(new Option(axe[0].axelabel, axe[0].axeid, true, true));
+                $("#editpdlplus_axes").change();
+            } else {
+                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+                $("#editpdlplus_axes option:selected").html(axe[0].axelabel);
+            }
+            $("#axistool").show();
+        }).fail(notification.exception);
+    });
+    $("#axisFormCancel").on("click", function () {
+        if ('{{action}}' === 'add'){
+            $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+        } else {
+            $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+        }
+        $("#axistool").show();
+    });
+});
+{{/ js }}

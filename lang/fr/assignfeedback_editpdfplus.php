@@ -106,5 +106,8 @@ $string['student_statut_nc'] = 'non traité';
 $string['student_answer_lib'] = 'Réponse';
 $string['editpdfplus:use'] = 'Utiliser le plugin';
 $string['editpdfplus:notify'] = 'Recevoir les notifications';
+$string['admintitle'] = 'Feedback configuration';
+$string['adminsubtitle'] = 'Configuration de la barre d\'outils de l\'annotation PDF avancée';
+$string['admincurrenttoolbar'] = 'Barre d\'outils en cours';
 
 

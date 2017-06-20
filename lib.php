@@ -79,14 +79,53 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
  * @param context_course $context
  */
 function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    $url = new moodle_url('/mod/assign/feedback/editpdfplus/admin/view.php');
+    $url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $course->id));
     $feedbackadminnode = navigation_node::create('Feedback : configuration', $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
     $navigation->add_node($feedbackadminnode);
 }
 
-/*function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $parentnode, $course, $context) {
-    $url = new moodle_url('/course/view.php', array('courseid' => $course->id));
-    $settingsnode = navigation_node::create('test ND navigation node', $url,
-            navigation_node::TYPE_SETTING, null, null, new pix_icon('i/settings', ''));
-    $parentnode->add_node($settingsnode);
-}*/
+/* function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $parentnode, $course, $context) {
+  $url = new moodle_url('/course/view.php', array('courseid' => $course->id));
+  $settingsnode = navigation_node::create('test ND navigation node', $url,
+  navigation_node::TYPE_SETTING, null, null, new pix_icon('i/settings', ''));
+  $parentnode->add_node($settingsnode);
+  } */
+
+function assignfeedback_editpdfplus_output_fragment_axisadd($args) {
+    global $CFG, $DB;
+
+    $context = $args['context'];
+
+    if ($context->contextlevel != CONTEXT_COURSE) {
+        return null;
+    }
+    require_once('locallib_admin.php');
+
+    if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
+        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
+        return $editpdfplus->getAxisForm();
+    }
+    
+    return null;
+}
+
+function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
+    global $CFG, $DB;
+
+    $context = $args['context'];
+    $axisid = $args['axeid'];
+
+    if ($context->contextlevel != CONTEXT_COURSE) {
+        return null;
+    }
+    require_once('locallib_admin.php');
+
+    if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
+        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
+        return $editpdfplus->getAxisForm($axisid);
+    }
+    
+    return null;
+}

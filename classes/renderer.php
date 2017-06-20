@@ -297,11 +297,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             }
             $toolbaraxis .= "</div></div>";
             $questionchoice = html_writer::select(
-                    [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')],
-                    'questionselection', 0, FALSE, array('class' => 'form-control'));
+                            [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')], 'questionselection', 0, FALSE, array('class' => 'form-control'));
             $axischoice = html_writer::select(
-                    [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')],
-                    'statutselection', 0, FALSE, array('class' => 'form-control'));
+                            [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')], 'statutselection', 0, FALSE, array('class' => 'form-control'));
             $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'button btn btn-default', 'id' => 'student_valide_button'));
             $toolbaraxis .= html_writer::div($validatebutton, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($axischoice, 'toolbar ', array('role' => 'toolbar'));
@@ -380,6 +378,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 ), 'assignfeedback_editpdfplus');
 
         return $html;
+    }
+
+    public function render_assignfeedback_editpdfplus_widget_admin(assignfeedback_editpdfplus\widget_admin $widget) {
+        return $this->render_from_template('assignfeedback_editpdfplus/admin', $widget);
+    }
+    
+    public function render_assignfeedback_editpdfplus_widget_admin_axisform(moodleform $form){
+        return $this->render_from_template('assignfeedback_editpdfplus/axis_form', $form);
     }
 
 }
