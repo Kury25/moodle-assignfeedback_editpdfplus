@@ -27,7 +27,7 @@
                 <div class='col-sm-2'>
                     <select id='editpdlplus_axes' class='form-control'>
                         {{# axis }}
-                        <option value="{{id}}">{{label}}</option>
+                        <option value="{{id}}" data-delete="{{children}}">{{label}}</option>
                         {{/ axis }}
                     </select>
                     <div class="panel panel-default" id="axistool">
@@ -35,13 +35,18 @@
                             <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_editaxis">
                                 <i class="fa fa-pencil" aria-hidden="true"></i>
                             </button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_delaxis">
+                                <i class="fa fa-remove" aria-hidden="true"></i>
+                            </button>
                         </div>
                     </div>
                     <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis">
                         <div class="panel-body"></div>
                     </div>
                     <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis">
+                        <div class="panel-body"></div>
+                    </div>
+                    <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis">
                         <div class="panel-body"></div>
                     </div>
                 </div>

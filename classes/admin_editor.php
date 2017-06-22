@@ -77,4 +77,15 @@ class admin_editor {
         return $DB->update_record('assignfeedback_editpp_axis', $axis);
     }
 
+    /**
+     * 
+     * @global type $DB
+     * @param type $axisid
+     * @return type
+     */
+    public static function del_axis($axeid) {
+        global $DB;
+        return $DB->delete_records('assignfeedback_editpp_axis', array('id' => $axeid));
+    }
+    
 }

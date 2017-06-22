@@ -42,14 +42,18 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             AdminPanel.prototype.selectTool = null;
             //
             AdminPanel.prototype.init = function () {
-                var selectAxis = $("#editpdlplus_axes").val();
-                $("#editpdlplus_toolbar_" + selectAxis).show();
-
                 $("#editpdlplus_axes").on("change", function () {
                     $(".toolbar").hide();
                     var selectAxis = $("#editpdlplus_axes").val();
                     $("#editpdlplus_toolbar_" + selectAxis).show();
+                    var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
+                    if (canBeDelete && parseInt(canBeDelete) > 0) {
+                        $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").addClass("disabled");
+                    } else {
+                        $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                    }
                 });
+                $("#editpdlplus_axes").change();
 //
                 $(".editpdlplus_tool").on("click", function () {
                     var selectid = $(this).val();
@@ -67,6 +71,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 this.initTool();
                 $("#assignfeedback_editpdfplus_widget_admin_button_addaxis").on("click", this.openDivAddAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_editaxis").on("click", this.openDivEditAxis);
+                $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").on("click", this.openDivDelAxis);
             };
             //
             AdminPanel.prototype.initTool = function () {
@@ -104,6 +109,19 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisedit', contextid, params)
                         .done(function (html, js) {
                             templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body',
+                                    html, js);
+                        }.bind(this)).fail(notification.exception);
+            };
+            //
+            AdminPanel.prototype.openDivDelAxis = function () {
+                $("#axistool").hide();
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                var axeid = $("#editpdlplus_axes option:selected").val();
+                var params = {axeid: axeid};
+                fragment.loadFragment('assignfeedback_editpdfplus', 'axisdel', contextid, params)
+                        .done(function (html, js) {
+                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };

@@ -129,3 +129,23 @@ function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
     
     return null;
 }
+
+function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
+    global $DB;
+
+    $context = $args['context'];
+    $axisid = $args['axeid'];
+
+    if ($context->contextlevel != CONTEXT_COURSE) {
+        return null;
+    }
+    require_once('locallib_admin.php');
+
+    if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
+        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
+        return $editpdfplus->getAxisDelForm($axisid);
+    }
+    
+    return null;
+}

@@ -1,0 +1,43 @@
+{{!
+    @template assignfeedback_editpdfplus/axis_form
+}}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {{title}}
+    </div>
+    <div class="panel-body" style="text-align: center;">
+        <p>Êtes-vous sûr de supprimer l'axe sélectionné ?</p>
+        {{{render}}}
+        <button type="button" class="btn btn-primary" id="axisDelSubmit">Oui</button>
+        <button type="button" class="btn btn-default" id="axisDelCancel">Non</button>
+    </div>
+</div>
+{{# js }}
+require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
+    var formid='{{id}}';
+    $("#axisDelSubmit").on("click", function () {
+        var form = $('#'+formid);
+        var data = form.serialize()+"&courseid="+{{courseid}};
+        ajax.call([
+            {
+                methodname: 'assignfeedback_editpdfplus_submit_axis_del_form',
+                args: {jsonformdata: JSON.stringify(data)}
+            }
+        ])[0].done(function(message) {
+            if (message[0].message === "1"){
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                $("#editpdlplus_axes option:selected").remove();
+                $("#editpdlplus_axes").change();
+                $("#axistool").show();
+            }else{
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body > .panel > .panel-body').append("<div class='alert alert-danger' style='margin-top: 5px;'>"+message[0].message+"</div>");
+            }
+        }).fail(notification.exception);
+    });
+    $("#axisDelCancel").on("click", function () {
+        $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+        $("#axistool").show();
+    });
+});
+{{/ js }}
