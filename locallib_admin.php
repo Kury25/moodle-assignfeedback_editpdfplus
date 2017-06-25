@@ -28,6 +28,7 @@ use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\widget_admin;
 use \assignfeedback_editpdfplus\form\axis_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
+use \assignfeedback_editpdfplus\form\tool_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
 class assign_feedback_editpdfplus_admin {
@@ -122,6 +123,25 @@ class assign_feedback_editpdfplus_admin {
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
         $formAxis->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_axisdelform($formAxis);
+        return $html;
+    }
+
+    public function getToolForm($toolid = null) {
+        global $PAGE, $DB;
+
+        $html = '';
+        $data = new stdClass;
+        $data->courseid = $this->course->id;
+        $data->sesskey = sesskey();
+        $data->actionurl = "http://localhost/moodle33/moodle/lib/ajax/service.php";
+        $data->formid = "assignfeedback_editpdfplus_edit_tool";
+        if ($toolid != null) {
+            $data->tool = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
+        }
+        $data->tools = page_editor::get_typetools(null);
+        $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
+        //$formTool->courseid = $this->course->id;
+        $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;
     }
 

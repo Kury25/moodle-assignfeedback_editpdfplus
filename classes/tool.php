@@ -65,7 +65,7 @@ class tool {
     /** @var boolean, if tool is actived or not */
     public $enabled = 1;
     
-    /** @var boolean, order in toolbar */
+    /** @var int order_tool, order in toolbar */
     public $order_tool = 1000;
 
     /**

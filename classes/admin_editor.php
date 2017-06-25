@@ -87,5 +87,57 @@ class admin_editor {
         global $DB;
         return $DB->delete_records('assignfeedback_editpp_axis', array('id' => $axeid));
     }
-    
+
+    public static function get_tools_by_axis($tool) {
+        global $DB;
+        $tools = array();
+        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $tool->axis));
+        foreach ($records as $record) {
+            if ($record->id == $tool->id) {
+                array_push($tools, $tool);
+            } else {
+                array_push($tools, new tool($record));
+            }
+        }
+        usort($tools, function($a, $b) {
+            $al = $a->order_tool;
+            $bl = $b->order_tool;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+        return $tools;
+    }
+
+    /**
+     * 
+     * @global type $DB
+     * @param type $axisLabel
+     * @param type $context
+     * @return type
+     */
+    public static function edit_tool($toolJson) {
+        global $DB;
+
+        $record=$DB->get_record('assignfeedback_editpp_tool', array('id' => $toolJson->toolid), '*', MUST_EXIST);
+        $tool = new tool($record);
+        $tool->type = $toolJson->typetool;
+        $tool->colors = $toolJson->color;
+        $tool->cartridge = $toolJson->libelle;
+        $tool->cartridge_color = $toolJson->catridgecolor;
+        $tool->texts = $toolJson->texts;
+        $tool->label = $toolJson->button;
+        if ($toolJson->reply) {
+            $tool->reply = $toolJson->reply;
+        } else {
+            $tool->reply = 0;
+        }
+        $tool->order_tool = $toolJson->order;
+        if ($DB->update_record('assignfeedback_editpp_tool', $tool)) {
+            return $tool;
+        }
+        return null;
+    }
+
 }

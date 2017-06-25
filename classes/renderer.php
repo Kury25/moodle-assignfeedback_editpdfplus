@@ -391,5 +391,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     public function render_assignfeedback_editpdfplus_widget_admin_axisdelform(moodleform $form){
         return $this->render_from_template('assignfeedback_editpdfplus/axis_del_form', $form);
     }
+    
+    public function render_assignfeedback_editpdfplus_widget_admin_toolform($data){
+        return $this->render_from_template('assignfeedback_editpdfplus/tool_form', $data);
+    }
 
 }
