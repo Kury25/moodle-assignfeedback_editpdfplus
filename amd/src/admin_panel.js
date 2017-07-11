@@ -60,6 +60,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $("#assignfeedback_editpdfplus_widget_admin_button_addaxis").on("click", this.openDivAddAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_editaxis").on("click", this.openDivEditAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").on("click", this.openDivDelAxis);
+                $("#assignfeedback_editpdfplus_widget_admin_button_addtool").on("click", this.openDivAddTool);
             };
             //
             AdminPanel.prototype.test = function () {
@@ -128,7 +129,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
              * @param {String} js
              * @return {Deferred} promise resolved when the animations are complete.
              */
-            var hello = function (node, html, js) {
+            var fillResultAjax = function (node, html, js) {
                 //alert("tutu");
                 //alert(html+js);
                 var promise = $.Deferred();
@@ -159,7 +160,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 //this.test();
                 fragment.loadFragment('assignfeedback_editpdfplus', 'tooledit', contextid, params)
                         .done(function (html, js) {
-                            hello($('#editpdlplus_tool_item'), html, js)
+                            fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
                                         $("#toolFormSubmit").on("click", function () {
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
@@ -222,6 +223,77 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             //alert("jdikdi");
                             //$(".editpdlplus_tool").on("click", this.refreshToolView);
                             //}.bind(this))/*.fail(notification.exception)*/;
+                        }.bind(this)).fail(notification.exception);
+            };
+            //
+            AdminPanel.prototype.openDivAddTool = function () {
+                $('#editpdlplus_tool_item').html("");
+                $('.btn-primary').addClass("btn-default");
+                $('.editpdlplus_tool').removeClass("btn-primary");
+                var axeid = $("#editpdlplus_axes option:selected").val();
+                var params = {axisid: axeid};
+                fragment.loadFragment('assignfeedback_editpdfplus', 'tooladd', contextid, params)
+                        .done(function (html, js) {
+                            fillResultAjax($('#editpdlplus_tool_item'), html, js)
+                                    .done(function () {
+                                        $("#toolFormSubmit").on("click", function () {
+                                            var form = $('#assignfeedback_editpdfplus_edit_tool');
+                                            var data = form.serialize();
+                                            ajax.call([
+                                                {
+                                                    methodname: 'assignfeedback_editpdfplus_submit_tool_add_form',
+                                                    args: {jsonformdata: JSON.stringify(data)}
+                                                }
+                                            ])[0].done(function (toolbar) {
+                                                if (toolbar[0].message === "") {
+                                                    //mise à jour du message
+                                                    $("#message_edit_tool").html("Ajout enregistré");
+                                                    $("#message_edit_tool").addClass("alert-success");
+                                                    $("#message_edit_tool").removeClass("alert-danger");
+                                                    //mise à jour bar d'outils
+                                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                    for (var i = 0; i < toolbar.length; i++) {
+                                                        var classButton = "btn-default";
+                                                        if (toolbar[i].enable !== 1) {
+                                                            classButton = "";
+                                                        }
+                                                        if (toolbar[i].toolid === toolbar[i].selecttool) {
+                                                            classButton = "btn-primary";
+                                                        }
+                                                        var style = "";
+                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
+                                                            style = "text-decoration: underline;";
+                                                        }
+                                                        var label = toolbar[i].button;
+                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
+                                                            label = "| " + label;
+                                                            if (toolbar[i].typetool === 4) {
+                                                                label += " |";
+                                                            }
+                                                        }
+                                                        var buttonTmp = "<button class='btn "
+                                                                + classButton
+                                                                + " editpdlplus_tool' id='editpdlplus_tool_"
+                                                                + toolbar[i].toolid + "' style='"
+                                                                + style
+                                                                + "' value='"
+                                                                + toolbar[i].toolid
+                                                                + "' data-enable='"
+                                                                + toolbar[i].enable + "'>"
+                                                                + label
+                                                                + "</button>";
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                    }
+                                                    $(".editpdlplus_tool").on("click", refreshToolView);
+                                                    $('#editpdlplus_tool_item').html("");
+                                                } else {
+                                                    $("#message_edit_tool").html(toolbar[0].message);
+                                                    $("#message_edit_tool").addClass("alert-danger");
+                                                    $("#message_edit_tool").removeClass("alert-success");
+                                                }
+                                            }).fail(notification.exception);
+                                        });
+                                    }.bind(this)).fail(notification.exception);
                         }.bind(this)).fail(notification.exception);
             };
             return AdminPanel;

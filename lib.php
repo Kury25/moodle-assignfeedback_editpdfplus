@@ -102,11 +102,11 @@ function assignfeedback_editpdfplus_output_fragment_axisadd($args) {
     require_once('locallib_admin.php');
 
     if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
-        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
         $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
         return $editpdfplus->getAxisForm();
     }
-    
+
     return null;
 }
 
@@ -122,11 +122,11 @@ function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
     require_once('locallib_admin.php');
 
     if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
-        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
         $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
         return $editpdfplus->getAxisForm($axisid);
     }
-    
+
     return null;
 }
 
@@ -142,11 +142,11 @@ function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
     require_once('locallib_admin.php');
 
     if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
-        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
         $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
         return $editpdfplus->getAxisDelForm($axisid);
     }
-    
+
     return null;
 }
 
@@ -162,10 +162,30 @@ function assignfeedback_editpdfplus_output_fragment_tooledit($args) {
     require_once('locallib_admin.php');
 
     if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
-        $course=$DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
         $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
         return $editpdfplus->getToolForm($toolid);
     }
-    
+
+    return null;
+}
+
+function assignfeedback_editpdfplus_output_fragment_tooladd($args) {
+    global $DB;
+
+    $context = $args['context'];
+    $axisid = $args['axisid'];
+
+    if ($context->contextlevel != CONTEXT_COURSE) {
+        return null;
+    }
+    require_once('locallib_admin.php');
+
+    if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
+        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
+        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
+        return $editpdfplus->getToolForm(null, $axisid);
+    }
+
     return null;
 }

@@ -255,9 +255,95 @@ class assignfeedback_editpdfplus_external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                 array(
-            'axeid' => new external_value(PARAM_INT, 'axe id'),        
+            'axeid' => new external_value(PARAM_INT, 'axe id'),
             'selecttool' => new external_value(PARAM_INT, 'tool id'),
-            'enable' => new external_value(PARAM_INT, 'tool enable'),    
+            'enable' => new external_value(PARAM_INT, 'tool enable'),
+            'toolid' => new external_value(PARAM_INT, 'tool id'),
+            'typetool' => new external_value(PARAM_INT, 'tool type'),
+            'button' => new external_value(PARAM_TEXT, 'tool label'),
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_tool_add_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_tool_add_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey) {
+            $tool = admin_editor::add_tool($customdata, $context->id);
+            if ($tool) {
+                $tools = admin_editor::get_tools_by_axis($tool);
+                $res = array();
+                foreach ($tools as $toolTmp) {
+                    $res[] = array('axeid' => $tool->axis, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                }
+                return $res;
+            } else {
+                $warnings[] = array('message' => 'erreur à l enregistrement');
+            }
+        } else {
+            $warnings[] = array('message' => 'erreur à l enregistrement');
+        }
+
+        /* if ($validateddata) {
+          if ($validateddata->axeid) {
+          admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
+          $axeid = $validateddata->axeid;
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          } else {
+          $axeid = admin_editor::add_axis($validateddata->label, $context->id);
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          }
+          } */
+
+
+        return $warnings;
+    }
+
+    public static function submit_tool_add_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'axeid' => new external_value(PARAM_INT, 'axe id'),
+            'selecttool' => new external_value(PARAM_INT, 'tool id'),
+            'enable' => new external_value(PARAM_INT, 'tool enable'),
             'toolid' => new external_value(PARAM_INT, 'tool id'),
             'typetool' => new external_value(PARAM_INT, 'tool type'),
             'button' => new external_value(PARAM_TEXT, 'tool label'),

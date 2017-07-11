@@ -7,15 +7,18 @@
 </div>
 
 <div class='row' style="margin-bottom: 10px;">
+        {{^tool.id}}<h4>Ajout d'un nouvel outil</h4>{{/tool.id}}
     <div class='col-sm-1'>
-        <div id="editpdlplus_tool_label"></div>
+        <div id="editpdlplus_tool_label">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
     </div>
     <div class='col-sm-offset-2 col-sm-5'>
-        Actions :
-        <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+        Action{{#tool.id}}s{{/tool.id}} :
+        <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}pencil{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
+        {{#tool.id}}
         <button type="button" class="btn btn-default"><i class="fa fa-clone" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-default"><i class="fa fa-eye-slash" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-default"><i class="fa fa-remove" aria-hidden="true"></i></button>
+        {{/tool.id}}
     </div>
 </div>
 
@@ -110,15 +113,16 @@
                         <div class="form-group">
                             <label class="control-label col-sm-3" for="reply">Question/réponse</label>
                             <div class="col-sm-9">
-                                <input type="checkbox" class="form-control" id="reply" {{#tool.reply}}checked{{/tool.reply}} value="{{tool.reply}}" name="reply" />
+                                <input type="checkbox" class="form-control" id="reply" {{#tool.reply}}checked {{/tool.reply}}name="reply" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
+            
             <div style='display:none;'>
                 <input type="hidden" name="toolid" value="{{tool.id}}" />
+                <input type="hidden" name="axisid" value="{{tool.axis}}" />
                 <input type="hidden" name="courseid" value="{{courseid}}" />
                 <input type="hidden" name="sesskey" value="{{sesskey}}" />
             </div>
@@ -132,7 +136,7 @@
 {{# js }}
 require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
 
-    $("#typetool").val({{tool.type}});
+    {{#tool.id}}$("#typetool").val({{tool.type}});{{/tool.id}}
 
 });
 {{/ js }}
