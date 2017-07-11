@@ -31,7 +31,7 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'assignfeedback_editpdfplus_submit_axis_edit_form' => array(
@@ -42,7 +42,7 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'assignfeedback_editpdfplus_submit_axis_del_form' => array(
@@ -53,7 +53,7 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'assignfeedback_editpdfplus_submit_tool_edit_form' => array(
@@ -64,7 +64,7 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'assignfeedback_editpdfplus_submit_tool_add_form' => array(
@@ -75,7 +75,18 @@ $functions = array(
         'type' => 'write',
         'ajax' => true,
         'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_tool_del_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_tool_del_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Remove a tool',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
 );

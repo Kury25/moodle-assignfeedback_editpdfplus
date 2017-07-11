@@ -137,11 +137,17 @@ class assign_feedback_editpdfplus_admin {
         $data->formid = "assignfeedback_editpdfplus_edit_tool";
         if ($toolid != null) {
             $data->tool = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
+            $data->tool->removable = true;
+            $nbEnregistrements = $DB->get_record_sql('SELECT count(*) as val FROM {assignfeedback_editpp_annot} WHERE toolid = ?', array('toolid' => $toolid));
+            if ($nbEnregistrements->val > 0) {
+                $data->tool->removable = false;
+            }
         } else {
             $tool = new \assignfeedback_editpdfplus\tool();
             $tool->contextid = $this->context->id;
             $tool->enabled = true;
             $tool->axis = $axisid;
+            $tool->removable = true;
             $data->tool = $tool;
         }
         $data->tools = page_editor::get_typetools(null);

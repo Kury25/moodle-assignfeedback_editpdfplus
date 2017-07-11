@@ -176,10 +176,15 @@ class admin_editor {
         return $DB->delete_records('assignfeedback_editpp_axis', array('id' => $axeid));
     }
 
-    public static function get_tools_by_axis($tool) {
+    public static function del_tool($tool) {
+        global $DB;
+        return $DB->delete_records('assignfeedback_editpp_tool', array('id' => $tool->toolid));
+    }
+
+    public static function get_tools_by_axis($axisid) {
         global $DB;
         $tools = array();
-        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $tool->axis));
+        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $axisid));
         foreach ($records as $record) {
             if ($record->id == $tool->id) {
                 array_push($tools, $tool);

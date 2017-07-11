@@ -248,6 +248,65 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             currentTool.order = $("#order").val();
                                             $("#assignfeedback_editpdfplus_widget_admin_button_addtool").click();
                                         });
+                                        $("#toolRemove").on("click", function () {
+                                            if (!$(this).hasClass("disabled")) {
+                                                var form = $('#assignfeedback_editpdfplus_edit_tool');
+                                                var data = form.serialize();
+                                                ajax.call([
+                                                    {
+                                                        methodname: 'assignfeedback_editpdfplus_submit_tool_del_form',
+                                                        args: {jsonformdata: JSON.stringify(data)}
+                                                    }
+                                                ])[0].done(function (toolbar) {
+                                                    if (toolbar[0].message === "") {
+                                                        //mise à jour du message
+                                                        $("#message_edit_tool").html("Outil supprimé");
+                                                        $("#message_edit_tool").addClass("alert-success");
+                                                        $("#message_edit_tool").removeClass("alert-danger");
+                                                        //mise à jour bar d'outils
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                        for (var i = 0; i < toolbar.length; i++) {
+                                                            var classButton = "btn-default";
+                                                            if (toolbar[i].enable !== 1) {
+                                                                classButton = "";
+                                                            }
+                                                            if (toolbar[i].toolid === toolbar[i].selecttool) {
+                                                                classButton = "btn-primary";
+                                                            }
+                                                            var style = "";
+                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
+                                                                style = "text-decoration: underline;";
+                                                            }
+                                                            var label = toolbar[i].button;
+                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
+                                                                label = "| " + label;
+                                                                if (toolbar[i].typetool === 4) {
+                                                                    label += " |";
+                                                                }
+                                                            }
+                                                            var buttonTmp = "<button class='btn "
+                                                                    + classButton
+                                                                    + " editpdlplus_tool' id='editpdlplus_tool_"
+                                                                    + toolbar[i].toolid + "' style='"
+                                                                    + style
+                                                                    + "' value='"
+                                                                    + toolbar[i].toolid
+                                                                    + "' data-enable='"
+                                                                    + toolbar[i].enable + "'>"
+                                                                    + label
+                                                                    + "</button>";
+                                                            $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                        }
+                                                        $(".editpdlplus_tool").on("click", refreshToolView);
+                                                        $('#toolworkspace').html("");
+                                                    } else {
+                                                        $("#message_edit_tool").html(toolbar[0].message);
+                                                        $("#message_edit_tool").addClass("alert-danger");
+                                                        $("#message_edit_tool").removeClass("alert-success");
+                                                    }
+                                                }).fail(notification.exception);
+                                            }
+                                        });
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");
@@ -267,7 +326,6 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
                                         if (action === "clone") {
-                                            alert(currentTool);
                                             $("#typetool").val(currentTool.typetool);
                                             $("#color").val(currentTool.color);
                                             $("#libelle").val(currentTool.libelle);
