@@ -208,6 +208,37 @@ class admin_editor {
     public static function edit_tool($toolJson) {
         global $DB;
 
+        $tools = array();
+        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $data->axisid));
+        foreach ($records as $record) {
+            array_push($tools, new tool($record));
+        }
+        usort($tools, function($a, $b) {
+            $al = $a->order_tool;
+            $bl = $b->order_tool;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+        $compteurPrecedent = null;
+        $decalage = 1;
+        foreach ($tools as $tool) {
+            if ($compteurPrecedent == null) {
+                $compteurPrecedent = $tool->order_tool;
+            } else {
+                $compteurCourant = $tool->order_tool;
+                if ($compteurCourant <= $compteurPrecedent) {
+                    $tool->order_tool = $compteurPrecedent + $decalage;
+                    //$decalage++;
+                }
+                $compteurPrecedent++;
+            }
+        }
+        foreach ($tools as $toolOr) {
+            $DB->update_record('assignfeedback_editpp_tool', $toolOr);
+        }
+
         $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolJson->toolid), '*', MUST_EXIST);
         $tool = new tool($record);
         $tool->type = $toolJson->typetool;
@@ -216,8 +247,9 @@ class admin_editor {
         $tool->cartridge_color = $toolJson->catridgecolor;
         $tool->texts = $toolJson->texts;
         $tool->label = $toolJson->button;
-        if ($toolJson->reply) {
-            $tool->reply = $toolJson->reply;
+        $tool->enabled = $toolJson->enabled;
+        if ($toolJson->reply == "on") {
+            $tool->reply = 1;
         } else {
             $tool->reply = 0;
         }

@@ -218,6 +218,19 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 }
                                             }).fail(notification.exception);
                                         });
+                                        $("#toolEnabled").on("click", function () {
+                                            var enabled = $("#toolenabled").val();
+                                            if (enabled == 1) {
+                                                $("#toolEnabled > i").addClass("fa-eye-slash");
+                                                $("#toolEnabled > i").removeClass("fa-eye");
+                                                $("#toolenabled").val(0);
+                                            } else {
+                                                $("#toolEnabled > i").addClass("fa-eye");
+                                                $("#toolEnabled > i").removeClass("fa-eye-slash");
+                                                $("#toolenabled").val(1);
+                                            }
+                                            $("#toolFormSubmit").click();
+                                        });
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");
