@@ -25,6 +25,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
         function ($/*, Y*/, notification, templates, fragment, ajax/*, str, checker*/) {
 
             var contextid = null;
+            var currentTool = null;
+            var action = null;
+
             /**
              * AdminPanel class.
              *
@@ -231,6 +234,20 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             }
                                             $("#toolFormSubmit").click();
                                         });
+                                        $("#toolClone").on("click", function () {
+                                            action = "clone";
+                                            currentTool = new Object();
+                                            currentTool.typetool = $("#typetool").val();
+                                            currentTool.color = $("#color").val();
+                                            currentTool.libelle = $("#libelle").val();
+                                            currentTool.catridgecolor = $("#catridgecolor").val();
+                                            currentTool.texts = $("#texts").val();
+                                            currentTool.button = $("#button").val();
+                                            currentTool.enabled = $("#enabled").val();
+                                            currentTool.reply = $("#reply").val();
+                                            currentTool.order = $("#order").val();
+                                            $("#assignfeedback_editpdfplus_widget_admin_button_addtool").click();
+                                        });
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");
@@ -249,6 +266,20 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
+                                        if (action === "clone") {
+                                            alert(currentTool);
+                                            $("#typetool").val(currentTool.typetool);
+                                            $("#color").val(currentTool.color);
+                                            $("#libelle").val(currentTool.libelle);
+                                            $("#catridgecolor").val(currentTool.catridgecolor);
+                                            $("#texts").val(currentTool.texts);
+                                            $("#button").val(currentTool.button);
+                                            $("#enabled").val(currentTool.enabled);
+                                            $("#reply").val(currentTool.reply);
+                                            $("#order").val(currentTool.order);
+                                            currentTool = null;
+                                            action = null;
+                                        }
                                         $("#toolFormSubmit").on("click", function () {
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
                                             var data = form.serialize();
