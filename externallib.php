@@ -89,7 +89,7 @@ class assignfeedback_editpdfplus_external extends external_api {
                 return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
             }
         } else {
-            $warnings[] = array('message' => 'erreur à l enregistrement');
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
 
@@ -158,7 +158,7 @@ class assignfeedback_editpdfplus_external extends external_api {
                 return array(array('message' => $message));
             }
         } else {
-            $message = "erreur à la suppression";
+            $message = get_string('admindeltool_messageko', 'assignfeedback_editpdfplus');
             $warnings[] = array('message' => $message);
         }
 
@@ -230,10 +230,10 @@ class assignfeedback_editpdfplus_external extends external_api {
                 }
                 return $res;
             } else {
-                $warnings[] = array('message' => 'erreur à l enregistrement');
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
             }
         } else {
-            $warnings[] = array('message' => 'erreur à l enregistrement');
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
         /* if ($validateddata) {
@@ -316,10 +316,10 @@ class assignfeedback_editpdfplus_external extends external_api {
                 }
                 return $res;
             } else {
-                $warnings[] = array('message' => 'erreur à l enregistrement');
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
             }
         } else {
-            $warnings[] = array('message' => 'erreur à l enregistrement');
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
         /* if ($validateddata) {
@@ -402,10 +402,10 @@ class assignfeedback_editpdfplus_external extends external_api {
                 }
                 return $res;
             } else {
-                $warnings[] = array('message' => 'erreur à l enregistrement');
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
             }
         } else {
-            $warnings[] = array('message' => 'erreur à l enregistrement');
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
         return $warnings;

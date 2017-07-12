@@ -21,13 +21,12 @@
  * @module mod_assignfeedback_editpdfplus/admin_panel
  */
 define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
-    'core/ajax'/*, 'core/str', 'mod_assign/grading_form_change_checker'*/],
-        function ($/*, Y*/, notification, templates, fragment, ajax/*, str, checker*/) {
+    'core/ajax', 'core/str'/*, 'mod_assign/grading_form_change_checker'*/],
+        function ($/*, Y*/, notification, templates, fragment, ajax, str /*, checker*/) {
 
             var contextid = null;
             var currentTool = null;
             var action = null;
-
             /**
              * AdminPanel class.
              *
@@ -147,6 +146,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             var refreshToolView = function () {
+                var messageok = str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus');
                 var selectid = $(this).val();
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
@@ -260,7 +260,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 ])[0].done(function (toolbar) {
                                                     if (toolbar[0].message === "") {
                                                         //mise à jour du message
-                                                        $("#message_edit_tool").html("Outil supprimé");
+                                                        $("#message_edit_tool").html(messageok);
                                                         $("#message_edit_tool").addClass("alert-success");
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         //mise à jour bar d'outils
@@ -316,6 +316,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivAddTool = function () {
+                var messageok = str.get_string('adminaddtool_messageok', 'assignfeedback_editpdfplus');
                 $('#editpdlplus_tool_item').html("");
                 $('.btn-primary').addClass("btn-default");
                 $('.editpdlplus_tool').removeClass("btn-primary");
@@ -349,7 +350,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             ])[0].done(function (toolbar) {
                                                 if (toolbar[0].message === "") {
                                                     //mise à jour du message
-                                                    $("#message_edit_tool").html("Ajout enregistré");
+                                                    $("#message_edit_tool").html(messageok);
                                                     $("#message_edit_tool").addClass("alert-success");
                                                     $("#message_edit_tool").removeClass("alert-danger");
                                                     //mise à jour bar d'outils

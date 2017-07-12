@@ -8,12 +8,12 @@
 
 <div id="toolworkspace">
     <div class='row' style="margin-bottom: 10px;">
-        {{^tool.id}}<h4>Ajout d'un nouvel outil</h4>{{/tool.id}}
+        {{^tool.id}}<h4>{{# str }} adminaddtool, assignfeedback_editpdfplus {{/ str }}</h4>{{/tool.id}}
         <div class='col-sm-1'>
             <div id="editpdlplus_tool_label">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
         </div>
         <div class='col-sm-offset-2 col-sm-5'>
-            Action{{#tool.id}}s{{/tool.id}} :
+            {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :
             <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}pencil{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
             {{#tool.id}}
             <button type="button" class="btn btn-default" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
@@ -29,12 +29,12 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse1">Type d'outil</a>
+                        <i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse1">{{# str }} admintoolboxtypetool, assignfeedback_editpdfplus {{/ str }}</a>
                     </div>
                     <div id="collapse1" class="panel-collapse collapse">
                         <div class="panel-body" style="margin-bottom: 20px;">
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="typetool">Type</label>
+                                <label class="control-label col-sm-3" for="typetool">{{# str }} admintoolboxtypetool_type, assignfeedback_editpdfplus {{/ str }}</label>
                                 <div class="col-sm-9">
                                     <select class="form-control" id="typetool" name="typetool">
                                         {{# tools }}
@@ -49,18 +49,18 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse2">Affichage barre d'outil</a>
+                        <i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse2">{{# str }} admintoolboxtoolbardisplay, assignfeedback_editpdfplus {{/ str }}</a>
                     </div>
                     <div id="collapse2" class="panel-collapse collapse">
                         <div class="panel-body" style="margin-bottom: 50px;">
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="button">Bouton</label>
+                                <label class="control-label col-sm-3" for="button">{{# str }} admintoolboxtoolbardisplay_button, assignfeedback_editpdfplus {{/ str }}</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="button" value="{{tool.label}}" name="button" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="order">Ordre</label>
+                                <label class="control-label col-sm-3" for="order">{{# str }} admintoolboxtoolbardisplay_order, assignfeedback_editpdfplus {{/ str }}</label>
                                 <div class="col-sm-9">
                                     <input type="number" class="form-control" id="order" value="{{tool.order_tool}}" name="order" />
                                 </div>
@@ -71,18 +71,18 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-address-card-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse3">Cartouche</a>
+                        <i class="fa fa-address-card-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse3">{{# str }} admintoolboxcartridge, assignfeedback_editpdfplus {{/ str }}</a>
                     </div>
                     <div id="collapse3" class="panel-collapse collapse">
                         <div class="panel-body" style="margin-bottom: 50px;">
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="libelle">Libellé</label>
+                                <label class="control-label col-sm-3" for="libelle">{{# str }} admintoolboxcartridge_label, assignfeedback_editpdfplus {{/ str }}</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="libelle" value="{{tool.cartridge}}" name="libelle" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="cartridgecolor">Couleur</label>
+                                <label class="control-label col-sm-3" for="cartridgecolor">{{# str }} admintoolboxcartridge_color, assignfeedback_editpdfplus {{/ str }}</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="cartridgecolor" placeholder="{{^tool.cartridge_color}}-{{/tool.cartridge_color}}"
                                            value="{{#tool.cartridge_color}}{{tool.cartridge_color}}{{/tool.cartridge_color}}" name="catridgecolor" />
@@ -94,25 +94,25 @@
 
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse4">Annotation</a>
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse4">{{# str }} admintoolboxannotation, assignfeedback_editpdfplus {{/ str }}</a>
                     </div>
                     <div id="collapse4" class="panel-collapse collapse">
                         <div class="panel-body" style="margin-bottom: 80px;">
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="color">Couleur</label>
+                                <label class="control-label col-sm-3" for="color">{{# str }} admintoolboxannotation_color, assignfeedback_editpdfplus {{/ str }}Couleur</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="color" placeholder="{{^tool.colors}}-{{/tool.colors}}"
                                            value="{{#tool.colors}}{{tool.colors}}{{/tool.colors}}" name="color" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="texts">Texte prédéfinis</label>
+                                <label class="control-label col-sm-3" for="texts">{{# str }} admintoolboxannotation_texts, assignfeedback_editpdfplus {{/ str }}Texte prédéfinis</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="texts" value="{{tool.texts}}" name="texts" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="control-label col-sm-3" for="reply">Question/réponse</label>
+                                <label class="control-label col-sm-3" for="reply">{{# str }} admintoolboxannotation_reply, assignfeedback_editpdfplus {{/ str }}Question/réponse</label>
                                 <div class="col-sm-9">
                                     <input type="checkbox" class="form-control" id="reply" {{#tool.reply}}checked {{/tool.reply}}name="reply" />
                                 </div>

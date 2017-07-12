@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,7 +22,6 @@
  * @copyright  2016 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 $string['addtoquicklist'] = 'Add to quicklist';
@@ -109,6 +109,26 @@ $string['editpdfplus:notify'] = 'Recevoir les notifications';
 $string['admintitle'] = 'Feedback configuration';
 $string['adminsubtitle'] = 'Configuration de la barre d\'outils de l\'annotation PDF avancée';
 $string['admincurrenttoolbar'] = 'Barre d\'outils en cours';
+$string['adminaxis'] = 'Axes';
+$string['admintools'] = 'Outils';
+$string['adminaddtool'] = 'Ajout d\'un nouvel outil';
+$string['admintoolboxaction'] = 'Actions';
+$string['admintoolboxtypetool'] = 'Type d\'outil';
+$string['admintoolboxtypetool_type'] = 'Type';
+$string['admintoolboxtoolbardisplay'] = 'Affichage barre d\'outil';
+$string['admintoolboxtoolbardisplay_button'] = 'Bouton';
+$string['admintoolboxtoolbardisplay_order'] = 'Ordre';
+$string['admintoolboxcartridge'] = 'Cartouche';
+$string['admintoolboxcartridge_label'] = 'Libellé';
+$string['admintoolboxcartridge_color'] = 'Couleur';
+$string['admintoolboxannotation'] = 'Annotation';
+$string['admintoolboxannotation_color'] = 'Couleur';
+$string['admintoolboxannotation_texts'] = 'Textes prédéfinis';
+$string['admintoolboxannotation_reply'] = 'Question/réponse';
+$string['admindeltool_messageok'] = 'Outil supprimé';
+$string['admindeltool_messageko'] = 'Erreur à la suppression';
+$string['adminaddtool_messageok'] = '"Ajout enregistré"';
+$string['admin_messageko'] = 'Erreur à l\'enregistrement';
 $string['typetool_highlightplus'] = 'Surlignement avec commentaires';
 $string['typetool_stampplus'] = 'Tampon avec contenu personalisé';
 $string['typetool_frame'] = 'Encadrement d\'éléments avec commentaires';
