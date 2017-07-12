@@ -186,11 +186,11 @@ class admin_editor {
         $tools = array();
         $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $axisid));
         foreach ($records as $record) {
-            if ($record->id == $tool->id) {
-                array_push($tools, $tool);
-            } else {
-                array_push($tools, new tool($record));
-            }
+            //if ($record->id == $tool->id) {
+            //    array_push($tools, $tool);
+            //} else {
+            array_push($tools, new tool($record));
+            //}
         }
         usort($tools, function($a, $b) {
             $al = $a->order_tool;
@@ -214,7 +214,7 @@ class admin_editor {
         global $DB;
 
         $tools = array();
-        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $data->axisid));
+        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $toolJson->axisid));
         foreach ($records as $record) {
             array_push($tools, new tool($record));
         }
@@ -263,6 +263,21 @@ class admin_editor {
             return $tool;
         }
         return null;
+    }
+
+    /**
+     * Get all the type tools.
+     * @param array $contextidlist
+     * @return type_tool
+     */
+    public static function get_typetools() {
+        global $DB;
+        $typetools = array();
+        $records = $DB->get_records('assignfeedback_editpp_typet', array('configurable' => 1));
+        foreach ($records as $record) {
+            array_push($typetools, new type_tool($record));
+        }
+        return $typetools;
     }
 
 }

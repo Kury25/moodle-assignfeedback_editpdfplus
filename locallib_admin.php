@@ -150,7 +150,10 @@ class assign_feedback_editpdfplus_admin {
             $tool->removable = true;
             $data->tool = $tool;
         }
-        $data->tools = page_editor::get_typetools(null);
+        $data->tools = admin_editor::get_typetools();
+        foreach ($data->tools as $toolRef) {
+            $toolRef->libelle= get_string('typetool_'.$toolRef->label,'assignfeedback_editpdfplus');
+        }
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
         //$formTool->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);

@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+use assignfeedback_editpdfplus\type_tool;
+
 /**
  * EditPDF upgrade code
  * @param int $oldversion
@@ -36,10 +38,8 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
     // Moodle v2.8.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Moodle v2.9.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Moodle v3.0.0 release upgrade line.
     // Put any upgrade step following this.
 
@@ -67,7 +67,6 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
     // Moodle v3.1.0 release upgrade line.
     // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.2.0 release upgrade line.
     // Put any upgrade step following this.
 
@@ -85,6 +84,39 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
         // Editpdf savepoint reached.
         upgrade_plugin_savepoint(true, 2017022700, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2017071202) {
+
+        $table = new xmldb_table('assignfeedback_editpp_typet');
+        $field = new xmldb_field('configurable', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        
+        $record1 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'highlight'), '*', MUST_EXIST);
+        $typeTool1 = new type_tool($record1);
+        $typeTool1->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool1);
+        $record2 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'oval'), '*', MUST_EXIST);
+        $typeTool2 = new type_tool($record2);
+        $typeTool2->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool2);
+        $record3 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'rectangle'), '*', MUST_EXIST);
+        $typeTool3 = new type_tool($record3);
+        $typeTool3->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool3);
+        $record4 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'line'), '*', MUST_EXIST);
+        $typeTool4 = new type_tool($record4);
+        $typeTool4->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool4);
+        $record5 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'pen'), '*', MUST_EXIST);
+        $typeTool5 = new type_tool($record5);
+        $typeTool5->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool5);
+
+        // Editpdf savepoint reached.
+        upgrade_plugin_savepoint(true, 2017071202, 'assignfeedback', 'editpdfplus');
     }
 
     return true;

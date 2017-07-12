@@ -109,5 +109,11 @@ $string['editpdfplus:notify'] = 'Recevoir les notifications';
 $string['admintitle'] = 'Feedback configuration';
 $string['adminsubtitle'] = 'Configuration de la barre d\'outils de l\'annotation PDF avancée';
 $string['admincurrenttoolbar'] = 'Barre d\'outils en cours';
+$string['typetool_highlightplus'] = 'Surlignement avec commentaires';
+$string['typetool_stampplus'] = 'Tampon avec contenu personalisé';
+$string['typetool_frame'] = 'Encadrement d\'éléments avec commentaires';
+$string['typetool_verticalline'] = 'Ligne verticale avec commentaires';
+$string['typetool_stampcomment'] = 'Tamon double flèche avec commentaires';
+$string['typetool_commentplus'] = 'Cadre de commentaire avancé';
 
 
