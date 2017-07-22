@@ -75,6 +75,17 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
+            AdminPanel.prototype.initCanevas = function () {
+                var typetool = parseInt($("#typetool").val());
+                if (typetool === 3 || typetool === 4 || typetool === 7) {
+                    $('#canevas').css("background-image", "url(" + $("#map01").val() + ")");
+                } else if (typetool === 1 || typetool === 6) {
+                    $('#canevas').css("background-image", "url(" + $("#map02").val() + ")");
+                } else if (typetool === 5) {
+                    $('#canevas').css("background-image", "url(" + $("#map03").val() + ")");
+                }
+            };
+            //
             AdminPanel.prototype.openDivAddAxis = function () {
                 $("#axistool").hide();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
@@ -307,6 +318,16 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 }).fail(notification.exception);
                                             }
                                         });
+                                        //maj affichage previsu
+                                        //this.initCanevas();
+                                        var typetool = parseInt($("#typetool").val());
+                                        if (typetool === 3 || typetool === 4 || typetool === 7) {
+                                            $('#canevas').css("background-image", "url(" + $("#map01").val() + ")");
+                                        } else if (typetool === 1 || typetool === 6) {
+                                            $('#canevas').css("background-image", "url(" + $("#map02").val() + ")");
+                                        } else if (typetool === 5) {
+                                            $('#canevas').css("background-image", "url(" + $("#map03").val() + ")");
+                                        }
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");

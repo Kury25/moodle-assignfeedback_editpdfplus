@@ -393,6 +393,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     }
     
     public function render_assignfeedback_editpdfplus_widget_admin_toolform($data){
+        $data->map01 =  $this->pix_url('map01','assignfeedback_editpdfplus');
+        $data->map02 =  $this->pix_url('map02','assignfeedback_editpdfplus');
+        $data->map03 =  $this->pix_url('map03','assignfeedback_editpdfplus');
         return $this->render_from_template('assignfeedback_editpdfplus/tool_form', $data);
     }
 

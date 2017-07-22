@@ -10,7 +10,7 @@
     <div class='row' style="margin-bottom: 10px;">
         {{^tool.id}}<h4>{{# str }} adminaddtool, assignfeedback_editpdfplus {{/ str }}</h4>{{/tool.id}}
         <div class='col-sm-1'>
-            <div id="editpdlplus_tool_label">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
+            <div id="editpdlplus_tool_label" class="btn alert-info" style="cursor: default;">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
         </div>
         <div class='col-sm-offset-2 col-sm-5'>
             {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :
@@ -132,6 +132,12 @@
             </form>
         </div>
         <div class='col-sm-6'>
+            <input id='map01' type='hidden' value='{{map01}}' />
+            <input id='map02' type='hidden' value='{{map02}}' />
+            <input id='map03' type='hidden' value='{{map03}}' />
+                <!--{{# pix }} cross, assignfeedback_editpdfplus, previsu {{/ pix }}-->
+            <div id="canevas" style="background-image: url('{{map01}}');background-repeat: no-repeat; border-width: 1px; border-style: solid; height: 330px;" >
+            </div>
         </div>
     </div>
 </div>
