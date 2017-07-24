@@ -152,7 +152,7 @@ class assign_feedback_editpdfplus_admin {
         }
         $data->tools = admin_editor::get_typetools();
         foreach ($data->tools as $toolRef) {
-            $toolRef->libelle= get_string('typetool_'.$toolRef->label,'assignfeedback_editpdfplus');
+            $toolRef->libelle = get_string('typetool_' . $toolRef->label, 'assignfeedback_editpdfplus');
         }
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
         //$formTool->courseid = $this->course->id;
@@ -168,6 +168,7 @@ class assign_feedback_editpdfplus_admin {
         $coursecontext = context::instance_by_id($this->context->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
         $tools = page_editor::get_tools($coursecontexts);
+        $typetools = page_editor::get_typetools(null);
         $axis = page_editor::get_axis(array($this->context->id));
         foreach ($axis as $ax) {
             $ax->children = 0;
@@ -196,7 +197,7 @@ class assign_feedback_editpdfplus_admin {
             }
             $toolbars[] = $toolbar;
         }
-        $widget = new widget_admin($this->context, $this->course, $USER, $toolbars, $axis);
+        $widget = new widget_admin($this->context, $this->course, $USER, $toolbars, $axis, $typetools);
         return $widget;
     }
 

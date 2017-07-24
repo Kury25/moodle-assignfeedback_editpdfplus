@@ -21,22 +21,28 @@
  * @module mod_assignfeedback_editpdfplus/admin_panel
  */
 define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
-    'core/ajax', 'core/str'/*, 'mod_assign/grading_form_change_checker'*/],
-        function ($/*, Y*/, notification, templates, fragment, ajax, str /*, checker*/) {
+    'core/ajax', 'core/str', /*'mod_assign/grading_form_change_checker'*/
+    'assignfeedback_editpdfplus/annotation', 'assignfeedback_editpdfplus/annotationhighlightplus',
+    'assignfeedback_editpdfplus/annotationstampplus'],
+        function ($/*, Y*/, notification, templates, fragment, ajax, str,
+                Annotation, AnnotationHighlightplus, AnnotationStampplus /*, checker*/) {
 
             var contextid = null;
             var currentTool = null;
             var action = null;
+            var typetools = null;
             /**
              * AdminPanel class.
              *
              * @class AdminPanel
              */
-            var AdminPanel = function (contextidP) {
+            var AdminPanel = function (contextidP, typetoolsP) {
                 //this.registerEventListeners();
                 this.init();
                 contextid = contextidP;
+                typetools = JSON.parse(typetoolsP);
             };
+            AdminPanel.annotationcurrent = null;
             //
             //AdminPanel.prototype.contextid;
             //
@@ -75,7 +81,17 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
-            AdminPanel.prototype.initCanevas = function () {
+            var getTypeTool = function (toolid) {
+                for (var i = 0; i < typetools.length; i++) {
+                    if (typetools[i].id == toolid) {
+                        return typetools[i];
+                    }
+                }
+            };
+            //
+            var initCanevas = function () {
+                $('#canevas').html("");
+                this.annotationcurrent = null;
                 var typetool = parseInt($("#typetool").val());
                 if (typetool === 3 || typetool === 4 || typetool === 7) {
                     $('#canevas').css("background-image", "url(" + $("#map01").val() + ")");
@@ -83,6 +99,29 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $('#canevas').css("background-image", "url(" + $("#map02").val() + ")");
                 } else if (typetool === 5) {
                     $('#canevas').css("background-image", "url(" + $("#map03").val() + ")");
+                }
+                if (typetool === 1) {
+                    this.annotationcurrent = new AnnotationHighlightplus();
+                    this.annotationcurrent.x = 83;
+                    this.annotationcurrent.y = 82;
+                    this.annotationcurrent.endx = 239;
+                    this.annotationcurrent.endy = 98;
+                } else if (typetool === 3) {
+                    this.annotationcurrent = new AnnotationStampplus();
+                    this.annotationcurrent.x = 108;
+                    this.annotationcurrent.y = 50;
+                }
+                if (this.annotationcurrent) {
+                    var typetoolEntity = getTypeTool(typetool);
+                    this.annotationcurrent.tooltype = currentTool;
+                    if (currentTool.color) {
+                        this.annotationcurrent.colour = currentTool.color;
+                    } else {
+                        this.annotationcurrent.colour = typetoolEntity.color;
+                    }
+                    this.annotationcurrent.tooltypefamille = typetoolEntity;
+                    this.annotationcurrent.id = 'previsu_annot';
+                    this.annotationcurrent.draw($('#canevas'));
                 }
             };
             //
@@ -176,6 +215,16 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
+                                        currentTool = new Object();
+                                        currentTool.typetool = $("#typetool").val();
+                                        currentTool.color = $("#color").val();
+                                        currentTool.libelle = $("#libelle").val();
+                                        currentTool.catridgecolor = $("#catridgecolor").val();
+                                        currentTool.texts = $("#texts").val();
+                                        currentTool.button = $("#button").val();
+                                        currentTool.enabled = $("#enabled").val();
+                                        currentTool.reply = $("#reply").val();
+                                        currentTool.order = $("#order").val();
                                         $("#toolFormSubmit").on("click", function () {
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
                                             var data = form.serialize();
@@ -247,16 +296,6 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         });
                                         $("#toolClone").on("click", function () {
                                             action = "clone";
-                                            currentTool = new Object();
-                                            currentTool.typetool = $("#typetool").val();
-                                            currentTool.color = $("#color").val();
-                                            currentTool.libelle = $("#libelle").val();
-                                            currentTool.catridgecolor = $("#catridgecolor").val();
-                                            currentTool.texts = $("#texts").val();
-                                            currentTool.button = $("#button").val();
-                                            currentTool.enabled = $("#enabled").val();
-                                            currentTool.reply = $("#reply").val();
-                                            currentTool.order = $("#order").val();
                                             $("#assignfeedback_editpdfplus_widget_admin_button_addtool").click();
                                         });
                                         $("#toolRemove").on("click", function () {
@@ -319,15 +358,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             }
                                         });
                                         //maj affichage previsu
-                                        //this.initCanevas();
-                                        var typetool = parseInt($("#typetool").val());
-                                        if (typetool === 3 || typetool === 4 || typetool === 7) {
-                                            $('#canevas').css("background-image", "url(" + $("#map01").val() + ")");
-                                        } else if (typetool === 1 || typetool === 6) {
-                                            $('#canevas').css("background-image", "url(" + $("#map02").val() + ")");
-                                        } else if (typetool === 5) {
-                                            $('#canevas').css("background-image", "url(" + $("#map03").val() + ")");
-                                        }
+                                        initCanevas();
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");
