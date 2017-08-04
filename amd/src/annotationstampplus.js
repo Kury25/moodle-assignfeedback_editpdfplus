@@ -41,9 +41,9 @@ define(['jquery', './annotation'],
                 if (canevas) {
                     var divStamp = "<div id='" + this.id + "'></div>";
                     canevas.append(divStamp);
-                    $("#" + this.id).css('position', 'absolue');
-                    $("#" + this.id).css('margin-top', this.x);
-                    $("#" + this.id).css('margin-left', this.y);
+                    $("#" + this.id).css('position', 'relative');
+                    $("#" + this.id).css('top', this.y);
+                    $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('color', this.colour);
                     $("#" + this.id).css('border', '2px solid ' + this.colour);
                     $("#" + this.id).css('padding', '0 2px');

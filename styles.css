@@ -353,6 +353,7 @@ ul.assignfeedback_editpdfplus_menu {
     background-color: #fffeeb;
     padding: 0;
     line-height: normal;
+    display:inline-block;
 }
 .assignfeedback_editpdfplus_highlightplus_cartridge,
 .assignfeedback_editpdfplus_frame_cartridge,

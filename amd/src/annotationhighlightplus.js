@@ -41,35 +41,66 @@ define(['jquery', './annotation'],
                 if (canevas) {
                     var divHighlight = "<div id='" + this.id + "'></div>";
                     canevas.append(divHighlight);
-                    $("#" + this.id).css('background-color', this.colour);
+                    $("#" + this.id).css('background-color', this.get_color());
                     $("#" + this.id).css('width', this.endx - this.x);
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('opacity', .5);
-                    $("#" + this.id).css('float', 'left');
-                    $("#" + this.id).css('margin-top', this.x);
-                    $("#" + this.id).css('margin-left', this.y);
+                    $("#" + this.id).css('position', 'relative');
+                    $("#" + this.id).css('display', 'inline-block');
+                    $("#" + this.id).css('left', this.x);
+                    $("#" + this.id).css('top', this.y);
                 }
 
-
-                /* shape = this.editor.graphic.addShape({
-                 type: Y.Rect,
-                 width: bounds.width,
-                 height: bounds.height,
-                 stroke: false,
-                 fill: {
-                 color: highlightcolour,
-                 opacity: 0.5
-                 },
-                 x: bounds.x,
-                 y: bounds.y
-                 });*/
-
-                /*drawable.shapes.push(shape);
-                 this.drawable = drawable;*/
-
-                //this.draw_catridge();
+                this.draw_catridge(canevas);
 
                 return;
+            };
+            /**
+             * Display cartridge and toolbox for the annotation
+             * @returns {Boolean} res
+             */
+            AnnotationHighlightplus.prototype.draw_catridge = function (canevas) {
+                var divdisplay;
+                if (!this.divcartridge || this.divcartridge === '') {
+                    this.init_div_cartridge_id();
+
+                    //init cartridge
+                    var colorcartridge = this.get_color_cartridge();
+                    divdisplay = this.get_div_cartridge(colorcartridge, canevas);
+                    divdisplay.addClass('assignfeedback_editpdfplus_hightlightplus');
+                    //divdisplay.css('display', 'inline-block');
+
+                    // inscription entete
+                    /*var divcartridge = */this.get_div_cartridge_label(colorcartridge, divdisplay);
+
+                    //creation input
+                    var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);
+
+                    //creation de la div d'edition
+                    //if (!this.editor.get('readonly')) {
+                    this.get_div_edition(divconteneurdisplay);
+                    //} else {
+                    //var divvisudisplay = this.get_div_visu(colorcartridge);
+                    //divconteneurdisplay.append(divvisudisplay);
+                    //}
+
+                    //positionnement de la div par rapport a l'annotation
+                    if (!this.cartridgex || this.cartridgex === 0) {
+                        this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
+                    }
+                    if (!this.cartridgey || this.cartridgey === 0) {
+                        this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
+                    }
+                    divdisplay.css('left', this.x + this.cartridgex + 17);
+                    divdisplay.css('top', this.y + this.cartridgey);
+
+                    this.apply_visibility_annot();
+                } else {
+                    //divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+                    //divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
+                    //divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
+                }
+                return true;
             };
 
             return AnnotationHighlightplus;

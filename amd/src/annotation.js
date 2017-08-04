@@ -20,8 +20,8 @@
 /**
  * @module mod_assignfeedback_editpdfplus/annotation
  */
-define(['jquery'],
-        function ($) {
+define(['jquery', './global'],
+        function ($, global) {
             // I am the internal, static counter for the number of models
             // that have been created in the system. This is used to
             // power the unique identifier of each instance.
@@ -141,6 +141,7 @@ define(['jquery'],
              * @public
              */
             Annotation.cartridgey = 0;
+            Annotation.adminDemo = 0;
             Annotation.prototype.init = function (config) {
                 this.cartridgex = parseInt(config.cartridgex, 10) || 0;
                 this.cartridgey = parseInt(config.cartridgey, 10) || 0;
@@ -170,7 +171,7 @@ define(['jquery'],
              * @protected
              */
             Annotation.prototype.get_color = function () {
-                var color = 'black'; //ANNOTATIONCOLOUR[this.colour];
+                var color = global.ANNOTATIONCOLOUR[this.colour];
                 if (!color) {
                     color = this.colour;
                 } else {
@@ -186,15 +187,15 @@ define(['jquery'],
              * @protected
              */
             Annotation.prototype.get_color_cartridge = function () {
-                var color = 'black'; //ANNOTATIONCOLOUR[this.tooltype.cartridge_color];
+                var color = global.ANNOTATIONCOLOUR[this.tooltype.catridgecolor];
                 if (!color) {
-                    color = this.tooltype.cartridge_color;
+                    color = this.tooltype.catridgecolor;
                 } else {
                     // Add an alpha channel to the rgb colour.
                     color = color.replace('rgb', 'rgba');
                     color = color.replace(')', ',0.5)');
                 }
-                if (color === '') {
+                if (!color || color === '') {
                     return this.tooltypefamille.cartridge_color;
                 }
                 return color;
@@ -205,22 +206,31 @@ define(['jquery'],
              */
             Annotation.prototype.init_div_cartridge_id = function () {
                 var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
-                this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+                if (this.tooltype.id) {
+                    this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+                } else {
+                    this.divcartridge = 'ct_' + this.id + '_' + date;
+                }
             };
             /**
              * get the html node for the cartridge
              * @param {string} colorcartridge
              * @return node
              */
-            Annotation.prototype.get_div_cartridge = function (colorcartridge) {
+            Annotation.prototype.get_div_cartridge = function (colorcartridge, canevas) {
                 var div = "<div ";
                 div += "id='" + this.divcartridge + "' ";
                 div += "class='assignfeedback_editpdfplus_cartridge' ";
                 div += "style='border-color: " + colorcartridge + ";'> ";
                 div += "</div>";
-                var divdisplay = Y.Node.create(div);
-                if (this.editor.get('readonly')) {
-                    divdisplay.on('click', this.view_annot, this);
+                if (canevas) {
+                    canevas.append(div);
+                }
+                var divdisplay = $('#' + this.divcartridge);
+                if (this.adminDemo < 1) {
+                    //if (this.editor.get('readonly')) {
+                    //    divdisplay.on('click', this.view_annot, this);
+                    //}
                 }
                 return divdisplay;
             };
@@ -230,19 +240,22 @@ define(['jquery'],
              * @param {boolean} draggable
              * @return node
              */
-            Annotation.prototype.get_div_cartridge_label = function (colorcartridge/*, draggable*/) {
+            Annotation.prototype.get_div_cartridge_label = function (colorcartridge, canevas/*, draggable*/) {
                 var divcartridge = "<div ";
                 divcartridge += "id='" + this.divcartridge + "_cartridge' ";
                 divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
-                if (this.editor.get('readonly') && this.get_valref() === '') {
-                    divcartridge += "style='border-right:none;padding-right:0px;color:" + colorcartridge + ";' ";
-                } else {
-                    divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";' ";
-                }
+                //if (this.editor.get('readonly') && this.get_valref() === '') {
+                //divcartridge += "style='border-right:none;padding-right:0px;color:" + colorcartridge + ";' ";
+                //} else {
+                divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";' ";
+                //}
                 divcartridge += "> ";
-                divcartridge += this.tooltype.cartridge;
+                divcartridge += this.tooltype.libelle;
                 divcartridge += "</div>";
-                var divcartridgedisplay = Y.Node.create(divcartridge);
+                if (canevas) {
+                    canevas.append(divcartridge);
+                }
+                var divcartridgedisplay = $('#' + this.divcartridge + "_cartridge");
                 /*if (draggable && !this.editor.get('readonly')) {
                  divcartridgedisplay.on('mousedown', this.move_cartridge_begin, this);
                  return divcartridgedisplay;
@@ -254,51 +267,67 @@ define(['jquery'],
              * @param {string} colorcartridge
              * @return node
              */
-            Annotation.prototype.get_div_input = function (colorcartridge) {
+            Annotation.prototype.get_div_input = function (colorcartridge, canevas) {
                 var divinput = "<div ";
                 divinput += "id='" + this.divcartridge + "_display' ";
                 divinput += "style='color:" + colorcartridge + "; ";
-                if (this.editor.get('readonly') && this.get_valref() === '') {
-                    divinput += "padding:0px;";
-                }
+                //if (this.editor.get('readonly') && this.get_valref() === '') {
+                //    divinput += "padding:0px;";
+                //}
                 divinput += "'></div>";
-                var divinputdisplay = Y.Node.create(divinput);
-                if (!this.editor.get('readonly')) {
-                    divinputdisplay.on('click', this.edit_annot, this);
-                }
+                canevas.append(divinput);
+                var divinputdisplay = $("#" + this.divcartridge + "_display");
+                //if (!this.editor.get('readonly')) {
+                divinputdisplay.on("click", {annotation: this}, this.edit_annot);
+                //}
                 return divinputdisplay;
             };
             /**
              * get the html node for the edition of comment and parameters
              * @return node
              */
-            Annotation.prototype.get_div_edition = function () {
+            Annotation.prototype.get_div_edition = function (canevas) {
                 var divedition = "<div ";
                 divedition += "id='" + this.divcartridge + "_edit' ";
                 divedition += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_edition' ";
                 divedition += "style='display:none;'> ";
                 divedition += "<textarea id='"
                         + this.divcartridge
-                        + "_editinput' type='text' value=\""
-                        + this.get_valref() + "\" class='form-control' style='margin-bottom:5px;' >"
-                        + this.get_valref() + "</textarea>";
+                        + "_editinput' type='text'"
+                        //value=\""
+                        //+ this.get_valref()
+                        + " class='form-control' style='margin-bottom:5px;'";
+                if (this.adminDemo === 1) {
+                    divedition += ' readonly';
+                }
+                divedition += ">"
+                        //+ this.get_valref()
+                        + "</textarea>";
                 divedition += "</div>";
-                var diveditiondisplay = Y.Node.create(divedition);
+                if (canevas) {
+                    canevas.append(divedition);
+                }
+                var diveditiondisplay = $("#" + this.divcartridge + "_edit");
                 var propositions = this.tooltype.texts;
                 if (propositions && propositions.length > 0) {
-                    var divproposition = "<div></div>";
-                    var divpropositiondisplay = Y.Node.create(divproposition);
+                    var divproposition = "<div id='" + this.divcartridge + "_edit_propositions'></div>";
+                    diveditiondisplay.append(divproposition);
+                    var divpropositiondisplay = $("#" + this.divcartridge + "_edit_propositions");
                     var propositionarray = propositions.split('","');
                     for (var i = 0; i < propositionarray.length; i++) {
-                        var buttontmp = "<button class='btn btn-default' type='button' style='width:100%;font-size: x-small;'>"
+                        var buttontmp = "<button class='btn btn-default";
+                        if (this.adminDemo === 1) {
+                            buttontmp += ' disabled';
+                        }
+                        buttontmp += "' type='button' style='width:100%;font-size: x-small;'>"
                                 + propositionarray[i].replace('"', '')
                                 + "</button>";
-                        var buttontmpdisplay = Y.Node.create(buttontmp);
-                        buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
-                        divpropositiondisplay.append(buttontmpdisplay);
+                        divpropositiondisplay.append(buttontmp);
+                        if (this.adminDemo < 1) {
+                            //buttontmpdisplay.on('click', this.fill_input_edition, this, propositionarray[i].replace('"', ''));
+                        }
                         divpropositiondisplay.append("<br/>");
                     }
-                    diveditiondisplay.append(divpropositiondisplay);
                 }
                 return diveditiondisplay;
             };
@@ -307,39 +336,39 @@ define(['jquery'],
              * @param {string} colorcartridge
              * @return node
              */
-            Annotation.prototype.get_div_container = function (colorcartridge) {
+            Annotation.prototype.get_div_container = function (colorcartridge, canevas) {
                 var divconteneur = "<div ";
                 divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_conteneur' >";
                 divconteneur += "</div>";
-                var divconteneurdisplay = Y.Node.create(divconteneur);
-                var divinputdisplay = this.get_div_input(colorcartridge);
+                if (canevas) {
+                    canevas.append(divconteneur);
+                }
+                var divconteneurdisplay = $('.assignfeedback_editpdfplus_' + this.tooltypefamille.label + "_conteneur");
+                var divinputdisplay = this.get_div_input(colorcartridge, divconteneurdisplay);
                 divinputdisplay.addClass('assignfeedback_editpdfplus_' + this.tooltypefamille.label + '_input');
-                //var inputvalref = this.get_input_valref();
                 var onof = 1;
                 if (this.displaylock || this.displaylock >= 0) {
                     onof = this.displaylock;
                 }
-                var inputonof = Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />");
-                var readonly = this.editor.get('readonly');
-                if (!readonly) {
-                    divinputdisplay.on('click', this.edit_annot, this);
+                var inputonof = "<input type='hidden' id='" + this.divcartridge + "_onof' value=" + onof + " />";
+                if (canevas) {
+                    divconteneurdisplay.append(inputonof);
                 }
-                divconteneurdisplay.append(divinputdisplay);
-                divconteneurdisplay.append(inputonof);
-                divconteneurdisplay.append(this.get_input_question());
-                readonly = this.editor.get('readonly');
-                if (!readonly) {
-                    divconteneurdisplay.append(this.get_button_visibility_left());
-                    divconteneurdisplay.append(this.get_button_visibility_right());
-                    divconteneurdisplay.append(this.get_button_save());
-                    divconteneurdisplay.append(this.get_button_cancel());
-                    if (this.tooltype.reply === 1) {
-                        divconteneurdisplay.append(this.get_button_question());
-                    }
-                    divconteneurdisplay.append(this.get_button_remove());
-                } else {
-                    divconteneurdisplay.append(this.get_button_student_status());
+                //var readonly = this.editor.get('readonly');
+                //divconteneurdisplay.append(this.get_input_question());
+                //readonly = this.editor.get('readonly');
+                //if (!readonly) {
+                this.get_button_visibility_left(divconteneurdisplay);
+                this.get_button_visibility_right(divconteneurdisplay);
+                this.get_button_save(divconteneurdisplay);
+                this.get_button_cancel(divconteneurdisplay);
+                if (this.tooltype.reply === 1) {
+                    this.get_button_question(divconteneurdisplay);
                 }
+                this.get_button_remove(divconteneurdisplay);
+                //} else {
+                //    divconteneurdisplay.append(this.get_button_student_status());
+                //}
 
                 return divconteneurdisplay;
             };
@@ -347,43 +376,93 @@ define(['jquery'],
              * get the html node for the button to set visibility on right
              * @return node
              */
-            Annotation.prototype.get_button_visibility_right = function () {
+            Annotation.prototype.get_button_visibility_right = function (canevas) {
                 var buttonvisibility = "<button id='"
                         + this.divcartridge
-                        + "_buttonedit_right' class='btn btn-default' type='button'>";
+                        + "_buttonedit_right' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttonvisibility += ' disabled';
+                }
+                buttonvisibility += "' type='button'>";
                 buttonvisibility += "<i class='fa fa-arrow-right' aria-hidden='true'></i>";
                 buttonvisibility += "</button>";
-                var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-                buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'r');
+                if (canevas) {
+                    canevas.append(buttonvisibility);
+                }
+                var buttonvisibilitydisplay = $('#' + this.divcartridge + "_buttonedit_right");
+                if (this.adminDemo < 1) {
+                    //buttonvisibilitydisplay.on('click', this.change_visibility_annot('r'));
+                }
                 return buttonvisibilitydisplay;
             };
             /**
              * get the html node for the button to set visibility on left
              * @return node
              */
-            Annotation.prototype.get_button_visibility_left = function () {
+            Annotation.prototype.get_button_visibility_left = function (canevas) {
                 var buttonvisibility = "<button id='"
                         + this.divcartridge
-                        + "_buttonedit_left' class='btn btn-default' type='button'>";
+                        + "_buttonedit_left' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttonvisibility += ' disabled';
+                }
+                buttonvisibility += "' type='button'>";
                 buttonvisibility += "<i class='fa fa-arrow-left' aria-hidden='true'></i>";
                 buttonvisibility += "</button>";
-                var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
-                buttonvisibilitydisplay.on('click', this.change_visibility_annot, this, 'l');
+                if (canevas) {
+                    canevas.append(buttonvisibility);
+                }
+                var buttonvisibilitydisplay = $('#' + this.divcartridge + "_buttonedit_left");
+                if (this.adminDemo < 1) {
+                    //buttonvisibilitydisplay.on('click', this.change_visibility_annot('l'));
+                }
                 return buttonvisibilitydisplay;
             };
 
             /**
+             * get the html node for the button to save the text in the annotation
+             * @return node
+             */
+            Annotation.prototype.get_button_save = function (canevas) {
+                var buttonsave = "<button id='"
+                        + this.divcartridge
+                        + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttonsave += ' disabled';
+                }
+                buttonsave += "' type='button'>"
+                        + "<i class='fa fa-check' aria-hidden='true'></i>"
+                        + "</button>";
+                if (canevas) {
+                    canevas.append(buttonsave);
+                }
+                var buttonsavedisplay = $('#' + this.divcartridge + "_buttonsave");
+                if (this.adminDemo < 1) {
+                    buttonsavedisplay.on('click', this.save_annot);
+                }
+                return buttonsavedisplay;
+            };
+            /**
              * get the html node for the button to cancel the text edition of the annotation
              * @return node
              */
-            Annotation.prototype.get_button_cancel = function () {
+            Annotation.prototype.get_button_cancel = function (canevas) {
                 var buttoncancel = "<button id='"
                         + this.divcartridge
-                        + "_buttoncancel' style='display:none;' class='btn btn-default' type='button'>"
+                        + "_buttoncancel' style='display:none;' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttoncancel += ' disabled';
+                }
+                buttoncancel += "' type='button'>"
                         + "<i class='fa fa-undo' aria-hidden='true'></i>"
                         + "</button>";
-                var buttoncanceldisplay = Y.Node.create(buttoncancel);
-                buttoncanceldisplay.on('click', this.cancel_edit, this);
+                if (canevas) {
+                    canevas.append(buttoncancel);
+                }
+                var buttoncanceldisplay = $('#' + this.divcartridge + "_buttoncancel");
+                if (this.adminDemo < 1) {
+                    //buttoncanceldisplay.on('click', this.cancel_edit, this);
+                }
                 return buttoncanceldisplay;
             };
 
@@ -391,31 +470,49 @@ define(['jquery'],
              * get the html node for the button to set a question
              * @return node
              */
-            Annotation.prototype.get_button_question = function () {
+            Annotation.prototype.get_button_question = function (canevas) {
                 var buttonquestion = "<button id='"
                         + this.divcartridge
-                        + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                        + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttonquestion += ' disabled';
+                }
+                buttonquestion += "' type='button'>"
                         + '<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
                         + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
                         + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
                         + '</span>'
                         + "</button>";
-                var buttonquestiondisplay = Y.Node.create(buttonquestion);
-                buttonquestiondisplay.on('click', this.change_question_status, this);
+                if (canevas) {
+                    canevas.append(buttonquestion);
+                }
+                var buttonquestiondisplay = $('#' + this.divcartridge + "_buttonquestion");
+                if (this.adminDemo < 1) {
+                    //buttonquestiondisplay.on('click', this.change_question_status, this);
+                }
                 return buttonquestiondisplay;
             };
             /**
              * get the html node for the button to remove the annotation
              * @return node
              */
-            Annotation.prototype.get_button_remove = function () {
+            Annotation.prototype.get_button_remove = function (canevas) {
                 var buttontrash = "<button id='"
                         + this.divcartridge
-                        + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                        + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default";
+                if (this.adminDemo === 1) {
+                    buttontrash += ' disabled';
+                }
+                buttontrash += "' type='button'>"
                         + "<i class='fa fa-trash' aria-hidden='true'></i>"
                         + "</button>";
-                var buttontrashdisplay = Y.Node.create(buttontrash);
-                buttontrashdisplay.on('click', this.remove_by_trash, this);
+                if (canevas) {
+                    canevas.append(buttontrash);
+                }
+                var buttontrashdisplay = $('#' + this.divcartridge + "_buttonremove");
+                if (this.adminDemo < 1) {
+                    //buttontrashdisplay.on('click', this.remove_by_trash, this);
+                }
                 return buttontrashdisplay;
             };
             /**
@@ -423,20 +520,20 @@ define(['jquery'],
              * @return node
              */
             Annotation.prototype.apply_visibility_annot = function () {
-                var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-                var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
-                var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
-                var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-                var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
+                var divdisplay = $('#' + this.divcartridge + "_display");
+                var interrupt = $('#' + this.divcartridge + "_onof");
+                var buttonplusr = $('#' + this.divcartridge + "_buttonedit_right");
+                var buttonplusl = $('#' + this.divcartridge + "_buttonedit_left");
+                var buttonstatus = $('#' + this.divcartridge + "_radioContainer");
                 if (interrupt) {
-                    if (interrupt.get('value') === '1') {
+                    if (interrupt.val() === '1') {
                         if (buttonplusr) {
                             buttonplusr.show();
                         }
                         if (buttonplusl) {
                             buttonplusl.show();
                         }
-                    } else if (interrupt.get('value') === '0') {
+                    } else if (interrupt.val() === '0') {
                         if (buttonplusr) {
                             buttonplusr.show();
                         }
@@ -453,7 +550,7 @@ define(['jquery'],
                     }
                 }
                 if (divdisplay) {
-                    divdisplay.setContent(this.get_text_to_diplay_in_cartridge());
+                    divdisplay.html(this.get_text_to_diplay_in_cartridge());
                 }
                 if (this.tooltypefamille.label === 'frame' && buttonplusr) {
                     buttonplusr.hide();
@@ -470,14 +567,14 @@ define(['jquery'],
              */
             Annotation.prototype.get_text_to_diplay_in_cartridge = function () {
                 var valref = this.get_valref();
-                var interrupt = this.editor.get_dialogue_element('#' + this.divcartridge + "_onof");
+                var interrupt = $('#' + this.divcartridge + "_onof");
                 var finalcontent = "";
-                if (valref === '' && !this.editor.get('readonly')) {
+                if (valref === '' /*&& !this.editor.get('readonly')*/) {
                     finalcontent = '&nbsp;&nbsp;&nbsp;&nbsp';
                 }
-                if (interrupt.get('value') === '1' && valref !== '') {
+                if (interrupt.val() === '1' && valref !== '') {
                     finalcontent = valref.substr(0, 20);
-                } else if (interrupt.get('value') === '0' && valref !== '') {
+                } else if (interrupt.val() === '0' && valref !== '') {
                     finalcontent = '...';
                 } else if (valref !== '') {
                     finalcontent = valref;
@@ -492,17 +589,17 @@ define(['jquery'],
              * @return null
              */
             Annotation.prototype.apply_question_status = function () {
-                var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
-                var questionvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_question");
+                var buttonquestion = $('#' + this.divcartridge + "_buttonquestion");
+                var questionvalue = $('#' + this.divcartridge + "_question");
                 var value = 0;
                 if (questionvalue) {
-                    value = parseInt(questionvalue.get('value'), 10);
+                    value = parseInt(questionvalue.val(), 10);
                 }
                 if (buttonquestion) {
                     if (value === 1) {
-                        buttonquestion.setHTML('<i class="fa fa-question-circle-o"></i>');
+                        buttonquestion.html('<i class="fa fa-question-circle-o"></i>');
                     } else {
-                        buttonquestion.setHTML('<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
+                        buttonquestion.html('<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
                                 + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
                                 + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
                                 + '</span>');
@@ -519,19 +616,20 @@ define(['jquery'],
             /**
              * display annotation edditing view
              */
-            Annotation.prototype.edit_annot = function () {
-                if (/*this.tooltype.type <= TOOLTYPE.COMMENTPLUS &&*/ !this.parent_annot_element) {
-                    var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-                    var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-                    var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-                    var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
-                    var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
-                    var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-                    var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-                    var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
-                    var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
-                    var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
-                    var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+            Annotation.prototype.edit_annot = function (event) {
+                if (event.data.annotation.tooltype.typetool <= global.TOOLTYPE.COMMENTPLUS/* && !this.parent_annot_element*/) {
+                    var annot = event.data.annotation;
+                    var divprincipale = $('#' + annot.divcartridge);
+                    var divdisplay = $('#' + annot.divcartridge + "_display");
+                    var divedit = $('#' + annot.divcartridge + "_edit");
+                    var buttonplusr = $('#' + annot.divcartridge + "_buttonedit_right");
+                    var buttonplusl = $('#' + annot.divcartridge + "_buttonedit_left");
+                    var buttonsave = $('#' + annot.divcartridge + "_buttonsave");
+                    var buttoncancel = $('#' + annot.divcartridge + "_buttoncancel");
+                    var buttonquestion = $('#' + annot.divcartridge + "_buttonquestion");
+                    var buttonrotation = $('#' + annot.divcartridge + "_buttonrotation");
+                    var buttonremove = $('#' + annot.divcartridge + "_buttonremove");
+                    var input = $('#' + annot.divcartridge + "_editinput");
                     divdisplay.hide();
                     if (buttonplusr) {
                         buttonplusr.hide();
@@ -549,12 +647,14 @@ define(['jquery'],
                         buttonquestion.show();
                     }
                     buttonremove.show();
-                    divprincipale.setStyle('z-index', 1000);
+                    divprincipale.css('z-index', 1000);
                     if (input) {
-                        input.set('focus', 'on');
+                        input.attr('focus', 'on');
                     }
-                    this.disabled_canvas_event();
-                    divprincipale.on('clickoutside', this.save_annot_clickout, this, 'clickoutside');
+                    event.data.annotation.disabled_canvas_event();
+                    $('#canevas').on('click',
+                            {annotation: annot, action: 'clickoutside'},
+                            annot.save_annot_clickout);
                 }
             };
             /**
@@ -563,15 +663,20 @@ define(['jquery'],
              * @param {string} unputtext
              */
             Annotation.prototype.fill_input_edition = function (e, unputtext) {
-                var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+                var input = $('#' + this.divcartridge + "_editinput");
                 if (input) {
                     input.set('value', unputtext);
                 }
                 this.save_annot(unputtext);
             };
-            Annotation.prototype.save_annot_clickout = function (e, clickType) {
-                if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
-                    this.save_annot(null);
+            Annotation.prototype.save_annot_clickout = function (event) {
+                //alert(event.target.id === "canevas");
+                if ((event.target.id === "canevas" /*&& this.editor.currentannotation === this*/)) {
+                    if (event.data.annotation.adminDemo === 1) {
+                        event.data.annotation.cancel_edit();
+                    } else {
+                        //event.data.annotation.save_annot(null);
+                    }
                 }
                 return;
             };
@@ -581,13 +686,13 @@ define(['jquery'],
              */
             Annotation.prototype.save_annot = function (result) {
                 if (typeof result !== 'string') {
-                    var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
+                    var input = $('#' + this.divcartridge + "_editinput");
                     if (input) {
-                        result = input.get('value');
+                        result = input.val();
                     }
                 }
                 this.textannot = result;
-                this.editor.save_current_page();
+                //this.editor.save_current_page();
                 if (result.length === 0) {
                     result = "&nbsp;&nbsp;";
                 }
@@ -599,21 +704,21 @@ define(['jquery'],
              * @param {type} e
              * @param {string} clickType
              */
-            Annotation.prototype.cancel_edit = function (e, clickType) {
-                if (!(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
-                    var valref = this.get_valref();
-                    var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
-                    if (valref && input) {
-                        input.set('value', valref);
-                    }
-                    this.hide_edit();
-                    this.apply_visibility_annot();
-                    var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-                    if (divprincipale) {
-                        divprincipale.detach();
-                    }
+            Annotation.prototype.cancel_edit = function () {
+                //if (!(clickType === 'clickoutside' /*&& this.editor.currentannotation === this)*/)) {
+                var valref = this.get_valref();
+                var input = $('#' + this.divcartridge + "_editinput");
+                if (valref && input) {
+                    input.set('value', valref);
                 }
-                return;
+                this.hide_edit();
+                this.apply_visibility_annot();
+                var divprincipale = $('#' + this.divcartridge);
+                if (divprincipale) {
+                    divprincipale.off();
+                }
+                //}
+                //return;
             };
             /**
              * remove annotation detail view
@@ -622,19 +727,20 @@ define(['jquery'],
              */
             Annotation.prototype.hide_edit = function (e, clickType) {
                 if (!clickType || !(clickType === 'clickoutside' && this.editor.currentannotation === this)) {
-                    var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
-                    var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-                    var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
-                    var divvisu = this.editor.get_dialogue_element('#' + this.divcartridge + "_visu");
-                    var buttonsave = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonsave");
-                    var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
-                    var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
-                    var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
-                    var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
-                    var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
+                    var divprincipale = $('#' + this.divcartridge);
+                    var divdisplay = $('#' + this.divcartridge + "_display");
+                    var divedit = $('#' + this.divcartridge + "_edit");
+                    var divvisu = $('#' + this.divcartridge + "_visu");
+                    var buttonsave = $('#' + this.divcartridge + "_buttonsave");
+                    var buttoncancel = $('#' + this.divcartridge + "_buttoncancel");
+                    var buttonquestion = $('#' + this.divcartridge + "_buttonquestion");
+                    var buttonrotation = $('#' + this.divcartridge + "_buttonrotation");
+                    var buttonremove = $('#' + this.divcartridge + "_buttonremove");
+                    var buttonstatus = $('#' + this.divcartridge + "_radioContainer");
                     if (divdisplay) {
                         divdisplay.show();
-                        divdisplay.set('style', 'display:inline;color:' + this.get_color_cartridge() + ';');
+                        //divdisplay.css('display', 'inline');
+                        divdisplay.css('color', this.get_color_cartridge());
                     }
                     if (buttonrotation) {
                         buttonrotation.show();
@@ -654,11 +760,11 @@ define(['jquery'],
                         buttonremove.hide();
                     }
                     if (divprincipale) {
-                        divprincipale.setStyle('z-index', 1);
-                        divprincipale.detach();
-                        if (this.editor.get('readonly')) {
-                            divprincipale.on('click', this.view_annot, this, 'click');
-                        }
+                        divprincipale.css('z-index', 1);
+                        $("#canevas").off();
+                        //if (this.editor.get('readonly')) {
+                        //    divprincipale.on('click', this.view_annot, this, 'click');
+                        //}
                     }
                     if (divedit) {
                         this.enabled_canvas_event();
@@ -667,6 +773,50 @@ define(['jquery'],
                         buttonstatus.hide();
                     }
                 }
+            };
+            /**
+             * Disable canvas event (click on other tool or annotation)
+             */
+            Annotation.prototype.disabled_canvas_event = function () {
+                var drawingcanvas = $(global.SELECTOR.DRAWINGCANVAS);
+                drawingcanvas.off('click');
+            };
+            /**
+             * Enable canvas event (click on other tool or annotation)
+             */
+            Annotation.prototype.enabled_canvas_event = function () {
+                /*var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+                 drawingcanvas.on('gesturemovestart', this.editor.edit_start, null, this.editor);
+                 drawingcanvas.on('gesturemove', this.editor.edit_move, null, this.editor);
+                 drawingcanvas.on('gesturemoveend', this.editor.edit_end, null, this.editor);*/
+            };
+            /**
+             * change the visibility of the annotation according to parameters and variable sens
+             * @param {type} e
+             * @param {char} sens
+             */
+            Annotation.prototype.change_visibility_annot = function (sens) {
+                var interrupt = $('#' + this.divcartridge + "_onof");
+                var finalvalue = parseInt(interrupt.val(), 10);
+                if (sens === 'r') {
+                    finalvalue += 1;
+                } else {
+                    finalvalue -= 1;
+                }
+                interrupt.val(finalvalue);
+                this.displaylock = finalvalue;
+                this.apply_visibility_annot();
+                //this.editor.save_current_page();
+            };
+            /**
+             * get the final reference text value
+             * @return node
+             */
+            Annotation.prototype.get_valref = function () {
+                if (this.textannot && this.textannot.length > 0 && typeof this.textannot === 'string') {
+                    return this.textannot;
+                }
+                return '';
             };
 
 

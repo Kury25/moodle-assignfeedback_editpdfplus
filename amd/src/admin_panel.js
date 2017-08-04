@@ -23,9 +23,9 @@
 define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
     'core/ajax', 'core/str', /*'mod_assign/grading_form_change_checker'*/
     'assignfeedback_editpdfplus/annotation', 'assignfeedback_editpdfplus/annotationhighlightplus',
-    'assignfeedback_editpdfplus/annotationstampplus'],
+    'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe'],
         function ($/*, Y*/, notification, templates, fragment, ajax, str,
-                Annotation, AnnotationHighlightplus, AnnotationStampplus /*, checker*/) {
+                Annotation, AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame /*, checker*/) {
 
             var contextid = null;
             var currentTool = null;
@@ -103,13 +103,20 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 if (typetool === 1) {
                     this.annotationcurrent = new AnnotationHighlightplus();
                     this.annotationcurrent.x = 83;
-                    this.annotationcurrent.y = 82;
+                    this.annotationcurrent.y = 84;
                     this.annotationcurrent.endx = 239;
-                    this.annotationcurrent.endy = 98;
+                    this.annotationcurrent.endy = 100;
                 } else if (typetool === 3) {
                     this.annotationcurrent = new AnnotationStampplus();
-                    this.annotationcurrent.x = 108;
-                    this.annotationcurrent.y = 50;
+                    this.annotationcurrent.x = 60;
+                    this.annotationcurrent.y = 100;
+                } else if (typetool === 4) {
+                    this.annotationcurrent = new AnnotationFrame();
+                    this.annotationcurrent.x = 279;
+                    this.annotationcurrent.y = 113;
+                    this.annotationcurrent.endx = 435;
+                    this.annotationcurrent.endy = 129;
+                    this.annotationcurrent.parent_annot = 0;
                 }
                 if (this.annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
@@ -121,6 +128,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     }
                     this.annotationcurrent.tooltypefamille = typetoolEntity;
                     this.annotationcurrent.id = 'previsu_annot';
+                    this.annotationcurrent.displaylock = 1;
+                    this.annotationcurrent.adminDemo = 1;
                     this.annotationcurrent.draw($('#canevas'));
                 }
             };
@@ -219,7 +228,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         currentTool.typetool = $("#typetool").val();
                                         currentTool.color = $("#color").val();
                                         currentTool.libelle = $("#libelle").val();
-                                        currentTool.catridgecolor = $("#catridgecolor").val();
+                                        currentTool.catridgecolor = $("#cartridgecolor").val();
                                         currentTool.texts = $("#texts").val();
                                         currentTool.button = $("#button").val();
                                         currentTool.enabled = $("#enabled").val();
@@ -382,7 +391,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             $("#typetool").val(currentTool.typetool);
                                             $("#color").val(currentTool.color);
                                             $("#libelle").val(currentTool.libelle);
-                                            $("#catridgecolor").val(currentTool.catridgecolor);
+                                            $("#cartridgecolor").val(currentTool.catridgecolor);
                                             $("#texts").val(currentTool.texts);
                                             $("#button").val(currentTool.button);
                                             $("#enabled").val(currentTool.enabled);
