@@ -150,6 +150,20 @@ class assign_feedback_editpdfplus_admin {
             $tool->removable = true;
             $data->tool = $tool;
         }
+        $tooltexts = $data->tool->texts;
+        if ($tooltexts) {
+            $tooltextsarray = explode(",", $tooltexts);
+            $compteur = 0;
+            foreach ($tooltextsarray as $value) {
+                $obj = new object();
+                $obj->text= substr($value,1,-1);
+                $obj->index=$compteur;
+                $data->tool->textsarray[] = $obj;
+                $compteur++;
+            }
+        } else {
+            $data->tool->textsarray = null;
+        }
         $data->tools = admin_editor::get_typetools();
         foreach ($data->tools as $toolRef) {
             $toolRef->libelle = get_string('typetool_' . $toolRef->label, 'assignfeedback_editpdfplus');

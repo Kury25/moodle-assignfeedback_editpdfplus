@@ -39,6 +39,7 @@ define(['jquery', './annotation'],
                 this.endx = 435;
                 this.endy = 129;
                 this.parent_annot = 0;
+                this.colour = "#FF0000";
             };
 
             AnnotationFrame.prototype.initChildAdminDemo = function (annotationparent) {
@@ -49,6 +50,7 @@ define(['jquery', './annotation'],
                 this.endy = 232;
                 this.parent_annot = annotationparent.id;
                 this.id = 'previsu_annot_child';
+                this.colour = "#FF0000";
             };
             /**
              * Draw a highlight annotation

@@ -72,6 +72,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $("#assignfeedback_editpdfplus_widget_admin_button_editaxis").on("click", this.openDivEditAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").on("click", this.openDivDelAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_addtool").on("click", this.openDivAddTool);
+
                 $(".btn-primary").click();
             };
             //
@@ -250,6 +251,15 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         currentTool.reply = $("#reply").val();
                                         currentTool.order = $("#order").val();
                                         $("#toolFormSubmit").on("click", function () {
+                                            var res = "";
+                                            $("input[name^='text[']").each(function () {
+                                                if ($(this).val() && ($(this).val()).length > 0) {
+                                                    res += '"' + $(this).val() + '",';
+                                                }
+                                            });
+                                            if (res.length>0){
+                                                $("#texts").val(res.substring(0,res.length-1));
+                                            }
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
                                             var data = form.serialize();
                                             ajax.call([
@@ -419,6 +429,16 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             action = null;
                                         }
                                         $("#toolFormSubmit").on("click", function () {
+                                            //jen suis ici pour lajout de nouvel outil
+                                            var res = "";
+                                            $("input[name^='text[']").each(function () {
+                                                if ($(this).val() && ($(this).val()).length > 0) {
+                                                    res += '"' + $(this).val() + '",';
+                                                }
+                                            });
+                                            if (res.length>0){
+                                                $("#texts").val(res.substring(0,res.length-1));
+                                            }
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
                                             var data = form.serialize();
                                             ajax.call([

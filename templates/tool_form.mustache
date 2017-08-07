@@ -101,7 +101,7 @@
                             <a data-toggle="collapse" href="#collapse4" data-parent="#accordion">{{# str }} admintoolboxannotation, assignfeedback_editpdfplus {{/ str }}</a>
                         </div>
                         <div id="collapse4" class="panel-collapse collapse">
-                            <div class="panel-body" style="margin-bottom: 80px;">
+                            <div class="panel-body" style="margin-bottom: 80px;overflow: auto;">
                                 <div class="form-group">
                                     <label class="control-label col-sm-3" for="color">{{# str }} admintoolboxannotation_color, assignfeedback_editpdfplus {{/ str }}</label>
                                     <div class="col-sm-9">
@@ -112,7 +112,14 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-3" for="texts">{{# str }} admintoolboxannotation_texts, assignfeedback_editpdfplus {{/ str }}</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="texts" value="{{tool.texts}}" name="texts" />
+                                        <input type="hidden" class="form-control" id="texts" value="{{tool.texts}}" name="texts" />
+                                        <ul class="textform"
+                                            data-prototype="<input  type='text' class='form-control' value='' name='text[__name__]' style='width:90%;display:inline-block;' />" 
+                                            style="list-style-type:none;padding:0px;">
+                                            {{#tool.textsarray}}
+                                            <li><input  type='text' class='form-control' value='{{text}}' name='text[{{index}}]' style='width:90%;display:inline-block;' /></li>
+                                            {{/tool.textsarray}}
+                                        </ul>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -151,6 +158,71 @@
 require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
 
 {{#tool.id}}$("#typetool").val({{tool.type}});{{/tool.id}}
+
+var $collectionHolder;
+
+// setup an "add a tag" link
+var $addTagLink = $('<a href="#" class="add_text_link"><i class="fa fa-plus"></i></a>');
+var $newLinkLi = $('<li></li>').append($addTagLink);
+
+jQuery(document).ready(function() {
+// Get the ul that holds the collection of tags
+$collectionHolder = $('ul.textform');
+
+// add a delete link to all of the existing tag form li elements
+$collectionHolder.find('li').each(function() {
+addTagFormDeleteLink($(this));
+});
+
+// add the "add a tag" anchor and li to the tags ul
+$collectionHolder.append($newLinkLi);
+
+// count the current form inputs we have (e.g. 2), use that as the new
+// index when inserting a new item (e.g. 2)
+$collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+$addTagLink.on('click', function(e) {
+// prevent the link from creating a "#" on the URL
+e.preventDefault();
+
+// add a new tag form (see next code block)
+addTagForm($collectionHolder, $newLinkLi);
+});
+});
+function addTagForm($collectionHolder, $newLinkLi) {
+// Get the data-prototype explained earlier
+var prototype = $collectionHolder.data('prototype');
+
+// get the new index
+var index = $collectionHolder.data('index');
+
+// Replace '__name__' in the prototype's HTML to
+// instead be a number based on how many items we have
+var newForm = prototype.replace(/__name__/g, index);
+
+// increase the index with one for the next item
+$collectionHolder.data('index', index + 1);
+
+// Display the form in the page in an li, before the "Add a tag" link li
+var $newFormLi = $('<li></li>').append(newForm);
+$newLinkLi.before($newFormLi);
+
+// add a delete link to the new form
+addTagFormDeleteLink($newFormLi);
+}
+
+function addTagFormDeleteLink($tagFormLi) {
+var $removeFormA = $('<a href="#"><i class="fa fa-remove"></i></a>');
+$tagFormLi.append($removeFormA);
+
+$removeFormA.on('click', function(e) {
+// prevent the link from creating a "#" on the URL
+e.preventDefault();
+
+// remove the li for the tag form
+$tagFormLi.remove();
+});
+}
 
 });
 {{/ js }}
