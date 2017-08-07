@@ -31,6 +31,12 @@ define(['jquery', './annotation'],
             }
             // The Friend class extends the base Model class.
             AnnotationStampplus.prototype = Object.create(Annotation.prototype);
+
+            AnnotationStampplus.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
+                Annotation.prototype.initAdminDemo.call(this, currentTool, typetoolEntity);
+                this.x = 60;
+                this.y = 100;
+            };
             /**
              * Draw a highlight annotation
              * @protected

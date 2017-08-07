@@ -105,66 +105,24 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 }
                 if (typetool === 1) {
                     this.annotationcurrent = new AnnotationHighlightplus();
-                    this.annotationcurrent.x = 83;
-                    this.annotationcurrent.y = 84;
-                    this.annotationcurrent.endx = 239;
-                    this.annotationcurrent.endy = 100;
                 } else if (typetool === 3) {
                     this.annotationcurrent = new AnnotationStampplus();
-                    this.annotationcurrent.x = 60;
-                    this.annotationcurrent.y = 100;
                 } else if (typetool === 4) {
                     this.annotationcurrent = new AnnotationFrame();
-                    this.annotationcurrent.x = 279;
-                    this.annotationcurrent.y = 113;
-                    this.annotationcurrent.endx = 435;
-                    this.annotationcurrent.endy = 129;
-                    this.annotationcurrent.parent_annot = 0;
                     var annotChild = new AnnotationFrame();
-                    annotChild.x = 144;
-                    annotChild.y = 216;
-                    annotChild.endx = 296;
-                    annotChild.endy = 232;
                 } else if (typetool === 5) {
                     this.annotationcurrent = new AnnotationVerticalline();
-                    this.annotationcurrent.x = 285;
-                    this.annotationcurrent.y = 65;
-                    this.annotationcurrent.endy = 175;
                 } else if (typetool === 6) {
                     this.annotationcurrent = new AnnotationStampcomment();
-                    this.annotationcurrent.x = 188;
-                    this.annotationcurrent.y = 118;
-                    this.annotationcurrent.displayrotation=1;
                 } else if (typetool === 7) {
                     this.annotationcurrent = new AnnotationCommentplus();
-                    this.annotationcurrent.x = 30;
-                    this.annotationcurrent.y = 90;
                 }
                 if (this.annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
-                    this.annotationcurrent.tooltype = currentTool;
-                    if (currentTool.color) {
-                        this.annotationcurrent.colour = currentTool.color;
-                    } else {
-                        this.annotationcurrent.colour = typetoolEntity.color;
-                    }
-                    this.annotationcurrent.tooltypefamille = typetoolEntity;
-                    this.annotationcurrent.id = 'previsu_annot';
-                    this.annotationcurrent.displaylock = 1;
-                    this.annotationcurrent.adminDemo = 1;
+                    this.annotationcurrent.initAdminDemo(currentTool, typetoolEntity);
                     this.annotationcurrent.draw($('#canevas'));
                     if (annotChild) {
-                        annotChild.tooltype = currentTool;
-                        if (currentTool.color) {
-                            annotChild.colour = currentTool.color;
-                        } else {
-                            annotChild.colour = typetoolEntity.color;
-                        }
-                        annotChild.tooltypefamille = typetoolEntity;
-                        annotChild.parent_annot = this.annotationcurrent.id;
-                        annotChild.id = 'previsu_annot_child';
-                        annotChild.displaylock = 1;
-                        annotChild.adminDemo = 1;
+                        annotChild.initChildAdminDemo(this.annotationcurrent);
                         annotChild.draw($('#canevas'));
                     }
                 }

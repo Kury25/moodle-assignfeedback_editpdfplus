@@ -31,6 +31,25 @@ define(['jquery', './annotation'],
             }
             // The Friend class extends the base Model class.
             AnnotationFrame.prototype = Object.create(Annotation.prototype);
+
+            AnnotationFrame.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
+                Annotation.prototype.initAdminDemo.call(this, currentTool, typetoolEntity);
+                this.x = 279;
+                this.y = 113;
+                this.endx = 435;
+                this.endy = 129;
+                this.parent_annot = 0;
+            };
+
+            AnnotationFrame.prototype.initChildAdminDemo = function (annotationparent) {
+                Annotation.prototype.initAdminDemo.call(this, annotationparent.tooltype, annotationparent.tooltypefamille);
+                this.x = 144;
+                this.y = 216;
+                this.endx = 296;
+                this.endy = 232;
+                this.parent_annot = annotationparent.id;
+                this.id = 'previsu_annot_child';
+            };
             /**
              * Draw a highlight annotation
              * @protected

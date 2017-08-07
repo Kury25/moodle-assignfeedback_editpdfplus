@@ -156,6 +156,19 @@ define(['jquery', './global'],
                 this.toolid = config.toolid;
                 this.tooltypefamille = this.editor.typetools[this.tooltype.type];
             };
+
+            Annotation.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
+                this.id = 'previsu_annot';
+                this.displaylock = 1;
+                this.adminDemo = 1;
+                this.tooltype = currentTool;
+                this.tooltypefamille = typetoolEntity;
+                if (currentTool.color) {
+                    this.colour = currentTool.color;
+                } else {
+                    this.colour = typetoolEntity.color;
+                }
+            };
             /**
              * Draw an annotation
              * @public
