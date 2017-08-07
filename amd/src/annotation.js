@@ -368,7 +368,7 @@ define(['jquery', './global'],
                     divconteneurdisplay.append(inputonof);
                 }
                 //var readonly = this.editor.get('readonly');
-                //divconteneurdisplay.append(this.get_input_question());
+                divconteneurdisplay.append(this.get_input_question());
                 //readonly = this.editor.get('readonly');
                 //if (!readonly) {
                 this.get_button_visibility_left(divconteneurdisplay);
@@ -384,6 +384,17 @@ define(['jquery', './global'],
                 //}
 
                 return divconteneurdisplay;
+            };
+            /**
+             * get the html node for the hidden input to keep information about question state
+             * @return node
+             */
+            Annotation.prototype.get_input_question = function () {
+                var qst = 0;
+                if (this.answerrequested && this.answerrequested === 1) {
+                    qst = 1;
+                }
+                return "<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>";
             };
             /**
              * get the html node for the button to set visibility on right

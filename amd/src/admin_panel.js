@@ -41,9 +41,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
              */
             var AdminPanel = function (contextidP, typetoolsP) {
                 //this.registerEventListeners();
-                this.init();
                 contextid = contextidP;
                 typetools = JSON.parse(typetoolsP);
+                this.init();
             };
             var annotationcurrent = null;
             //
@@ -72,6 +72,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $("#assignfeedback_editpdfplus_widget_admin_button_editaxis").on("click", this.openDivEditAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").on("click", this.openDivDelAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_addtool").on("click", this.openDivAddTool);
+                $(".btn-primary").click();
             };
             //
             AdminPanel.prototype.test = function () {
@@ -84,21 +85,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
-            AdminPanel.prototype.refreshPrevisu = function (newtool) {
-                /*currentTool
-                alert($("#libelle").val());
-                $("#typetool").val(newtool.typetool);
-                $("#color").val(newtool.color);
-                $("#libelle").val(newtool.libelle);
-                $("#cartridgecolor").val(newtool.catridgecolor);
-                $("#texts").val(newtool.texts);
-                $("#button").val(newtool.button);
-                $("#enabled").val(newtool.enabled);
-                $("#reply").val(newtool.reply);
-                $("#order").val(newtool.order);
-                alert(newtool.libelle);
-                currentTool = newtool;
-*/
+            AdminPanel.prototype.refreshPrevisu = function () {
                 currentTool.typetool = $("#typetool").val();
                 currentTool.color = $("#color").val();
                 currentTool.libelle = $("#libelle").val();
@@ -106,7 +93,10 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 currentTool.texts = $("#texts").val();
                 currentTool.button = $("#button").val();
                 currentTool.enabled = $("#enabled").val();
-                currentTool.reply = $("#reply").val();
+                currentTool.reply = 0;
+                if ($("#reply").is(':checked')) {
+                    currentTool.reply = 1;
+                }
                 currentTool.order = $("#order").val();
                 initCanevas();
             };
@@ -146,6 +136,10 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 }
                 if (annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
+                    currentTool.reply = 0;
+                    if ($("#reply").is(':checked')) {
+                        currentTool.reply = 1;
+                    }
                     annotationcurrent.initAdminDemo(currentTool, typetoolEntity);
                     annotationcurrent.draw($('#canevas'));
                     if (annotChild) {
@@ -271,7 +265,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     $("#message_edit_tool").removeClass("alert-danger");
                                                     //mise à jour bar d'outils
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
-                                                    var newtool = null;
+                                                    //var newtool = null;
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var classButton = "btn-default";
                                                         if (toolbar[i].enable !== 1) {
@@ -279,7 +273,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         }
                                                         if (toolbar[i].toolid === toolbar[i].selecttool) {
                                                             classButton = "btn-primary";
-                                                            newtool = toolbar[i];
+                                                            //newtool = toolbar[i];
                                                         }
                                                         var style = "";
                                                         if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
@@ -306,7 +300,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
-                                                    AdminPanel.prototype.refreshPrevisu(newtool);
+                                                    AdminPanel.prototype.refreshPrevisu();
                                                 } else {
                                                     $("#message_edit_tool").html(toolbar[0].message);
                                                     $("#message_edit_tool").addClass("alert-danger");
