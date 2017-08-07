@@ -45,7 +45,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 contextid = contextidP;
                 typetools = JSON.parse(typetoolsP);
             };
-            AdminPanel.annotationcurrent = null;
+            var annotationcurrent = null;
             //
             //AdminPanel.prototype.contextid;
             //
@@ -84,6 +84,33 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
+            AdminPanel.prototype.refreshPrevisu = function (newtool) {
+                /*currentTool
+                alert($("#libelle").val());
+                $("#typetool").val(newtool.typetool);
+                $("#color").val(newtool.color);
+                $("#libelle").val(newtool.libelle);
+                $("#cartridgecolor").val(newtool.catridgecolor);
+                $("#texts").val(newtool.texts);
+                $("#button").val(newtool.button);
+                $("#enabled").val(newtool.enabled);
+                $("#reply").val(newtool.reply);
+                $("#order").val(newtool.order);
+                alert(newtool.libelle);
+                currentTool = newtool;
+*/
+                currentTool.typetool = $("#typetool").val();
+                currentTool.color = $("#color").val();
+                currentTool.libelle = $("#libelle").val();
+                currentTool.catridgecolor = $("#cartridgecolor").val();
+                currentTool.texts = $("#texts").val();
+                currentTool.button = $("#button").val();
+                currentTool.enabled = $("#enabled").val();
+                currentTool.reply = $("#reply").val();
+                currentTool.order = $("#order").val();
+                initCanevas();
+            };
+            //
             var getTypeTool = function (toolid) {
                 for (var i = 0; i < typetools.length; i++) {
                     if (typetools[i].id == toolid) {
@@ -94,7 +121,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             //
             var initCanevas = function () {
                 $('#canevas').html("");
-                this.annotationcurrent = null;
+                annotationcurrent = null;
                 var typetool = parseInt($("#typetool").val());
                 if (typetool === 3 || typetool === 4 || typetool === 7) {
                     $('#canevas').css("background-image", "url(" + $("#map01").val() + ")");
@@ -104,25 +131,25 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $('#canevas').css("background-image", "url(" + $("#map03").val() + ")");
                 }
                 if (typetool === 1) {
-                    this.annotationcurrent = new AnnotationHighlightplus();
+                    annotationcurrent = new AnnotationHighlightplus();
                 } else if (typetool === 3) {
-                    this.annotationcurrent = new AnnotationStampplus();
+                    annotationcurrent = new AnnotationStampplus();
                 } else if (typetool === 4) {
-                    this.annotationcurrent = new AnnotationFrame();
+                    annotationcurrent = new AnnotationFrame();
                     var annotChild = new AnnotationFrame();
                 } else if (typetool === 5) {
-                    this.annotationcurrent = new AnnotationVerticalline();
+                    annotationcurrent = new AnnotationVerticalline();
                 } else if (typetool === 6) {
-                    this.annotationcurrent = new AnnotationStampcomment();
+                    annotationcurrent = new AnnotationStampcomment();
                 } else if (typetool === 7) {
-                    this.annotationcurrent = new AnnotationCommentplus();
+                    annotationcurrent = new AnnotationCommentplus();
                 }
-                if (this.annotationcurrent) {
+                if (annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
-                    this.annotationcurrent.initAdminDemo(currentTool, typetoolEntity);
-                    this.annotationcurrent.draw($('#canevas'));
+                    annotationcurrent.initAdminDemo(currentTool, typetoolEntity);
+                    annotationcurrent.draw($('#canevas'));
                     if (annotChild) {
-                        annotChild.initChildAdminDemo(this.annotationcurrent);
+                        annotChild.initChildAdminDemo(annotationcurrent);
                         annotChild.draw($('#canevas'));
                     }
                 }
@@ -244,6 +271,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     $("#message_edit_tool").removeClass("alert-danger");
                                                     //mise à jour bar d'outils
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                    var newtool = null;
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var classButton = "btn-default";
                                                         if (toolbar[i].enable !== 1) {
@@ -251,6 +279,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         }
                                                         if (toolbar[i].toolid === toolbar[i].selecttool) {
                                                             classButton = "btn-primary";
+                                                            newtool = toolbar[i];
                                                         }
                                                         var style = "";
                                                         if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
@@ -277,6 +306,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
+                                                    AdminPanel.prototype.refreshPrevisu(newtool);
                                                 } else {
                                                     $("#message_edit_tool").html(toolbar[0].message);
                                                     $("#message_edit_tool").addClass("alert-danger");

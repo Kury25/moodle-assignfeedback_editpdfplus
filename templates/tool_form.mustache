@@ -9,12 +9,12 @@
 <div id="toolworkspace">
     <div class='row' style="margin-bottom: 10px;">
         {{^tool.id}}<h4>{{# str }} adminaddtool, assignfeedback_editpdfplus {{/ str }}</h4>{{/tool.id}}
-        <div class='col-sm-1'>
+        <div class='col-sm-3'>
             <div id="editpdlplus_tool_label" class="btn alert-info" style="cursor: default;">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
         </div>
-        <div class='col-sm-offset-2 col-sm-5'>
+        <div class='col-sm-offset-1 col-sm-5'>
             {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :
-            <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}pencil{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}save{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
             {{#tool.id}}
             <button type="button" class="btn btn-default" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
             <button type="button" class="btn btn-default" id="toolEnabled"><i class="fa fa-eye{{^tool.enabled}}-slash{{/tool.enabled}}" aria-hidden="true"></i></button>
