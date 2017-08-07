@@ -46,7 +46,7 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('border', 'solid 2px red');
                     $("#" + this.id).css('position', 'relative');
-                    $("#" + this.id).css('display', 'inline-block');
+                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -82,14 +82,22 @@ define(['jquery', './annotation'],
                         //if (!this.editor.get('readonly')) {
                         var buttonrender = "<button id='"
                                 + this.divcartridge
-                                + "_buttonpencil' class='btn btn-default' type='button'>";
+                                + "_buttonpencil' class='btn btn-default";
+                        if (this.adminDemo) {
+                            buttonrender += " disabled";
+                        }
+                        buttonrender += "' type='button'>";
                         buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                         buttonrender += "</button>";
                         //var buttonrenderdisplay = Y.Node.create(buttonrender);
                         //buttonrenderdisplay.on('click', this.display_picker, this);
                         var buttonadd = "<button id='"
                                 + this.divcartridge
-                                + "_buttonadd' class='btn btn-default' type='button'>";
+                                + "_buttonadd' class='btn btn-default";
+                        if (this.adminDemo) {
+                            buttonadd += " disabled";
+                        }
+                        buttonadd += "' type='button'>";
                         buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                         buttonadd += "</button>";
                         //var buttonadddisplay = Y.Node.create(buttonadd);

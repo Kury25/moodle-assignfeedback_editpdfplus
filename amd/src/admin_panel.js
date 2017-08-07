@@ -117,6 +117,11 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     this.annotationcurrent.endx = 435;
                     this.annotationcurrent.endy = 129;
                     this.annotationcurrent.parent_annot = 0;
+                    var annotChild = new AnnotationFrame();
+                    annotChild.x = 144;
+                    annotChild.y = 216;
+                    annotChild.endx = 296;
+                    annotChild.endy = 232;
                 }
                 if (this.annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
@@ -131,6 +136,20 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     this.annotationcurrent.displaylock = 1;
                     this.annotationcurrent.adminDemo = 1;
                     this.annotationcurrent.draw($('#canevas'));
+                    if (annotChild) {
+                        annotChild.tooltype = currentTool;
+                        if (currentTool.color) {
+                            annotChild.colour = currentTool.color;
+                        } else {
+                            annotChild.colour = typetoolEntity.color;
+                        }
+                        annotChild.tooltypefamille = typetoolEntity;
+                        annotChild.parent_annot = this.annotationcurrent.id;
+                        annotChild.id = 'previsu_annot_child';
+                        annotChild.displaylock = 1;
+                        annotChild.adminDemo = 1;
+                        annotChild.draw($('#canevas'));
+                    }
                 }
             };
             //
