@@ -23,9 +23,11 @@
 define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
     'core/ajax', 'core/str', /*'mod_assign/grading_form_change_checker'*/
     'assignfeedback_editpdfplus/annotation', 'assignfeedback_editpdfplus/annotationhighlightplus',
-    'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe'],
+    'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe',
+    'assignfeedback_editpdfplus/annotationcommentplus'],
         function ($/*, Y*/, notification, templates, fragment, ajax, str,
-                Annotation, AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame /*, checker*/) {
+                Annotation, AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
+                AnnotationCommentplus /*, checker*/) {
 
             var contextid = null;
             var currentTool = null;
@@ -122,6 +124,10 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     annotChild.y = 216;
                     annotChild.endx = 296;
                     annotChild.endy = 232;
+                } else if (typetool === 7) {
+                    this.annotationcurrent = new AnnotationCommentplus();
+                    this.annotationcurrent.x = 30;
+                    this.annotationcurrent.y = 90;
                 }
                 if (this.annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
