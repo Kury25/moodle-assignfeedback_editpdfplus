@@ -155,11 +155,19 @@ class assign_feedback_editpdfplus_admin {
             $tooltextsarray = explode("\",\"", $tooltexts);
             $compteur = 0;
             foreach ($tooltextsarray as $value) {
-                $obj = new object();
-                $obj->text= substr($value,1,-1);
-                $obj->index=$compteur;
-                $data->tool->textsarray[] = $obj;
-                $compteur++;
+                if ($value && $value != '"') {
+                    $obj = new object();
+                    $obj->text = /* substr( */$value/* ,1,-1) */;
+                    if (substr($obj->text, 0, 1) == '"') {
+                        $obj->text = substr($obj->text, 1);
+                    }
+                    if (substr($obj->text, -1) == '"') {
+                        $obj->text = substr($obj->text,0, -1);
+                    }
+                    $obj->index = $compteur;
+                    $data->tool->textsarray[] = $obj;
+                    $compteur++;
+                }
             }
         } else {
             $data->tool->textsarray = null;
