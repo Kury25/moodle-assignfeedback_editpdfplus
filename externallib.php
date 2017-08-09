@@ -398,7 +398,7 @@ class assignfeedback_editpdfplus_external extends external_api {
                 $res = array();
                 $tools = admin_editor::get_tools_by_axis($axisid);
                 foreach ($tools as $toolTmp) {
-                    $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                    $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
                 }
                 return $res;
             } else {
@@ -421,7 +421,8 @@ class assignfeedback_editpdfplus_external extends external_api {
             'toolid' => new external_value(PARAM_INT, 'tool id'),
             'typetool' => new external_value(PARAM_INT, 'tool type'),
             'button' => new external_value(PARAM_TEXT, 'tool label'),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL),
+            'messageok' => new external_value(PARAM_TEXT, 'messageok', VALUE_OPTIONAL)
                 )
                 )
         );

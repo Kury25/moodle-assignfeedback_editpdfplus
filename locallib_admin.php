@@ -152,7 +152,7 @@ class assign_feedback_editpdfplus_admin {
         }
         $tooltexts = $data->tool->texts;
         if ($tooltexts) {
-            $tooltextsarray = explode(",", $tooltexts);
+            $tooltextsarray = explode("\",\"", $tooltexts);
             $compteur = 0;
             foreach ($tooltextsarray as $value) {
                 $obj = new object();

@@ -86,7 +86,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
-            AdminPanel.prototype.refreshPrevisu = function () {
+            /*AdminPanel.prototype.refreshPrevisu = function () {
                 currentTool.typetool = $("#typetool").val();
                 currentTool.color = $("#color").val();
                 currentTool.libelle = $("#libelle").val();
@@ -100,7 +100,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 }
                 currentTool.order = $("#order").val();
                 initCanevas();
-            };
+            };*/
             //
             var getTypeTool = function (toolid) {
                 for (var i = 0; i < typetools.length; i++) {
@@ -221,7 +221,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             var refreshToolView = function () {
-                var messageok = str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus');
+                //var messageok = str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus');
                 var selectid = $(this).val();
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
@@ -254,11 +254,11 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             var res = "";
                                             $("input[name^='text[']").each(function () {
                                                 if ($(this).val() && ($(this).val()).length > 0) {
-                                                    res += '"' + $(this).val() + '",';
+                                                    res += '"' + $(this).val().replace(/"/g, "") + '",';
                                                 }
                                             });
-                                            if (res.length>0){
-                                                $("#texts").val(res.substring(0,res.length-1));
+                                            if (res.length > 0) {
+                                                $("#texts").val(res.substring(0, res.length - 1));
                                             }
                                             var form = $('#assignfeedback_editpdfplus_edit_tool');
                                             var data = form.serialize();
@@ -310,7 +310,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
-                                                    AdminPanel.prototype.refreshPrevisu();
+                                                    //AdminPanel.prototype.refreshPrevisu();
+                                                    refreshToolView();
                                                 } else {
                                                     $("#message_edit_tool").html(toolbar[0].message);
                                                     $("#message_edit_tool").addClass("alert-danger");
@@ -347,7 +348,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 ])[0].done(function (toolbar) {
                                                     if (toolbar[0].message === "") {
                                                         //mise à jour du message
-                                                        $("#message_edit_tool").html(messageok);
+                                                        $("#message_edit_tool").html(toolbar[0].messageok);
                                                         $("#message_edit_tool").addClass("alert-success");
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         //mise à jour bar d'outils
@@ -429,71 +430,81 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             action = null;
                                         }
                                         $("#toolFormSubmit").on("click", function () {
-                                            //jen suis ici pour lajout de nouvel outil
-                                            var res = "";
-                                            $("input[name^='text[']").each(function () {
-                                                if ($(this).val() && ($(this).val()).length > 0) {
-                                                    res += '"' + $(this).val() + '",';
-                                                }
-                                            });
-                                            if (res.length>0){
-                                                $("#texts").val(res.substring(0,res.length-1));
-                                            }
-                                            var form = $('#assignfeedback_editpdfplus_edit_tool');
-                                            var data = form.serialize();
-                                            ajax.call([
-                                                {
-                                                    methodname: 'assignfeedback_editpdfplus_submit_tool_add_form',
-                                                    args: {jsonformdata: JSON.stringify(data)}
-                                                }
-                                            ])[0].done(function (toolbar) {
-                                                if (toolbar[0].message === "") {
-                                                    //mise à jour du message
-                                                    $("#message_edit_tool").html(messageok);
-                                                    $("#message_edit_tool").addClass("alert-success");
-                                                    $("#message_edit_tool").removeClass("alert-danger");
-                                                    //mise à jour bar d'outils
-                                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
-                                                    for (var i = 0; i < toolbar.length; i++) {
-                                                        var classButton = "btn-default";
-                                                        if (toolbar[i].enable !== 1) {
-                                                            classButton = "";
-                                                        }
-                                                        if (toolbar[i].toolid === toolbar[i].selecttool) {
-                                                            classButton = "btn-primary";
-                                                        }
-                                                        var style = "";
-                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                            style = "text-decoration: underline;";
-                                                        }
-                                                        var label = toolbar[i].button;
-                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                                            label = "| " + label;
-                                                            if (toolbar[i].typetool === 4) {
-                                                                label += " |";
-                                                            }
-                                                        }
-                                                        var buttonTmp = "<button class='btn "
-                                                                + classButton
-                                                                + " editpdlplus_tool' id='editpdlplus_tool_"
-                                                                + toolbar[i].toolid + "' style='"
-                                                                + style
-                                                                + "' value='"
-                                                                + toolbar[i].toolid
-                                                                + "' data-enable='"
-                                                                + toolbar[i].enable + "'>"
-                                                                + label
-                                                                + "</button>";
-                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                            if ($("#button").val() === "") {
+                                                //mise à jour du message
+                                                var message = "<strong>Attention!</strong>"
+                                                        + "Le libellé du bouton n'est pas renseigné";
+                                                $("#message_edit_tool").html(message);
+                                                $("#message_edit_tool").addClass("alert-warning");
+                                                $("#message_edit_tool").removeClass("alert-danger");
+                                                $("#message_edit_tool").removeClass("alert-success");
+                                            } else {
+                                                var res = "";
+                                                $("input[name^='text[']").each(function () {
+                                                    if ($(this).val() && ($(this).val()).length > 0) {
+                                                        res += '"' + $(this).val().replace(/"/g, "") + '",';
                                                     }
-                                                    $(".editpdlplus_tool").on("click", refreshToolView);
-                                                    $('#editpdlplus_tool_item').html("");
-                                                } else {
-                                                    $("#message_edit_tool").html(toolbar[0].message);
-                                                    $("#message_edit_tool").addClass("alert-danger");
-                                                    $("#message_edit_tool").removeClass("alert-success");
+                                                });
+                                                if (res.length > 0) {
+                                                    $("#texts").val(res.substring(0, res.length - 1));
                                                 }
-                                            }).fail(notification.exception);
+                                                var form = $('#assignfeedback_editpdfplus_edit_tool');
+                                                var data = form.serialize();
+                                                ajax.call([
+                                                    {
+                                                        methodname: 'assignfeedback_editpdfplus_submit_tool_add_form',
+                                                        args: {jsonformdata: JSON.stringify(data)}
+                                                    }
+                                                ])[0].done(function (toolbar) {
+                                                    if (toolbar[0].message === "") {
+                                                        //mise à jour du message
+                                                        $("#message_edit_tool").html(messageok);
+                                                        $("#message_edit_tool").addClass("alert-success");
+                                                        $("#message_edit_tool").removeClass("alert-danger");
+                                                        $("#message_edit_tool").removeClass("alert-warning");
+                                                        //mise à jour bar d'outils
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                        for (var i = 0; i < toolbar.length; i++) {
+                                                            var classButton = "btn-default";
+                                                            if (toolbar[i].enable !== 1) {
+                                                                classButton = "";
+                                                            }
+                                                            if (toolbar[i].toolid === toolbar[i].selecttool) {
+                                                                classButton = "btn-primary";
+                                                            }
+                                                            var style = "";
+                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
+                                                                style = "text-decoration: underline;";
+                                                            }
+                                                            var label = toolbar[i].button;
+                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
+                                                                label = "| " + label;
+                                                                if (toolbar[i].typetool === 4) {
+                                                                    label += " |";
+                                                                }
+                                                            }
+                                                            var buttonTmp = "<button class='btn "
+                                                                    + classButton
+                                                                    + " editpdlplus_tool' id='editpdlplus_tool_"
+                                                                    + toolbar[i].toolid + "' style='"
+                                                                    + style
+                                                                    + "' value='"
+                                                                    + toolbar[i].toolid
+                                                                    + "' data-enable='"
+                                                                    + toolbar[i].enable + "'>"
+                                                                    + label
+                                                                    + "</button>";
+                                                            $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                        }
+                                                        $(".editpdlplus_tool").on("click", refreshToolView);
+                                                        $('#editpdlplus_tool_item').html("");
+                                                    } else {
+                                                        $("#message_edit_tool").html(toolbar[0].message);
+                                                        $("#message_edit_tool").addClass("alert-danger");
+                                                        $("#message_edit_tool").removeClass("alert-success");
+                                                    }
+                                                }).fail(notification.exception);
+                                            }
                                         });
                                     }.bind(this)).fail(notification.exception);
                         }.bind(this)).fail(notification.exception);

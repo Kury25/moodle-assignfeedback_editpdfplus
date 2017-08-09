@@ -333,7 +333,7 @@ define(['jquery', './global'],
                             buttontmp += ' disabled';
                         }
                         buttontmp += "' type='button' style='width:100%;font-size: x-small;'>"
-                                + propositionarray[i].replace('"', '')
+                                + propositionarray[i].replace(/"/g, "")
                                 + "</button>";
                         divpropositiondisplay.append(buttontmp);
                         if (this.adminDemo < 1) {

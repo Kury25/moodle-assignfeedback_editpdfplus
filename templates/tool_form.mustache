@@ -10,7 +10,7 @@
     <div class='row' style="margin-bottom: 10px;">
         {{^tool.id}}<h4>{{# str }} adminaddtool, assignfeedback_editpdfplus {{/ str }}</h4>{{/tool.id}}
         <div class='col-sm-3'>
-            <div id="editpdlplus_tool_label" class="btn alert-info" style="cursor: default;">{{#tool.id}}{{tool.label}}{{/tool.id}}</div>
+            {{#tool.id}}<div id="editpdlplus_tool_label" class="btn alert-info" style="cursor: default;">{{tool.label}}</div>{{/tool.id}}
         </div>
         <div class='col-sm-offset-1 col-sm-5'>
             {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :

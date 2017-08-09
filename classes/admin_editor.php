@@ -106,7 +106,7 @@ class admin_editor {
         $tool = new tool();
         $tool->axis = $data->axisid;
         $tool->cartridge = $data->libelle;
-        $tool->cartridge_color = $data->cartridgecolor;
+        $tool->cartridge_color = $data->catridgecolor;
         $tool->contextid = $contextid;
         $tool->label = $data->button;
         if ($data->reply == "on") {
@@ -116,6 +116,7 @@ class admin_editor {
         }
         $tool->texts = $data->texts;
         $tool->type = $data->typetool;
+        $tool->colors = $data->color;
         if ($maxindice == null) {
             $tool->order_tool = 1;
         } elseif ($data->order && intval($data->order) < 1000) {
