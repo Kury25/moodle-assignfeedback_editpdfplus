@@ -30,7 +30,7 @@ $functions = array(
         'description' => 'Test add axis',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
@@ -41,7 +41,7 @@ $functions = array(
         'description' => 'Edit an axis',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
@@ -52,7 +52,7 @@ $functions = array(
         'description' => 'Remove an axis',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
@@ -63,7 +63,7 @@ $functions = array(
         'description' => 'Edit a tool',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
@@ -74,7 +74,7 @@ $functions = array(
         'description' => 'Add a tool',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
@@ -85,7 +85,7 @@ $functions = array(
         'description' => 'Remove a tool',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),

@@ -36,13 +36,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    // Moodle v2.8.0 release upgrade line.
-    // Put any upgrade step following this.
-    // Moodle v2.9.0 release upgrade line.
-    // Put any upgrade step following this.
     // Moodle v3.0.0 release upgrade line.
-    // Put any upgrade step following this.
-
     if ($oldversion < 2016021600) {
 
         // Define table assignfeedback_editpdfplus_queue to be created.
@@ -65,11 +59,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016021600, 'assignfeedback', 'editpdfplus');
     }
 
-    // Moodle v3.1.0 release upgrade line.
-    // Put any upgrade step following this.
     // Automatically generated Moodle v3.2.0 release upgrade line.
-    // Put any upgrade step following this.
-
     if ($oldversion < 2017022700) {
 
         // Get orphaned, duplicate files and delete them.
@@ -93,7 +83,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         $record1 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'highlight'), '*', MUST_EXIST);
         $typeTool1 = new type_tool($record1);
         $typeTool1->configurable = 0;

@@ -93,7 +93,7 @@ $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 //$PAGE->start_collecting_javascript_requirements();
 
-if (has_capability('mod/assignfeedback_editpdfplus:use', $context, null, false)) {
+if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
     $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
     echo $editpdfplus->view();
 }

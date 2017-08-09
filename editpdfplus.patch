@@ -10,7 +10,7 @@ index a9a74e5..b87f347 100644
 +        global $CFG;
 +        if (file_exists($CFG->dirroot . '/mod/assign/feedback/editpdfplus/version.php')) {
 +            if ($this->assignment->get_context()) {
-+                return !has_capability('mod/assignfeedback_editpdfplus:use', $this->assignment->get_context(), null, false);
++                return !has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
 +            }
 +            return false;
 +        }

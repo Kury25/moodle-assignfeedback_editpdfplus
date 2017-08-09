@@ -26,17 +26,45 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'mod/assignfeedback_editpdfplus:use' => array(
+    /*'mod/assignfeedback_editpdfplus:use' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+        )
+    ),*/
+    /*'mod/assignfeedback_editpdfplus:notify' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW
+        )
+    ),*/
+    /*'mod/assignfeedback_editpdfplus:managetools' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW
+        )
+    ),*/
+    'assignfeedback/editpdfplus:use' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
         )
     ),
-    'mod/assignfeedback_editpdfplus:notify' => array(
+    'assignfeedback/editpdfplus:notify' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
             'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW
+        )
+    ),
+    'assignfeedback/editpdfplus:managetools' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
             'editingteacher' => CAP_ALLOW
         )
     )
