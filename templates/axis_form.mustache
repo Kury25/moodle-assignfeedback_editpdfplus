@@ -25,14 +25,20 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             }
         ])[0].done(function(axe) {
             if ('{{action}}' === 'add'){
+                var divAxis = "<div id='editpdlplus_toolbar_"+axe[0].axeid+"' class='btn-group toolbar' style='display: none;'></div>";
+                $('#editpdlplus_toolbars').append(divAxis);
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
-                $("#editpdlplus_axes").append(new Option(axe[0].axelabel, axe[0].axeid, true, true));
+                var option=new Option(axe[0].axelabel, axe[0].axeid, true, true);
+                $("#editpdlplus_axes").append(option);
                 $("#editpdlplus_axes").change();
+                $('#editpdlplus_tool_item').html("");
             } else {
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
                 $("#editpdlplus_axes option:selected").html(axe[0].axelabel);
             }
             $("#axistool").show();
+            $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
+            $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
         }).fail(notification.exception);
     });
     $("#axisFormCancel").on("click", function () {
@@ -42,6 +48,8 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
         }
         $("#axistool").show();
+        $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
+        $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
     });
 });
 {{/ js }}

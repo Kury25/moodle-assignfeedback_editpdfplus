@@ -55,16 +55,18 @@
                         <div class="panel-body"></div>
                     </div>
                 </div>
-                <div class='col-sm-10'>
-                    {{# toolbars }}
-                    <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
-                        {{# tools }}
-                        <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
-                            {{label}}
-                        </button>
-                        {{/ tools }}
+                <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolworkspace'>
+                    <div id='editpdlplus_toolbars'>
+                        {{# toolbars }}
+                        <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
+                            {{# tools }}
+                            <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
+                                {{label}}
+                            </button>
+                            {{/ tools }}
+                        </div>
+                        {{/ toolbars }}
                     </div>
-                    {{/ toolbars }}
 
                     <div id="editpdlplus_tool_item" style="margin-top: 10px;"></div>
                     

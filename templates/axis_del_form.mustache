@@ -33,11 +33,16 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             }else{
                 $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body > .panel > .panel-body').append("<div class='alert alert-danger' style='margin-top: 5px;'>"+message[0].message+"</div>");
             }
+            $("#axistool").show();
+            $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
+            $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
         }).fail(notification.exception);
     });
     $("#axisDelCancel").on("click", function () {
         $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
         $("#axistool").show();
+        $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
+        $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
     });
 });
 {{/ js }}
