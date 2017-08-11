@@ -92,21 +92,30 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(this.selectTool).addClass("btn-primary");
             };
             //
-            /*AdminPanel.prototype.refreshPrevisu = function () {
-             currentTool.typetool = $("#typetool").val();
-             currentTool.color = $("#color").val();
-             currentTool.libelle = $("#libelle").val();
-             currentTool.catridgecolor = $("#cartridgecolor").val();
-             currentTool.texts = $("#texts").val();
-             currentTool.button = $("#button").val();
-             currentTool.enabled = $("#enabled").val();
-             currentTool.reply = 0;
-             if ($("#reply").is(':checked')) {
-             currentTool.reply = 1;
-             }
-             currentTool.order = $("#order").val();
-             initCanevas();
-             };*/
+            AdminPanel.prototype.refreshPrevisu = function () {
+                currentTool.typetool = $("#typetool").val();
+                currentTool.color = $("#color").val();
+                currentTool.libelle = $("#libelle").val();
+                currentTool.catridgecolor = $("#cartridgecolor").val();
+                var res = "";
+                $("input[name^='text[']").each(function () {
+                    if ($(this).val() && ($(this).val()).length > 0) {
+                        res += '"' + $(this).val().replace(/"/g, "") + '",';
+                    }
+                });
+                if (res.length > 0) {
+                    $("#texts").val(res.substring(0, res.length - 1));
+                }
+                currentTool.texts = $("#texts").val();
+                currentTool.button = $("#button").val();
+                currentTool.enabled = $("#enabled").val();
+                currentTool.reply = 0;
+                if ($("#reply").is(':checked')) {
+                    currentTool.reply = 1;
+                }
+                currentTool.order = $("#order").val();
+                initCanevas();
+            };
             //
             var getTypeTool = function (toolid) {
                 for (var i = 0; i < typetools.length; i++) {
@@ -420,6 +429,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     }
                                                 }).fail(notification.exception);
                                             }
+                                        });
+                                        $("#toolRefesh").on("click", function () {
+                                            AdminPanel.prototype.refreshPrevisu();
                                         });
                                         //maj affichage previsu
                                         initCanevas();
