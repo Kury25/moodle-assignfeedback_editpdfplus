@@ -28,28 +28,34 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
                 var divAxis = "<div id='editpdlplus_toolbar_"+axe[0].axeid+"' class='btn-group toolbar' style='display: none;'></div>";
                 $('#editpdlplus_toolbars').append(divAxis);
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').hide();
                 var option=new Option(axe[0].axelabel, axe[0].axeid, true, true);
                 $("#editpdlplus_axes").append(option);
                 $("#editpdlplus_axes").change();
                 $('#editpdlplus_tool_item').html("");
             } else {
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').hide();
                 $("#editpdlplus_axes option:selected").html(axe[0].axelabel);
             }
             $("#axistool").show();
             $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
             $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
+            $("#editpdlplus_axes").prop('disabled',false);
         }).fail(notification.exception);
     });
     $("#axisFormCancel").on("click", function () {
         if ('{{action}}' === 'add'){
             $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+            $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').hide();
         } else {
             $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+            $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').hide();
         }
         $("#axistool").show();
         $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
         $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
+        $("#editpdlplus_axes").prop('disabled',false);
     });
 });
 {{/ js }}

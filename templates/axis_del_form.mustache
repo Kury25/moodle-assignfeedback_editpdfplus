@@ -36,6 +36,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             $("#axistool").show();
             $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
             $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
+            $("#editpdlplus_axes").prop('disabled',false);
         }).fail(notification.exception);
     });
     $("#axisDelCancel").on("click", function () {
@@ -43,6 +44,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
         $("#axistool").show();
         $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
         $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
+        $("#editpdlplus_axes").prop('disabled',false);
     });
 });
 {{/ js }}

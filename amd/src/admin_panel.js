@@ -162,6 +162,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
+                $("#editpdlplus_axes").prop('disabled', 'disabled');
                 var params = {};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisadd', contextid, params)
                         .done(function (html, js) {
@@ -176,6 +177,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
+                $("#editpdlplus_axes").prop('disabled', 'disabled');
                 /*var context = {name: 'Tweety bird', intelligence: 2};
                  templates.render('assignfeedback_editpdfplus/admin_axis_add', context)
                  // It returns a promise that needs to be resoved.
@@ -195,18 +197,22 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivDelAxis = function () {
-                $("#axistool").hide();
-                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
-                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
-                $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
-                $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
-                var axeid = $("#editpdlplus_axes option:selected").val();
-                var params = {axeid: axeid};
-                fragment.loadFragment('assignfeedback_editpdfplus', 'axisdel', contextid, params)
-                        .done(function (html, js) {
-                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body',
-                                    html, js);
-                        }.bind(this)).fail(notification.exception);
+                var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
+                if (canBeDelete !== null && parseInt(canBeDelete) === 0) {
+                    $("#axistool").hide();
+                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
+                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                    $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
+                    $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
+                    $("#editpdlplus_axes").prop('disabled', 'disabled');
+                    var axeid = $("#editpdlplus_axes option:selected").val();
+                    var params = {axeid: axeid};
+                    fragment.loadFragment('assignfeedback_editpdfplus', 'axisdel', contextid, params)
+                            .done(function (html, js) {
+                                templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body',
+                                        html, js);
+                            }.bind(this)).fail(notification.exception);
+                }
             };
             /**
              * Fade the dom node out, update it, and fade it back.
@@ -358,46 +364,54 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         args: {jsonformdata: JSON.stringify(data)}
                                                     }
                                                 ])[0].done(function (toolbar) {
-                                                    if (toolbar[0].message === "") {
+                                                    if (toolbar[0].message === "" || toolbar[0].message === "1") {
                                                         //mise à jour du message
                                                         $("#message_edit_tool").html(toolbar[0].messageok);
                                                         $("#message_edit_tool").addClass("alert-success");
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         //mise à jour bar d'outils
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
-                                                        for (var i = 0; i < toolbar.length; i++) {
-                                                            var classButton = "btn-default";
-                                                            if (toolbar[i].enable !== 1) {
-                                                                classButton = "";
-                                                            }
-                                                            if (toolbar[i].toolid === toolbar[i].selecttool) {
-                                                                classButton = "btn-primary";
-                                                            }
-                                                            var style = "";
-                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                                style = "text-decoration: underline;";
-                                                            }
-                                                            var label = toolbar[i].button;
-                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                                                label = "| " + label;
-                                                                if (toolbar[i].typetool === 4) {
-                                                                    label += " |";
+                                                        if (parseInt(toolbar[0].toolid) > 0) {
+                                                            for (var i = 0; i < toolbar.length; i++) {
+                                                                var classButton = "btn-default";
+                                                                if (toolbar[i].enable !== 1) {
+                                                                    classButton = "";
                                                                 }
+                                                                if (toolbar[i].toolid === toolbar[i].selecttool) {
+                                                                    classButton = "btn-primary";
+                                                                }
+                                                                var style = "";
+                                                                if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
+                                                                    style = "text-decoration: underline;";
+                                                                }
+                                                                var label = toolbar[i].button;
+                                                                if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
+                                                                    label = "| " + label;
+                                                                    if (toolbar[i].typetool === 4) {
+                                                                        label += " |";
+                                                                    }
+                                                                }
+                                                                var buttonTmp = "<button class='btn "
+                                                                        + classButton
+                                                                        + " editpdlplus_tool' id='editpdlplus_tool_"
+                                                                        + toolbar[i].toolid + "' style='"
+                                                                        + style
+                                                                        + "' value='"
+                                                                        + toolbar[i].toolid
+                                                                        + "' data-enable='"
+                                                                        + toolbar[i].enable + "'>"
+                                                                        + label
+                                                                        + "</button>";
+                                                                $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                             }
-                                                            var buttonTmp = "<button class='btn "
-                                                                    + classButton
-                                                                    + " editpdlplus_tool' id='editpdlplus_tool_"
-                                                                    + toolbar[i].toolid + "' style='"
-                                                                    + style
-                                                                    + "' value='"
-                                                                    + toolbar[i].toolid
-                                                                    + "' data-enable='"
-                                                                    + toolbar[i].enable + "'>"
-                                                                    + label
-                                                                    + "</button>";
-                                                            $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                            $(".editpdlplus_tool").on("click", refreshToolView);
+                                                        } else {
+                                                            var axeid = toolbar[0].axeid;
+                                                            var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
+                                                            axeOption.data('delete', 0);
+                                                            var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
+                                                            btr.removeClass("disabled");
                                                         }
-                                                        $(".editpdlplus_tool").on("click", refreshToolView);
                                                         $('#toolworkspace').html("");
                                                     } else {
                                                         $("#message_edit_tool").html(toolbar[0].message);
@@ -510,6 +524,11 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         }
                                                         $(".editpdlplus_tool").on("click", refreshToolView);
                                                         $('#toolworkspace').html("");
+                                                        var axeid = toolbar[0].axeid;
+                                                        var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
+                                                        axeOption.data('delete', 1);
+                                                        var delAxBt = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
+                                                        delAxBt.addClass("disabled");
                                                     } else {
                                                         $("#message_edit_tool").html(toolbar[0].message);
                                                         $("#message_edit_tool").addClass("alert-danger");

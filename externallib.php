@@ -397,8 +397,12 @@ class assignfeedback_editpdfplus_external extends external_api {
             if (admin_editor::del_tool($customdata, $context->id)) {
                 $res = array();
                 $tools = admin_editor::get_tools_by_axis($axisid);
-                foreach ($tools as $toolTmp) {
-                    $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
+                if (sizeof($tools) > 0) {
+                    foreach ($tools as $toolTmp) {
+                        $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
+                    }
+                } else {
+                    $res[] = array('axeid' => $axisid, 'selecttool' => -1, 'toolid' => -1, 'message' => '1', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
                 }
                 return $res;
             } else {
@@ -417,10 +421,10 @@ class assignfeedback_editpdfplus_external extends external_api {
                 array(
             'axeid' => new external_value(PARAM_INT, 'axe id'),
             'selecttool' => new external_value(PARAM_INT, 'tool id'),
-            'enable' => new external_value(PARAM_INT, 'tool enable'),
+            'enable' => new external_value(PARAM_INT, 'tool enable', VALUE_OPTIONAL),
             'toolid' => new external_value(PARAM_INT, 'tool id'),
-            'typetool' => new external_value(PARAM_INT, 'tool type'),
-            'button' => new external_value(PARAM_TEXT, 'tool label'),
+            'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
+            'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL),
             'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL),
             'messageok' => new external_value(PARAM_TEXT, 'messageok', VALUE_OPTIONAL)
                 )
