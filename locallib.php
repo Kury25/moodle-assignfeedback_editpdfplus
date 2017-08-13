@@ -74,9 +74,17 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         $toolbars = array();
         $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
+        $axis = array();
+        foreach ($coursecontexts as $value) {
+            $axistmp = page_editor::get_axis(array($value));
+            if ($axistmp && sizeof($axistmp) > 0) {
+                $axis = $axistmp;
+            }
+        }
+        //$axis = page_editor::get_axis($coursecontexts);    
         $tools = page_editor::get_tools($coursecontexts);
-        $axis = page_editor::get_axis($coursecontexts);
         foreach ($axis as $ax) {
+            $toolbars[$ax->id]['axeid'] = $ax->id;
             $toolbars[$ax->id]['label'] = $ax->label;
             foreach ($tools as $tool) {
                 if ($tool->axis == $ax->id) {
@@ -243,7 +251,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function view(stdClass $grade) {
         global $PAGE;
-        
+
         $html = '';
         // Show a link to download the pdf.
         if (page_editor::has_annotations_or_comments($grade->id, false)) {
