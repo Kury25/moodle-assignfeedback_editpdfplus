@@ -46,6 +46,13 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 this.init();
             };
             var annotationcurrent = null;
+            //messages
+            AdminPanel.messageDelOk = "";
+            AdminPanel.messageDelKo = "";
+            AdminPanel.messageko = "";
+            AdminPanel.messageaddok = "";
+            AdminPanel.messageaddlibelleko = "";
+            AdminPanel.messageEditOk = "";
             //
             //AdminPanel.prototype.contextid;
             //
@@ -80,6 +87,29 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $("#assignfeedback_editpdfplus_widget_admin_button_addtool").on("click", this.openDivAddTool);
 
                 $(".btn-primary").click();
+
+                initMessages();
+            };
+            //init message
+            var initMessages = function () {
+                str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageDelOk = message;
+                }).fail(notification.exception);
+                str.get_string('admindeltool_messageko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageDelKo = message;
+                }).fail(notification.exception);
+                str.get_string('adminaddtool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageaddok = message;
+                }).fail(notification.exception);
+                str.get_string('admin_messageko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageko = message;
+                }).fail(notification.exception);
+                str.get_string('adminedittool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageEditOk = message;
+                }).fail(notification.exception);
+                str.get_string('adminaddtool_messagelibelleko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageaddlibelleko = message;
+                }).fail(notification.exception);
             };
             //
             AdminPanel.prototype.test = function () {
@@ -166,6 +196,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivAddAxis = function () {
+                $("#message_edit_tool").hide();
                 $("#axistool").hide();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
@@ -181,6 +212,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivEditAxis = function () {
+                $("#message_edit_tool").hide();
                 $("#axistool").hide();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
@@ -208,6 +240,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             AdminPanel.prototype.openDivDelAxis = function () {
                 var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
                 if (canBeDelete !== null && parseInt(canBeDelete) === 0) {
+                    $("#message_edit_tool").hide();
                     $("#axistool").hide();
                     $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
                     $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
@@ -248,7 +281,6 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             var refreshToolView = function () {
-                //var messageok = str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus');
                 var selectid = $(this).val();
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
@@ -259,6 +291,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     }
                 });
                 $(this).addClass("btn-primary");
+                if (!currentTool || currentTool.id !== selectid) {
+                    $("#message_edit_tool").hide();
+                }
                 //load proprieties
                 $('#editpdlplus_tool_item').html("");
                 var params = {toolid: selectid};
@@ -268,6 +303,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
                                         currentTool = new Object();
+                                        currentTool.id = selectid;
                                         currentTool.typetool = $("#typetool").val();
                                         var typetoolEntity = getTypeTool(currentTool.typetool);
                                         var realcolor = $("#realcolor").val();
@@ -309,9 +345,11 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             ])[0].done(function (toolbar) {
                                                 if (toolbar[0].message === "") {
                                                     //mise à jour du message
-                                                    $("#message_edit_tool").html("Modifications enregistrées");
+                                                    $("#message_edit_tool").show();
+                                                    $("#message_edit_tool").html(AdminPanel.messageEditOk);
                                                     $("#message_edit_tool").addClass("alert-success");
                                                     $("#message_edit_tool").removeClass("alert-danger");
+                                                    $("#message_edit_tool").removeClass("alert-warning");
                                                     //mise à jour bar d'outils
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                     //var newtool = null;
@@ -353,6 +391,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     $("#editpdlplus_tool_" + toolbar[0].selecttool).click();
                                                     //refreshToolView();
                                                 } else {
+                                                    $("#message_edit_tool").show();
                                                     $("#message_edit_tool").html(toolbar[0].message);
                                                     $("#message_edit_tool").addClass("alert-danger");
                                                     $("#message_edit_tool").removeClass("alert-success");
@@ -388,9 +427,11 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 ])[0].done(function (toolbar) {
                                                     if (toolbar[0].message === "" || toolbar[0].message === "1") {
                                                         //mise à jour du message
-                                                        $("#message_edit_tool").html(toolbar[0].messageok);
+                                                        $("#message_edit_tool").show();
+                                                        $("#message_edit_tool").html(AdminPanel.messageDelOk);
                                                         $("#message_edit_tool").addClass("alert-success");
                                                         $("#message_edit_tool").removeClass("alert-danger");
+                                                        $("#message_edit_tool").removeClass("alert-warning");
                                                         //mise à jour bar d'outils
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                         if (parseInt(toolbar[0].toolid) > 0) {
@@ -436,6 +477,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         }
                                                         $('#toolworkspace').html("");
                                                     } else {
+                                                        $("#message_edit_tool").show();
                                                         $("#message_edit_tool").html(toolbar[0].message);
                                                         $("#message_edit_tool").addClass("alert-danger");
                                                         $("#message_edit_tool").removeClass("alert-success");
@@ -457,7 +499,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivAddTool = function () {
-                var messageok = str.get_string('adminaddtool_messageok', 'assignfeedback_editpdfplus');
+                $("#message_edit_tool").hide();
                 $('#editpdlplus_tool_item').html("");
                 $('.btn-primary').addClass("btn-default");
                 $('.editpdlplus_tool').removeClass("btn-primary");
@@ -483,9 +525,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         $("#toolFormSubmit").on("click", function () {
                                             if ($("#button").val() === "") {
                                                 //mise à jour du message
-                                                var message = "<strong>Attention!</strong>"
-                                                        + "Le libellé du bouton n'est pas renseigné";
-                                                $("#message_edit_tool").html(message);
+                                                $("#message_edit_tool").show();
+                                                $("#message_edit_tool").html(AdminPanel.messageaddlibelleko);
                                                 $("#message_edit_tool").addClass("alert-warning");
                                                 $("#message_edit_tool").removeClass("alert-danger");
                                                 $("#message_edit_tool").removeClass("alert-success");
@@ -509,7 +550,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 ])[0].done(function (toolbar) {
                                                     if (toolbar[0].message === "") {
                                                         //mise à jour du message
-                                                        $("#message_edit_tool").html(messageok);
+                                                        $("#message_edit_tool").show();
+                                                        $("#message_edit_tool").html(AdminPanel.messageaddok);
                                                         $("#message_edit_tool").addClass("alert-success");
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         $("#message_edit_tool").removeClass("alert-warning");
@@ -555,6 +597,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         var delAxBt = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
                                                         delAxBt.addClass("disabled");
                                                     } else {
+                                                        $("#message_edit_tool").show();
                                                         $("#message_edit_tool").html(toolbar[0].message);
                                                         $("#message_edit_tool").addClass("alert-danger");
                                                         $("#message_edit_tool").removeClass("alert-success");

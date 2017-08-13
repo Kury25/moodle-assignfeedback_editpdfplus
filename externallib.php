@@ -217,7 +217,7 @@ class assignfeedback_editpdfplus_external extends external_api {
         $PAGE->set_context($context);
 
         $customdata = (object) $data;
-        $formparams = array($customdata);
+        //$formparams = array($customdata);
 
         $sessionkey = sesskey();
         if ($sessionkey == $customdata->sesskey && $customdata->toolid) {
@@ -399,10 +399,10 @@ class assignfeedback_editpdfplus_external extends external_api {
                 $tools = admin_editor::get_tools_by_axis($axisid);
                 if (sizeof($tools) > 0) {
                     foreach ($tools as $toolTmp) {
-                        $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
+                        $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
                     }
                 } else {
-                    $res[] = array('axeid' => $axisid, 'selecttool' => -1, 'toolid' => -1, 'message' => '1', 'messageok' => get_string('admindeltool_messageok', 'assignfeedback_editpdfplus'));
+                    $res[] = array('axeid' => $axisid, 'selecttool' => -1, 'toolid' => -1, 'message' => '1');
                 }
                 return $res;
             } else {
@@ -425,8 +425,7 @@ class assignfeedback_editpdfplus_external extends external_api {
             'toolid' => new external_value(PARAM_INT, 'tool id'),
             'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
             'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL),
-            'messageok' => new external_value(PARAM_TEXT, 'messageok', VALUE_OPTIONAL)
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
                 )
                 )
         );
