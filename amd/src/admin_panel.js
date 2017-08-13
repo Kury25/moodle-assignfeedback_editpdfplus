@@ -509,6 +509,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
+                                        $("#canevas").hide();
                                         if (action === "clone") {
                                             $("#typetool").val(currentTool.typetool);
                                             $("#color").val(currentTool.color);
@@ -519,8 +520,19 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             $("#enabled").val(currentTool.enabled);
                                             $("#reply").val(currentTool.reply);
                                             $("#order").val(currentTool.order);
-                                            currentTool = null;
+                                            currentTool = new Object();
                                             action = null;
+                                        } else {
+                                            currentTool = new Object();
+                                            $("#typetool").on("change", function () {
+                                                currentTool.typetool = $("#typetool").val();
+                                                var typetoolEntity = getTypeTool(currentTool.typetool);
+                                                currentTool.color = typetoolEntity.color;
+                                                currentTool.catridgecolor = typetoolEntity.cartridge_color;
+                                                $("#color").val(currentTool.color);
+                                                $("#cartridgecolor").val(currentTool.catridgecolor);
+                                            });
+                                            $("#typetool").change();
                                         }
                                         $("#toolFormSubmit").on("click", function () {
                                             if ($("#button").val() === "") {
