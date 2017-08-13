@@ -269,9 +269,21 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                     .done(function () {
                                         currentTool = new Object();
                                         currentTool.typetool = $("#typetool").val();
-                                        currentTool.color = $("#color").val();
+                                        var typetoolEntity = getTypeTool(currentTool.typetool);
+                                        var realcolor = $("#realcolor").val();
+                                        if (realcolor.length > 0) {
+                                            currentTool.color = $("#color").val();
+                                        } else {
+                                            $("#color").val(typetoolEntity.color);
+                                            currentTool.color = null;
+                                        }
                                         currentTool.libelle = $("#libelle").val();
-                                        currentTool.catridgecolor = $("#cartridgecolor").val();
+                                        if ($("#realcartridgecolor").val().length > 0) {
+                                            currentTool.catridgecolor = $("#cartridgecolor").val();
+                                        } else {
+                                            $("#cartridgecolor").val(typetoolEntity.cartridge_color);
+                                            currentTool.catridgecolor = null;
+                                        }
                                         currentTool.texts = $("#texts").val();
                                         currentTool.button = $("#button").val();
                                         currentTool.enabled = $("#enabled").val();
@@ -338,7 +350,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
                                                     //AdminPanel.prototype.refreshPrevisu();
-                                                    refreshToolView();
+                                                    $("#editpdlplus_tool_" + toolbar[0].selecttool).click();
+                                                    //refreshToolView();
                                                 } else {
                                                     $("#message_edit_tool").html(toolbar[0].message);
                                                     $("#message_edit_tool").addClass("alert-danger");

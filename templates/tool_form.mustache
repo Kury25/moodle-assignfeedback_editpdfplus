@@ -92,8 +92,9 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-3" for="cartridgecolor">{{# str }} admintoolboxcartridge_color, assignfeedback_editpdfplus {{/ str }}</label>
                                     <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="cartridgecolor" placeholder="{{^tool.cartridge_color}}-{{/tool.cartridge_color}}"
+                                        <input type="color" class="form-control" id="cartridgecolor" placeholder="{{^tool.cartridge_color}}-{{/tool.cartridge_color}}"
                                                value="{{#tool.cartridge_color}}{{tool.cartridge_color}}{{/tool.cartridge_color}}" name="catridgecolor" />
+                                        <input type="hidden" id="realcartridgecolor" value="{{#tool.cartridge_color}}{{tool.cartridge_color}}{{/tool.cartridge_color}}" />
                                     </div>
                                 </div>
                             </div>
@@ -107,14 +108,15 @@
                         </div>
                         <div id="collapse4" class="panel-collapse collapse">
                             <div class="panel-body" style="margin-bottom: 80px;overflow: auto;">
-                                <div class="form-group">
-                                    <label class="control-label col-sm-3" for="color">{{# str }} admintoolboxannotation_color, assignfeedback_editpdfplus {{/ str }}</label>
-                                    <div class="col-sm-9">
-                                        <input type="text" class="form-control" id="color" placeholder="{{^tool.colors}}-{{/tool.colors}}"
-                                               value="{{#tool.colors}}{{tool.colors}}{{/tool.colors}}" name="color" />
+                                    <div class="row form-group">
+                                        <label class="control-label col-sm-3" for="color">{{# str }} admintoolboxannotation_color, assignfeedback_editpdfplus {{/ str }}</label>
+                                        <div class="col-sm-9">
+                                            <input type="color" class="form-control" id="color" placeholder="{{^tool.colors}}-{{/tool.colors}}"
+                                                   value="{{#tool.colors}}{{tool.colors}}{{/tool.colors}}" name="color" />
+                                            <input type="hidden" id="realcolor" value="{{#tool.colors}}{{tool.colors}}{{/tool.colors}}" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group">
+                                <div class="row form-group">
                                     <label class="control-label col-sm-3" for="texts">{{# str }} admintoolboxannotation_texts, assignfeedback_editpdfplus {{/ str }}</label>
                                     <div class="col-sm-9">
                                         <input type="hidden" class="form-control" id="texts" value="{{tool.texts}}" name="texts" />
@@ -127,7 +129,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="row form-group">
                                     <label class="control-label col-sm-3" for="reply">{{# str }} admintoolboxannotation_reply, assignfeedback_editpdfplus {{/ str }}</label>
                                     <div class="col-sm-9">
                                         <input type="checkbox" id="reply" {{#tool.reply}}checked {{/tool.reply}}name="reply" />

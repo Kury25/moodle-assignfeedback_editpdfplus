@@ -108,6 +108,49 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         // Editpdf savepoint reached.
         upgrade_plugin_savepoint(true, 2017071202, 'assignfeedback', 'editpdfplus');
     }
+    
+    if ($oldversion < 2017081306) {
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET color = :htmlcolor
+                 WHERE color = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#FF0000',
+            'textcolor' => 'red'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#FFA500',
+            'textcolor' => 'orange'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#008000',
+            'textcolor' => 'green'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#0000FF',
+            'textcolor' => 'blue'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+    }
 
     return true;
 }
