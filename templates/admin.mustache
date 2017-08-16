@@ -7,6 +7,41 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
+            Importation axe
+        </div>
+        <div class="panel-body">
+            Axes disponibles à l'importation
+            <table class='table table-bordered table-striped'>
+                <thead>
+                    <tr>
+                        <!--th>Cours / activité</th-->
+                        <th>Nom</th>
+                        <th>Outils</th>
+                        <th>Importer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{# toolbarsDispo }}
+                    <tr>
+                        <!--td></td-->
+                        <td>{{axis.label}}</td>
+                        <td>
+                            {{# tools }}
+                            <button class="btn btn-default" style="{{style}}">
+                                {{label}}
+                            </button>
+                            {{/ tools }}
+                        </td>
+                        <td><button class='btn btn-primary btn-sm' class='btnimport' data-axis='{{axis.id}}'><i class='fa fa-download'></i></button></td>
+                    </tr>
+                    {{/ toolbarsDispo }}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
             {{# str }} admincurrenttoolbar, assignfeedback_editpdfplus {{/ str }}
         </div>
         <div class="panel-body">
@@ -62,7 +97,7 @@
                     <div class="alert col-sm-5" id="message_edit_tool" style="margin-top: 10px;margin-bottom: 0px;display: none;"></div>
 
                     <div id="editpdlplus_tool_item" class="alert col-sm-12" style="margin-top: 0px;"></div>
-                    
+
                 </div>
                 <div class='col-sm-10'>
                     <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;">

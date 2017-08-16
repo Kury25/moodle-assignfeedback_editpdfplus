@@ -145,6 +145,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 }
                 currentTool.order = $("#order").val();
                 initCanevas();
+                initToolDisplay();
             };
             //
             var getTypeTool = function (toolid) {
@@ -384,6 +385,16 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         currentTool.enabled = $("#enabled").val();
                                         currentTool.reply = $("#reply").val();
                                         currentTool.order = $("#order").val();
+                                        $("#typetool").on("change", function () {
+                                            currentTool.typetool = $("#typetool").val();
+                                            var typetoolEntity = getTypeTool(currentTool.typetool);
+                                            currentTool.color = typetoolEntity.color;
+                                            currentTool.catridgecolor = typetoolEntity.cartridge_color;
+                                            $("#color").val(currentTool.color);
+                                            $("#cartridgecolor").val(currentTool.catridgecolor);
+                                            initToolDisplay();
+                                            initCanevas();
+                                        });
                                         $("#toolFormSubmit").on("click", function () {
                                             var res = "";
                                             $("input[name^='text[']").each(function () {
@@ -592,6 +603,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                 currentTool.catridgecolor = typetoolEntity.cartridge_color;
                                                 $("#color").val(currentTool.color);
                                                 $("#cartridgecolor").val(currentTool.catridgecolor);
+                                                initToolDisplay();
                                             });
                                             $("#typetool").change();
                                         }

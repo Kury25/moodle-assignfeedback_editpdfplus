@@ -28,7 +28,6 @@ use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\widget_admin;
 use \assignfeedback_editpdfplus\form\axis_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
-use \assignfeedback_editpdfplus\form\tool_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
 class assign_feedback_editpdfplus_admin {
@@ -162,7 +161,7 @@ class assign_feedback_editpdfplus_admin {
                         $obj->text = substr($obj->text, 1);
                     }
                     if (substr($obj->text, -1) == '"') {
-                        $obj->text = substr($obj->text,0, -1);
+                        $obj->text = substr($obj->text, 0, -1);
                     }
                     $obj->index = $compteur;
                     $data->tool->textsarray[] = $obj;
@@ -186,12 +185,39 @@ class assign_feedback_editpdfplus_admin {
         global $USER;
 
         // get the costum toolbars
-        $toolbars = array();
         $coursecontext = context::instance_by_id($this->context->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
         $tools = page_editor::get_tools($coursecontexts);
         $typetools = page_editor::get_typetools(null);
         $axis = page_editor::get_axis(array($this->context->id));
+        $toolbars = $this->prepareToolbar($axis, $tools);
+        // get all accessibled toolbars
+        $courses = get_courses();
+        $contextListToCheck = array();
+        foreach ($courses as $course) {
+            $contextid = context_course::instance($course->id);
+            $coursecontextsTmp = array_filter(explode('/', $contextid->path), 'strlen');
+            foreach ($coursecontextsTmp as $value) {
+                if ($value != $this->context->id && !in_array($value, $contextListToCheck)) {
+                    $contextListToCheck[] = $value;
+                }
+            }
+        }
+        $axisDispo = array();
+        $toolDispo = page_editor::get_tools($contextListToCheck);
+        foreach ($contextListToCheck as $value) {
+            $axistmp = page_editor::get_axis(array($value));
+            if ($axistmp && sizeof($axistmp) > 0) {
+                $axisDispo = array_merge($axisDispo, $axistmp);
+            }
+        }
+        $toolbarsDispo = $this->prepareToolbar($axisDispo, $toolDispo);
+        $widget = new widget_admin($this->context, $this->course, $USER, $toolbars, $axis, $typetools, $toolbarsDispo);
+        return $widget;
+    }
+
+    private function prepareToolbar($axis, $tools) {
+        $toolbars = array();
         foreach ($axis as $ax) {
             $ax->children = 0;
             $toolbar = new stdClass();
@@ -219,8 +245,7 @@ class assign_feedback_editpdfplus_admin {
             }
             $toolbars[] = $toolbar;
         }
-        $widget = new widget_admin($this->context, $this->course, $USER, $toolbars, $axis, $typetools);
-        return $widget;
+        return $toolbars;
     }
 
 }
