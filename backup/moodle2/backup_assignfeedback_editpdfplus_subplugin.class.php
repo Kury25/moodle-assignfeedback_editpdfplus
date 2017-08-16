@@ -46,7 +46,7 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginelementfiles = new backup_nested_element('feedback_editpdfplus_files', null, array('gradeid'));
         $subpluginelementannotations = new backup_nested_element('feedback_editpdfplus_annotations');
         $subpluginelementannotation = new backup_nested_element('feedback_editpdfplus_annotation', null, array('gradeid', 'pageno', 'type', 'x', 'y', 'endx', 'endy', 'colour', 'path', 'draft'));
-        
+
         // Connect XML elements into the tree.
         $subplugin->add_child($subpluginwrapper);
         $subpluginelementannotations->add_child($subpluginelementannotation);
@@ -64,5 +64,5 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', 'stamps', 'gradeid');
         return $subplugin;
     }
-
+    
 }

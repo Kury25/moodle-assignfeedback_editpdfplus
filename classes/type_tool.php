@@ -56,6 +56,21 @@ class type_tool {
     /** @var type */
     public $configurable = 1;
 
+    /** @var type */
+    public $configurable_cartridge = 1;
+
+    /** @var type */
+    public $configurable_cartridge_color = 1;
+
+    /** @var type */
+    public $configurable_color = 1;
+
+    /** @var type */
+    public $configurable_texts = 1;
+
+    /** @var type */
+    public $configurable_question = 1;
+
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

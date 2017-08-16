@@ -154,6 +154,65 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     }
                 }
             };
+            var initToolDisplay = function () {
+                var typetool = parseInt($("#typetool").val());
+                var typetoolEntity = getTypeTool(typetool);
+                var confCartridge = false;
+                var confCartridgeColor = false;
+                if (typetoolEntity.configurable_cartridge && parseInt(typetoolEntity.configurable_cartridge) === 0) {
+                    $("#libelle").hide();
+                    $("label[for='libelle']").hide();
+                    confCartridge = true;
+                } else {
+                    $("#libelle").show();
+                    $("label[for='libelle']").show();
+                }
+                if (typetoolEntity.configurable_cartridge_color && parseInt(typetoolEntity.configurable_cartridge_color) === 0) {
+                    $("#cartridgecolor").hide();
+                    $("label[for='cartridgecolor']").hide();
+                    confCartridgeColor = true;
+                } else {
+                    $("#cartridgecolor").show();
+                    $("label[for='cartridgecolor']").show();
+                }
+                if (confCartridge && confCartridgeColor) {
+                    $("#collapse3").parent().hide();
+                } else {
+                    $("#collapse3").parent().show();
+                }
+                var confAnnotColor = false,
+                        confAnnotTexts = false,
+                        confAnnotReply = false;
+                if (typetoolEntity.configurable_color && parseInt(typetoolEntity.configurable_color) === 0) {
+                    $("#color").hide();
+                    $("label[for='color']").hide();
+                    confAnnotColor = true;
+                } else {
+                    $("#color").show();
+                    $("label[for='color']").show();
+                }
+                if (typetoolEntity.configurable_texts && parseInt(typetoolEntity.configurable_texts) === 0) {
+                    $(".textform").hide();
+                    $("label[for='texts']").hide();
+                    confAnnotTexts = true;
+                } else {
+                    $(".textform").show();
+                    $("label[for='texts']").show();
+                }
+                if (typetoolEntity.configurable_question && parseInt(typetoolEntity.configurable_question) === 0) {
+                    $("#reply").hide();
+                    $("label[for='reply']").hide();
+                    confAnnotReply = true;
+                } else {
+                    $("#reply").show();
+                    $("label[for='reply']").show();
+                }
+                if (confAnnotColor && confAnnotReply && confAnnotTexts) {
+                    $("#collapse4").parent().hide();
+                } else {
+                    $("#collapse4").parent().show();
+                }
+            };
             //
             var initCanevas = function () {
                 $('#canevas').html("");
@@ -490,6 +549,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         });
                                         //maj affichage previsu
                                         initCanevas();
+                                        //maj tool worspkace
+                                        initToolDisplay();
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
                             //alert("jdikdi");
