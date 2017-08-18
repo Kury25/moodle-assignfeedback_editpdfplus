@@ -88,6 +88,8 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
 
                 $(".btn-primary").click();
 
+                $(".btnimport").on('click', this.importAxis);
+
                 initMessages();
             };
             //init message
@@ -338,6 +340,79 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 });
                 return promise.promise();
                 //return true;
+            };
+            //
+            AdminPanel.prototype.importAxis = function () {
+                var axisimportid = $(this).data('axis');
+                if (axisimportid && parseInt(axisimportid) > 0) {
+                    $("#assignfeedback_editpdfplus_import_axis > div > input[name^='axeid']").val(axisimportid);
+                    var form = $('#assignfeedback_editpdfplus_import_axis');
+                    var data = form.serialize() + "&courseid=" + $("#courseid").val();
+                    ajax.call([
+                        {
+                            methodname: 'assignfeedback_editpdfplus_submit_axis_import_form',
+                            args: {jsonformdata: JSON.stringify(data)}
+                        }
+                    ])[0].done(function (toolbar) {
+                        if (toolbar[0].message === "") {
+                            //mise à jour du message
+                            $("#message_import_axis").show();
+                            $("#message_import_axis").html(AdminPanel.messageaddok);
+                            $("#message_import_axis").addClass("alert-success");
+                            $("#message_import_axis").removeClass("alert-danger");
+                            $("#message_import_axis").removeClass("alert-warning");
+                            //maj axe
+                            var divAxis = "<div id='editpdlplus_toolbar_"
+                                    + toolbar[0].axeid
+                                    + "' class='btn-group toolbar' style='display: none;'></div>";
+                            $('#editpdlplus_toolbars').append(divAxis);
+                            var option = new Option(toolbar[0].axelabel, toolbar[0].axeid, true, true);
+                            $("#editpdlplus_axes").append(option);
+                            $('#editpdlplus_tool_item').html("");
+                            //maj toolbar
+                            for (var i = 0; i < toolbar.length; i++) {
+                                if (toolbar[i].toolid && toolbar[i].toolid > 0) {
+                                    var classButton = "btn-default";
+                                    if (toolbar[i].enable !== 1) {
+                                        classButton = "";
+                                    }
+                                    var style = "";
+                                    if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
+                                        style = "text-decoration: underline;";
+                                    }
+                                    var label = toolbar[i].button;
+                                    if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
+                                        label = "| " + label;
+                                        if (toolbar[i].typetool === 4) {
+                                            label += " |";
+                                        }
+                                    }
+                                    var buttonTmp = "<button class='btn "
+                                            + classButton
+                                            + " editpdlplus_tool' id='editpdlplus_tool_"
+                                            + toolbar[i].toolid + "' style='"
+                                            + style
+                                            + "' value='"
+                                            + toolbar[i].toolid
+                                            + "' data-enable='"
+                                            + toolbar[i].enable + "'>"
+                                            + label
+                                            + "</button>";
+                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                }
+                            }
+                            $(".editpdlplus_tool").on("click", refreshToolView);
+                            //maj visu
+                            $("#editpdlplus_axes").change();
+                            $("a[href^='#collapseadmin2'").click();
+                        } else {
+                            $("#message_import_axis").show();
+                            $("#message_import_axis").html(toolbar[0].message);
+                            $("#message_import_axis").addClass("alert-danger");
+                            $("#message_import_axis").removeClass("alert-success");
+                        }
+                    }).fail(notification.exception);
+                }
             };
             //
             var refreshToolView = function () {

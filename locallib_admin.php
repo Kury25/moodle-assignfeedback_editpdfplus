@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\widget_admin;
 use \assignfeedback_editpdfplus\form\axis_form;
+use \assignfeedback_editpdfplus\form\axis_import_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
@@ -68,8 +69,14 @@ class assign_feedback_editpdfplus_admin {
           //Set default data (if any)
           $formAddAxis->set_data($toform);
           } */
+        $axisimportform = new axis_import_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_import_axis"));
+        $axisimportform->id = "assignfeedback_editpdfplus_import_axis";
+        $axisimportform->title = "";
+        $axisimportform->action = "import";
         $widget = $this->get_widget();
         //$widget->axisaddform = $formAddAxis;
+        $widget->axisimportform = $axisimportform;
+        $widget->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin($widget);
         return $html;
     }

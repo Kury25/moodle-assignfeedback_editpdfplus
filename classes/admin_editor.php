@@ -281,4 +281,49 @@ class admin_editor {
         return $typetools;
     }
 
+    public static function getAxisById($axeid) {
+        global $DB;
+        $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
+        return $axis;
+    }
+
+    public static function import_axis($axisOrigin, $context) {
+        global $DB;
+        $record = $DB->get_record_sql('SELECT max(order_axis) as order_max FROM {assignfeedback_editpp_axis} WHERE contextid = :contextid', array('contextid' => $context));
+
+        $axis = new axis();
+        $axis->contextid = $context;
+        $axis->label = $axisOrigin->label;
+        if ($record->order_max == null) {
+            $axis->order_axis = 1;
+        } else {
+            $axis->order_axis = $record->order_max + 1;
+        }
+
+        return $DB->insert_record('assignfeedback_editpp_axis', $axis);
+    }
+
+    public static function import_tool($toolToImport, $axeNew, $context) {
+        global $DB;
+        $record = $DB->get_record_sql('SELECT max(order_tool) as order_max FROM {assignfeedback_editpp_tool} WHERE contextid = :contextid', array('axis' => $axeNew->id, 'contextid' => $context));
+
+        $tool = new tool();
+        $tool->axis = $axeNew;
+        $tool->cartridge = $toolToImport->cartridge;
+        $tool->cartridge_color = $toolToImport->cartridge_color;
+        $tool->colors = $toolToImport->colors;
+        $tool->contextid = $context;
+        $tool->enabled = $toolToImport->enabled;
+        $tool->label = $toolToImport->label;
+        $tool->reply = $toolToImport->reply;
+        $tool->texts = $toolToImport->texts;
+        $tool->type = $toolToImport->type;
+        if ($record->order_max == null) {
+            $tool->order_tool = 1;
+        } else {
+            $tool->order_tool = $record->order_max + 1;
+        }
+        return $DB->insert_record('assignfeedback_editpp_tool', $tool);
+    }
+
 }
