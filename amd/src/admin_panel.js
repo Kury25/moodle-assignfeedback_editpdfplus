@@ -361,6 +361,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             $("#message_import_axis").addClass("alert-success");
                             $("#message_import_axis").removeClass("alert-danger");
                             $("#message_import_axis").removeClass("alert-warning");
+                            $("#message_import_axis").fadeOut(5000);
                             //maj axe
                             var divAxis = "<div id='editpdlplus_toolbar_"
                                     + toolbar[0].axeid
@@ -368,10 +369,14 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             $('#editpdlplus_toolbars').append(divAxis);
                             var option = new Option(toolbar[0].axelabel, toolbar[0].axeid, true, true);
                             $("#editpdlplus_axes").append(option);
+                            var axeOption = $("#editpdlplus_axes option[value='" + toolbar[0].axeid + "']");
+                            axeOption.data('delete', 1);
+                            var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
+                            btr.addClass("disabled");
                             $('#editpdlplus_tool_item').html("");
                             //maj toolbar
-                            for (var i = 0; i < toolbar.length; i++) {
-                                if (toolbar[i].toolid && toolbar[i].toolid > 0) {
+                            if (toolbar[0].toolid && toolbar[0].toolid > 0) {
+                                for (var i = 0; i < toolbar.length; i++) {
                                     var classButton = "btn-default";
                                     if (toolbar[i].enable !== 1) {
                                         classButton = "";
@@ -400,16 +405,23 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                             + "</button>";
                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                 }
+                            } else {
+                                var axeid = toolbar[0].axeid;
+                                var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
+                                axeOption.data('delete', 0);
+                                var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
+                                btr.removeClass("disabled");
                             }
                             $(".editpdlplus_tool").on("click", refreshToolView);
                             //maj visu
                             $("#editpdlplus_axes").change();
-                            $("a[href^='#collapseadmin2'").click();
+                            $("a[href^='#collapseadmin1'").click();
                         } else {
                             $("#message_import_axis").show();
                             $("#message_import_axis").html(toolbar[0].message);
                             $("#message_import_axis").addClass("alert-danger");
                             $("#message_import_axis").removeClass("alert-success");
+                            $("#message_import_axis").fadeOut(5000);
                         }
                     }).fail(notification.exception);
                 }
