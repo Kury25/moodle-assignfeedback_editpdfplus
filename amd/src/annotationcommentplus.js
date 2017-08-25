@@ -53,8 +53,8 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('width', this.endx - this.x);
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('padding', '0 2px');
-                    $("#" + this.id).css('position', 'absolute');
-                    $("#" + this.id).css('display', 'inline-block');
+                    $("#" + this.id).css('position', 'relative');
+                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -99,7 +99,7 @@ define(['jquery', './annotation'],
                         this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
                     }
                     divdisplay.css('left', this.x + 20);
-                    divdisplay.css('top', this.y);
+                    divdisplay.css('top', this.y - 20);
 
                     this.apply_visibility_annot();
                 } else {

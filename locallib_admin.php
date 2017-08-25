@@ -235,8 +235,10 @@ class assign_feedback_editpdfplus_admin {
                 if ($tool->axis == $ax->id) {
                     if ($tool->enabled == "1") {
                         $tool->button = "btn-default";
+                        $tool->style = "";
                     } else {
                         $tool->button = "";
+                        $tool->style = "background-image:none;background-color:#CCCCCC;";
                     }
                     if ($tool->type == "4") {
                         $tool->label = '| ' . $tool->label . ' |';
@@ -244,7 +246,7 @@ class assign_feedback_editpdfplus_admin {
                         $tool->label = '| ' . $tool->label;
                     }
                     if ($tool->type == "4" || $tool->type == "1") {
-                        $tool->style = "text-decoration: underline;";
+                        $tool->style .= "text-decoration: underline;";
                     }
                     $toolbar->tools[] = $tool;
                     $ax->children++;

@@ -54,7 +54,7 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('opacity', .5);
                     $("#" + this.id).css('position', 'relative');
-                    $("#" + this.id).css('display', 'inline-block');
+                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -99,8 +99,8 @@ define(['jquery', './annotation'],
                     if (!this.cartridgey || this.cartridgey === 0) {
                         this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
                     }
-                    divdisplay.css('left', this.x + this.cartridgex + 17);
-                    divdisplay.css('top', this.y + this.cartridgey);
+                    divdisplay.css('left', this.x + this.cartridgex);
+                    divdisplay.css('top', this.y + this.cartridgey - 15);
 
                     this.apply_visibility_annot();
                 } else {

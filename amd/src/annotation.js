@@ -234,7 +234,7 @@ define(['jquery', './global'],
                 var div = "<div ";
                 div += "id='" + this.divcartridge + "' ";
                 div += "class='assignfeedback_editpdfplus_cartridge' ";
-                div += "style='border-color: " + colorcartridge + ";'> ";
+                div += "style='border-color: " + colorcartridge + ";position:relative;'> ";
                 div += "</div>";
                 if (canevas) {
                     canevas.append(div);

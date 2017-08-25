@@ -57,8 +57,8 @@ define(['jquery', './annotation'],
                     }
                     var divStampComment = "<div id='" + this.id + "'>" + fleche + "</div>";
                     canevas.append(divStampComment);
-                    $("#" + this.id).css('position', 'absolute');
-                    $("#" + this.id).css('display', 'inline-block');
+                    $("#" + this.id).css('position', 'relative');
+                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -126,7 +126,7 @@ define(['jquery', './annotation'],
                         this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
                     }
                     divdisplay.css('left', this.x + this.cartridgex);
-                    divdisplay.css('top', this.y + this.cartridgey - 5);
+                    divdisplay.css('top', this.y + this.cartridgey - 30);
 
                     this.apply_visibility_annot();
                 } else {

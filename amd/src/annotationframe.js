@@ -45,9 +45,9 @@ define(['jquery', './annotation'],
             AnnotationFrame.prototype.initChildAdminDemo = function (annotationparent) {
                 Annotation.prototype.initAdminDemo.call(this, annotationparent.tooltype, annotationparent.tooltypefamille);
                 this.x = 144;
-                this.y = 216;
+                this.y = 192;
                 this.endx = 296;
-                this.endy = 232;
+                this.endy = 208;
                 this.parent_annot = annotationparent.id;
                 this.id = 'previsu_annot_child';
                 this.colour = "#FF0000";
@@ -70,6 +70,7 @@ define(['jquery', './annotation'],
                     //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
+                    $("#" + this.id).css('box-sizing', 'inherit');
                 }
                 this.draw_catridge(canevas);
                 return this;
@@ -143,7 +144,7 @@ define(['jquery', './annotation'],
                             this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
                         }
                         divdisplay.css('left', this.cartridgex + 15);
-                        divdisplay.css('top', this.y + this.cartridgey);
+                        divdisplay.css('top', this.y + this.cartridgey - 12);
 
                         this.apply_visibility_annot();
                     } else {

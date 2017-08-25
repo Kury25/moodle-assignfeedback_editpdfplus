@@ -432,9 +432,14 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
                     $(this).removeClass("btn-default");
+                    $(this).css("background-image","");
+                    $(this).css("background-color","");
                     var enabled = $(this).data('enable');
                     if (enabled === 1 && $(this).val() !== selectid) {
                         $(this).addClass("btn-default");
+                    } else if ($(this).val() !== selectid) {
+                    $(this).css("background-image","none");
+                    $(this).css("background-color","#CCCCCC");
                     }
                 });
                 $(this).addClass("btn-primary");
@@ -512,16 +517,17 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     //var newtool = null;
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var classButton = "btn-default";
+                                                        var style = "";
                                                         if (toolbar[i].enable !== 1) {
                                                             classButton = "";
+                                                            style = "background-image:none;background-color:#CCCCCC;";
                                                         }
                                                         if (toolbar[i].toolid === toolbar[i].selecttool) {
                                                             classButton = "btn-primary";
                                                             //newtool = toolbar[i];
                                                         }
-                                                        var style = "";
                                                         if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                            style = "text-decoration: underline;";
+                                                            style += "text-decoration: underline;";
                                                         }
                                                         var label = toolbar[i].button;
                                                         if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
