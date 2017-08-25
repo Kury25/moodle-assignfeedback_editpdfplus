@@ -21,13 +21,13 @@
  * @module mod_assignfeedback_editpdfplus/admin_panel
  */
 define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
-    'core/ajax', 'core/str', /*'mod_assign/grading_form_change_checker'*/
-    'assignfeedback_editpdfplus/annotation', 'assignfeedback_editpdfplus/annotationhighlightplus',
+    'core/ajax', 'core/str', 'assignfeedback_editpdfplus/tool', 'assignfeedback_editpdfplus/tooltype',
+    'assignfeedback_editpdfplus/annotationhighlightplus',
     'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe',
     'assignfeedback_editpdfplus/annotationcommentplus', 'assignfeedback_editpdfplus/annotationverticalline',
     'assignfeedback_editpdfplus/annotationstampcomment'],
-        function ($/*, Y*/, notification, templates, fragment, ajax, str,
-                Annotation, AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
+        function ($/*, Y*/, notification, templates, fragment, ajax, str, Tool, ToolType,
+                AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
                 AnnotationCommentplus, AnnotationVerticalline, AnnotationStampcomment /*, checker*/) {
 
             var contextid = null;
@@ -42,7 +42,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             var AdminPanel = function (contextidP, typetoolsP) {
                 //this.registerEventListeners();
                 contextid = contextidP;
-                typetools = JSON.parse(typetoolsP);
+                this.initTypeTool(typetoolsP);
                 this.init();
             };
             var annotationcurrent = null;
@@ -57,6 +57,15 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             //AdminPanel.prototype.contextid;
             //
             AdminPanel.prototype.selectTool = null;
+            AdminPanel.prototype.initTypeTool = function (typeToolsP) {
+                var typetoolsTmp = JSON.parse(typeToolsP);
+                typetools = [];
+                for (var i = 0; i < typetoolsTmp.length; i++) {
+                    var typeToolTmp = new ToolType();
+                    typeToolTmp.initAdmin(typetoolsTmp[i]);
+                    typetools[i] = typeToolTmp;
+                }
+            };
             //
             AdminPanel.prototype.init = function () {
                 $("#editpdlplus_axes").on("change", function () {
@@ -80,7 +89,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
 //
                 $(".editpdlplus_tool").on("click", refreshToolView);
                 this.selectTool = $(".editpdlplus_tool").first();
-                this.initTool();
+                this.initToolUI();
                 $("#assignfeedback_editpdfplus_widget_admin_button_addaxis").on("click", this.openDivAddAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_editaxis").on("click", this.openDivEditAxis);
                 $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").on("click", this.openDivDelAxis);
@@ -119,16 +128,16 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 refreshToolView();
             };
             //
-            AdminPanel.prototype.initTool = function () {
+            AdminPanel.prototype.initToolUI = function () {
                 $(this.selectTool).removeClass("btn-default");
                 $(this.selectTool).addClass("btn-primary");
             };
             //
             AdminPanel.prototype.refreshPrevisu = function () {
                 currentTool.typetool = $("#typetool").val();
-                currentTool.color = $("#color").val();
-                currentTool.libelle = $("#libelle").val();
-                currentTool.catridgecolor = $("#cartridgecolor").val();
+                currentTool.colors = $("#color").val();
+                currentTool.cartridge = $("#libelle").val();
+                currentTool.cartridgeColor = $("#cartridgecolor").val();
                 var res = "";
                 $("input[name^='text[']").each(function () {
                     if ($(this).val() && ($(this).val()).length > 0) {
@@ -139,13 +148,13 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $("#texts").val(res.substring(0, res.length - 1));
                 }
                 currentTool.texts = $("#texts").val();
-                currentTool.button = $("#button").val();
+                currentTool.label = $("#button").val();
                 currentTool.enabled = $("#enabled").val();
                 currentTool.reply = 0;
                 if ($("#reply").is(':checked')) {
                     currentTool.reply = 1;
                 }
-                currentTool.order = $("#order").val();
+                currentTool.orderTool = $("#order").val();
                 initCanevas();
                 initToolDisplay();
             };
@@ -162,7 +171,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 var typetoolEntity = getTypeTool(typetool);
                 var confCartridge = false;
                 var confCartridgeColor = false;
-                if (typetoolEntity.configurable_cartridge && parseInt(typetoolEntity.configurable_cartridge) === 0) {
+                if (typetoolEntity.configurableCartridge && parseInt(typetoolEntity.configurableCartridge) === 0) {
                     $("#libelle").hide();
                     $("label[for='libelle']").hide();
                     confCartridge = true;
@@ -170,7 +179,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $("#libelle").show();
                     $("label[for='libelle']").show();
                 }
-                if (typetoolEntity.configurable_cartridge_color && parseInt(typetoolEntity.configurable_cartridge_color) === 0) {
+                if (typetoolEntity.configurableCartridgeColor && parseInt(typetoolEntity.configurableCartridgeColor) === 0) {
                     $("#cartridgecolor").hide();
                     $("label[for='cartridgecolor']").hide();
                     confCartridgeColor = true;
@@ -186,7 +195,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 var confAnnotColor = false,
                         confAnnotTexts = false,
                         confAnnotReply = false;
-                if (typetoolEntity.configurable_color && parseInt(typetoolEntity.configurable_color) === 0) {
+                if (typetoolEntity.configurableColor && parseInt(typetoolEntity.configurableColor) === 0) {
                     $("#color").hide();
                     $("label[for='color']").hide();
                     confAnnotColor = true;
@@ -194,7 +203,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $("#color").show();
                     $("label[for='color']").show();
                 }
-                if (typetoolEntity.configurable_texts && parseInt(typetoolEntity.configurable_texts) === 0) {
+                if (typetoolEntity.configurableTexts && parseInt(typetoolEntity.configurableTexts) === 0) {
                     $(".textform").hide();
                     $("label[for='texts']").hide();
                     confAnnotTexts = true;
@@ -202,7 +211,7 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                     $(".textform").show();
                     $("label[for='texts']").show();
                 }
-                if (typetoolEntity.configurable_question && parseInt(typetoolEntity.configurable_question) === 0) {
+                if (typetoolEntity.configurableQuestion && parseInt(typetoolEntity.configurableQuestion) === 0) {
                     $("#reply").hide();
                     $("label[for='reply']").hide();
                     confAnnotReply = true;
@@ -244,11 +253,12 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 }
                 if (annotationcurrent) {
                     var typetoolEntity = getTypeTool(typetool);
+                    currentTool.type = typetoolEntity;
                     currentTool.reply = 0;
                     if ($("#reply").is(':checked')) {
                         currentTool.reply = 1;
                     }
-                    annotationcurrent.initAdminDemo(currentTool, typetoolEntity);
+                    annotationcurrent.initAdminDemo(currentTool);
                     annotationcurrent.draw($('#canevas'));
                     if (annotChild) {
                         annotChild.initChildAdminDemo(annotationcurrent);
@@ -329,8 +339,6 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
              * @return {Deferred} promise resolved when the animations are complete.
              */
             var fillResultAjax = function (node, html, js) {
-                //alert("tutu");
-                //alert(html+js);
                 var promise = $.Deferred();
                 node.fadeOut("fast", function () {
                     templates.replaceNodeContents(node, html, js);
@@ -377,32 +385,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             //maj toolbar
                             if (toolbar[0].toolid && toolbar[0].toolid > 0) {
                                 for (var i = 0; i < toolbar.length; i++) {
-                                    var classButton = "btn-default";
-                                    if (toolbar[i].enable !== 1) {
-                                        classButton = "";
-                                    }
-                                    var style = "";
-                                    if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                        style = "text-decoration: underline;";
-                                    }
-                                    var label = toolbar[i].button;
-                                    if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                        label = "| " + label;
-                                        if (toolbar[i].typetool === 4) {
-                                            label += " |";
-                                        }
-                                    }
-                                    var buttonTmp = "<button class='btn "
-                                            + classButton
-                                            + " editpdlplus_tool' id='editpdlplus_tool_"
-                                            + toolbar[i].toolid + "' style='"
-                                            + style
-                                            + "' value='"
-                                            + toolbar[i].toolid
-                                            + "' data-enable='"
-                                            + toolbar[i].enable + "'>"
-                                            + label
-                                            + "</button>";
+                                    var toolTmp = new Tool();
+                                    toolTmp.initAdmin(toolbar[i]);
+                                    var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                 }
                             } else {
@@ -432,14 +417,14 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
                     $(this).removeClass("btn-default");
-                    $(this).css("background-image","");
-                    $(this).css("background-color","");
+                    $(this).css("background-image", "");
+                    $(this).css("background-color", "");
                     var enabled = $(this).data('enable');
                     if (enabled === 1 && $(this).val() !== selectid) {
                         $(this).addClass("btn-default");
                     } else if ($(this).val() !== selectid) {
-                    $(this).css("background-image","none");
-                    $(this).css("background-color","#CCCCCC");
+                        $(this).css("background-image", "none");
+                        $(this).css("background-color", "#CCCCCC");
                     }
                 });
                 $(this).addClass("btn-primary");
@@ -454,36 +439,38 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
-                                        currentTool = new Object();
+                                        currentTool = new Tool();
                                         currentTool.id = selectid;
                                         currentTool.typetool = $("#typetool").val();
                                         var typetoolEntity = getTypeTool(currentTool.typetool);
+                                        currentTool.type = typetoolEntity;
                                         var realcolor = $("#realcolor").val();
                                         if (realcolor.length > 0) {
-                                            currentTool.color = $("#color").val();
+                                            currentTool.colors = $("#color").val();
                                         } else {
                                             $("#color").val(typetoolEntity.color);
-                                            currentTool.color = null;
+                                            currentTool.colors = null;
                                         }
-                                        currentTool.libelle = $("#libelle").val();
+                                        currentTool.cartridge = $("#libelle").val();
                                         if ($("#realcartridgecolor").val().length > 0) {
-                                            currentTool.catridgecolor = $("#cartridgecolor").val();
+                                            currentTool.cartridgeColor = $("#cartridgecolor").val();
                                         } else {
                                             $("#cartridgecolor").val(typetoolEntity.cartridge_color);
-                                            currentTool.catridgecolor = null;
+                                            currentTool.cartridgeColor = null;
                                         }
                                         currentTool.texts = $("#texts").val();
-                                        currentTool.button = $("#button").val();
+                                        currentTool.label = $("#button").val();
                                         currentTool.enabled = $("#enabled").val();
                                         currentTool.reply = $("#reply").val();
-                                        currentTool.order = $("#order").val();
+                                        currentTool.orderTool = $("#order").val();
                                         $("#typetool").on("change", function () {
                                             currentTool.typetool = $("#typetool").val();
                                             var typetoolEntity = getTypeTool(currentTool.typetool);
-                                            currentTool.color = typetoolEntity.color;
-                                            currentTool.catridgecolor = typetoolEntity.cartridge_color;
-                                            $("#color").val(currentTool.color);
-                                            $("#cartridgecolor").val(currentTool.catridgecolor);
+                                            currentTool.type = typetoolEntity;
+                                            currentTool.colors = typetoolEntity.color;
+                                            currentTool.cartridgeColor = typetoolEntity.cartridge_color;
+                                            $("#color").val(currentTool.colors);
+                                            $("#cartridgecolor").val(currentTool.cartridgeColor);
                                             initToolDisplay();
                                             initCanevas();
                                         });
@@ -516,37 +503,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                     //var newtool = null;
                                                     for (var i = 0; i < toolbar.length; i++) {
-                                                        var classButton = "btn-default";
-                                                        var style = "";
-                                                        if (toolbar[i].enable !== 1) {
-                                                            classButton = "";
-                                                            style = "background-image:none;background-color:#CCCCCC;";
-                                                        }
-                                                        if (toolbar[i].toolid === toolbar[i].selecttool) {
-                                                            classButton = "btn-primary";
-                                                            //newtool = toolbar[i];
-                                                        }
-                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                            style += "text-decoration: underline;";
-                                                        }
-                                                        var label = toolbar[i].button;
-                                                        if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                                            label = "| " + label;
-                                                            if (toolbar[i].typetool === 4) {
-                                                                label += " |";
-                                                            }
-                                                        }
-                                                        var buttonTmp = "<button class='btn "
-                                                                + classButton
-                                                                + " editpdlplus_tool' id='editpdlplus_tool_"
-                                                                + toolbar[i].toolid + "' style='"
-                                                                + style
-                                                                + "' value='"
-                                                                + toolbar[i].toolid
-                                                                + "' data-enable='"
-                                                                + toolbar[i].enable + "'>"
-                                                                + label
-                                                                + "</button>";
+                                                        var toolTmp = new Tool();
+                                                        toolTmp.initAdmin(toolbar[i]);
+                                                        var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
@@ -599,35 +558,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                         if (parseInt(toolbar[0].toolid) > 0) {
                                                             for (var i = 0; i < toolbar.length; i++) {
-                                                                var classButton = "btn-default";
-                                                                if (toolbar[i].enable !== 1) {
-                                                                    classButton = "";
-                                                                }
-                                                                if (toolbar[i].toolid === toolbar[i].selecttool) {
-                                                                    classButton = "btn-primary";
-                                                                }
-                                                                var style = "";
-                                                                if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                                    style = "text-decoration: underline;";
-                                                                }
-                                                                var label = toolbar[i].button;
-                                                                if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                                                    label = "| " + label;
-                                                                    if (toolbar[i].typetool === 4) {
-                                                                        label += " |";
-                                                                    }
-                                                                }
-                                                                var buttonTmp = "<button class='btn "
-                                                                        + classButton
-                                                                        + " editpdlplus_tool' id='editpdlplus_tool_"
-                                                                        + toolbar[i].toolid + "' style='"
-                                                                        + style
-                                                                        + "' value='"
-                                                                        + toolbar[i].toolid
-                                                                        + "' data-enable='"
-                                                                        + toolbar[i].enable + "'>"
-                                                                        + label
-                                                                        + "</button>";
+                                                                var toolTmp = new Tool();
+                                                                toolTmp.initAdmin(toolbar[i]);
+                                                                var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
                                                                 $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                             }
                                                             $(".editpdlplus_tool").on("click", refreshToolView);
@@ -657,7 +590,6 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         initToolDisplay();
                                     }.bind(this)).fail(notification.exception);
                             //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
-                            //alert("jdikdi");
                             //$(".editpdlplus_tool").on("click", this.refreshToolView);
                             //}.bind(this))/*.fail(notification.exception)*/;
                         }.bind(this)).fail(notification.exception);
@@ -677,25 +609,26 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                         $("#canevas").hide();
                                         if (action === "clone") {
                                             $("#typetool").val(currentTool.typetool);
-                                            $("#color").val(currentTool.color);
-                                            $("#libelle").val(currentTool.libelle);
-                                            $("#cartridgecolor").val(currentTool.catridgecolor);
+                                            $("#color").val(currentTool.colors);
+                                            $("#libelle").val(currentTool.cartridge);
+                                            $("#cartridgecolor").val(currentTool.cartridgeColor);
                                             $("#texts").val(currentTool.texts);
-                                            $("#button").val(currentTool.button);
+                                            $("#button").val(currentTool.label);
                                             $("#enabled").val(currentTool.enabled);
                                             $("#reply").val(currentTool.reply);
-                                            $("#order").val(currentTool.order);
-                                            currentTool = new Object();
+                                            $("#order").val(currentTool.orderTool);
+                                            currentTool = new Tool();
                                             action = null;
                                         } else {
-                                            currentTool = new Object();
+                                            currentTool = new Tool();
                                             $("#typetool").on("change", function () {
                                                 currentTool.typetool = $("#typetool").val();
                                                 var typetoolEntity = getTypeTool(currentTool.typetool);
-                                                currentTool.color = typetoolEntity.color;
-                                                currentTool.catridgecolor = typetoolEntity.cartridge_color;
-                                                $("#color").val(currentTool.color);
-                                                $("#cartridgecolor").val(currentTool.catridgecolor);
+                                                currentTool.type = typetoolEntity;
+                                                currentTool.colors = typetoolEntity.color;
+                                                currentTool.cartridgeColor = typetoolEntity.cartridge_color;
+                                                $("#color").val(currentTool.colors);
+                                                $("#cartridgecolor").val(currentTool.cartridgeColor);
                                                 initToolDisplay();
                                             });
                                             $("#typetool").change();
@@ -736,35 +669,9 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                                                         //mise à jour bar d'outils
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                         for (var i = 0; i < toolbar.length; i++) {
-                                                            var classButton = "btn-default";
-                                                            if (toolbar[i].enable !== 1) {
-                                                                classButton = "";
-                                                            }
-                                                            if (toolbar[i].toolid === toolbar[i].selecttool) {
-                                                                classButton = "btn-primary";
-                                                            }
-                                                            var style = "";
-                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 1) {
-                                                                style = "text-decoration: underline;";
-                                                            }
-                                                            var label = toolbar[i].button;
-                                                            if (toolbar[i].typetool === 4 || toolbar[i].typetool === 5) {
-                                                                label = "| " + label;
-                                                                if (toolbar[i].typetool === 4) {
-                                                                    label += " |";
-                                                                }
-                                                            }
-                                                            var buttonTmp = "<button class='btn "
-                                                                    + classButton
-                                                                    + " editpdlplus_tool' id='editpdlplus_tool_"
-                                                                    + toolbar[i].toolid + "' style='"
-                                                                    + style
-                                                                    + "' value='"
-                                                                    + toolbar[i].toolid
-                                                                    + "' data-enable='"
-                                                                    + toolbar[i].enable + "'>"
-                                                                    + label
-                                                                    + "</button>";
+                                                            var toolTmp = new Tool();
+                                                            toolTmp.initAdmin(toolbar[i]);
+                                                            var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
                                                             $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                         }
                                                         $(".editpdlplus_tool").on("click", refreshToolView);

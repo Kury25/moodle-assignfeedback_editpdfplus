@@ -32,8 +32,8 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationVerticalline.prototype = Object.create(Annotation.prototype);
 
-            AnnotationVerticalline.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
-                Annotation.prototype.initAdminDemo.call(this, currentTool, typetoolEntity);
+            AnnotationVerticalline.prototype.initAdminDemo = function (currentTool) {
+                Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 285;
                 this.y = 65;
                 this.endy = 175;
@@ -95,10 +95,10 @@ define(['jquery', './annotation'],
 
                     //positionnement de la div par rapport a l'annotation
                     if (!this.cartridgex || this.cartridgex === 0) {
-                        this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
+                        this.cartridgex = parseInt(this.tooltype.getToolTypeCartX(), 10);
                     }
                     if (!this.cartridgey || this.cartridgey === 0) {
-                        this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
+                        this.cartridgey = parseInt(this.tooltype.getToolTypeCartY(), 10);
                     }
                     divdisplay.css('left', this.x + this.cartridgex);
                     divdisplay.css('top', this.y + this.cartridgey - 109);

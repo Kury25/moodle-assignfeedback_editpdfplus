@@ -42,7 +42,6 @@ define(['jquery', './global'],
             function Annotation() {
                 // Store the private instance id.
                 this._instanceID = getNewInstanceID();
-                $("#tutu").val();
                 // Return this object reference.
                 return(this);
 
@@ -107,19 +106,12 @@ define(['jquery', './global'],
              */
             Annotation.colour = 'red';
             /**
-             * Reference to M.assignfeedback_editpdfplus.tool
+             * Reference to assignfeedback_editpdfplus.tool
              * @property tooltype
-             * @type M.assignfeedback_editpdfplus.tool
+             * @type assignfeedback_editpdfplus.tool
              * @public
              */
             Annotation.tooltype = null;
-            /**
-             * Reference to M.assignfeedback_editpdfplus.type_tool
-             * @property tooltypefamille
-             * @type M.assignfeedback_editpdfplus.type_tool
-             * @public
-             */
-            Annotation.tooltypefamille = null;
             /**
              * id of the annotation in BDD.
              * @property id
@@ -154,20 +146,14 @@ define(['jquery', './global'],
                 this.endy = parseInt(config.endy, 10) || 0;
                 this.path = config.path || '';
                 this.toolid = config.toolid;
-                this.tooltypefamille = this.editor.typetools[this.tooltype.type];
             };
 
-            Annotation.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
+            Annotation.prototype.initAdminDemo = function (currentTool) {
                 this.id = 'previsu_annot';
                 this.displaylock = 1;
                 this.adminDemo = 1;
                 this.tooltype = currentTool;
-                this.tooltypefamille = typetoolEntity;
-                if (currentTool.color) {
-                    this.colour = currentTool.color;
-                } else {
-                    this.colour = typetoolEntity.color;
-                }
+                this.colour = currentTool.get_color();
             };
             /**
              * Draw an annotation
@@ -200,16 +186,13 @@ define(['jquery', './global'],
              * @protected
              */
             Annotation.prototype.get_color_cartridge = function () {
-                var color = global.ANNOTATIONCOLOUR[this.tooltype.catridgecolor];
+                var color = global.ANNOTATIONCOLOUR[this.tooltype.get_color_cartridge()];
                 if (!color) {
-                    color = this.tooltype.catridgecolor;
+                    color = this.tooltype.get_color_cartridge();
                 } else {
                     // Add an alpha channel to the rgb colour.
                     color = color.replace('rgb', 'rgba');
                     color = color.replace(')', ',0.5)');
-                }
-                if (!color || color === '') {
-                    return this.tooltypefamille.cartridge_color;
                 }
                 return color;
             };
@@ -256,14 +239,14 @@ define(['jquery', './global'],
             Annotation.prototype.get_div_cartridge_label = function (colorcartridge, canevas/*, draggable*/) {
                 var divcartridge = "<div ";
                 divcartridge += "id='" + this.divcartridge + "_cartridge' ";
-                divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_cartridge' ";
+                divcartridge += "class='assignfeedback_editpdfplus_" + this.tooltype.getToolTypeLabel() + "_cartridge' ";
                 //if (this.editor.get('readonly') && this.get_valref() === '') {
                 //divcartridge += "style='border-right:none;padding-right:0px;color:" + colorcartridge + ";' ";
                 //} else {
                 divcartridge += "style='border-right-color: " + colorcartridge + ";color:" + colorcartridge + ";' ";
                 //}
                 divcartridge += "> ";
-                divcartridge += this.tooltype.libelle;
+                divcartridge += this.tooltype.cartridge;
                 divcartridge += "</div>";
                 if (canevas) {
                     canevas.append(divcartridge);
@@ -302,7 +285,7 @@ define(['jquery', './global'],
             Annotation.prototype.get_div_edition = function (canevas) {
                 var divedition = "<div ";
                 divedition += "id='" + this.divcartridge + "_edit' ";
-                divedition += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_edition' ";
+                divedition += "class='assignfeedback_editpdfplus_" + this.tooltype.getToolTypeLabel() + "_edition' ";
                 divedition += "style='display:none;'> ";
                 divedition += "<textarea id='"
                         + this.divcartridge
@@ -351,14 +334,14 @@ define(['jquery', './global'],
              */
             Annotation.prototype.get_div_container = function (colorcartridge, canevas) {
                 var divconteneur = "<div ";
-                divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltypefamille.label + "_conteneur' >";
+                divconteneur += "class='assignfeedback_editpdfplus_" + this.tooltype.getToolTypeLabel() + "_conteneur' >";
                 divconteneur += "</div>";
                 if (canevas) {
                     canevas.append(divconteneur);
                 }
-                var divconteneurdisplay = $('.assignfeedback_editpdfplus_' + this.tooltypefamille.label + "_conteneur");
+                var divconteneurdisplay = $('.assignfeedback_editpdfplus_' + this.tooltype.getToolTypeLabel() + "_conteneur");
                 var divinputdisplay = this.get_div_input(colorcartridge, divconteneurdisplay);
-                divinputdisplay.addClass('assignfeedback_editpdfplus_' + this.tooltypefamille.label + '_input');
+                divinputdisplay.addClass('assignfeedback_editpdfplus_' + this.tooltype.getToolTypeLabel() + '_input');
                 var onof = 1;
                 if (this.displaylock || this.displaylock >= 0) {
                     onof = this.displaylock;
@@ -576,7 +559,7 @@ define(['jquery', './global'],
                 if (divdisplay) {
                     divdisplay.html(this.get_text_to_diplay_in_cartridge());
                 }
-                if (this.tooltypefamille.label === 'frame' && buttonplusr) {
+                if (this.tooltype.getToolTypeLabel() === 'frame' && buttonplusr) {
                     buttonplusr.hide();
                     buttonplusl.hide();
                 }

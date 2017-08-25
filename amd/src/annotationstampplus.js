@@ -54,7 +54,7 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('border', '2px solid ' + this.colour);
                     $("#" + this.id).css('padding', '0 2px');
                     $("#" + this.id).css('display', 'inline-block');
-                    $("#" + this.id).append(this.tooltype.button);
+                    $("#" + this.id).append(this.tooltype.label);
                 }
                 return this;
             };

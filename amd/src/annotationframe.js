@@ -32,8 +32,8 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationFrame.prototype = Object.create(Annotation.prototype);
 
-            AnnotationFrame.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
-                Annotation.prototype.initAdminDemo.call(this, currentTool, typetoolEntity);
+            AnnotationFrame.prototype.initAdminDemo = function (currentTool) {
+                Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 279;
                 this.y = 113;
                 this.endx = 435;
@@ -43,7 +43,7 @@ define(['jquery', './annotation'],
             };
 
             AnnotationFrame.prototype.initChildAdminDemo = function (annotationparent) {
-                Annotation.prototype.initAdminDemo.call(this, annotationparent.tooltype, annotationparent.tooltypefamille);
+                Annotation.prototype.initAdminDemo.call(this, annotationparent.tooltype);
                 this.x = 144;
                 this.y = 192;
                 this.endx = 296;
@@ -138,10 +138,10 @@ define(['jquery', './annotation'],
 
                         //positionnement de la div par rapport a l'annotation
                         if (!this.cartridgex || this.cartridgex === 0) {
-                            this.cartridgex = parseInt(this.tooltypefamille.cartridge_x, 10);
+                            this.cartridgex = parseInt(this.tooltype.getToolTypeCartX(), 10);
                         }
                         if (!this.cartridgey || this.cartridgey === 0) {
-                            this.cartridgey = parseInt(this.tooltypefamille.cartridge_y, 10);
+                            this.cartridgey = parseInt(this.tooltype.getToolTypeCartY(), 10);
                         }
                         divdisplay.css('left', this.cartridgex + 15);
                         divdisplay.css('top', this.y + this.cartridgey - 12);
