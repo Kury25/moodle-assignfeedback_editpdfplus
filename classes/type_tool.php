@@ -53,6 +53,24 @@ class type_tool {
     /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridge_y = 0;
 
+    /** @var type */
+    public $configurable = 1;
+
+    /** @var type */
+    public $configurable_cartridge = 1;
+
+    /** @var type */
+    public $configurable_cartridge_color = 1;
+
+    /** @var type */
+    public $configurable_color = 1;
+
+    /** @var type */
+    public $configurable_texts = 1;
+
+    /** @var type */
+    public $configurable_question = 1;
+
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

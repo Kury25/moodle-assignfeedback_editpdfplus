@@ -5,123 +5,192 @@
 <div class="assignfeedback_editpdfplus_widget_admin">                                                                                                             
     <h5>{{# str }} adminsubtitle, assignfeedback_editpdfplus {{/ str }}</h5> 
 
+    <!--div class="panel-group" id="adminAccordion"-->
     <div class="panel panel-default">
         <div class="panel-heading">
-            {{# str }} admincurrenttoolbar, assignfeedback_editpdfplus {{/ str }}
+            <a data-toggle="collapse" href="#collapseadmin1" >Importation axe</a>
         </div>
-        <div class="panel-body">
-            <div class='row'>
-                <div class='col-sm-2'>
-                    <h6>
-                        Axes
-                        <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addaxis">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                        </button>
-                    </h6>
-                </div>
-                <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolheader'>
-                    <h6>Outils <button type="button" class="btn btn-default"><i class="fa fa-plus" aria-hidden="true"></i></button></h6>
-                </div>
-            </div>
-            <div class='row' id='assignfeedback_editpdfplus_widget_admin_workspace'>
-                <div class='col-sm-2'>
-                    <select id='editpdlplus_axes' class='form-control'>
-                        {{# axis }}
-                        <option value="{{id}}">{{label}}</option>
-                        {{/ axis }}
-                    </select>
-                    <div class="panel panel-default" id="axistool">
-                        <div class="panel-body" style="text-align: center;">
-                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_editaxis">
-                                <i class="fa fa-pencil" aria-hidden="true"></i>
-                            </button>
-                            <button type="button" class="btn btn-default"><i class="fa fa-remove" aria-hidden="true"></i></button>
-                        </div>
-                    </div>
-                    <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis">
-                        <div class="panel-body"></div>
-                    </div>
-                    <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis">
-                        <div class="panel-body"></div>
-                    </div>
-                </div>
-                <div class='col-sm-10'>
-                    {{# toolbars }}
-                    <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
-                        {{# tools }}
-                        <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">{{label}}</button>
-                        {{/ tools }}
-                    </div>
-                    {{/ toolbars }}
-
-                    <div id="editpdlplus_tool_item" style="margin-top: 10px;">
-                        <div class='row' style="margin-bottom: 10px;">
-                            <div class='col-sm-1'>
-                                <div id="editpdlplus_tool_label"></div>
-                            </div>
-                            <div class='col-sm-offset-2 col-sm-5'>
-                                <button type="button" class="btn btn-default"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-                                <button type="button" class="btn btn-default"><i class="fa fa-clone" aria-hidden="true"></i></button>
-                                <button type="button" class="btn btn-default"><i class="fa fa-eye-slash" aria-hidden="true"></i></button>
-                                <button type="button" class="btn btn-default"><i class="fa fa-remove" aria-hidden="true"></i></button>
-
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-sm-6'>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse1">Type d'outil</a>
-                                    </div>
-                                    <div id="collapse1" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            yt
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse2">Affichage barre d'outil</a>
-                                    </div>
-                                    <div id="collapse2" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            fddr
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <i class="fa fa-address-card-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse3">Cartouche</a>
-                                    </div>
-                                    <div id="collapse3" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            -
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;<a data-toggle="collapse" href="#collapse4">Annotation</a>
-                                    </div>
-                                    <div id="collapse4" class="panel-collapse collapse">
-                                        <div class="panel-body">
-                                            -
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class='col-sm-6'>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div id="collapseadmin1" class="panel-collapse collapse">
+            <div class="panel-body">
+                Axes disponibles à l'importation
+                {{{ axisimportform.render }}}
+                <input type="hidden" id="courseid" value="{{courseid}}" />
+                <table class='table table-bordered table-striped'>
+                    <thead>
+                        <tr>
+                            <!--th>Cours / activité</th-->
+                            <th>Nom</th>
+                            <th>Outils</th>
+                            <th>Importer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{# toolbarsDispo }}
+                        <tr>
+                            <!--td></td-->
+                            <td>{{axis.label}}</td>
+                            <td>
+                                {{# tools }}
+                                <button class="btn btn-default" style="{{style}}">
+                                    {{label}}
+                                </button>
+                                {{/ tools }}
+                            </td>
+                            <td><button class='btn btn-primary btn-sm btnimport' data-axis='{{axis.id}}'><i class='fa fa-download'></i></button></td>
+                        </tr>
+                        {{/ toolbarsDispo }}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <a data-toggle="collapse" href="#collapseadmin2">{{# str }} admincurrenttoolbar, assignfeedback_editpdfplus {{/ str }}</a>
+        </div>
+        <div class="panel-body">
+            <div id="message_import_axis" class="alert" style="display:none;"></div>
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 17%">
+                        <h6>
+                            {{# str }} adminaxis, assignfeedback_editpdfplus {{/ str }}
+                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addaxis">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </h6>
+                    </td>
+                    <td id='assignfeedback_editpdfplus_widget_admin_toolheader' style="padding-left: 20px;">
+                        <h6>
+                            {{# str }} admintools, assignfeedback_editpdfplus {{/ str }}
+                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addtool">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </h6>
+                    </td>
+                </tr>
+                <!--div class='row'>
+                    <div class='col-sm-2'>
+                        <h6>
+                            {{# str }} adminaxis, assignfeedback_editpdfplus {{/ str }}
+                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addaxis">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </h6>
+                    </div>
+                    <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolheader'>
+                        <h6>
+                            {{# str }} admintools, assignfeedback_editpdfplus {{/ str }}
+                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addtool">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </button>
+                        </h6>
+                    </div>
+                </div-->
+                <tr id='assignfeedback_editpdfplus_widget_admin_workspace'>
+                    <td style="vertical-align: top;">
+                        <select id='editpdlplus_axes' class='form-control'>
+                            {{# axis }}
+                            <option value="{{id}}" data-delete="{{children}}">{{label}}</option>
+                            {{/ axis }}
+                        </select>
+                        <div class="panel panel-default" id="axistool">
+                            <div class="panel-body" style="text-align: center;">
+                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_editaxis">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_delaxis">
+                                    <i class="fa fa-remove" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </td>
+                    <td id='assignfeedback_editpdfplus_widget_admin_toolworkspace' style="padding-left: 20px;vertical-align: top;">
+                        <div id='editpdlplus_toolbars'>
+                            {{# toolbars }}
+                            <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
+                                {{# tools }}
+                                <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
+                                    {{label}}
+                                </button>
+                                {{/ tools }}
+                            </div>
+                            {{/ toolbars }}
+                        </div>
+
+                        <div class="alert" id="message_edit_tool" style="margin-top: 10px;margin-bottom: 0px;display: none;width: 50%;"></div>
+
+                        <div id="editpdlplus_tool_item" style="margin-top: 15px;"></div>
+                    </td>
+                    <td>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                    </td>
+                </tr>
+                <!--div class='row' id='assignfeedback_editpdfplus_widget_admin_workspace'>
+                    <div class='col-sm-2'>
+                        <select id='editpdlplus_axes' class='form-control'>
+                            {{# axis }}
+                            <option value="{{id}}" data-delete="{{children}}">{{label}}</option>
+                            {{/ axis }}
+                        </select>
+                        <div class="panel panel-default" id="axistool">
+                            <div class="panel-body" style="text-align: center;">
+                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_editaxis">
+                                    <i class="fa fa-pencil" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_delaxis">
+                                    <i class="fa fa-remove" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolworkspace'>
+                        <div id='editpdlplus_toolbars'>
+                            {{# toolbars }}
+                            <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
+                                {{# tools }}
+                                <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
+                                    {{label}}
+                                </button>
+                                {{/ tools }}
+                            </div>
+                            {{/ toolbars }}
+                        </div>
+
+                        <div class="alert col-sm-5" id="message_edit_tool" style="margin-top: 10px;margin-bottom: 0px;display: none;"></div>
+
+                        <div id="editpdlplus_tool_item" class="alert col-sm-12" style="margin-top: 0px;"></div>
+
+                    </div>
+                    <div class='col-sm-10'>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                        <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis" style="display:none;">
+                            <div class="panel-body"></div>
+                        </div>
+                    </div>
+                </div-->
+            </table>
+        </div>
+    </div>
+    <!--/div-->
 </div>
 
 {{# js }}
 require(['assignfeedback_editpdfplus/admin_panel'], function(AdminPanel) {
-var adminpanel = new AdminPanel({{context.id}});
+var adminpanel = new AdminPanel({{context.id}},'{{{toollibs}}}');
 });
 {{/ js }}

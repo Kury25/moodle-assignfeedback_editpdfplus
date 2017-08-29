@@ -33,3 +33,7 @@ $settings->add(new admin_setting_heading('pathtogs', get_string('pathtogs', 'adm
 $url = new moodle_url('/mod/assign/feedback/editpdfplus/testgs.php');
 $link = html_writer::link($url, get_string('testgs', 'assignfeedback_editpdfplus'));
 $settings->add(new admin_setting_heading('testgs', '', $link));
+
+//$settings->add(new admin_setting_configtext("unsetting", "le nom ici", "description", 50, PARAM_INT, 20));
+
+//get_config("ass:::", "unsetting")

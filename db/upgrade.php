@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+use assignfeedback_editpdfplus\type_tool;
+
 /**
  * EditPDF upgrade code
  * @param int $oldversion
@@ -34,15 +36,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
     $dbman = $DB->get_manager();
 
-    // Moodle v2.8.0 release upgrade line.
-    // Put any upgrade step following this.
-
-    // Moodle v2.9.0 release upgrade line.
-    // Put any upgrade step following this.
-
     // Moodle v3.0.0 release upgrade line.
-    // Put any upgrade step following this.
-
     if ($oldversion < 2016021600) {
 
         // Define table assignfeedback_editpdfplus_queue to be created.
@@ -65,12 +59,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016021600, 'assignfeedback', 'editpdfplus');
     }
 
-    // Moodle v3.1.0 release upgrade line.
-    // Put any upgrade step following this.
-
     // Automatically generated Moodle v3.2.0 release upgrade line.
-    // Put any upgrade step following this.
-
     if ($oldversion < 2017022700) {
 
         // Get orphaned, duplicate files and delete them.
@@ -85,6 +74,143 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
 
         // Editpdf savepoint reached.
         upgrade_plugin_savepoint(true, 2017022700, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2017071202) {
+
+        $table = new xmldb_table('assignfeedback_editpp_typet');
+        $field = new xmldb_field('configurable', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $record1 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'highlight'), '*', MUST_EXIST);
+        $typeTool1 = new type_tool($record1);
+        $typeTool1->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool1);
+        $record2 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'oval'), '*', MUST_EXIST);
+        $typeTool2 = new type_tool($record2);
+        $typeTool2->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool2);
+        $record3 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'rectangle'), '*', MUST_EXIST);
+        $typeTool3 = new type_tool($record3);
+        $typeTool3->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool3);
+        $record4 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'line'), '*', MUST_EXIST);
+        $typeTool4 = new type_tool($record4);
+        $typeTool4->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool4);
+        $record5 = $DB->get_record('assignfeedback_editpp_typet', array('label' => 'pen'), '*', MUST_EXIST);
+        $typeTool5 = new type_tool($record5);
+        $typeTool5->configurable = 0;
+        $DB->update_record('assignfeedback_editpp_typet', $typeTool5);
+
+        // Editpdf savepoint reached.
+        upgrade_plugin_savepoint(true, 2017071202, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2017081306) {
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET color = :htmlcolor
+                 WHERE color = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#FF0000',
+            'textcolor' => 'red'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#FFA500',
+            'textcolor' => 'orange'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#008000',
+            'textcolor' => 'green'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET colors = :htmlcolor
+                 WHERE colors = :textcolor";
+        // Update query params.
+        $params = [
+            'htmlcolor' => '#0000FF',
+            'textcolor' => 'blue'
+        ];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+
+        // Editpdf savepoint reached.
+        upgrade_plugin_savepoint(true, 2017081306, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2017081601) {
+        $table = new xmldb_table('assignfeedback_editpp_typet');
+        $field = new xmldb_field('configurable_cartridge', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('configurable_cartridge_color', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('configurable_color', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('configurable_texts', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        $field = new xmldb_field('configurable_question', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, 1);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET configurable_cartridge = 0,
+                   configurable_cartridge_color = 0,
+                   configurable_texts = 0,
+                   configurable_question = 0
+                 WHERE id = 3";
+        // Update query params.
+        $params = [];
+        // Execute DB update for assign instances.
+        $DB->execute($sql, $params);
+
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET configurable_cartridge_color = 0,
+                   configurable_color = 0
+                 WHERE id = 4";
+        // Execute DB update for assign instances.
+        $DB->execute($sql, []);
+
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET configurable_color = 0,
+                   configurable_texts = 0
+                 WHERE id = 7";
+        // Execute DB update for assign instances.
+        $DB->execute($sql, []);
+
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET configurable_color = 0
+                 WHERE id = 6";
+        // Execute DB update for assign instances.
+        $DB->execute($sql, []);
+
+        // Editpdf savepoint reached.
+        upgrade_plugin_savepoint(true, 2017081601, 'assignfeedback', 'editpdfplus');
     }
 
     return true;

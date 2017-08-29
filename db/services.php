@@ -30,8 +30,8 @@ $functions = array(
         'description' => 'Test add axis',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
     'assignfeedback_editpdfplus_submit_axis_edit_form' => array(
@@ -41,8 +41,63 @@ $functions = array(
         'description' => 'Edit an axis',
         'type' => 'write',
         'ajax' => true,
-        'requiredcapability' => 'mod/assignfeedback_editpdfplus:use',
-        'enabled'=>1,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_axis_del_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_axis_del_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Remove an axis',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_tool_edit_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_tool_edit_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Edit a tool',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_tool_add_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_tool_add_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Add a tool',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_tool_del_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_tool_del_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Remove a tool',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_axis_import_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_axis_import_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Import an axis with its tools',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     )
 );

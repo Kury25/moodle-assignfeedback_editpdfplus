@@ -167,7 +167,7 @@ if ($action === 'pollconversions') {
     }
 
     if ($refresh) {
-        $teachers = get_users_by_capability($context, 'mod/assignfeedback_editpdfplus:notify');
+        $teachers = get_users_by_capability($context, 'assignfeedback/editpdfplus:notify');
         $contextb = $assignment->get_context();
         $course = $assignment->get_course();
         $coursemodule = $assignment->get_course_module();

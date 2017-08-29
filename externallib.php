@@ -31,6 +31,8 @@ require_once("locallib.php");
 require_once("locallib_admin.php");
 
 use \assignfeedback_editpdfplus\form\axis_form;
+use \assignfeedback_editpdfplus\form\axis_del_form;
+use \assignfeedback_editpdfplus\form\axis_import_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
 class assignfeedback_editpdfplus_external extends external_api {
@@ -81,23 +83,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         if ($validateddata) {
             if ($validateddata->axeid) {
                 admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
-                /* $axisTot = admin_editor::get_axis($context->id);
-                  $res = array();
-                  $res[]=array('axeid' => $validateddata->axeid, 'axelabel' => $validateddata->label);
-                  foreach ($axisTot as $axetmp) {
-                  $res[]=array('axeid' => $axetmp->id, 'axelabel' => $axetmp->label);
-                  }
-                  return $res; */
                 $axeid = $validateddata->axeid;
                 return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
             } else {
                 $axeid = admin_editor::add_axis($validateddata->label, $context->id);
-                //return array(array('itemid' => $axeid),array('item' => $validateddata->label));
-                //return array('axe' => array('axeid' => $axeid, 'axelabel' => $validateddata->label));
                 return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
             }
         } else {
-            $warnings[] = array('message' => 'erreur à l enregistrement');
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
 
@@ -115,6 +108,416 @@ class assignfeedback_editpdfplus_external extends external_api {
             'axeid' => new external_value(PARAM_INT, 'axis id'),
             'axelabel' => new external_value(PARAM_TEXT, 'axis label'),
             'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_axis_del_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_axis_del_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+        $serialiseddata = json_decode($params['jsonformdata']);
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+        $formparams = array($customdata);
+
+        // Data is injected into the form by the last param for the constructor.
+        $mform = new axis_del_form(null, $formparams, 'post', '', null, true, $data);
+        $validateddata = $mform->get_data();
+
+        if ($validateddata) {
+            if ($validateddata->axeid && admin_editor::del_axis($validateddata->axeid)) {
+                $message = "1";
+                return array(array('message' => $message));
+            }
+        } else {
+            $message = get_string('admindeltool_messageko', 'assignfeedback_editpdfplus');
+            $warnings[] = array('message' => $message);
+        }
+
+
+        return $warnings;
+    }
+
+    /* public static function submit_axis_form_returns() {
+      return new external_warnings();
+      } */
+
+    public static function submit_axis_del_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_tool_edit_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_tool_edit_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+        //$formparams = array($customdata);
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey && $customdata->toolid) {
+            $tool = admin_editor::edit_tool($customdata);
+            if ($tool) {
+                $tools = admin_editor::get_tools_by_axis($tool->axis);
+                $res = array();
+                foreach ($tools as $toolTmp) {
+                    $res[] = array('axeid' => $tool->axis, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                }
+                return $res;
+            } else {
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+            }
+        } else {
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+        }
+
+        /* if ($validateddata) {
+          if ($validateddata->axeid) {
+          admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
+          $axeid = $validateddata->axeid;
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          } else {
+          $axeid = admin_editor::add_axis($validateddata->label, $context->id);
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          }
+          } */
+
+
+        return $warnings;
+    }
+
+    public static function submit_tool_edit_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'axeid' => new external_value(PARAM_INT, 'axe id'),
+            'selecttool' => new external_value(PARAM_INT, 'tool id'),
+            'enable' => new external_value(PARAM_INT, 'tool enable'),
+            'toolid' => new external_value(PARAM_INT, 'tool id'),
+            'typetool' => new external_value(PARAM_INT, 'tool type'),
+            'button' => new external_value(PARAM_TEXT, 'tool label'),
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_tool_add_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_tool_add_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey) {
+            $tool = admin_editor::add_tool($customdata, $context->id);
+            if ($tool) {
+                $tools = admin_editor::get_tools_by_axis($tool->axis);
+                $res = array();
+                foreach ($tools as $toolTmp) {
+                    $res[] = array('axeid' => $tool->axis, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                }
+                return $res;
+            } else {
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+            }
+        } else {
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+        }
+
+        /* if ($validateddata) {
+          if ($validateddata->axeid) {
+          admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
+          $axeid = $validateddata->axeid;
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          } else {
+          $axeid = admin_editor::add_axis($validateddata->label, $context->id);
+          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
+          }
+          } */
+
+
+        return $warnings;
+    }
+
+    public static function submit_tool_add_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'axeid' => new external_value(PARAM_INT, 'axe id'),
+            'selecttool' => new external_value(PARAM_INT, 'tool id'),
+            'enable' => new external_value(PARAM_INT, 'tool enable'),
+            'toolid' => new external_value(PARAM_INT, 'tool id'),
+            'typetool' => new external_value(PARAM_INT, 'tool type'),
+            'button' => new external_value(PARAM_TEXT, 'tool label'),
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_tool_del_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_tool_del_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey) {
+            $axisid = $customdata->axisid;
+            if (admin_editor::del_tool($customdata, $context->id)) {
+                $res = array();
+                $tools = admin_editor::get_tools_by_axis($axisid);
+                if (sizeof($tools) > 0) {
+                    foreach ($tools as $toolTmp) {
+                        $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                    }
+                } else {
+                    $res[] = array('axeid' => $axisid, 'selecttool' => -1, 'toolid' => -1, 'message' => '1');
+                }
+                return $res;
+            } else {
+                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+            }
+        } else {
+            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+        }
+
+        return $warnings;
+    }
+
+    public static function submit_tool_del_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'axeid' => new external_value(PARAM_INT, 'axe id'),
+            'selecttool' => new external_value(PARAM_INT, 'tool id'),
+            'enable' => new external_value(PARAM_INT, 'tool enable', VALUE_OPTIONAL),
+            'toolid' => new external_value(PARAM_INT, 'tool id'),
+            'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
+            'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL),
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_axis_import_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    public static function submit_axis_import_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_axis_import_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+        $formparams = array($customdata);
+
+        // Data is injected into the form by the last param for the constructor.
+        $mform = new axis_import_form(null, $formparams, 'post', '', null, true, $data);
+        $validateddata = $mform->get_data();
+
+        if ($validateddata && $validateddata->axeid) {
+            $axeToImport = admin_editor::getAxisById($validateddata->axeid);
+            $axeNew = admin_editor::import_axis($axeToImport, $context->id);
+            if ($axeNew) {
+                $tools = admin_editor::get_tools_by_axis($axeToImport->id);
+                //$toolsNew = array();
+                foreach ($tools as $toolToImport) {
+                    admin_editor::import_tool($toolToImport, $axeNew, $context->id);
+                }
+                //$res = array('axeid' => $axeNew, 'axelabel' => $axeToImport->label);
+                $res = array();
+                $toolsNew = admin_editor::get_tools_by_axis($axeNew);
+                if (sizeof($toolsNew) > 0) {
+                    foreach ($toolsNew as $tool) {
+                        $res[] = array('axeid' => $axeNew, 'axelabel' => $axeToImport->label, 'message' => "", 'enable' => $tool->enabled, 'toolid' => $tool->id, 'typetool' => $tool->type, 'button' => $tool->label, 'message' => '');
+                    }
+                } else {
+                    $res = array(array('axeid' => $axeNew, 'axelabel' => $axeToImport->label, 'message' => ""));
+                }
+
+                return $res;
+            }
+        }
+
+        $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+        return $warnings;
+    }
+
+    /* public static function submit_axis_form_returns() {
+      return new external_warnings();
+      } */
+
+    public static function submit_axis_import_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            'axeid' => new external_value(PARAM_INT, 'axis id', VALUE_OPTIONAL),
+            'axelabel' => new external_value(PARAM_TEXT, 'axis label', VALUE_OPTIONAL),
+            'message' => new external_value(PARAM_TEXT, 'message'),
+            'enable' => new external_value(PARAM_INT, 'tool enable', VALUE_OPTIONAL),
+            'toolid' => new external_value(PARAM_INT, 'tool id', VALUE_OPTIONAL),
+            'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
+            'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL)
                 )
                 )
         );

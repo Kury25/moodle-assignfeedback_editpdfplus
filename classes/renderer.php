@@ -266,23 +266,23 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $toolbarCostum = array();
             $axis = array();
             foreach ($widget->toolbars as $toolbar) {
-                $axis[] = $toolbar['label'];
+                $axis[$toolbar['axeid']] = $toolbar['label'];
                 $toolbartmp = '';
                 foreach ($toolbar['tool'] as $tool) {
                     if ($tool->enabled) {
                         $toolbartmp .= $this->render_toolbar_button('', '', $tool);
                     }
                 }
-                $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $tool->axis, 'style' => 'display:none;'));
+                $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
             }
-            usort($axis, function($a, $b) {
-                $al = substr($a, 4, 5);
-                $bl = substr($b, 4, 5);
-                if ($al == $bl) {
-                    return 0;
-                }
-                return ($al > $bl) ? +1 : -1;
-            });
+            /* usort($axis, function($a, $b) {
+              $al = substr($a, 4, 5);
+              $bl = substr($b, 4, 5);
+              if ($al == $bl) {
+              return 0;
+              }
+              return ($al > $bl) ? +1 : -1;
+              }); */
             $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
             foreach ($toolbarCostum as $toolbarCostumUnit) {
                 $toolbarCostumdiv .= $toolbarCostumUnit;
@@ -383,9 +383,20 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     public function render_assignfeedback_editpdfplus_widget_admin(assignfeedback_editpdfplus\widget_admin $widget) {
         return $this->render_from_template('assignfeedback_editpdfplus/admin', $widget);
     }
-    
-    public function render_assignfeedback_editpdfplus_widget_admin_axisform(moodleform $form){
+
+    public function render_assignfeedback_editpdfplus_widget_admin_axisform(moodleform $form) {
         return $this->render_from_template('assignfeedback_editpdfplus/axis_form', $form);
+    }
+
+    public function render_assignfeedback_editpdfplus_widget_admin_axisdelform(moodleform $form) {
+        return $this->render_from_template('assignfeedback_editpdfplus/axis_del_form', $form);
+    }
+
+    public function render_assignfeedback_editpdfplus_widget_admin_toolform($data) {
+        $data->map01 = $this->pix_url('map01', 'assignfeedback_editpdfplus');
+        $data->map02 = $this->pix_url('map02', 'assignfeedback_editpdfplus');
+        $data->map03 = $this->pix_url('map03', 'assignfeedback_editpdfplus');
+        return $this->render_from_template('assignfeedback_editpdfplus/tool_form', $data);
     }
 
 }

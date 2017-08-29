@@ -49,7 +49,7 @@ See this <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/c
 An administrator profile will be able to give to a course the right to use this plugin or not.
 
  1. Go to the course (or course category) permissions settings
- 2. Look for the ***mod/assignfeedback_editpdfplus:use*** capability
+ 2. Look for the ***assignfeedback/editpdfplus:use*** capability
  3. Add the manager, teacher and student roles to it
 
 The 'Annotate PDF advanced' plugin will then be used in place of the standard 'Annotate PDF' plugin in the corresponding course (or course category), or wherever you give users this capability.

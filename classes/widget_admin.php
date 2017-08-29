@@ -59,12 +59,14 @@ class widget_admin implements renderable, templatable {
      * @param tool[] $toolbars - the different tool to display
      * @param axis[] $axis - the different axis to display
      */
-    public function __construct($context, $course, $userid, $toolbars, $axis) {
+    public function __construct($context, $course, $userid, $toolbars, $axis, $typetools, $toolbarsDispo) {
         $this->context = $context;
         $this->course = $course;
         $this->userid = $userid;
         $this->toolbars = $toolbars;
         $this->axis = $axis;
+        $this->toollibs = json_encode($typetools);
+        $this->toolbarsDispo = $toolbarsDispo;
     }
 
     public function export_for_template(\renderer_base $output) {

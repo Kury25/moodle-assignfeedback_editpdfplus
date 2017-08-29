@@ -65,5 +65,5 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', 'stamps', 'gradeid');
         return $subplugin;
     }
-
+    
 }

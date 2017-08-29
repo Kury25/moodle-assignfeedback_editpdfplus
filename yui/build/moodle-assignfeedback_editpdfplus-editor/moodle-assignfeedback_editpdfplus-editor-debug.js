@@ -5594,7 +5594,7 @@ EDITOR.prototype = {
             toolbar.hide();
         }, this);
         var axisselector = this.get_dialogue_element(SELECTOR.AXISCUSTOMTOOLBAR + ' option:checked');
-        var axisid = parseInt(axisselector.get('value'), 10) + 1;
+        var axisid = parseInt(axisselector.get('value'), 10);
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
