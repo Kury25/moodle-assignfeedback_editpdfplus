@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -45,7 +46,9 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginwrapper = new backup_nested_element($this->get_recommended_name());
         $subpluginelementfiles = new backup_nested_element('feedback_editpdfplus_files', null, array('gradeid'));
         $subpluginelementannotations = new backup_nested_element('feedback_editpdfplus_annotations');
-        $subpluginelementannotation = new backup_nested_element('feedback_editpdfplus_annotation', null, array('gradeid', 'pageno', 'type', 'x', 'y', 'endx', 'endy', 'colour', 'path', 'draft'));
+        $subpluginelementannotation = new backup_nested_element(
+                'feedback_editpdfplus_annotation', null, array('gradeid', 'pageno', 'x', 'y', 'endx', 'endy', 'cartridgex', 'cartridgey', 'path', 'toolid', 'textannot', 'colour', 'draft', 'answerrequested', 'studentanswer', 'studentstatus', 'displaylock', 'displayrotation', 'borderstyle', 'parent_annot')
+        );
 
         // Connect XML elements into the tree.
         $subplugin->add_child($subpluginwrapper);
@@ -57,10 +60,8 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginelementfiles->set_source_sql('SELECT id AS gradeid from {assign_grades} where id = :gradeid', array('gradeid' => backup::VAR_PARENTID));
         $subpluginelementannotation->set_source_table('assignfeedback_editpp_annot', array('gradeid' => backup::VAR_PARENTID));
         // We only need to backup the files in the final pdf area, and the readonly page images - the others can be regenerated.
-        $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus',
-            \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, 'gradeid');
-        $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus',
-            \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, 'gradeid');
+        $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, 'gradeid');
+        $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, 'gradeid');
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', 'stamps', 'gradeid');
         return $subplugin;
     }
