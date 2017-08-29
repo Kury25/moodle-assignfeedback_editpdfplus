@@ -30,11 +30,13 @@
                             <!--td></td-->
                             <td>{{axis.label}}</td>
                             <td>
-                                {{# tools }}
-                                <button class="btn btn-default" style="{{style}}">
-                                    {{label}}
-                                </button>
-                                {{/ tools }}
+                                <div class="btn-group">
+                                    {{# tools }}
+                                    <button class="btn btn-default" style="{{style}}">
+                                        {{label}}
+                                    </button>
+                                    {{/ tools }}
+                                </div>
                             </td>
                             <td><button class='btn btn-primary btn-sm btnimport' data-axis='{{axis.id}}'><i class='fa fa-download'></i></button></td>
                         </tr>

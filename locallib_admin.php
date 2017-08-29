@@ -139,7 +139,7 @@ class assign_feedback_editpdfplus_admin {
         $data = new stdClass;
         $data->courseid = $this->course->id;
         $data->sesskey = sesskey();
-        $data->actionurl = "http://localhost/moodle33/moodle/lib/ajax/service.php";
+        $data->actionurl = "/moodle/lib/ajax/service.php";
         $data->formid = "assignfeedback_editpdfplus_edit_tool";
         if ($toolid != null) {
             $data->tool = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
