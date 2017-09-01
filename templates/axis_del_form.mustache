@@ -1,5 +1,29 @@
 {{!
-    @template assignfeedback_editpdfplus/axis_form
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template assignfeedback_editpdfplus/axis_del_form
+
+    Admin template for remove one axis.
+
+    Context variables required for this template:
+    * courseid - Course id
+    * title - Title of the page (add or edit)
+    * render - form render for removing the axis
+    * id - form id
 }}
 
 <div class="panel panel-default">
@@ -7,10 +31,10 @@
         {{title}}
     </div>
     <div class="panel-body" style="text-align: center;">
-        <p>Êtes-vous sûr de supprimer l'axe sélectionné ?</p>
+        <p>{{# str }} adminaxisdelete_question, assignfeedback_editpdfplus {{/ str }}</p>
         {{{render}}}
-        <button type="button" class="btn btn-primary" id="axisDelSubmit">Oui</button>
-        <button type="button" class="btn btn-default" id="axisDelCancel">Non</button>
+        <button type="button" class="btn btn-primary" id="axisDelSubmit">{{# str }} adminaxisdelete_ok, assignfeedback_editpdfplus {{/ str }}</button>
+        <button type="button" class="btn btn-default" id="axisDelCancel">{{# str }} adminaxisdelete_ko, assignfeedback_editpdfplus {{/ str }}</button>
     </div>
 </div>
 {{# js }}

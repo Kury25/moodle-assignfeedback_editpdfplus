@@ -499,3 +499,28 @@ ul.assignfeedback_editpdfplus_menu {
 #editpdlplus_tool_item {
     margin-top: 15px;
 }
+#editpdlplus_tool_label {
+    cursor: default;
+}
+.assignfeedback_editpdfplus_widget_admin_tool_col2 {
+    padding-left: 15px;
+    width: 50%;
+    vertical-align: top;
+}
+.assignfeedback_editpdfplus_widget_admin_tool_col1 {
+    width: 50%;
+    vertical-align: top;
+}
+.assignfeedback_editpdfplus_widget_admin_tool_row {
+    padding-top: 20px;
+}
+#toolworkspace label {
+    width: 100%;
+}
+#toolworkspace .drawingcanvas {
+    background-repeat: no-repeat;
+    border-width: 1px;
+    border-style: solid;
+    height: 330px;
+    box-sizing: border-box;
+}
