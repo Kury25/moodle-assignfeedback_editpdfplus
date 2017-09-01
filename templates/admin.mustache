@@ -1,33 +1,57 @@
 {{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
     @template assignfeedback_editpdfplus/admin
+
+    Admin template for manage axis.
+
+    Context variables required for this template:
+    * courseid - Course id
+    * context - Context id
+    * axisimportform - Moodle form to import an axis
+    * toolbars - All toolbars for the current course
+    * axis - All axis for the current coure
+    * toollibs - All avaibled type's tool
+    * toolbarsDispo - All toolbars which can be import by the current user
 }}
 
 <div class="assignfeedback_editpdfplus_widget_admin">                                                                                                             
     <h5>{{# str }} adminsubtitle, assignfeedback_editpdfplus {{/ str }}</h5> 
 
-    <!--div class="panel-group" id="adminAccordion"-->
     <div class="panel panel-default">
         <div class="panel-heading">
-            <a data-toggle="collapse" href="#collapseadmin1" >Importation axe</a>
+            <a data-toggle="collapse" href="#collapseadmin1" >{{# str }} adminaxisimporttitle, assignfeedback_editpdfplus {{/ str }}</a>
         </div>
         <div id="collapseadmin1" class="panel-collapse collapse">
             <div class="panel-body">
-                Axes disponibles à l'importation
+                {{# str }} adminaxisimport, assignfeedback_editpdfplus {{/ str }}
                 {{{ axisimportform.render }}}
                 <input type="hidden" id="courseid" value="{{courseid}}" />
                 <table class='table table-bordered table-striped'>
                     <thead>
                         <tr>
-                            <!--th>Cours / activité</th-->
-                            <th>Nom</th>
-                            <th>Outils</th>
-                            <th>Importer</th>
+                            <th>{{# str }} adminaxisimport_name, assignfeedback_editpdfplus {{/ str }}</th>
+                            <th>{{# str }} adminaxisimport_tool, assignfeedback_editpdfplus {{/ str }}</th>
+                            <th>{{# str }} adminaxisimport_action, assignfeedback_editpdfplus {{/ str }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {{# toolbarsDispo }}
                         <tr>
-                            <!--td></td-->
                             <td>{{axis.label}}</td>
                             <td>
                                 <div class="btn-group">
@@ -53,9 +77,9 @@
         </div>
         <div class="panel-body">
             <div id="message_import_axis" class="alert" style="display:none;"></div>
-            <table style="width: 100%">
+            <table>
                 <tr>
-                    <td style="width: 17%">
+                    <td class='assignfeedback_editpdfplus_widget_admin_col1'>
                         <h6>
                             {{# str }} adminaxis, assignfeedback_editpdfplus {{/ str }}
                             <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addaxis">
@@ -63,7 +87,7 @@
                             </button>
                         </h6>
                     </td>
-                    <td id='assignfeedback_editpdfplus_widget_admin_toolheader' style="padding-left: 20px;">
+                    <td id='assignfeedback_editpdfplus_widget_admin_toolheader' class='assignfeedback_editpdfplus_widget_admin_col2'>
                         <h6>
                             {{# str }} admintools, assignfeedback_editpdfplus {{/ str }}
                             <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addtool">
@@ -71,27 +95,10 @@
                             </button>
                         </h6>
                     </td>
+                    <td></td>
                 </tr>
-                <!--div class='row'>
-                    <div class='col-sm-2'>
-                        <h6>
-                            {{# str }} adminaxis, assignfeedback_editpdfplus {{/ str }}
-                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addaxis">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </button>
-                        </h6>
-                    </div>
-                    <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolheader'>
-                        <h6>
-                            {{# str }} admintools, assignfeedback_editpdfplus {{/ str }}
-                            <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_addtool">
-                                <i class="fa fa-plus" aria-hidden="true"></i>
-                            </button>
-                        </h6>
-                    </div>
-                </div-->
                 <tr id='assignfeedback_editpdfplus_widget_admin_workspace'>
-                    <td style="vertical-align: top;">
+                    <td  id='editpdlplus_axes_worspace' class='assignfeedback_editpdfplus_widget_admin_col1'>
                         <select id='editpdlplus_axes' class='form-control'>
                             {{# axis }}
                             <option value="{{id}}" data-delete="{{children}}">{{label}}</option>
@@ -108,7 +115,7 @@
                             </div>
                         </div>
                     </td>
-                    <td id='assignfeedback_editpdfplus_widget_admin_toolworkspace' style="padding-left: 20px;vertical-align: top;">
+                    <td id='assignfeedback_editpdfplus_widget_admin_toolworkspace' class='assignfeedback_editpdfplus_widget_admin_col2'>
                         <div id='editpdlplus_toolbars'>
                             {{# toolbars }}
                             <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
@@ -121,9 +128,9 @@
                             {{/ toolbars }}
                         </div>
 
-                        <div class="alert" id="message_edit_tool" style="margin-top: 10px;margin-bottom: 0px;display: none;width: 50%;"></div>
+                        <div class="alert" id="message_edit_tool"></div>
 
-                        <div id="editpdlplus_tool_item" style="margin-top: 15px;"></div>
+                        <div id="editpdlplus_tool_item"></div>
                     </td>
                     <td>
                         <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;">
@@ -137,58 +144,9 @@
                         </div>
                     </td>
                 </tr>
-                <!--div class='row' id='assignfeedback_editpdfplus_widget_admin_workspace'>
-                    <div class='col-sm-2'>
-                        <select id='editpdlplus_axes' class='form-control'>
-                            {{# axis }}
-                            <option value="{{id}}" data-delete="{{children}}">{{label}}</option>
-                            {{/ axis }}
-                        </select>
-                        <div class="panel panel-default" id="axistool">
-                            <div class="panel-body" style="text-align: center;">
-                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_editaxis">
-                                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                                </button>
-                                <button type="button" class="btn btn-default" id="assignfeedback_editpdfplus_widget_admin_button_delaxis">
-                                    <i class="fa fa-remove" aria-hidden="true"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class='col-sm-10' id='assignfeedback_editpdfplus_widget_admin_toolworkspace'>
-                        <div id='editpdlplus_toolbars'>
-                            {{# toolbars }}
-                            <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar" style="display: none;">
-                                {{# tools }}
-                                <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
-                                    {{label}}
-                                </button>
-                                {{/ tools }}
-                            </div>
-                            {{/ toolbars }}
-                        </div>
-
-                        <div class="alert col-sm-5" id="message_edit_tool" style="margin-top: 10px;margin-bottom: 0px;display: none;"></div>
-
-                        <div id="editpdlplus_tool_item" class="alert col-sm-12" style="margin-top: 0px;"></div>
-
-                    </div>
-                    <div class='col-sm-10'>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;">
-                            <div class="panel-body"></div>
-                        </div>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis" style="display:none;">
-                            <div class="panel-body"></div>
-                        </div>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis" style="display:none;">
-                            <div class="panel-body"></div>
-                        </div>
-                    </div>
-                </div-->
             </table>
         </div>
     </div>
-    <!--/div-->
 </div>
 
 {{# js }}

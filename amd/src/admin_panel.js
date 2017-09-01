@@ -20,15 +20,15 @@
 /**
  * @module mod_assignfeedback_editpdfplus/admin_panel
  */
-define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/fragment',
+define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
     'core/ajax', 'core/str', 'assignfeedback_editpdfplus/tool', 'assignfeedback_editpdfplus/tooltype',
     'assignfeedback_editpdfplus/annotationhighlightplus',
     'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe',
     'assignfeedback_editpdfplus/annotationcommentplus', 'assignfeedback_editpdfplus/annotationverticalline',
     'assignfeedback_editpdfplus/annotationstampcomment'],
-        function ($/*, Y*/, notification, templates, fragment, ajax, str, Tool, ToolType,
+        function ($, notification, templates, fragment, ajax, str, Tool, ToolType,
                 AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
-                AnnotationCommentplus, AnnotationVerticalline, AnnotationStampcomment /*, checker*/) {
+                AnnotationCommentplus, AnnotationVerticalline, AnnotationStampcomment) {
 
             var contextid = null;
             var currentTool = null;
@@ -71,17 +71,22 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                 $("#editpdlplus_axes").on("change", function () {
                     $(".toolbar").hide();
                     var selectAxis = $("#editpdlplus_axes").val();
-                    $("#editpdlplus_toolbar_" + selectAxis).show();
-                    var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
-                    if (canBeDelete) {
-                        if (parseInt(canBeDelete) > 0) {
-                            $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").addClass("disabled");
+                    if (selectAxis && selectAxis !== "") {
+                        $("#editpdlplus_toolbar_" + selectAxis).show();
+                        var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
+                        if (canBeDelete) {
+                            if (parseInt(canBeDelete) > 0) {
+                                $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").addClass("disabled");
+                            } else {
+                                $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                            }
                         } else {
+                            $("#editpdlplus_axes option[value='" + selectAxis + "']").data('delete', 0);
                             $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
                         }
                     } else {
-                        $("#editpdlplus_axes option[value='" + selectAxis + "']").data('delete', 0);
-                        $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                        $("#assignfeedback_editpdfplus_widget_admin_workspace").hide();
+                        $("#assignfeedback_editpdfplus_widget_admin_toolheader").hide();
                     }
                     $('#toolworkspace').html("");
                 });
@@ -268,8 +273,14 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
             };
             //
             AdminPanel.prototype.openDivAddAxis = function () {
-                $("#message_edit_tool").hide();
-                $("#axistool").hide();
+                var selectAxis = $("#editpdlplus_axes").val();
+                if (selectAxis && selectAxis !== "") {
+                    $("#message_edit_tool").hide();
+                    $("#axistool").hide();
+                } else {
+                    $("#assignfeedback_editpdfplus_widget_admin_workspace").show();
+                    $("#editpdlplus_axes_worspace").hide();
+                }
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
@@ -401,6 +412,10 @@ define(['jquery'/*, 'core/yui'*/, 'core/notification', 'core/templates', 'core/f
                             //maj visu
                             $("#editpdlplus_axes").change();
                             $("a[href^='#collapseadmin1'").click();
+                            $("#axistool").show();
+                            $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
+                            $('#assignfeedback_editpdfplus_widget_admin_workspace').show();
+                            $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
                         } else {
                             $("#message_import_axis").show();
                             $("#message_import_axis").html(toolbar[0].message);

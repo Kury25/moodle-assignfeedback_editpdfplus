@@ -49,32 +49,13 @@ class assign_feedback_editpdfplus_admin {
     public function view() {
         global $PAGE;
 
-        //$PAGE->requires->js_call_amd('assignfeedback_editpdfplus/admin_panel', 'init');
-
         $html = '';
-        //$toform = null;
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
-        /* $formAddAxis = new axis_form(new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php?id=' . $this->course->id, array('id' => $this->course->id))); //Form processing and displaying is done here
-          if ($formAddAxis->is_cancelled()) {
-          //Handle form cancel operation, if cancel button is present on form
-          } else if ($fromform = $formAddAxis->get_data()) {
-          //In this case you process validated data. $mform->get_data() returns data posted in form.
-          $label = $fromform->label;
-          $axe = $this->addAxis($label);
-          $formAddAxis->set_data($toform);
-          return $axe; //"<option>tutu</option>";
-          } else {
-          // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
-          // or on the first display of the form.
-          //Set default data (if any)
-          $formAddAxis->set_data($toform);
-          } */
         $axisimportform = new axis_import_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_import_axis"));
         $axisimportform->id = "assignfeedback_editpdfplus_import_axis";
         $axisimportform->title = "";
         $axisimportform->action = "import";
         $widget = $this->get_widget();
-        //$widget->axisaddform = $formAddAxis;
         $widget->axisimportform = $axisimportform;
         $widget->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin($widget);
@@ -183,7 +164,6 @@ class assign_feedback_editpdfplus_admin {
             $toolRef->libelle = get_string('typetool_' . $toolRef->label, 'assignfeedback_editpdfplus');
         }
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
-        //$formTool->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;
     }
@@ -230,7 +210,6 @@ class assign_feedback_editpdfplus_admin {
             $toolbar = new stdClass();
             $toolbar->axis = $ax;
             $toolbar->tools = array();
-            //$toolbars[$ax->id]['label'] = $ax->label;
             foreach ($tools as $tool) {
                 if ($tool->axis == $ax->id) {
                     if ($tool->enabled == "1") {

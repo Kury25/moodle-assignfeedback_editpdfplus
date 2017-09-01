@@ -353,7 +353,7 @@ ul.assignfeedback_editpdfplus_menu {
     background-color: #fffeeb;
     padding: 0;
     line-height: normal;
-    display:inline-block;
+    display: inline-block;
 }
 .assignfeedback_editpdfplus_highlightplus_cartridge,
 .assignfeedback_editpdfplus_frame_cartridge,
@@ -478,4 +478,24 @@ ul.assignfeedback_editpdfplus_menu {
 }
 .assignfeedback_editpdfplus_widget_admin .panel-heading > a {
     color: black;
+}
+.assignfeedback_editpdfplus_widget_admin table {
+    width: 100%;
+}
+.assignfeedback_editpdfplus_widget_admin_col1 {
+    width: 17%;
+    vertical-align: top;
+}
+.assignfeedback_editpdfplus_widget_admin_col2 {
+    padding-left: 20px;
+    vertical-align: top;
+}
+#message_edit_tool {
+    margin-top: 10px;
+    margin-bottom: 0;
+    display: none;
+    width: 50%;
+}
+#editpdlplus_tool_item {
+    margin-top: 15px;
 }
