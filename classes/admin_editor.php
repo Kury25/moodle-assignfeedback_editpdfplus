@@ -19,7 +19,7 @@
  * This file contains the editor class for the assignfeedback_editpdfplus plugin
  *
  * @package   assignfeedback_editpdfplus
- * @copyright  2016 Université de Lausanne
+ * @copyright  2017 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

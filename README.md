@@ -10,14 +10,18 @@ Compatible with Moodle versions: 3.3
 
 This tool is a Moodle plugin wich allows:
 
- - to use different correction axes (i.e. groups of tools)
- - to use several types of customizable tools: simple annotation, comment, stamp, highlighting, margin annotation, chained annotations
- - to have different tool palettes depending on the Moodle context (course, course category, site default)
- - to create question / answer interactions with the student
- - the student to consult and manage annotations
- - to generate a PDF including annotations and questions / answers
+ - a work part:
+  - to use different correction axes (i.e. groups of tools)
+  - to use several types of customizable tools: simple annotation, comment, stamp, highlighting, margin annotation, chained annotations
+  - to have different tool palettes depending on the Moodle context (course, course category, site default)
+  - to create question / answer interactions with the student
+  - the student to consult and manage annotations
+  - to generate a PDF including annotations and questions / answers
+ - a configuration part:
+  - to allow configuration of toolbars for a course
+  - to import existing toolbars into a course
 
-At the moment, sample tools are installed with the plugin and tools can be added/modified directly as database records only. Current development will provide an UI for teachers to build their annotation palettes.
+At the moment, sample tools are installed with the plugin and type's tool can be added/modified directly as database records only. Current development will provide an UI for managers and administrators to custom tool's family.
 
 See this <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/home">wiki page</a> for screenshots.
 
@@ -59,7 +63,9 @@ For usage application, please follow <a href="https://gitlabriset.unil.ch/Marion
 
 ## What's next?
 
-Upcoming developments include building an interface allowing teachers to customize their own annotation tool sets.
+Upcoming developments include:
+ - improve the interface allowing teachers to customize their own annotation tool sets
+ - build an interface for manager and administrator to allow them to manage toolbars and type's tool.
 
 
 ## Contributors and Licenses

@@ -53,22 +53,22 @@ class type_tool {
     /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridge_y = 0;
 
-    /** @var type */
+    /** @var bool true if this typetool is configurable or not */
     public $configurable = 1;
 
-    /** @var type */
+    /** @var bool true if the label of the cartridge is configurable or not */
     public $configurable_cartridge = 1;
 
-    /** @var type */
+    /** @var bool true if this color of the cartridge is configurable or not */
     public $configurable_cartridge_color = 1;
 
-    /** @var type */
+    /** @var bool true if the color is configurable or not */
     public $configurable_color = 1;
 
-    /** @var type */
+    /** @var bool true if the attached texts are configurable or not */
     public $configurable_texts = 1;
 
-    /** @var type */
+    /** @var bool true if the fact that an user can attach a question/answer when he use this tool is configurable or not */
     public $configurable_question = 1;
 
     /**
