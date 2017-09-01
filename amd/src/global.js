@@ -19,11 +19,13 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/global
+ * @returns {Global} global object
  */
 define([],
         function () {
             /**
              * Global class.
+             * Define constantes
              *
              * @class Global
              */
@@ -32,6 +34,7 @@ define([],
                 return(this);
 
             }
+
             Global.ANNOTATIONCOLOUR = {
                 'white': 'rgb(255,255,255)',
                 'yellowlemon': 'rgb(255,255,0)',
@@ -41,6 +44,7 @@ define([],
                 'blue': 'rgb(0,0,255)',
                 'black': 'rgb(51,51,51)'
             };
+
             Global.TOOLTYPE = {
                 'HIGHLIGHTPLUS': 1,
                 'LINEPLUS': 2,
@@ -55,11 +59,14 @@ define([],
                 'OVAL': 11,
                 'HIGHLIGHT': 12
             };
+
             Global.SELECTOR = {
                 DRAWINGCANVAS: '.drawingcanvas'
             };
+
             Global.CSS = {
                 DIALOGUE: 'assignfeedback_editpdfplus_widget'
             };
+
             return Global;
         });

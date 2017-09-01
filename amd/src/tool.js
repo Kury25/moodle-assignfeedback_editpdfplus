@@ -18,15 +18,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
- * @module mod_assignfeedback_editpdfplus/annotation
+ * @module mod_assignfeedback_editpdfplus/tool
+ * @param {Global} global constantes
+ * @returns {Tool} tool object
  */
-define(['jquery', './global'],
-        function ($, global) {
+define(['./global'],
+        function (global) {
+
+            /*******************************
+             * CONSTRUCTOR and SUPER-CLASS *
+             *******************************/
+
             // I am the internal, static counter for the number of models
             // that have been created in the system. This is used to
             // power the unique identifier of each instance.
             var instanceCount = 0;
-
             // I get the next instance ID.
             var getNewInstanceID = function () {
                 // Precrement the instance count in order to generate the
@@ -35,16 +41,15 @@ define(['jquery', './global'],
             };
             // I return an initialized object.
             /**
-             * Annotation class.
+             * Tool class.
              *
-             * @class Annotation
+             * @class Tool
              */
             function Tool() {
                 // Store the private instance id.
                 this._instanceID = getNewInstanceID();
                 // Return this object reference.
                 return(this);
-
             }
             // I return the current instance count. I am a static method
             // on the Model class.
@@ -54,18 +59,93 @@ define(['jquery', './global'],
             Tool.prototype.getInstanceID = function () {
                 return(this._instanceID);
             };
+
+            /**************
+             * Parameters *
+             **************/
+
+            /**
+             * Base identifiant
+             * @property id
+             * @type Int
+             */
             Tool.id = -1;
+            /**
+             * Axis id
+             * @property axis
+             * @type Int
+             */
             Tool.axis = -1;
+            /**
+             * Family's tool id
+             * @property typetool
+             * @type Int
+             * @deprecated since 2017-08
+             */
             Tool.typetool = -1;
+            /**
+             * Family's tool
+             * @property typetool
+             * @type ToolType
+             */
             Tool.type = null;
+            /**
+             * Default HTML color
+             * @property colors
+             * @type String
+             */
             Tool.colors = "";
+            /**
+             * Label of cartridge
+             * @property cartridge
+             * @type String
+             */
             Tool.cartridge = "";
+            /**
+             * HTML color of cartridge
+             * @property cartridgeColor
+             * @type String
+             */
             Tool.cartridgeColor = "";
+            /**
+             * Proposed default texts
+             * @property texts
+             * @type String
+             */
             Tool.texts = "";
+            /**
+             * Label of button in toolbar
+             * @property label
+             * @type String
+             */
             Tool.label = "";
+            /**
+             * If the annotation can be used as question/answer or not
+             * @property reply
+             * @type Boolean
+             */
             Tool.reply = true;
+            /**
+             * If the tool can be used in annotation workspace
+             * @property enabled
+             * @type Bollean
+             */
             Tool.enabled = true;
+            /**
+             * Order tool inside the toolbar
+             * @property orderTool
+             * @type Int
+             */
             Tool.orderTool = 1000;
+
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Initialize tooltype object from an object from database
+             * @param {object} config
+             */
             Tool.prototype.init = function (config) {
                 this.id = parseInt(config.id, 10) || 0;
                 this.axis = parseInt(config.axis, 10) || 0;
@@ -79,6 +159,11 @@ define(['jquery', './global'],
                 this.enabled = config.enabled;
                 this.orderTool = config.orderTool;
             };
+            /**
+             * Initialize tooltype object from an object from database
+             * Special light init
+             * @param {object} config
+             */
             Tool.prototype.initAdmin = function (config) {
                 this.id = parseInt(config.toolid, 10) || 0;
                 this.typetool = config.typetool;
@@ -86,19 +171,30 @@ define(['jquery', './global'],
                 this.enabled = config.enable;
                 this.orderTool = config.orderTool;
             };
+            /**
+             * Get name of type's tool
+             * @returns {string} label
+             */
             Tool.prototype.getToolTypeLabel = function () {
                 return this.type.label;
             };
+            /**
+             * Get the X position of the cartridge giving by type tool
+             * @returns {string} cartridgeX
+             */
             Tool.prototype.getToolTypeCartX = function () {
                 return this.type.cartridgeX;
             };
+            /**
+             * Get the Y position of the cartridge giving by type tool
+             * @returns {string} cartridgeY
+             */
             Tool.prototype.getToolTypeCartY = function () {
                 return this.type.cartridgeY;
             };
             /**
              * Get the final color for the annotation
-             * @return string
-             * @protected
+             * @return {string} html color
              */
             Tool.prototype.get_color = function () {
                 var color = global.ANNOTATIONCOLOUR[this.colors];
@@ -116,8 +212,7 @@ define(['jquery', './global'],
             };
             /**
              * Get the final color for the cartridge
-             * @return string
-             * @protected
+             * @return {string} html color
              */
             Tool.prototype.get_color_cartridge = function () {
                 var color = global.ANNOTATIONCOLOUR[this.cartridgeColor];
@@ -133,6 +228,11 @@ define(['jquery', './global'],
                 }
                 return color;
             };
+            /**
+             * Get the html code for design the tool's button into the toolbar
+             * @param {int} selectToolId
+             * @return {string} HTML code
+             */
             Tool.prototype.getButton = function (selectToolId) {
                 var classButton = "btn-default";
                 var style = "";

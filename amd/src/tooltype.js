@@ -18,15 +18,21 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
- * @module mod_assignfeedback_editpdfplus/annotation
+ * @module mod_assignfeedback_editpdfplus/tooltype
+ * @param {Global} global constantes
+ * @returns {ToolType} tooltype object
  */
-define(['jquery', './global'],
-        function ($, global) {
+define(['./global'],
+        function (global) {
+
+            /*******************************
+             * CONSTRUCTOR and SUPER-CLASS *
+             *******************************/
+
             // I am the internal, static counter for the number of models
             // that have been created in the system. This is used to
             // power the unique identifier of each instance.
             var instanceCount = 0;
-
             // I get the next instance ID.
             var getNewInstanceID = function () {
                 // Precrement the instance count in order to generate the
@@ -35,16 +41,15 @@ define(['jquery', './global'],
             };
             // I return an initialized object.
             /**
-             * Annotation class.
+             * ToolType class.
              *
-             * @class Annotation
+             * @class ToolType
              */
             function ToolType() {
                 // Store the private instance id.
                 this._instanceID = getNewInstanceID();
                 // Return this object reference.
                 return(this);
-
             }
             // I return the current instance count. I am a static method
             // on the Model class.
@@ -54,20 +59,93 @@ define(['jquery', './global'],
             ToolType.prototype.getInstanceID = function () {
                 return(this._instanceID);
             };
+
+            /**************
+             * Parameters *
+             **************/
+
+            /**
+             * Base identifiant
+             * @property id
+             * @type Int
+             */
             ToolType.id = -1;
+            /**
+             * Code name
+             * @property label
+             * @type String
+             */
             ToolType.label = "";
+            /**
+             * Default HTML color
+             * @property color
+             * @type String
+             */
             ToolType.color = "";
+            /**
+             * Default HTML cartridge color
+             * @property cartridgeColor
+             * @type String
+             */
             ToolType.cartridgeColor = "";
+            /**
+             * Default X position for cartridge
+             * @property cartridgeX
+             * @type Int
+             */
             ToolType.cartridgeX = 0;
+            /**
+             * Default Y position for cartridge
+             * @property cartridgeX
+             * @type Int
+             */
             ToolType.cartridgeY = 0;
+            /**
+             * Is the content's cartridge allowed to be configurable
+             * @property configurableCartridge
+             * @type Boolean
+             */
             ToolType.configurableCartridge = 1;
+            /**
+             * Is the color's cartridge allowed to be configurable
+             * @property configurableCartridgeColor
+             * @type Boolean
+             */
             ToolType.configurableCartridgeColor = 1;
+            /**
+             * Is the tool's color allowed to be configurable
+             * @property configurableColor
+             * @type Boolean
+             */
             ToolType.configurableColor = 1;
+            /**
+             * Are the tool's texts allowed to be configurable
+             * @property configurableTexts
+             * @type Boolean
+             */
             ToolType.configurableTexts = 1;
+            /**
+             * Is the tool's question/qnswer allowed to be configurable
+             * @property configurableQuestion
+             * @type Boolean
+             */
             ToolType.configurableQuestion = 1;
+
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Initialize tooltype object from an object from database with its base's id
+             * @param {object} config
+             */
             ToolType.prototype.init = function (config) {
                 this.id = parseInt(config.id, 10) || 0;
             };
+            /**
+             * Initialize tooltype object from an object from database
+             * @param {object} config
+             */
             ToolType.prototype.initAdmin = function (config) {
                 this.id = parseInt(config.id, 10) || 0;
                 this.label = config.label;
@@ -82,9 +160,8 @@ define(['jquery', './global'],
                 this.configurableQuestion = config.configurable_question;
             };
             /**
-             * Get the final color for the annotation
-             * @return string
-             * @protected
+             * Get the default color of an annotation
+             * @return {string} color
              */
             ToolType.prototype.get_color = function () {
                 var color = global.ANNOTATIONCOLOUR[this.color];
@@ -98,9 +175,8 @@ define(['jquery', './global'],
                 return color;
             };
             /**
-             * Get the final color for the cartridge
-             * @return string
-             * @protected
+             * Get the color for the cartridge
+             * @return {string} color
              */
             ToolType.prototype.get_color_cartridge = function () {
                 var color = global.ANNOTATIONCOLOUR[this.cartridgeColor];

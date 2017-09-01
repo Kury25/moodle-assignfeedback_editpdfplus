@@ -18,10 +18,15 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
- * @module mod_assignfeedback_editpdfplus/annotationhighlightplus
+ * @module mod_assignfeedback_editpdfplus/annotationverticalline
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
+
+            /********************************
+             * CONSTRUCTOR and EXTEND-CLASS *
+             ********************************/
+
             // I return an initialized object.
             function AnnotationVerticalline() {
                 // Call the super constructor.
@@ -32,6 +37,14 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationVerticalline.prototype = Object.create(Annotation.prototype);
 
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Init the annotation with demo parameters
+             * @param {Tool} currentTool
+             */
             AnnotationVerticalline.prototype.initAdminDemo = function (currentTool) {
                 Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 285;
@@ -40,9 +53,7 @@ define(['jquery', './annotation'],
             };
             /**
              * Draw a highlight annotation
-             * @protected
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable
+             * @param {JQuery Entity} canevas
              */
             AnnotationVerticalline.prototype.draw = function (canevas) {
                 if (canevas) {
@@ -55,17 +66,14 @@ define(['jquery', './annotation'],
                     }
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('position', 'relative');
-                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
+                    this.draw_catridge(canevas);
                 }
-
-                this.draw_catridge(canevas);
-
-                return;
             };
             /**
              * Display cartridge and toolbox for the annotation
+             * @param {JQuery Entity} canevas
              * @returns {Boolean} res
              */
             AnnotationVerticalline.prototype.draw_catridge = function (canevas) {
@@ -77,10 +85,9 @@ define(['jquery', './annotation'],
                     var colorcartridge = this.get_color_cartridge();
                     divdisplay = this.get_div_cartridge(colorcartridge, canevas);
                     divdisplay.addClass('assignfeedback_editpdfplus_verticalline');
-                    //divdisplay.css('display', 'inline-block');
 
                     // inscription entete
-                    /*var divcartridge = */this.get_div_cartridge_label(colorcartridge, divdisplay);
+                    this.get_div_cartridge_label(colorcartridge, divdisplay);
 
                     //creation input
                     var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);

@@ -18,7 +18,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 /**
- * @module mod_assignfeedback_editpdfplus/annotationhighlightplus
+ * @module mod_assignfeedback_editpdfplus/annotationcomment
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
