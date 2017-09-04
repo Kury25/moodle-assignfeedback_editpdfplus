@@ -26,7 +26,7 @@ use templatable;
  * This file contains the definition for the library class for edit PDF renderer.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright  2016 Université de Lausanne
+ * @copyright  2017 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class widget_admin implements renderable, templatable {

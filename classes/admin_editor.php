@@ -39,11 +39,11 @@ use assignfeedback_editpdfplus\axis;
 class admin_editor {
 
     /**
-     * 
+     * Add an axis
      * @global type $DB
-     * @param type $axisLabel
-     * @param type $context
-     * @return type
+     * @param String $axisLabel axis' name
+     * @param Integer $context context's id
+     * @return Integer id of the created axis
      */
     public static function add_axis($axisLabel, $context) {
         global $DB;
@@ -63,45 +63,16 @@ class admin_editor {
     }
 
     /**
-     * 
+     * Add a tool
      * @global type $DB
-     * @param type $axisLabel
-     * @param type $context
-     * @return type
+     * @param object $data object with contains tool' info
+     * @param Integer $contextid context's id
+     * @return \assignfeedback_editpdfplus\tool created tool
      */
     public static function add_tool($data, $contextid) {
         global $DB;
 
-        $tools = array();
-        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $data->axisid));
-        foreach ($records as $record) {
-            array_push($tools, new tool($record));
-        }
-        usort($tools, function($a, $b) {
-            $al = $a->order_tool;
-            $bl = $b->order_tool;
-            if ($al == $bl) {
-                return 0;
-            }
-            return ($al > $bl) ? +1 : -1;
-        });
-
-        $compteurPrecedent = null;
-        $decalage = 1;
-        foreach ($tools as $tool) {
-            if ($compteurPrecedent == null) {
-                $compteurPrecedent = $tool->order_tool;
-            } else {
-                $compteurCourant = $tool->order_tool;
-                if ($compteurCourant <= $compteurPrecedent) {
-                    $tool->order_tool = $compteurPrecedent + $decalage;
-                    //$decalage++;
-                }
-                $compteurPrecedent++;
-            }
-        }
-
-        $maxindice = $compteurPrecedent;
+        $maxindice = admin_editor::reorder_tool($data->axisid);
 
         $tool = new tool();
         $tool->axis = $data->axisid;
@@ -109,54 +80,85 @@ class admin_editor {
         $tool->cartridge_color = $data->catridgecolor;
         $tool->contextid = $contextid;
         $tool->label = $data->button;
+        $tool->reply = 0;
         if ($data->reply == "on") {
             $tool->reply = 1;
-        } else {
-            $tool->reply = 0;
         }
         $tool->texts = $data->texts;
         $tool->type = $data->typetool;
         $tool->colors = $data->color;
+        $reorder = false;
         if ($maxindice == null) {
             $tool->order_tool = 1;
         } elseif ($data->order && intval($data->order) < 1000) {
             $tool->order_tool = $data->order;
-
-            $compteurPrecedent = null;
-            $decalage = 1;
-            foreach ($tools as $toolOr) {
-                if ($compteurPrecedent == null && $data->order == $toolOr->order_tool) {
-                    $compteurPrecedent = $toolOr->order_tool;
-                    $toolOr->order_tool++;
-                } else {
-                    $compteurCourant = $toolOr->order_tool;
-                    if ($compteurCourant == $compteurPrecedent) {
-                        $toolOr->order_tool = $compteurPrecedent + $decalage;
-                    }
-                }
-            }
-            //$this->reorder_tool($data->axisid, 'id', 'desc');
+            $reorder = true;
         } else {
-            $tool->order_tool = $maxindice;
+            $tool->order_tool = $maxindice + 1;
         }
 
         $toolid = $DB->insert_record('assignfeedback_editpp_tool', $tool);
-        foreach ($tools as $toolOr) {
-            $DB->update_record('assignfeedback_editpp_tool', $toolOr);
-        }
+
         if ($toolid > 0) {
-            //$tool->id = $toolid;
+            if ($reorder) {
+                admin_editor::reorder_tool($data->axisid, $toolid);
+            }
             return $tool;
         }
         return null;
     }
 
     /**
-     * 
+     * Order tools of a toolbar
      * @global type $DB
-     * @param type $axisLabel
-     * @param type $context
-     * @return type
+     * @param Integer $axisid axis to reorder
+     * @param Integer $toolid optional, can indicate a tool to place into a toolbar
+     * @return last order rank
+     */
+    protected static function reorder_tool($axisid, $toolid = null) {
+        global $DB;
+
+        $tools = array();
+        $records = $DB->get_records_sql('SELECT * FROM {assignfeedback_editpp_tool} WHERE axis = :axisid ORDER BY order_tool ASC', array('axisid' => $axisid));
+        foreach ($records as $record) {
+            array_push($tools, new tool($record));
+        }
+        $compteurPrecedent = null;
+        $decalage = 1;
+        $lastTool = null;
+        foreach ($tools as $tool) {
+            if ($compteurPrecedent == null) {
+                $compteurPrecedent = $tool->order_tool;
+                $lastTool = $tool;
+            } else {
+                $compteurCourant = $tool->order_tool;
+                if ($compteurCourant != $compteurPrecedent + $decalage) {
+                    if ($toolid && $tool->id == $toolid) {
+                        $tool->order_tool = $lastTool->order_tool;
+                        $lastTool->order_tool = $compteurPrecedent + 1;
+                        $DB->update_record('assignfeedback_editpp_tool', $tool);
+                        $DB->update_record('assignfeedback_editpp_tool', $lastTool);
+                    } else {
+                        $tool->order_tool = $compteurPrecedent + $decalage;
+                        $DB->update_record('assignfeedback_editpp_tool', $tool);
+                        $lastTool = $tool;
+                    }
+                    //$decalage++;
+                } else {
+                    $lastTool = $tool;
+                }
+                $compteurPrecedent++;
+            }
+        }
+        return $compteurPrecedent;
+    }
+
+    /**
+     * Edit an axis
+     * @global type $DB
+     * @param Integer $axeid axis' id
+     * @param String $axisLabel new axis' label
+     * @return Boolean true if the update is ok
      */
     public static function edit_axis($axeid, $axisLabel) {
         global $DB;
@@ -167,31 +169,39 @@ class admin_editor {
     }
 
     /**
-     * 
+     * Delete an axis
      * @global type $DB
-     * @param type $axisid
-     * @return type
+     * @param Integer $axeid axis' id
+     * @return Boolean true if the update is ok
      */
     public static function del_axis($axeid) {
         global $DB;
         return $DB->delete_records('assignfeedback_editpp_axis', array('id' => $axeid));
     }
 
+    /**
+     * Delete a tool
+     * @global type $DB
+     * @param \assignfeedback_editpdfplus\tool $tool
+     * @return Boolean true if the remove is ok
+     */
     public static function del_tool($tool) {
         global $DB;
         return $DB->delete_records('assignfeedback_editpp_tool', array('id' => $tool->toolid));
     }
 
+    /**
+     * Get all tools by an axis' id
+     * @global type $DB
+     * @param Integer $axisid axis' id
+     * @return array<\assignfeedback_editpdfplus\tool> the toolbar, order by order_tool
+     */
     public static function get_tools_by_axis($axisid) {
         global $DB;
         $tools = array();
         $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $axisid));
         foreach ($records as $record) {
-            //if ($record->id == $tool->id) {
-            //    array_push($tools, $tool);
-            //} else {
             array_push($tools, new tool($record));
-            //}
         }
         usort($tools, function($a, $b) {
             $al = $a->order_tool;
@@ -205,45 +215,13 @@ class admin_editor {
     }
 
     /**
-     * 
+     * Update a tool
      * @global type $DB
-     * @param type $axisLabel
-     * @param type $context
-     * @return type
+     * @param object $toolJson object contains tool's values to update
+     * @return \assignfeedback_editpdfplus\tool
      */
     public static function edit_tool($toolJson) {
         global $DB;
-
-        $tools = array();
-        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $toolJson->axisid));
-        foreach ($records as $record) {
-            array_push($tools, new tool($record));
-        }
-        usort($tools, function($a, $b) {
-            $al = $a->order_tool;
-            $bl = $b->order_tool;
-            if ($al == $bl) {
-                return 0;
-            }
-            return ($al > $bl) ? +1 : -1;
-        });
-        $compteurPrecedent = null;
-        $decalage = 1;
-        foreach ($tools as $tool) {
-            if ($compteurPrecedent == null) {
-                $compteurPrecedent = $tool->order_tool;
-            } else {
-                $compteurCourant = $tool->order_tool;
-                if ($compteurCourant <= $compteurPrecedent) {
-                    $tool->order_tool = $compteurPrecedent + $decalage;
-                    //$decalage++;
-                }
-                $compteurPrecedent++;
-            }
-        }
-        foreach ($tools as $toolOr) {
-            $DB->update_record('assignfeedback_editpp_tool', $toolOr);
-        }
 
         $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolJson->toolid), '*', MUST_EXIST);
         $tool = new tool($record);
@@ -259,17 +237,23 @@ class admin_editor {
         } else {
             $tool->reply = 0;
         }
-        $tool->order_tool = $toolJson->order;
+        $reorder = false;
+        if ($tool->order_tool != $toolJson->order) {
+            $tool->order_tool = $toolJson->order;
+            $reorder = true;
+        }
         if ($DB->update_record('assignfeedback_editpp_tool', $tool)) {
+            if ($reorder) {
+                admin_editor::reorder_tool($tool->axis, $tool->id);
+            }
             return $tool;
         }
         return null;
     }
 
     /**
-     * Get all the type tools.
-     * @param array $contextidlist
-     * @return type_tool
+     * Get all the type tools which are configurabled.
+     * @return array<\assignfeedback_editpdfplus\type_tool> array of type tools
      */
     public static function get_typetools() {
         global $DB;
@@ -281,12 +265,25 @@ class admin_editor {
         return $typetools;
     }
 
+    /**
+     * Get axis by its id
+     * @global type $DB
+     * @param Integer $axeid axis' id
+     * @return \assignfeedback_editpdfplus\axis the axis
+     */
     public static function getAxisById($axeid) {
         global $DB;
         $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
         return $axis;
     }
 
+    /**
+     * Clone an axis to the context given in parameter
+     * @global type $DB
+     * @param \assignfeedback_editpdfplus\axis $axisOrigin
+     * @param Integer $context context's id
+     * @return Integer id of the imported axis
+     */
     public static function import_axis($axisOrigin, $context) {
         global $DB;
         $record = $DB->get_record_sql('SELECT max(order_axis) as order_max FROM {assignfeedback_editpp_axis} WHERE contextid = :contextid', array('contextid' => $context));
@@ -303,6 +300,14 @@ class admin_editor {
         return $DB->insert_record('assignfeedback_editpp_axis', $axis);
     }
 
+    /**
+     * Clone a tool to a new axis
+     * @global type $DB
+     * @param \assignfeedback_editpdfplus\tool $toolToImport tool to duplicate
+     * @param \assignfeedback_editpdfplus\axis $axeNew axis to attached new tool
+     * @param Integer $context context's id
+     * @return Integer id of tool's created
+     */
     public static function import_tool($toolToImport, $axeNew, $context) {
         global $DB;
         $record = $DB->get_record_sql('SELECT max(order_tool) as order_max FROM {assignfeedback_editpp_tool} WHERE contextid = :contextid', array('axis' => $axeNew->id, 'contextid' => $context));

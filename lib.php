@@ -73,7 +73,7 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
 }
 
 /**
- * 
+ * Display menu inside course'admin view
  * @param navigation_node $navigation
  * @param stdClass $course
  * @param context_course $context
@@ -84,15 +84,13 @@ function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $na
     $navigation->add_node($feedbackadminnode);
 }
 
-/* function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $parentnode, $course, $context) {
-  $url = new moodle_url('/course/view.php', array('courseid' => $course->id));
-  $settingsnode = navigation_node::create('test ND navigation node', $url,
-  navigation_node::TYPE_SETTING, null, null, new pix_icon('i/settings', ''));
-  $parentnode->add_node($settingsnode);
-  } */
-
+/**
+ * Get axis form (add)
+ * @global $DB
+ * @param type $args
+ */
 function assignfeedback_editpdfplus_output_fragment_axisadd($args) {
-    global $CFG, $DB;
+    global $DB;
 
     $context = $args['context'];
 
@@ -110,8 +108,13 @@ function assignfeedback_editpdfplus_output_fragment_axisadd($args) {
     return null;
 }
 
+/**
+ * Get axis form (edit)
+ * @global $DB
+ * @param type $args
+ */
 function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
-    global $CFG, $DB;
+    global $DB;
 
     $context = $args['context'];
     $axisid = $args['axeid'];
@@ -130,6 +133,11 @@ function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
     return null;
 }
 
+/**
+ * Get axis form (delete)
+ * @global $DB
+ * @param type $args
+ */
 function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
     global $DB;
 
@@ -150,6 +158,11 @@ function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
     return null;
 }
 
+/**
+ * Get tool form (edit)
+ * @global $DB
+ * @param type $args
+ */
 function assignfeedback_editpdfplus_output_fragment_tooledit($args) {
     global $DB;
 
@@ -170,6 +183,11 @@ function assignfeedback_editpdfplus_output_fragment_tooledit($args) {
     return null;
 }
 
+/**
+ * Get tool form (add)
+ * @global $DB
+ * @param type $args
+ */
 function assignfeedback_editpdfplus_output_fragment_tooladd($args) {
     global $DB;
 

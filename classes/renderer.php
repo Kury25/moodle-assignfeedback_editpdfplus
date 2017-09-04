@@ -380,18 +380,38 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         return $html;
     }
 
+    /**
+     * Display admin view
+     * @param assignfeedback_editpdfplus\widget_admin $widget
+     * @return String
+     */
     public function render_assignfeedback_editpdfplus_widget_admin(assignfeedback_editpdfplus\widget_admin $widget) {
         return $this->render_from_template('assignfeedback_editpdfplus/admin', $widget);
     }
 
+    /**
+     * Display axis form (add and edit)
+     * @param moodleform $form
+     * @return String
+     */
     public function render_assignfeedback_editpdfplus_widget_admin_axisform(moodleform $form) {
         return $this->render_from_template('assignfeedback_editpdfplus/axis_form', $form);
     }
 
+    /**
+     * Display axis form (delete)
+     * @param moodleform $form
+     * @return String
+     */
     public function render_assignfeedback_editpdfplus_widget_admin_axisdelform(moodleform $form) {
         return $this->render_from_template('assignfeedback_editpdfplus/axis_del_form', $form);
     }
 
+    /**
+     * Display tool form, with preview
+     * @param object $data
+     * @return String
+     */
     public function render_assignfeedback_editpdfplus_widget_admin_toolform($data) {
         $data->map01 = $this->pix_url('map01', 'assignfeedback_editpdfplus');
         $data->map02 = $this->pix_url('map02', 'assignfeedback_editpdfplus');
