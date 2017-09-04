@@ -637,11 +637,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                         } else {
                                             currentTool = new Tool();
                                             $("#typetool").on("change", function () {
+                                            currentTool = new Tool();
                                                 currentTool.typetool = $("#typetool").val();
                                                 var typetoolEntity = getTypeTool(currentTool.typetool);
                                                 currentTool.type = typetoolEntity;
-                                                currentTool.colors = typetoolEntity.color;
-                                                currentTool.cartridgeColor = typetoolEntity.cartridge_color;
+                                                currentTool.colors = typetoolEntity.get_color();
+                                                currentTool.cartridgeColor = typetoolEntity.get_color_cartridge();
                                                 $("#color").val(currentTool.colors);
                                                 $("#cartridgecolor").val(currentTool.cartridgeColor);
                                                 initToolDisplay();
