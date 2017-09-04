@@ -19,9 +19,17 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotationstampcomment
+ * @param {Jquery} $
+ * @param {Annotation} Annotation super-class
+ * @returns {AnnotationStampcomment} annotation stamp comment
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
+
+            /********************************
+             * CONSTRUCTOR and EXTEND-CLASS *
+             ********************************/
+
             // I return an initialized object.
             function AnnotationStampcomment() {
                 // Call the super constructor.
@@ -32,6 +40,14 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationStampcomment.prototype = Object.create(Annotation.prototype);
 
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Init the annotation with demo parameters
+             * @param {Tool} currentTool
+             */
             AnnotationStampcomment.prototype.initAdminDemo = function (currentTool) {
                 Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 188;
@@ -39,10 +55,8 @@ define(['jquery', './annotation'],
                 this.displayrotation = 1;
             };
             /**
-             * Draw a highlight annotation
-             * @protected
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable
+             * Draw the annotation
+             * @param {JQuery Entity} canevas
              */
             AnnotationStampcomment.prototype.draw = function (canevas) {
                 if (canevas) {
@@ -58,7 +72,6 @@ define(['jquery', './annotation'],
                     var divStampComment = "<div id='" + this.id + "'>" + fleche + "</div>";
                     canevas.append(divStampComment);
                     $("#" + this.id).css('position', 'relative');
-                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -69,6 +82,7 @@ define(['jquery', './annotation'],
             };
             /**
              * Display cartridge and toolbox for the annotation
+             * @param {JQuery Entity} canevas
              * @returns {Boolean} res
              */
             AnnotationStampcomment.prototype.draw_catridge = function (canevas) {

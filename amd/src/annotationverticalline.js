@@ -19,6 +19,9 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotationverticalline
+ * @param {Jquery} $
+ * @param {Annotation} Annotation super-class
+ * @returns {AnnotationVerticalline} annotation vertical line
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
@@ -52,7 +55,7 @@ define(['jquery', './annotation'],
                 this.endy = 175;
             };
             /**
-             * Draw a highlight annotation
+             * Draw the annotation
              * @param {JQuery Entity} canevas
              */
             AnnotationVerticalline.prototype.draw = function (canevas) {

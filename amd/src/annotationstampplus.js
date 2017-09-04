@@ -19,9 +19,17 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotationstampplus
+ * @param {Jquery} $
+ * @param {Annotation} Annotation super-class
+ * @returns {AnnotationStampplus} annotation stamp plus
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
+
+            /********************************
+             * CONSTRUCTOR and EXTEND-CLASS *
+             ********************************/
+
             // I return an initialized object.
             function AnnotationStampplus() {
                 // Call the super constructor.
@@ -32,16 +40,22 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationStampplus.prototype = Object.create(Annotation.prototype);
 
-            AnnotationStampplus.prototype.initAdminDemo = function (currentTool, typetoolEntity) {
-                Annotation.prototype.initAdminDemo.call(this, currentTool, typetoolEntity);
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Init the annotation with demo parameters
+             * @param {Tool} currentTool
+             */
+            AnnotationStampplus.prototype.initAdminDemo = function (currentTool) {
+                Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 60;
                 this.y = 100;
             };
             /**
-             * Draw a highlight annotation
-             * @protected
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable
+             * Draw the annotation
+             * @param {JQuery Entity} canevas
              */
             AnnotationStampplus.prototype.draw = function (canevas) {
                 if (canevas) {

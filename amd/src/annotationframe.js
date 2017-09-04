@@ -19,9 +19,17 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotationframe
+ * @param {Jquery} $
+ * @param {Annotation} Annotation super-class
+ * @returns {AnnotationFrame} annotation frame
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
+
+            /********************************
+             * CONSTRUCTOR and EXTEND-CLASS *
+             ********************************/
+
             // I return an initialized object.
             function AnnotationFrame() {
                 // Call the super constructor.
@@ -32,6 +40,14 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationFrame.prototype = Object.create(Annotation.prototype);
 
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Init the annotation with demo parameters
+             * @param {Tool} currentTool
+             */
             AnnotationFrame.prototype.initAdminDemo = function (currentTool) {
                 Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 279;
@@ -42,6 +58,10 @@ define(['jquery', './annotation'],
                 this.colour = "#FF0000";
             };
 
+            /**
+             * Init a child-annotation with demo parameters
+             * @param {Annotation} annotationparent
+             */
             AnnotationFrame.prototype.initChildAdminDemo = function (annotationparent) {
                 Annotation.prototype.initAdminDemo.call(this, annotationparent.tooltype);
                 this.x = 144;
@@ -52,11 +72,10 @@ define(['jquery', './annotation'],
                 this.id = 'previsu_annot_child';
                 this.colour = "#FF0000";
             };
+
             /**
-             * Draw a highlight annotation
-             * @protected
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable
+             * Draw the annotation
+             * @param {JQuery Entity} canevas
              */
             AnnotationFrame.prototype.draw = function (canevas) {
                 //this.shape_id = 'ct_frame_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
@@ -67,7 +86,6 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('border', 'solid 2px red');
                     $("#" + this.id).css('position', 'relative');
-                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                     $("#" + this.id).css('box-sizing', 'inherit');
@@ -75,8 +93,10 @@ define(['jquery', './annotation'],
                 this.draw_catridge(canevas);
                 return this;
             };
+
             /**
              * Display cartridge and toolbox for the annotation
+             * @param {JQuery Entity} canevas
              * @returns {Boolean} res
              */
             AnnotationFrame.prototype.draw_catridge = function (canevas) {
