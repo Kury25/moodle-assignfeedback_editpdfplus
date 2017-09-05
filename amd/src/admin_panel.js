@@ -19,6 +19,20 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/admin_panel
+ * @param {Jquery} $
+ * @param {core/notification} notification
+ * @param {core/templates} templates
+ * @param {core/fragment} fragment
+ * @param {core/ajax} ajax
+ * @param {core/str} str
+ * @param {assignfeedback_editpdfplus/tool} Tool
+ * @param {assignfeedback_editpdfplus/tooltype} ToolType
+ * @param {assignfeedback_editpdfplus/annotationhighlightplus} AnnotationHighlightplus
+ * @param {assignfeedback_editpdfplus/annotationstampplus} AnnotationStampplus
+ * @param {assignfeedback_editpdfplus/annotationframe} AnnotationFrame
+ * @param {assignfeedback_editpdfplus/annotationcommentplus} AnnotationCommentplus
+ * @param {assignfeedback_editpdfplus/annotationverticalline} AnnotationVerticalline
+ * @param {assignfeedback_editpdfplus/annotationstampcomment} AnnotationStampcomment
  */
 define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
     'core/ajax', 'core/str', 'assignfeedback_editpdfplus/tool', 'assignfeedback_editpdfplus/tooltype',
@@ -30,14 +44,46 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                 AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
                 AnnotationCommentplus, AnnotationVerticalline, AnnotationStampcomment) {
 
+            /********************
+             * GLOBAL VARIABLES *
+             ********************/
+
+            /**
+             * Context id
+             * @type {Integer}
+             */
             var contextid = null;
+            /**
+             * Current tool in process
+             * @type {Tool}
+             */
             var currentTool = null;
+            /**
+             * Current action
+             * @type {String}
+             */
             var action = null;
+            /**
+             * All type tools
+             * @type {Array<assignfeedback_edipdfplus\typetool>}
+             */
             var typetools = null;
+            /**
+             * Current annotation in process
+             * @type {Annotation}
+             */
+            var annotationcurrent = null;
+
+            /****************
+             * CONSTRUCTOR  *
+             ****************/
+
             /**
              * AdminPanel class.
              *
              * @class AdminPanel
+             * @param {Integer} contextidP
+             * @param {String} typetoolsP
              */
             var AdminPanel = function (contextidP, typetoolsP) {
                 //this.registerEventListeners();
@@ -45,18 +91,75 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                 this.initTypeTool(typetoolsP);
                 this.init();
             };
-            var annotationcurrent = null;
+
+            /**************
+             * Parameters *
+             **************/
+
             //messages
+            /**
+             * Message ok in delete case
+             */
             AdminPanel.messageDelOk = "";
+            /**
+             * Message ko in delete case
+             */
             AdminPanel.messageDelKo = "";
+            /**
+             * Message ko in all case
+             */
             AdminPanel.messageko = "";
+            /**
+             * Message ok in add case
+             */
             AdminPanel.messageaddok = "";
+            /**
+             * Message ko in add case
+             */
             AdminPanel.messageaddlibelleko = "";
+            /**
+             * Message ok in edit case
+             */
             AdminPanel.messageEditOk = "";
-            //
-            //AdminPanel.prototype.contextid;
-            //
+
+            /**
+             * Current select button
+             * @type {Jquery node}
+             */
             AdminPanel.prototype.selectTool = null;
+
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Initalisation of all messages with ajax
+             */
+            var initMessages = function () {
+                str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageDelOk = message;
+                }).fail(notification.exception);
+                str.get_string('admindeltool_messageko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageDelKo = message;
+                }).fail(notification.exception);
+                str.get_string('adminaddtool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageaddok = message;
+                }).fail(notification.exception);
+                str.get_string('admin_messageko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageko = message;
+                }).fail(notification.exception);
+                str.get_string('adminedittool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageEditOk = message;
+                }).fail(notification.exception);
+                str.get_string('adminaddtool_messagelibelleko', 'assignfeedback_editpdfplus').done(function (message) {
+                    AdminPanel.messageaddlibelleko = message;
+                }).fail(notification.exception);
+            };
+
+            /**
+             * Set typetool list from json request
+             * @param {object} typeToolsP
+             */
             AdminPanel.prototype.initTypeTool = function (typeToolsP) {
                 var typetoolsTmp = JSON.parse(typeToolsP);
                 typetools = [];
@@ -66,7 +169,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     typetools[i] = typeToolTmp;
                 }
             };
-            //
+
+            /**
+             * Init IHM
+             */
             AdminPanel.prototype.init = function () {
                 $("#editpdlplus_axes").on("change", function () {
                     $(".toolbar").hide();
@@ -91,7 +197,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     $('#toolworkspace').html("");
                 });
                 $("#editpdlplus_axes").change();
-//
+
                 $(".editpdlplus_tool").on("click", refreshToolView);
                 this.selectTool = $(".editpdlplus_tool").first();
                 this.initToolUI();
@@ -106,38 +212,18 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
 
                 initMessages();
             };
-            //init message
-            var initMessages = function () {
-                str.get_string('admindeltool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageDelOk = message;
-                }).fail(notification.exception);
-                str.get_string('admindeltool_messageko', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageDelKo = message;
-                }).fail(notification.exception);
-                str.get_string('adminaddtool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageaddok = message;
-                }).fail(notification.exception);
-                str.get_string('admin_messageko', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageko = message;
-                }).fail(notification.exception);
-                str.get_string('adminedittool_messageok', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageEditOk = message;
-                }).fail(notification.exception);
-                str.get_string('adminaddtool_messagelibelleko', 'assignfeedback_editpdfplus').done(function (message) {
-                    AdminPanel.messageaddlibelleko = message;
-                }).fail(notification.exception);
-            };
-            //
-            AdminPanel.prototype.test = function () {
-                alert("test");
-                refreshToolView();
-            };
-            //
+
+            /**
+             * Init too UI for select element
+             */
             AdminPanel.prototype.initToolUI = function () {
                 $(this.selectTool).removeClass("btn-default");
                 $(this.selectTool).addClass("btn-primary");
             };
-            //
+
+            /**
+             * Init tool form and preview
+             */
             AdminPanel.prototype.refreshPrevisu = function () {
                 currentTool.typetool = $("#typetool").val();
                 currentTool.colors = $("#color").val();
@@ -163,7 +249,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                 initCanevas();
                 initToolDisplay();
             };
-            //
+
+            /**
+             * Get type tool object from an id
+             * @param {Integer} toolid
+             * @return {Typetool}
+             */
             var getTypeTool = function (toolid) {
                 for (var i = 0; i < typetools.length; i++) {
                     if (typetools[i].id == toolid) {
@@ -171,6 +262,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     }
                 }
             };
+
+            /**
+             * Init tool form display with custom configurable parameters
+             */
             var initToolDisplay = function () {
                 var typetool = parseInt($("#typetool").val());
                 var typetoolEntity = getTypeTool(typetool);
@@ -230,7 +325,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     $("#collapse4").parent().show();
                 }
             };
-            //
+
+            /**
+             * Init tool preview
+             */
             var initCanevas = function () {
                 $('#canevas').html("");
                 annotationcurrent = null;
@@ -271,7 +369,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     }
                 }
             };
-            //
+
+            /**
+             * Load content for adding an axis
+             */
             AdminPanel.prototype.openDivAddAxis = function () {
                 var selectAxis = $("#editpdlplus_axes").val();
                 if (selectAxis && selectAxis !== "") {
@@ -293,7 +394,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
-            //
+
+            /**
+             * Load content for editing an axis
+             */
             AdminPanel.prototype.openDivEditAxis = function () {
                 $("#message_edit_tool").hide();
                 $("#axistool").hide();
@@ -302,15 +406,6 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
                 $("#editpdlplus_axes").prop('disabled', 'disabled');
-                /*var context = {name: 'Tweety bird', intelligence: 2};
-                 templates.render('assignfeedback_editpdfplus/admin_axis_add', context)
-                 // It returns a promise that needs to be resoved.
-                 .then(function (html, js) {
-                 // Here eventually I have my compiled template, and any javascript that it generated.
-                 // The templates object has append, prepend and replace functions.
-                 templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body',
-                 html, js);
-                 }).fail(notification.exception);*/
                 var axeid = $("#editpdlplus_axes option:selected").val();
                 var params = {axeid: axeid};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisedit', contextid, params)
@@ -319,7 +414,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
-            //
+
+            /**
+             * Load content for deleting an axis
+             */
             AdminPanel.prototype.openDivDelAxis = function () {
                 var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
                 if (canBeDelete !== null && parseInt(canBeDelete) === 0) {
@@ -339,11 +437,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                             }.bind(this)).fail(notification.exception);
                 }
             };
+
             /**
              * Fade the dom node out, update it, and fade it back.
              *
              * @private
-             * @method _hello
+             * @method fillResultAjax
              * @param {JQuery} node
              * @param {String} html
              * @param {String} js
@@ -358,9 +457,11 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     });
                 });
                 return promise.promise();
-                //return true;
             };
-            //
+
+            /**
+             * Import an axis to the current's user's toolbar
+             */
             AdminPanel.prototype.importAxis = function () {
                 var axisimportid = $(this).data('axis');
                 if (axisimportid && parseInt(axisimportid) > 0) {
@@ -381,7 +482,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                             $("#message_import_axis").removeClass("alert-danger");
                             $("#message_import_axis").removeClass("alert-warning");
                             $("#message_import_axis").fadeOut(5000);
-                            //maj axe
+                            //maj axis
                             var divAxis = "<div id='editpdlplus_toolbar_"
                                     + toolbar[0].axeid
                                     + "' class='btn-group toolbar' style='display: none;'></div>";
@@ -426,7 +527,10 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                     }).fail(notification.exception);
                 }
             };
-            //
+
+            /**
+             * Refresh tool view, preview and form for editing
+             */
             var refreshToolView = function () {
                 var selectid = $(this).val();
                 $(".editpdlplus_tool").each(function () {
@@ -449,7 +553,6 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                 //load proprieties
                 $('#editpdlplus_tool_item').html("");
                 var params = {toolid: selectid};
-                //this.test();
                 fragment.loadFragment('assignfeedback_editpdfplus', 'tooledit', contextid, params)
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
@@ -516,7 +619,6 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                     $("#message_edit_tool").removeClass("alert-warning");
                                                     //mise à jour bar d'outils
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
-                                                    //var newtool = null;
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var toolTmp = new Tool();
                                                         toolTmp.initAdmin(toolbar[i]);
@@ -524,9 +626,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
-                                                    //AdminPanel.prototype.refreshPrevisu();
                                                     $("#editpdlplus_tool_" + toolbar[0].selecttool).click();
-                                                    //refreshToolView();
                                                 } else {
                                                     $("#message_edit_tool").show();
                                                     $("#message_edit_tool").html(toolbar[0].message);
@@ -604,12 +704,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                         //maj tool worspkace
                                         initToolDisplay();
                                     }.bind(this)).fail(notification.exception);
-                            //templates.appendNodeContents('#editpdlplus_tool_item', html, js).done(function () {
-                            //$(".editpdlplus_tool").on("click", this.refreshToolView);
-                            //}.bind(this))/*.fail(notification.exception)*/;
                         }.bind(this)).fail(notification.exception);
             };
-            //
+
+            /**
+             * Load content for adding a tool
+             */
             AdminPanel.prototype.openDivAddTool = function () {
                 $("#message_edit_tool").hide();
                 $('#editpdlplus_tool_item').html("");
@@ -709,5 +809,6 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                     }.bind(this)).fail(notification.exception);
                         }.bind(this)).fail(notification.exception);
             };
+
             return AdminPanel;
         });

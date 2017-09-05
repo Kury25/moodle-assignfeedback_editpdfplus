@@ -57,6 +57,7 @@ define(['jquery', './annotation'],
             /**
              * Draw the annotation
              * @param {JQuery Entity} canevas
+             * @returns {Annotation} this annotation
              */
             AnnotationStampcomment.prototype.draw = function (canevas) {
                 if (canevas) {

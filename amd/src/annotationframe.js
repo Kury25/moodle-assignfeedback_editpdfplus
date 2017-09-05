@@ -76,6 +76,7 @@ define(['jquery', './annotation'],
             /**
              * Draw the annotation
              * @param {JQuery Entity} canevas
+             * @returns {Annotation} this annotation
              */
             AnnotationFrame.prototype.draw = function (canevas) {
                 //this.shape_id = 'ct_frame_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');

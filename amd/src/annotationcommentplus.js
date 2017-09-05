@@ -19,9 +19,17 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotationcomment
+ * @param {Jquery} $
+ * @param {Annotation} Annotation super-class
+ * @returns {AnnotationCommentplus} annotation comment plus
  */
 define(['jquery', './annotation'],
         function ($, Annotation) {
+
+            /********************************
+             * CONSTRUCTOR and EXTEND-CLASS *
+             ********************************/
+
             // I return an initialized object.
             function AnnotationCommentplus() {
                 // Call the super constructor.
@@ -32,16 +40,24 @@ define(['jquery', './annotation'],
             // The Friend class extends the base Model class.
             AnnotationCommentplus.prototype = Object.create(Annotation.prototype);
 
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Init the annotation with demo parameters
+             * @param {Tool} currentTool
+             */
             AnnotationCommentplus.prototype.initAdminDemo = function (currentTool) {
                 Annotation.prototype.initAdminDemo.call(this, currentTool);
                 this.x = 30;
                 this.y = 90;
             };
+
             /**
-             * Draw a highlight annotation
-             * @protected
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable
+             * Draw the annotation
+             * @param {JQuery Entity} canevas
+             * @returns {Annotation} this annotation
              */
             AnnotationCommentplus.prototype.draw = function (canevas) {
                 if (canevas) {
@@ -54,7 +70,6 @@ define(['jquery', './annotation'],
                     $("#" + this.id).css('height', this.endy - this.y);
                     $("#" + this.id).css('padding', '0 2px');
                     $("#" + this.id).css('position', 'relative');
-                    //$("#" + this.id).css('display', 'inline-block');
                     $("#" + this.id).css('left', this.x);
                     $("#" + this.id).css('top', this.y);
                 }
@@ -63,9 +78,10 @@ define(['jquery', './annotation'],
 
                 return;
             };
+
             /**
-             * Display cartridge and toolbox for the annotation
-             * @returns {Boolean} res
+             * Init a child-annotation with demo parameters
+             * @param {Annotation} annotationparent
              */
             AnnotationCommentplus.prototype.draw_catridge = function (canevas) {
                 var divdisplay;

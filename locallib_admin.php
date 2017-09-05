@@ -33,7 +33,9 @@ use \assignfeedback_editpdfplus\admin_editor;
 
 class assign_feedback_editpdfplus_admin {
 
+    /** @var stdClass $course current course */
     private $course = null;
+    /** @var stdClass $context current context */
     private $context = null;
 
     function __construct(stdClass $context, stdClass $course) {
@@ -42,8 +44,9 @@ class assign_feedback_editpdfplus_admin {
     }
 
     /**
-     * todo.
+     * Display the admin grid to manage axis and tools.
      *
+     * @global $PAGE
      * @return string
      */
     public function view() {
@@ -62,6 +65,13 @@ class assign_feedback_editpdfplus_admin {
         return $html;
     }
 
+    /**
+     * Buid axis moodleform
+     * @global $PAGE
+     * @global $DB
+     * @param $axeid
+     * @return string
+     */
     public function getAxisForm($axeid = null) {
         global $PAGE, $DB;
 
@@ -91,6 +101,13 @@ class assign_feedback_editpdfplus_admin {
         return $html;
     }
 
+    /**
+     * Buid axis moodleform for deleting
+     * @global $PAGE
+     * @global $DB
+     * @param $axeid
+     * @return string
+     */
     public function getAxisDelForm($axeid) {
         global $PAGE, $DB;
 
@@ -113,6 +130,14 @@ class assign_feedback_editpdfplus_admin {
         return $html;
     }
 
+    /**
+     * Buid tool moodleform
+     * @global $PAGE
+     * @global $DB
+     * @param $toolid
+     * @param $axeid
+     * @return string
+     */
     public function getToolForm($toolid = null, $axisid = null) {
         global $PAGE, $DB;
 
@@ -167,7 +192,12 @@ class assign_feedback_editpdfplus_admin {
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;
     }
-
+    
+    /**
+     * Create a admin widget for rendering the editor.
+     *
+     * @return assignfeedback_editpdfplus_widget_admin
+     */
     private function get_widget() {
         global $USER;
 
@@ -203,6 +233,12 @@ class assign_feedback_editpdfplus_admin {
         return $widget;
     }
 
+    /**
+     * Build display for specific tools on toolbars
+     * @param axis $axis
+     * @param array<tool> $tools
+     * @return array<tool>
+     */
     private function prepareToolbar($axis, $tools) {
         $toolbars = array();
         foreach ($axis as $ax) {

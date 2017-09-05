@@ -19,9 +19,16 @@
  */
 /**
  * @module mod_assignfeedback_editpdfplus/annotation
+ * @param {Jquery} $
+ * @param {Global} global constantes
  */
 define(['jquery', './global'],
         function ($, global) {
+
+            /********************************
+             * CONSTRUCTOR and SUPER-CLASS *
+             ********************************/
+
             // I am the internal, static counter for the number of models
             // that have been created in the system. This is used to
             // power the unique identifier of each instance.
@@ -54,8 +61,11 @@ define(['jquery', './global'],
             Annotation.prototype.getInstanceID = function () {
                 return(this._instanceID);
             };
-            /*var Annotation = function () {
-             };*/
+
+            /**************
+             * Parameters *
+             **************/
+
             /**
              * X position
              * @property x
@@ -133,7 +143,22 @@ define(['jquery', './global'],
              * @public
              */
             Annotation.cartridgey = 0;
+            /**
+             * mode readonly demo or not
+             * @property adminDemo
+             * @type Boolean
+             * @public
+             */
             Annotation.adminDemo = 0;
+
+            /*************
+             * FUNCTIONS *
+             *************/
+
+            /**
+             * Initialize tooltype object from an object from database with its base's id
+             * @param {object} config
+             */
             Annotation.prototype.init = function (config) {
                 this.cartridgex = parseInt(config.cartridgex, 10) || 0;
                 this.cartridgey = parseInt(config.cartridgey, 10) || 0;
@@ -148,6 +173,10 @@ define(['jquery', './global'],
                 this.toolid = config.toolid;
             };
 
+            /**
+             * Initialize tooltype object from an object from database
+             * @param {Tool} currentTool
+             */
             Annotation.prototype.initAdminDemo = function (currentTool) {
                 this.id = 'previsu_annot';
                 this.displaylock = 1;
@@ -155,19 +184,18 @@ define(['jquery', './global'],
                 this.tooltype = currentTool;
                 this.colour = currentTool.get_color();
             };
+
             /**
-             * Draw an annotation
-             * @public
-             * @method draw
-             * @return M.assignfeedback_editpdfplus.drawable|false
+             * Draw an annotation - super class
+             * @returns {Annotation} this annotation
              */
             Annotation.prototype.draw = function () {
                 // Should be overridden by the subclass.
             };
+
             /**
              * Get the final color for the annotation
              * @return string
-             * @protected
              */
             Annotation.prototype.get_color = function () {
                 var color = global.ANNOTATIONCOLOUR[this.colour];
@@ -180,10 +208,10 @@ define(['jquery', './global'],
                 }
                 return color;
             };
+
             /**
              * Get the final color for the cartridge
              * @return string
-             * @protected
              */
             Annotation.prototype.get_color_cartridge = function () {
                 var color = global.ANNOTATIONCOLOUR[this.tooltype.get_color_cartridge()];
@@ -196,9 +224,9 @@ define(['jquery', './global'],
                 }
                 return color;
             };
+
             /**
-             * Init the HTML id for the annotation
-             * @protected
+             * Init the HTML id for the cartridge's annotation
              */
             Annotation.prototype.init_div_cartridge_id = function () {
                 var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
@@ -208,10 +236,12 @@ define(['jquery', './global'],
                     this.divcartridge = 'ct_' + this.id + '_' + date;
                 }
             };
+
             /**
              * get the html node for the cartridge
              * @param {string} colorcartridge
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_div_cartridge = function (colorcartridge, canevas) {
                 var div = "<div ";
@@ -230,11 +260,12 @@ define(['jquery', './global'],
                 }
                 return divdisplay;
             };
+
             /**
              * get the html node for the label cartridge
              * @param {string} colorcartridge
-             * @param {boolean} draggable
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_div_cartridge_label = function (colorcartridge, canevas/*, draggable*/) {
                 var divcartridge = "<div ";
@@ -258,10 +289,12 @@ define(['jquery', './global'],
                  }*/
                 return divcartridgedisplay;
             };
+
             /**
              * get the html node for the textannot associated to the annotation
              * @param {string} colorcartridge
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_div_input = function (colorcartridge, canevas) {
                 var divinput = "<div ";
@@ -278,9 +311,11 @@ define(['jquery', './global'],
                 //}
                 return divinputdisplay;
             };
+
             /**
              * get the html node for the edition of comment and parameters
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_div_edition = function (canevas) {
                 var divedition = "<div ";
@@ -327,10 +362,12 @@ define(['jquery', './global'],
                 }
                 return diveditiondisplay;
             };
+
             /**
              * get the html node for the text annotation, tools and options
              * @param {string} colorcartridge
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_div_container = function (colorcartridge, canevas) {
                 var divconteneur = "<div ";
@@ -368,6 +405,7 @@ define(['jquery', './global'],
 
                 return divconteneurdisplay;
             };
+
             /**
              * get the html node for the hidden input to keep information about question state
              * @return node
@@ -379,9 +417,11 @@ define(['jquery', './global'],
                 }
                 return "<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>";
             };
+
             /**
              * get the html node for the button to set visibility on right
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_visibility_right = function (canevas) {
                 var buttonvisibility = "<button id='"
@@ -402,9 +442,11 @@ define(['jquery', './global'],
                 }
                 return buttonvisibilitydisplay;
             };
+
             /**
              * get the html node for the button to set visibility on left
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_visibility_left = function (canevas) {
                 var buttonvisibility = "<button id='"
@@ -428,7 +470,8 @@ define(['jquery', './global'],
 
             /**
              * get the html node for the button to save the text in the annotation
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_save = function (canevas) {
                 var buttonsave = "<button id='"
@@ -451,7 +494,8 @@ define(['jquery', './global'],
             };
             /**
              * get the html node for the button to cancel the text edition of the annotation
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_cancel = function (canevas) {
                 var buttoncancel = "<button id='"
@@ -475,7 +519,8 @@ define(['jquery', './global'],
 
             /**
              * get the html node for the button to set a question
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_question = function (canevas) {
                 var buttonquestion = "<button id='"
@@ -499,9 +544,11 @@ define(['jquery', './global'],
                 }
                 return buttonquestiondisplay;
             };
+
             /**
              * get the html node for the button to remove the annotation
-             * @return node
+             * @param {JQuery Entity} canevas
+             * @return {JQuery Entity} node
              */
             Annotation.prototype.get_button_remove = function (canevas) {
                 var buttontrash = "<button id='"
@@ -522,9 +569,9 @@ define(['jquery', './global'],
                 }
                 return buttontrashdisplay;
             };
+
             /**
              * display the annotation according to parameters and profile
-             * @return node
              */
             Annotation.prototype.apply_visibility_annot = function () {
                 var divdisplay = $('#' + this.divcartridge + "_display");
@@ -568,6 +615,7 @@ define(['jquery', './global'],
                 }
                 this.apply_question_status();
             };
+
             /**
              * get the html node for the text to display for the annotation, according to parameters
              * @return node
@@ -591,9 +639,9 @@ define(['jquery', './global'],
                 }
                 return finalcontent;
             };
+
             /**
              * change question set of the annotation
-             * @return null
              */
             Annotation.prototype.apply_question_status = function () {
                 var buttonquestion = $('#' + this.divcartridge + "_buttonquestion");
@@ -614,14 +662,17 @@ define(['jquery', './global'],
                 }
                 return;
             };
+
             /**
              * global method, draw empty cartridge
              */
             Annotation.prototype.draw_catridge = function () {
                 return true;
             };
+
             /**
              * display annotation edditing view
+             * @param {Event} event
              */
             Annotation.prototype.edit_annot = function (event) {
                 if (event.data.annotation.tooltype.typetool <= global.TOOLTYPE.COMMENTPLUS/* && !this.parent_annot_element*/) {
@@ -664,9 +715,10 @@ define(['jquery', './global'],
                             annot.save_annot_clickout);
                 }
             };
+
             /**
              * fill input edition with new text
-             * @param {type} e
+             * @param {event} e
              * @param {string} unputtext
              */
             Annotation.prototype.fill_input_edition = function (e, unputtext) {
@@ -677,7 +729,6 @@ define(['jquery', './global'],
                 this.save_annot(unputtext);
             };
             Annotation.prototype.save_annot_clickout = function (event) {
-                //alert(event.target.id === "canevas");
                 if ((event.target.id === "canevas" /*&& this.editor.currentannotation === this*/)) {
                     if (event.data.annotation.adminDemo === 1) {
                         event.data.annotation.cancel_edit();
@@ -687,6 +738,7 @@ define(['jquery', './global'],
                 }
                 return;
             };
+
             /**
              * save text annotation
              * @param {string} result
@@ -706,10 +758,9 @@ define(['jquery', './global'],
                 this.hide_edit();
                 this.apply_visibility_annot();
             };
+
             /**
              * cancel annotation detail view
-             * @param {type} e
-             * @param {string} clickType
              */
             Annotation.prototype.cancel_edit = function () {
                 //if (!(clickType === 'clickoutside' /*&& this.editor.currentannotation === this)*/)) {
@@ -727,9 +778,10 @@ define(['jquery', './global'],
                 //}
                 //return;
             };
+
             /**
              * remove annotation detail view
-             * @param {type} e
+             * @param {Event} e
              * @param {string} clickType
              */
             Annotation.prototype.hide_edit = function (e, clickType) {
@@ -746,7 +798,6 @@ define(['jquery', './global'],
                     var buttonstatus = $('#' + this.divcartridge + "_radioContainer");
                     if (divdisplay) {
                         divdisplay.show();
-                        //divdisplay.css('display', 'inline');
                         divdisplay.css('color', this.get_color_cartridge());
                     }
                     if (buttonrotation) {
@@ -781,6 +832,7 @@ define(['jquery', './global'],
                     }
                 }
             };
+
             /**
              * Disable canvas event (click on other tool or annotation)
              */
@@ -788,6 +840,7 @@ define(['jquery', './global'],
                 var drawingcanvas = $(global.SELECTOR.DRAWINGCANVAS);
                 drawingcanvas.off('click');
             };
+
             /**
              * Enable canvas event (click on other tool or annotation)
              */
@@ -797,9 +850,9 @@ define(['jquery', './global'],
                  drawingcanvas.on('gesturemove', this.editor.edit_move, null, this.editor);
                  drawingcanvas.on('gesturemoveend', this.editor.edit_end, null, this.editor);*/
             };
+
             /**
              * change the visibility of the annotation according to parameters and variable sens
-             * @param {type} e
              * @param {char} sens
              */
             Annotation.prototype.change_visibility_annot = function (sens) {
@@ -815,6 +868,7 @@ define(['jquery', './global'],
                 this.apply_visibility_annot();
                 //this.editor.save_current_page();
             };
+
             /**
              * get the final reference text value
              * @return node
@@ -825,7 +879,6 @@ define(['jquery', './global'],
                 }
                 return '';
             };
-
 
             return Annotation;
         });

@@ -49,6 +49,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit axis form for adding or edditing
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_axis_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -66,7 +74,6 @@ class assignfeedback_editpdfplus_external extends external_api {
         if (WS_SERVER) {
             // Assume form submission if coming from WS.
             $USER->ignoresesskey = true;
-            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
         }
 
         $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
@@ -93,14 +100,13 @@ class assignfeedback_editpdfplus_external extends external_api {
             $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
-
         return $warnings;
     }
 
-    /* public static function submit_axis_form_returns() {
-      return new external_warnings();
-      } */
-
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_axis_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
@@ -125,6 +131,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit axis form for deleting
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_axis_del_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -167,10 +181,10 @@ class assignfeedback_editpdfplus_external extends external_api {
         return $warnings;
     }
 
-    /* public static function submit_axis_form_returns() {
-      return new external_warnings();
-      } */
-
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_axis_del_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
@@ -193,6 +207,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit tool form for edditing
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_tool_edit_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -210,7 +232,6 @@ class assignfeedback_editpdfplus_external extends external_api {
         if (WS_SERVER) {
             // Assume form submission if coming from WS.
             $USER->ignoresesskey = true;
-            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
         }
 
         $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
@@ -237,21 +258,13 @@ class assignfeedback_editpdfplus_external extends external_api {
             $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
-        /* if ($validateddata) {
-          if ($validateddata->axeid) {
-          admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
-          $axeid = $validateddata->axeid;
-          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
-          } else {
-          $axeid = admin_editor::add_axis($validateddata->label, $context->id);
-          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
-          }
-          } */
-
-
         return $warnings;
     }
 
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_tool_edit_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
@@ -280,6 +293,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit tool form for adding
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_tool_add_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -297,7 +318,6 @@ class assignfeedback_editpdfplus_external extends external_api {
         if (WS_SERVER) {
             // Assume form submission if coming from WS.
             $USER->ignoresesskey = true;
-            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
         }
 
         $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
@@ -323,21 +343,13 @@ class assignfeedback_editpdfplus_external extends external_api {
             $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
 
-        /* if ($validateddata) {
-          if ($validateddata->axeid) {
-          admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
-          $axeid = $validateddata->axeid;
-          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
-          } else {
-          $axeid = admin_editor::add_axis($validateddata->label, $context->id);
-          return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
-          }
-          } */
-
-
         return $warnings;
     }
 
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_tool_add_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
@@ -366,6 +378,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit tool form for deleting
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_tool_del_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -383,7 +403,6 @@ class assignfeedback_editpdfplus_external extends external_api {
         if (WS_SERVER) {
             // Assume form submission if coming from WS.
             $USER->ignoresesskey = true;
-            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
         }
 
         $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
@@ -416,6 +435,10 @@ class assignfeedback_editpdfplus_external extends external_api {
         return $warnings;
     }
 
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_tool_del_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
@@ -444,6 +467,14 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Submit axis form for importing
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
     public static function submit_axis_import_form($jsonformdata) {
         global $USER, $PAGE, $DB;
 
@@ -461,7 +492,6 @@ class assignfeedback_editpdfplus_external extends external_api {
         if (WS_SERVER) {
             // Assume form submission if coming from WS.
             $USER->ignoresesskey = true;
-            //$data['_qf__mod_assign_grade_form_' . $params['userid']] = 1;
         }
 
         $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
@@ -480,11 +510,9 @@ class assignfeedback_editpdfplus_external extends external_api {
             $axeNew = admin_editor::import_axis($axeToImport, $context->id);
             if ($axeNew) {
                 $tools = admin_editor::get_tools_by_axis($axeToImport->id);
-                //$toolsNew = array();
                 foreach ($tools as $toolToImport) {
                     admin_editor::import_tool($toolToImport, $axeNew, $context->id);
                 }
-                //$res = array('axeid' => $axeNew, 'axelabel' => $axeToImport->label);
                 $res = array();
                 $toolsNew = admin_editor::get_tools_by_axis($axeNew);
                 if (sizeof($toolsNew) > 0) {
@@ -503,10 +531,10 @@ class assignfeedback_editpdfplus_external extends external_api {
         return $warnings;
     }
 
-    /* public static function submit_axis_form_returns() {
-      return new external_warnings();
-      } */
-
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
     public static function submit_axis_import_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
