@@ -5526,6 +5526,7 @@ EDITOR.prototype = {
         if (axisselector) {
             axisselector.on('change', this.update_custom_toolbars, this);
         }
+        this.update_custom_toolbars();
         Y.all(SELECTOR.CUSTOMTOOLBARBUTTONS).each(function (toolnode) {
             var toolid = toolnode.get('id');
             var toollib = toolnode.getAttribute('data-tool');
