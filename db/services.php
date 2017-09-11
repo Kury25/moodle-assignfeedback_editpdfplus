@@ -36,7 +36,7 @@ $functions = array(
     ),
     'assignfeedback_editpdfplus_submit_axis_edit_form' => array(
         'classname' => 'assignfeedback_editpdfplus_external',
-        'methodname' => 'submit_axis_edit_form',
+        'methodname' => 'submit_axis_form',
         'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
         'description' => 'Edit an axis',
         'type' => 'write',
