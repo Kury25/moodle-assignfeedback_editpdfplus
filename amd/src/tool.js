@@ -166,6 +166,7 @@ define(['./global'],
              */
             Tool.prototype.initAdmin = function (config) {
                 this.id = parseInt(config.toolid, 10) || 0;
+                this.axis = parseInt(config.axis, 10) || 0;
                 this.typetool = config.typetool;
                 this.label = config.button;
                 this.enabled = config.enable;

@@ -129,6 +129,7 @@ $string['admintoolboxtypetool_type'] = 'Type';
 $string['admintoolboxtoolbardisplay'] = 'Affichage barre d\'outil';
 $string['admintoolboxtoolbardisplay_button'] = 'Bouton';
 $string['admintoolboxtoolbardisplay_order'] = 'Ordre';
+$string['admintoolboxtoolbardisplay_axis'] = 'Axe';
 $string['admintoolboxcartridge'] = 'Cartouche';
 $string['admintoolboxcartridge_label'] = 'Libellé';
 $string['admintoolboxcartridge_color'] = 'Couleur';

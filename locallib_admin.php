@@ -188,6 +188,8 @@ class assign_feedback_editpdfplus_admin {
         foreach ($data->tools as $toolRef) {
             $toolRef->libelle = get_string('typetool_' . $toolRef->label, 'assignfeedback_editpdfplus');
         }
+        $axis = page_editor::get_axis(array($this->context->id));
+        $data->axis = $axis;
         $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;

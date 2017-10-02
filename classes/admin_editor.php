@@ -72,10 +72,10 @@ class admin_editor {
     public static function add_tool($data, $contextid) {
         global $DB;
 
-        $maxindice = admin_editor::reorder_tool($data->axisid);
+        $maxindice = admin_editor::reorder_tool($data->toolaxis);
 
         $tool = new tool();
-        $tool->axis = $data->axisid;
+        $tool->axis = $data->toolaxis;
         $tool->cartridge = $data->libelle;
         $tool->cartridge_color = $data->catridgecolor;
         $tool->contextid = $contextid;
@@ -225,6 +225,7 @@ class admin_editor {
 
         $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolJson->toolid), '*', MUST_EXIST);
         $tool = new tool($record);
+        $tool->axis = $toolJson->toolaxis;
         $tool->type = $toolJson->typetool;
         $tool->colors = $toolJson->color;
         $tool->cartridge = $toolJson->libelle;

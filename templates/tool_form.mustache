@@ -95,6 +95,18 @@
                                     <table>
                                         <tr>
                                             <td style="width: 25%;">
+                                                <label class="control-label" for="toolaxis">{{# str }} admintoolboxtoolbardisplay_axis, assignfeedback_editpdfplus {{/ str }}</label>
+                                            </td>
+                                            <td>
+                                                <select class="form-control" id="toolaxis" name="toolaxis">
+                                                    {{# axis }}
+                                                    <option value='{{id}}'>{{label}}</option>
+                                                    {{/ axis }}
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 25%;">
                                                 <label class="control-label" for="button">
                                                     {{# str }} admintoolboxtoolbardisplay_button, assignfeedback_editpdfplus {{/ str }}
                                                 </label>
@@ -196,7 +208,7 @@
 
                     <div style='display:none;'>
                         <input type="hidden" name="toolid" value="{{tool.id}}" />
-                        <input type="hidden" name="axisid" value="{{tool.axis}}" />
+                        <input type="hidden" name="axisid" id="axisid" value="{{tool.axis}}" />
                         <input type="hidden" name="courseid" value="{{courseid}}" />
                         <input type="hidden" name="sesskey" value="{{sesskey}}" />
                         <input type="hidden" name="enabled" id="toolenabled" value="{{tool.enabled}}" />
@@ -219,6 +231,7 @@
 require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
 
 {{#tool.id}}$("#typetool").val({{tool.type}});{{/tool.id}}
+{{#tool.id}}$("#toolaxis").val({{tool.axis}});{{/tool.id}}
 
 var $collectionHolder;
 

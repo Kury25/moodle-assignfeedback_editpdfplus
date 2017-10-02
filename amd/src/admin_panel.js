@@ -225,6 +225,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
              * Init tool form and preview
              */
             AdminPanel.prototype.refreshPrevisu = function () {
+                currentTool.axis = $("#toolaxis").val();
                 currentTool.typetool = $("#typetool").val();
                 currentTool.colors = $("#color").val();
                 currentTool.cartridge = $("#libelle").val();
@@ -559,6 +560,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                     .done(function () {
                                         currentTool = new Tool();
                                         currentTool.id = selectid;
+                                        currentTool.axis = $("#toolaxis").val();
                                         currentTool.typetool = $("#typetool").val();
                                         var typetoolEntity = getTypeTool(currentTool.typetool);
                                         currentTool.type = typetoolEntity;
@@ -618,6 +620,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                     $("#message_edit_tool").removeClass("alert-danger");
                                                     $("#message_edit_tool").removeClass("alert-warning");
                                                     //mise à jour bar d'outils
+                                                    $("#editpdlplus_tool_" + toolbar[0].selecttool).remove();
                                                     $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var toolTmp = new Tool();
@@ -626,6 +629,11 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                         $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
+                                                    var oldaxeid = $("#axisid").val();
+                                                    if (oldaxeid !== toolbar[0].axeid) {
+                                                        $("#editpdlplus_axes").val(toolbar[0].axeid);
+                                                        $("#editpdlplus_axes").change();
+                                                    }
                                                     $("#editpdlplus_tool_" + toolbar[0].selecttool).click();
                                                 } else {
                                                     $("#message_edit_tool").show();
@@ -723,6 +731,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                     .done(function () {
                                         $("#canevas").hide();
                                         if (action === "clone") {
+                                            $("#toolaxis").val(currentTool.axis);
                                             $("#typetool").val(currentTool.typetool);
                                             $("#color").val(currentTool.colors);
                                             $("#libelle").val(currentTool.cartridge);
@@ -738,6 +747,7 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                             currentTool = new Tool();
                                             $("#typetool").on("change", function () {
                                                 currentTool = new Tool();
+                                                currentTool.axis = $("#toolaxis").val();
                                                 currentTool.typetool = $("#typetool").val();
                                                 var typetoolEntity = getTypeTool(currentTool.typetool);
                                                 currentTool.type = typetoolEntity;
