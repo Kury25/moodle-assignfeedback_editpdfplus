@@ -224,6 +224,9 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 initSortableToolBar();
             };
 
+            /**
+             * Init tool order by drag and drop
+             */
             var initSortableToolBar = function () {
                 $(".sortable").sortable({
                     placeholder: "alert-warning",

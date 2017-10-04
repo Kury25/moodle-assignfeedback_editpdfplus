@@ -268,7 +268,7 @@ define(['./global'],
                 return buttonTmp;
             };
             /**
-             * Get the html code for design the tool's button into the toolbar
+             * Get the html code for design the tool's button into the toolbar in a list li
              * @param {int} selectToolId
              * @return {string} HTML code
              */
