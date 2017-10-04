@@ -20,6 +20,7 @@
 /**
  * @module mod_assignfeedback_editpdfplus/admin_panel
  * @param {Jquery} $
+ * @param {Jqueryui} $.ui
  * @param {core/notification} notification
  * @param {core/templates} templates
  * @param {core/fragment} fragment
@@ -34,13 +35,13 @@
  * @param {assignfeedback_editpdfplus/annotationverticalline} AnnotationVerticalline
  * @param {assignfeedback_editpdfplus/annotationstampcomment} AnnotationStampcomment
  */
-define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
+define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragment',
     'core/ajax', 'core/str', 'assignfeedback_editpdfplus/tool', 'assignfeedback_editpdfplus/tooltype',
     'assignfeedback_editpdfplus/annotationhighlightplus',
     'assignfeedback_editpdfplus/annotationstampplus', 'assignfeedback_editpdfplus/annotationframe',
     'assignfeedback_editpdfplus/annotationcommentplus', 'assignfeedback_editpdfplus/annotationverticalline',
     'assignfeedback_editpdfplus/annotationstampcomment'],
-        function ($, notification, templates, fragment, ajax, str, Tool, ToolType,
+        function ($, jqui, notification, templates, fragment, ajax, str, Tool, ToolType,
                 AnnotationHighlightplus, AnnotationStampplus, AnnotationFrame,
                 AnnotationCommentplus, AnnotationVerticalline, AnnotationStampcomment) {
 
@@ -219,6 +220,49 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
             AdminPanel.prototype.initToolUI = function () {
                 $(this.selectTool).removeClass("btn-default");
                 $(this.selectTool).addClass("btn-primary");
+
+                initSortableToolBar();
+            };
+
+            var initSortableToolBar = function () {
+                $(".sortable").sortable({
+                    placeholder: "alert-warning",
+                    handle: 'button',
+                    cancel: '',
+                    stop: function (event, uiElement) {
+                        var prevButtonId = $(uiElement.item).prev().find("button").val();
+                        var nextButtonId = $(uiElement.item).next().find("button").val();
+                        var currentButtonId = $(uiElement.item).find("button").val();
+                        $("input[name^='previoustoolid']").val(prevButtonId);
+                        $("input[name^='toolid']").val(currentButtonId);
+                        $("input[name^='nexttoolid']").val(nextButtonId);
+                        var form = $('#assignfeedback_editpdfplus_order_tool');
+                        var data = form.serialize() + "&courseid=" + $("#courseid").val();
+                        ajax.call([
+                            {
+                                methodname: 'assignfeedback_editpdfplus_submit_tool_order_form',
+                                args: {jsonformdata: JSON.stringify(data)}
+                            }
+                        ])[0].done(function (retour) {
+                            if (retour.message === "ok") {
+                                //mise à jour du message
+                                $("#message_order_tool").show();
+                                $("#message_order_tool").html(AdminPanel.messageEditOk);
+                                $("#message_order_tool").addClass("alert-success");
+                                $("#message_order_tool").removeClass("alert-danger");
+                                $("#message_order_tool").removeClass("alert-warning");
+                                $("#message_order_tool").fadeOut(5000);
+                            } else {
+                                $("#message_order_tool").show();
+                                $("#message_order_tool").html(AdminPanel.messageko);
+                                $("#message_order_tool").addClass("alert-danger");
+                                $("#message_order_tool").removeClass("alert-success");
+                                $("#message_order_tool").fadeOut(5000);
+                            }
+                        }).fail(notification.exception);
+                    }
+                });
+                $(".sortable").disableSelection();
             };
 
             /**
@@ -486,8 +530,11 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                             //maj axis
                             var divAxis = "<div id='editpdlplus_toolbar_"
                                     + toolbar[0].axeid
-                                    + "' class='btn-group toolbar' style='display: none;'></div>";
+                                    + "' class='btn-group toolbar' style='display: none;'>"
+                                    + "<ul class='sortable' style='list-style-type: none;margin: 0;padding: 0;width: 100%;'></ul>"
+                                    + "</div>";
                             $('#editpdlplus_toolbars').append(divAxis);
+                            initSortableToolBar();
                             var option = new Option(toolbar[0].axelabel, toolbar[0].axeid, true, true);
                             $("#editpdlplus_axes").append(option);
                             var axeOption = $("#editpdlplus_axes option[value='" + toolbar[0].axeid + "']");
@@ -500,8 +547,8 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                 for (var i = 0; i < toolbar.length; i++) {
                                     var toolTmp = new Tool();
                                     toolTmp.initAdmin(toolbar[i]);
-                                    var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
-                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                    var buttonTmp = toolTmp.getButtonSortable(toolbar[i].selecttool);
+                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").append(buttonTmp);
                                 }
                             } else {
                                 var axeid = toolbar[0].axeid;
@@ -621,12 +668,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                     $("#message_edit_tool").removeClass("alert-warning");
                                                     //mise à jour bar d'outils
                                                     $("#editpdlplus_tool_" + toolbar[0].selecttool).remove();
-                                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                    $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").html("");
                                                     for (var i = 0; i < toolbar.length; i++) {
                                                         var toolTmp = new Tool();
                                                         toolTmp.initAdmin(toolbar[i]);
-                                                        var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
-                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                        var buttonTmp = toolTmp.getButtonSortable(toolbar[i].selecttool);
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").append(buttonTmp);
                                                     }
                                                     $(".editpdlplus_tool").on("click", refreshToolView);
                                                     var oldaxeid = $("#axisid").val();
@@ -678,13 +725,13 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         $("#message_edit_tool").removeClass("alert-warning");
                                                         //mise à jour bar d'outils
-                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").html("");
                                                         if (parseInt(toolbar[0].toolid) > 0) {
                                                             for (var i = 0; i < toolbar.length; i++) {
                                                                 var toolTmp = new Tool();
                                                                 toolTmp.initAdmin(toolbar[i]);
-                                                                var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
-                                                                $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                                var bT = toolTmp.getButtonSortable(toolbar[i].selecttool);
+                                                                $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").append(bT);
                                                             }
                                                             $(".editpdlplus_tool").on("click", refreshToolView);
                                                         } else {
@@ -793,12 +840,12 @@ define(['jquery', 'core/notification', 'core/templates', 'core/fragment',
                                                         $("#message_edit_tool").removeClass("alert-danger");
                                                         $("#message_edit_tool").removeClass("alert-warning");
                                                         //mise à jour bar d'outils
-                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid).html("");
+                                                        $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").html("");
                                                         for (var i = 0; i < toolbar.length; i++) {
                                                             var toolTmp = new Tool();
                                                             toolTmp.initAdmin(toolbar[i]);
-                                                            var buttonTmp = toolTmp.getButton(toolbar[i].selecttool);
-                                                            $("#editpdlplus_toolbar_" + toolbar[0].axeid).append(buttonTmp);
+                                                            var btnTmp = toolTmp.getButtonSortable(toolbar[i].selecttool);
+                                                            $("#editpdlplus_toolbar_" + toolbar[0].axeid + " > ul").append(btnTmp);
                                                         }
                                                         $(".editpdlplus_tool").on("click", refreshToolView);
                                                         $('#toolworkspace').html("");

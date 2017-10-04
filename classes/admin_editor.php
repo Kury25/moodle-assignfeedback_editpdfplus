@@ -108,6 +108,34 @@ class admin_editor {
         return null;
     }
 
+    public static function edit_tool_order($data) {
+        global $DB;
+        $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->toolid), '*', MUST_EXIST);
+        $toolCurrent = new tool($record);
+        $previousorder = -1;
+        $toolPrevious = null;
+        $toolNext = null;
+        if ($data->previoustoolid) {
+            $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->previoustoolid), '*', MUST_EXIST);
+            $toolPrevious = new tool($record);
+            $previousorder = $toolPrevious->order_tool + 1;
+        } elseif ($data->nexttoolid) {
+            $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->nexttoolid), '*', MUST_EXIST);
+            $toolNext = new tool($record);
+            $previousorder = $toolNext->order_tool - 1;
+        }
+        if ($previousorder > -1 && ($toolPrevious || $toolNext )) {
+            if ($previousorder == 0) {
+                $previousorder = 1;
+            }
+            $toolCurrent->order_tool = $previousorder;
+            debugging($previousorder);
+            if ($DB->update_record('assignfeedback_editpp_tool', $toolCurrent)) {
+                admin_editor::reorder_tool($toolCurrent->axis, $data->toolid);
+            }
+        }
+    }
+
     /**
      * Order tools of a toolbar
      * @global type $DB

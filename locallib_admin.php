@@ -29,6 +29,7 @@ use \assignfeedback_editpdfplus\widget_admin;
 use \assignfeedback_editpdfplus\form\axis_form;
 use \assignfeedback_editpdfplus\form\axis_import_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
+use \assignfeedback_editpdfplus\form\tool_order_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
 class assign_feedback_editpdfplus_admin {
@@ -58,8 +59,13 @@ class assign_feedback_editpdfplus_admin {
         $axisimportform->id = "assignfeedback_editpdfplus_import_axis";
         $axisimportform->title = "";
         $axisimportform->action = "import";
+        $toolorderform = new tool_order_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_order_tool"));
+        $toolorderform->id = "assignfeedback_editpdfplus_order_tool";
+        $toolorderform->title = "";
+        $toolorderform->action = "order";
         $widget = $this->get_widget();
         $widget->axisimportform = $axisimportform;
+        $widget->toolorderform = $toolorderform;
         $widget->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin($widget);
         return $html;

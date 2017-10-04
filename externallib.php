@@ -551,4 +551,72 @@ class assignfeedback_editpdfplus_external extends external_api {
         );
     }
 
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_tool_order_form_parameters() {
+        return new external_function_parameters(
+                array(
+            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+                )
+        );
+    }
+
+    /**
+     * Submit tool form for changing order
+     * @global $USER
+     * @global $PAGE
+     * @global $DB
+     * @param String $jsonformdata
+     * @return array
+     */
+    public static function submit_tool_order_form($jsonformdata) {
+        global $USER, $PAGE, $DB;
+
+        $params = self::validate_parameters(self::submit_tool_order_form_parameters(), array(
+                    'jsonformdata' => $jsonformdata
+        ));
+
+        $serialiseddata = json_decode($params['jsonformdata']);
+
+        $data = array();
+        parse_str($serialiseddata, $data);
+
+        $warnings = array();
+
+        if (WS_SERVER) {
+            // Assume form submission if coming from WS.
+            $USER->ignoresesskey = true;
+        }
+
+        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+
+        $customdata = (object) $data;
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey && $customdata->toolid) {
+            admin_editor::edit_tool_order($customdata);
+            $warnings = array('message' => 'ok');
+        } else {
+            $warnings = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+        }
+
+        return $warnings;
+    }
+
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
+    public static function submit_tool_order_form_returns() {
+        return new external_single_structure(
+                array(
+            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+                )
+        );
+    }
+
 }

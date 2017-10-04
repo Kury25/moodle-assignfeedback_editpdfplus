@@ -267,6 +267,14 @@ define(['./global'],
                         + "</button>";
                 return buttonTmp;
             };
+            /**
+             * Get the html code for design the tool's button into the toolbar
+             * @param {int} selectToolId
+             * @return {string} HTML code
+             */
+            Tool.prototype.getButtonSortable = function (selectToolId) {
+                return "<li style='float: left;display: block;'>" + this.getButton(selectToolId) + "</li>";
+            };
 
             return Tool;
         });
