@@ -777,6 +777,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
                                         $("#canevas").hide();
+                                        $("#toolaxis").val(axeid);
                                         if (action === "clone") {
                                             $("#toolaxis").val(currentTool.axis);
                                             $("#typetool").val(currentTool.typetool);
