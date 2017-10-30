@@ -91,7 +91,8 @@ class page_editor {
         global $DB;
         $record = $DB->get_record('assignfeedback_editpp_typet', array('id' => $tooltypeid));
         if ($record) {
-            return new type_tool($record);
+            $newTypeTool = new type_tool($record);
+            return page_editor::custom_type_tool($newTypeTool);
         }
         return false;
     }
@@ -110,7 +111,8 @@ class page_editor {
             $records = $DB->get_records('assignfeedback_editpp_typet');
         }
         foreach ($records as $record) {
-            array_push($typetools, new type_tool($record));
+            $newToolType = new type_tool($record);
+            array_push($typetools, page_editor::custom_type_tool($newToolType));
         }
         return $typetools;
     }
@@ -395,10 +397,10 @@ class page_editor {
             $annotation->gradeid = $grade->id;
             $DB->insert_record('assignfeedback_editpp_annot', $annotation);
         }
-        /*foreach ($comments as $comment) {
-            $comment->gradeid = $grade->id;
-            $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
-        }*/
+        /* foreach ($comments as $comment) {
+          $comment->gradeid = $grade->id;
+          $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
+          } */
 
         $fs = get_file_storage();
 
@@ -464,6 +466,129 @@ class page_editor {
     public function get_feedback_comments($gradeid) {
         global $DB;
         return $DB->get_record('assignfeedback_comments', array('grade' => $gradeid));
+    }
+
+    public static function custom_type_tool(type_tool $newToolType) {
+        global $CFG;
+        switch ($newToolType->label) {
+            case 'highlightplus':
+                if (isset($CFG->highlightplus_configurable) && (intval($CFG->highlightplus_configurable) == 0 || intval($CFG->highlightplus_configurable) == 1)) {
+                    if (intval($CFG->highlightplus_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->highlightplus_color) && $CFG->highlightplus_color != null && strlen($CFG->highlightplus_color) > 4) {
+                    $newToolType->color = $CFG->highlightplus_color;
+                }
+                if (isset($CFG->highlightplus_cartridge_color) && $CFG->highlightplus_cartridge_color != null && strlen($CFG->highlightplus_cartridge_color) > 4) {
+                    $newToolType->cartridge_color = $CFG->highlightplus_cartridge_color;
+                }
+                if (isset($CFG->highlightplus_cartridge_x) && (intval($CFG->highlightplus_cartridge_x) || $CFG->highlightplus_cartridge_x == '0')) {
+                    $newToolType->cartridge_x = intval($CFG->highlightplus_cartridge_x);
+                }
+                if (isset($CFG->highlightplus_cartridge_y) && (intval($CFG->highlightplus_cartridge_y) || $CFG->highlightplus_cartridge_y == '0')) {
+                    $newToolType->cartridge_y = intval($CFG->highlightplus_cartridge_y);
+                }
+                break;
+
+            case 'stampplus':
+                if (isset($CFG->stampplus_configurable) && (intval($CFG->stampplus_configurable) == 0 || intval($CFG->stampplus_configurable) == 1)) {
+                    if (intval($CFG->stampplus_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->stampplus_color) && $CFG->stampplus_color != null && strlen($CFG->stampplus_color) > 4) {
+                    $newToolType->color = $CFG->stampplus_color;
+                }
+                break;
+
+            case 'frame':
+                if (isset($CFG->frame_configurable) && (intval($CFG->frame_configurable) == 0 || intval($CFG->frame_configurable) == 1)) {
+                    if (intval($CFG->frame_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->frame_cartridge_x) && (intval($CFG->frame_cartridge_x) || $CFG->frame_cartridge_x == '0')) {
+                    $newToolType->cartridge_x = intval($CFG->frame_cartridge_x);
+                }
+                if (isset($CFG->frame_cartridge_y) && (intval($CFG->frame_cartridge_y) || $CFG->frame_cartridge_y == '0')) {
+                    $newToolType->cartridge_y = intval($CFG->frame_cartridge_y);
+                }
+                break;
+
+            case 'verticalline':
+                if (isset($CFG->verticalline_configurable) && (intval($CFG->verticalline_configurable) == 0 || intval($CFG->verticalline_configurable) == 1)) {
+                    if (intval($CFG->verticalline_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->verticalline_color) && $CFG->verticalline_color != null && strlen($CFG->verticalline_color) > 4) {
+                    $newToolType->color = $CFG->verticalline_color;
+                }
+                if (isset($CFG->verticalline_cartridge_color) && $CFG->verticalline_cartridge_color != null && strlen($CFG->verticalline_cartridge_color) > 4) {
+                    $newToolType->cartridge_color = $CFG->verticalline_cartridge_color;
+                }
+                if (isset($CFG->verticalline_cartridge_x) && (intval($CFG->verticalline_cartridge_x) || $CFG->verticalline_cartridge_x == '0')) {
+                    $newToolType->cartridge_x = intval($CFG->verticalline_cartridge_x);
+                }
+                if (isset($CFG->verticalline_cartridge_y) && (intval($CFG->verticalline_cartridge_y) || $CFG->verticalline_cartridge_y == '0')) {
+                    $newToolType->cartridge_y = intval($CFG->verticalline_cartridge_y);
+                }
+                break;
+
+            case 'stampcomment':
+                if (isset($CFG->stampcomment_configurable) && (intval($CFG->stampcomment_configurable) == 0 || intval($CFG->stampcomment_configurable) == 1)) {
+                    if (intval($CFG->stampcomment_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->stampcomment_color) && $CFG->stampcomment_color != null && strlen($CFG->stampcomment_color) > 4) {
+                    $newToolType->color = $CFG->stampcomment_color;
+                }
+                if (isset($CFG->stampcomment_cartridge_color) && $CFG->stampcomment_cartridge_color != null && strlen($CFG->stampcomment_cartridge_color) > 4) {
+                    $newToolType->cartridge_color = $CFG->stampcomment_cartridge_color;
+                }
+                if (isset($CFG->stampcomment_cartridge_x) && (intval($CFG->stampcomment_cartridge_x) || $CFG->stampcomment_cartridge_x == '0')) {
+                    $newToolType->cartridge_x = intval($CFG->stampcomment_cartridge_x);
+                }
+                if (isset($CFG->stampcomment_cartridge_y) && (intval($CFG->stampcomment_cartridge_y) || $CFG->stampcomment_cartridge_y == '0')) {
+                    $newToolType->cartridge_y = intval($CFG->stampcomment_cartridge_y);
+                }
+                break;
+
+            case 'commentplus':
+                if (isset($CFG->commentplus_configurable) && (intval($CFG->commentplus_configurable) == 0 || intval($CFG->commentplus_configurable) == 1)) {
+                    if (intval($CFG->commentplus_configurable) == 0) {
+                        $newToolType->configurable = 1;
+                    } else {
+                        $newToolType->configurable = 0;
+                    }
+                }
+                if (isset($CFG->commentplus_cartridge_color) && $CFG->commentplus_cartridge_color != null && strlen($CFG->commentplus_cartridge_color) > 4) {
+                    $newToolType->cartridge_color = intval($CFG->commentplus_cartridge_color);
+                }
+                if (isset($CFG->commentplus_cartridge_x) && (intval($CFG->commentplus_cartridge_x) || $CFG->commentplus_cartridge_x == '0')) {
+                    $newToolType->cartridge_x = intval($CFG->commentplus_cartridge_x);
+                }
+                if (isset($CFG->commentplus_cartridge_y) && (intval($CFG->commentplus_cartridge_y) || $CFG->commentplus_cartridge_y == '0')) {
+                    $newToolType->cartridge_y = intval($CFG->commentplus_cartridge_y);
+                }
+                break;
+
+            default:
+                break;
+        }
+        return $newToolType;
     }
 
 }

@@ -149,5 +149,21 @@ $string['typetool_frame'] = 'Encadrement d\'éléments avec commentaires';
 $string['typetool_verticalline'] = 'Ligne verticale avec commentaires';
 $string['typetool_stampcomment'] = 'Tamon double flèche avec commentaires';
 $string['typetool_commentplus'] = 'Cadre de commentaire avancé';
+$string['typetool_highlightplus_desc'] = 'Configuration par défaut de l\'outil "surlignement avec commentaires"';
+$string['typetool_stampplus_desc'] = 'Configuration par défaut de l\'outil "tampon avec contenu personalisé"';
+$string['typetool_frame_desc'] = 'Configuration par défaut de l\'outil "encadrement d\'éléments avec commentaires"';
+$string['typetool_verticalline_desc'] = 'Configuration par défaut de l\'outil "ligne verticale avec commentaires"';
+$string['typetool_stampcomment_desc'] = 'Configuration par défaut de l\'outil "tamon double flèche avec commentaires"';
+$string['typetool_commentplus_desc'] = 'Configuration par défaut de l\'outil "cadre de commentaire avancé"';
+$string['is_not_configurable'] = 'N\'est pas configurable';
+$string['is_not_configurable_desc'] = 'Si coché, les utilisateurs ne pouront  pas créer ou personaliser des outils à partir de ce type';
+$string['adminplugin_color'] = 'Couleur';
+$string['adminplugin_color_desc'] = 'Couleur de l\'annotation';
+$string['adminplugin_cartridge_color'] = 'Couleur cartouche';
+$string['adminplugin_cartridge_color_desc'] = 'Couleur du cartouche';
+$string['adminplugin_cartridge_x'] = 'Décalage relatif horizontal';
+$string['adminplugin_cartridge_x_desc'] = 'Décalage relatif horizontal du cartouche par rapport à l\'annotation en px';
+$string['adminplugin_cartridge_y'] = 'Décalage relatif vertical';
+$string['adminplugin_cartridge_y_desc'] = 'Décalage relatif vertical du cartouche par rapport à l\'annotation en px';
 
 
