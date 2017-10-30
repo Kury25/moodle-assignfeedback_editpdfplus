@@ -289,7 +289,10 @@ class admin_editor {
         $typetools = array();
         $records = $DB->get_records('assignfeedback_editpp_typet', array('configurable' => 1));
         foreach ($records as $record) {
-            array_push($typetools, new type_tool($record));
+            $newTypeTool = page_editor::custom_type_tool(new type_tool($record));
+            if ($newTypeTool->configurable > 0) {
+                array_push($typetools, $newTypeTool);
+            }
         }
         return $typetools;
     }
