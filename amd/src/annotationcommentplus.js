@@ -114,8 +114,8 @@ define(['jquery', './annotation'],
                     if (!this.cartridgey || this.cartridgey === 0) {
                         this.cartridgey = parseInt(this.tooltype.getToolTypeCartY(), 10);
                     }
-                    divdisplay.css('left', this.x + 20);
-                    divdisplay.css('top', this.y - 20);
+                    divdisplay.css('left', this.x + 20 + this.cartridgex);
+                    divdisplay.css('top', this.y - 20 + this.cartridgey);
 
                     this.apply_visibility_annot();
                 } else {

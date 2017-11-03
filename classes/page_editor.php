@@ -552,9 +552,9 @@ class page_editor {
                         $newToolType->configurable = 0;
                     }
                 }*/
-                if (isset($CFG->stampcomment_color) && $CFG->stampcomment_color != null && strlen($CFG->stampcomment_color) > 4) {
+                /*if (isset($CFG->stampcomment_color) && $CFG->stampcomment_color != null && strlen($CFG->stampcomment_color) > 4) {
                     $newToolType->color = $CFG->stampcomment_color;
-                }
+                }*/
                 if (isset($CFG->stampcomment_cartridge_color) && $CFG->stampcomment_cartridge_color != null && strlen($CFG->stampcomment_cartridge_color) > 4) {
                     $newToolType->cartridge_color = $CFG->stampcomment_cartridge_color;
                 }
@@ -575,7 +575,7 @@ class page_editor {
                     }
                 }*/
                 if (isset($CFG->commentplus_cartridge_color) && $CFG->commentplus_cartridge_color != null && strlen($CFG->commentplus_cartridge_color) > 4) {
-                    $newToolType->cartridge_color = intval($CFG->commentplus_cartridge_color);
+                    $newToolType->cartridge_color = $CFG->commentplus_cartridge_color;
                 }
                 if (isset($CFG->commentplus_cartridge_x) && (intval($CFG->commentplus_cartridge_x) || $CFG->commentplus_cartridge_x == '0')) {
                     $newToolType->cartridge_x = intval($CFG->commentplus_cartridge_x);

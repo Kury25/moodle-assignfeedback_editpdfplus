@@ -60,7 +60,7 @@ $settings->add(new admin_setting_configtext('verticalline_cartridge_y',get_strin
 
 $settings->add(new admin_setting_heading('stampcomment',get_string('typetool_stampcomment','assignfeedback_editpdfplus'),get_string('typetool_stampcomment_desc','assignfeedback_editpdfplus')));
 //$settings->add(new admin_setting_configcheckbox('stampcomment_configurable',get_string('is_not_configurable','assignfeedback_editpdfplus'),get_string('is_not_configurable_desc','assignfeedback_editpdfplus'),0));
-$settings->add(new admin_setting_configcolourpicker('stampcomment_color',get_string('adminplugin_color','assignfeedback_editpdfplus'),get_string('adminplugin_color_desc','assignfeedback_editpdfplus'),'#000099'));
+//$settings->add(new admin_setting_configcolourpicker('stampcomment_color',get_string('adminplugin_color','assignfeedback_editpdfplus'),get_string('adminplugin_color_desc','assignfeedback_editpdfplus'),'#000099'));
 $settings->add(new admin_setting_configcolourpicker('stampcomment_cartridge_color',get_string('adminplugin_cartridge_color','assignfeedback_editpdfplus'),get_string('adminplugin_cartridge_color_desc','assignfeedback_editpdfplus'),'#000099'));
 $settings->add(new admin_setting_configtext('stampcomment_cartridge_x',get_string('adminplugin_cartridge_x','assignfeedback_editpdfplus'),get_string('adminplugin_cartridge_x_desc','assignfeedback_editpdfplus'),35));
 $settings->add(new admin_setting_configtext('stampcomment_cartridge_y',get_string('adminplugin_cartridge_y','assignfeedback_editpdfplus'),get_string('adminplugin_cartridge_y_desc','assignfeedback_editpdfplus'),6));
