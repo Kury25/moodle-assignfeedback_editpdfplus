@@ -5491,8 +5491,10 @@ EDITOR.prototype = {
 
         if (this.get('readonly')) {
             // Setup the tool buttons.
-            for (var i = 1; i < this.axis.length; i++) {
-                var axis = this.axis[i];
+            for (var axis in this.axis) {
+                //}
+                //for (var i = 1; i < this.axis.length; i++) {
+                //    var axis = this.axis[i];
                 var axe = this.get_dialogue_element('#ctaxis' + axis.id);
                 if (axe) {
                     axe.set('checked', 'true');
