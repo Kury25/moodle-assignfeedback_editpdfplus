@@ -622,10 +622,10 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                             currentTool.colors = null;
                                         }
                                         currentTool.cartridge = $("#libelle").val();
-                                        if ($("#realcartridgecolor").val().length > 0) {
+                                        if ($("#realcartridgecolor").val() && $("#realcartridgecolor").val().length > 0) {
                                             currentTool.cartridgeColor = $("#cartridgecolor").val();
                                         } else {
-                                            $("#cartridgecolor").val(typetoolEntity.cartridge_color);
+                                            $("#cartridgecolor").val(typetoolEntity.get_color_cartridge());
                                             currentTool.cartridgeColor = null;
                                         }
                                         currentTool.texts = $("#texts").val();
