@@ -5491,14 +5491,12 @@ EDITOR.prototype = {
 
         if (this.get('readonly')) {
             // Setup the tool buttons.
-            for (var axis in this.axis) {
-                //}
-                //for (var i = 1; i < this.axis.length; i++) {
-                //    var axis = this.axis[i];
-                var axe = this.get_dialogue_element('#ctaxis' + axis.id);
+            for (var axisIndex in this.axis) {
+                var axisTmp = this.axis[axisIndex];
+                var axe = this.get_dialogue_element('#ctaxis' + axisTmp.id);
                 if (axe) {
                     axe.set('checked', 'true');
-                    axe.on('click', this.handle_axis_button, this, axis, axe);
+                    axe.on('click', this.handle_axis_button, this, axisTmp, axe);
                 }
             }
 
