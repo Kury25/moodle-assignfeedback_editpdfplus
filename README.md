@@ -43,7 +43,7 @@ By default, the standard 'Edit PDF' annotation tool will stay active over all yo
 
 You can test-drive this plugin using the provided annotation tools that come pre-installed, or create your own annotation tool sets (palettes).
 
-Teachers can to build their annotation palettes. 
+Teachers can build their annotation palettes. 
 
 See this <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/configuration">wiki page</a> for more details about creating new tool palettes.
 
