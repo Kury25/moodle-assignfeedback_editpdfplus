@@ -57,14 +57,18 @@
         <tr>
             <td class='assignfeedback_editpdfplus_widget_admin_tool_col1 assignfeedback_editpdfplus_widget_admin_tool_row' colspan="2">
                 <form id="{{formid}}" method="post" action="{{actionurl}}" class="form-horizontal">
-                    <div class="panel-group" id="accordion">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;
-                                <a data-toggle="collapse" href="#collapse1" data-parent="#accordion">{{# str }} admintoolboxtypetool, assignfeedback_editpdfplus {{/ str }}</a>
+                    <div id="accordion">
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-wrench" aria-hidden="true"></i>&nbsp;&nbsp;
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse1" aria-expanded="true" aria-controls="collapse1">
+                                      {{# str }} admintoolboxtypetool, assignfeedback_editpdfplus {{/ str }}
+                                    </button>
+                                </h5>
                             </div>
-                            <div id="collapse1" class="panel-collapse collapse">
-                                <div class="panel-body">
+                            <div id="collapse1" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body">
                                     <table>
                                         <tr>
                                             <td style="width: 25%;">
@@ -85,13 +89,17 @@
                             </div>
                         </div>
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;
-                                <a data-toggle="collapse" href="#collapse2" data-parent="#accordion">{{# str }} admintoolboxtoolbardisplay, assignfeedback_editpdfplus {{/ str }}</a>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse2" aria-expanded="true" aria-controls="collapse2">
+                                      {{# str }} admintoolboxtoolbardisplay, assignfeedback_editpdfplus {{/ str }}
+                                    </button>
+                                </h5>
                             </div>
-                            <div id="collapse2" class="panel-collapse collapse">
-                                <div class="panel-body">
+                            <div id="collapse2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body">
                                     <table>
                                         <tr>
                                             <td style="width: 25%;">
@@ -128,13 +136,17 @@
                             </div>
                         </div>
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-address-card-o" aria-hidden="true"></i>&nbsp;&nbsp;
-                                <a data-toggle="collapse" href="#collapse3" data-parent="#accordion">{{# str }} admintoolboxcartridge, assignfeedback_editpdfplus {{/ str }}</a>
+                        <div class="card">
+                            <div class="card-header" id="headingThree">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-address-card-o" aria-hidden="true"></i>&nbsp;&nbsp;
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse3" aria-expanded="true" aria-controls="collapse3">
+                                      {{# str }} admintoolboxcartridge, assignfeedback_editpdfplus {{/ str }}
+                                    </button>
+                                </h5>
                             </div>
-                            <div id="collapse3" class="panel-collapse collapse">
-                                <div class="panel-body">
+                            <div id="collapse3" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                                <div class="card-body">
                                     <table>
                                         <tr>
                                             <td style="width: 25%;">
@@ -159,13 +171,17 @@
                             </div>
                         </div>
 
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;
-                                <a data-toggle="collapse" href="#collapse4" data-parent="#accordion">{{# str }} admintoolboxannotation, assignfeedback_editpdfplus {{/ str }}</a>
+                        <div class="card">
+                            <div class="card-header" id="headingFour">
+                                <h5 class="mb-0">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;&nbsp;
+                                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapse4" aria-expanded="true" aria-controls="collapse4">
+                                      {{# str }} admintoolboxannotation, assignfeedback_editpdfplus {{/ str }}
+                                    </button>
+                                </h5>
                             </div>
-                            <div id="collapse4" class="panel-collapse collapse">
-                                <div class="panel-body" style="overflow: auto;">
+                            <div id="collapse4" class="collapse" aria-labelledby="headingFour" data-parent="#accordion">
+                                <div class="card-body" style="overflow: auto;">
                                     <table>
                                         <tr>
                                             <td style="width: 25%;">
