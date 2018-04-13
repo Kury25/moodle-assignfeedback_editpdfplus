@@ -50,7 +50,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             }
         ])[0].done(function(axe) {
             if ('{{action}}' === 'add'){
-                var divAxis = "<div id='editpdlplus_toolbar_"+axe[0].axeid+"' class='btn-group toolbar' style='display: none;'></div>";
+                var divAxis = "<div id='editpdlplus_toolbar_"+axe[0].axeid+"' class='btn-group toolbar' style='display: none;'><ul></ul></div>";
                 $('#editpdlplus_toolbars').append(divAxis);
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').hide();
