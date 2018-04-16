@@ -113,8 +113,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             }
             $iconhtml = html_writer::tag("i", "", array('class' => 'fa ' . $class,
                         'aria-hidden' => 'true'));
-            //$iconhtml = $this->image_icon($icon, $iconalt, 'assignfeedback_editpdfplus');
-
             $iconparams = array('data-tool' => $tool, 'class' => $tool . 'button btn btn-default', 'type' => 'button');
             if ($disabled) {
                 $iconparams['disabled'] = 'true';
@@ -216,9 +214,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $nav_next = 'nav_next';
         }
 
-        //$iconalt = get_string('navigateprevious', 'assignfeedback_editpdfplus');
-        //$iconhtml = $this->image_icon($nav_prev, $iconalt, 'assignfeedback_editpdfplus');
-        $iconhtmlP = html_writer::tag("i", "", array('class' => 'fa fa-caret-left fa-2x',
+       $iconhtmlP = html_writer::tag("i", "", array('class' => 'fa fa-caret-left fa-2x',
                     'aria-hidden' => 'true'));
         $navigation1 .= html_writer::tag('button', $iconhtmlP, array('disabled' => 'true',
                     'class' => 'btn btn-default navigate-previous-button',
@@ -228,8 +224,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $navigation1 .= html_writer::tag('select', null, array('disabled' => 'true',
                     'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => 'navigate-page-select',
                     'accesskey' => $this->get_shortcut('navigate-page-select')));
-        //$iconalt = get_string('navigatenext', 'assignfeedback_editpdfplus');
-        //$iconhtml = $this->image_icon($nav_next, $iconalt, 'assignfeedback_editpdfplus');
         $iconhtmlN = html_writer::tag("i", "", array('class' => 'fa fa-caret-right fa-2x',
                     'aria-hidden' => 'true'));
         $navigation1 .= html_writer::tag('button', $iconhtmlN, array('disabled' => 'true',
@@ -275,14 +269,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 }
                 $toolbarCostum[] = html_writer::div($toolbartmp, 'toolbar customtoolbar', array('role' => 'toolbar', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
             }
-            /* usort($axis, function($a, $b) {
-              $al = substr($a, 4, 5);
-              $bl = substr($b, 4, 5);
-              if ($al == $bl) {
-              return 0;
-              }
-              return ($al > $bl) ? +1 : -1;
-              }); */
             $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), 'toolbar ', array('role' => 'toolbar'));
             foreach ($toolbarCostum as $toolbarCostumUnit) {
                 $toolbarCostumdiv .= $toolbarCostumUnit;
