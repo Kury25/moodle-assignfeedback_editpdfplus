@@ -505,12 +505,25 @@ class pdf extends \FPDI {
                     $h = self::MIN_ANNOTATION_HEIGHT;
                 }
                 $this->SetXY($sx, $sy);
+
+                $colourcartridge = $toolObject->colors;
+                if (!$colourcartridge) {
+                    $colourcartridge = $typetool->color;
+                }
+                $colourcartridgearray = $this->get_colour_for_pdf($colourcartridge);
+                $this->SetTextColorArray($colourcartridgearray);
+
+                $cartouche = $toolObject->label;
+                //$this->Cell($w);
+                //Texte centré dans une cellule 20*10 mm encadrée et retour à la ligne
+                $this->Cell(strlen($cartouche)*6+4, 10, $cartouche, 1, 1, 'C');
+
                 break;
             default: // Line.
                 $this->Line($sx, $sy, $ex, $ey);
                 break;
         }
-        if ($type == 'stampplus' || $type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
+        if ($type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
             $cartouche = $toolObject->cartridge;
             if ($annotation->textannot) {
                 $cartouche .= ' [' . $annotation_index . ']';

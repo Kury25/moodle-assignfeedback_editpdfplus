@@ -751,10 +751,6 @@ EOD;
 
         // Need to generate the page images - first get a combined pdf.
         $document = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-        /* $file = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          if (!$file) {
-          throw new \moodle_exception('Could not generate combined pdf.');
-          } */
 
         $status = $document->get_status();
         if ($status === combined_document::STATUS_FAILED) {
@@ -794,12 +790,7 @@ EOD;
 
         for ($i = 0; $i < $pagecount; $i++) {
             $pdf->copy_page();
-            //$comments = page_editor::get_comments($grade->id, $i, false);
             $annotations = page_editor::get_annotations($grade->id, $i, false);
-
-            /* foreach ($comments as $comment) {
-              $pdf->add_comment($comment->rawtext, $comment->x, $comment->y, $comment->width, $comment->colour);
-              } */
 
             foreach ($annotations as $annotation) {
                 $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
