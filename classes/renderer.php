@@ -235,6 +235,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $toolbar001 = '';
         $toolbar002 = '';
+        $toolbar003 = '';
         $toolbarCostumdiv = '';
         $toolbaraxis = '';
         $clearfix = html_writer::div('', 'clearfix');
@@ -274,6 +275,16 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 $toolbarCostumdiv .= $toolbarCostumUnit;
             }
             $toolbarCostumdiv .= $axischoice;
+            
+            // Toolbar pour lien creation palette
+            $courseid = $this->page->course->id;
+            $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $courseid));
+            $toolbar003 .= html_writer::tag('button',
+                    html_writer::tag("i", "", array('class' => 'fa fa-wrench','aria-hidden' => 'true')),
+                    array('class' => 'button btn btn-default', 'type' => 'button'));
+            $toolbar003 = html_writer::link($lienAdmin, $toolbar003);
+            $toolbar003 = html_writer::div($toolbar003, 'toolbar', array('role' => 'toolbar'));
+            //$url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $course->id));
         } else {
             $toolbaraxis = "<div class='navigation' style='padding-left:10px;'><div style='display:inline;margin-right:5px;text-align:left;'>";
             $axis = $widget->axis;
@@ -298,6 +309,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                         $toolbaraxis .
                         $toolbarCostumdiv .
                         $toolbar001 .
+                        $toolbar003 .
                         $clearfix, 'pageheader', array('style' => 'padding:0'));
 
         $body .= $pageheader;
