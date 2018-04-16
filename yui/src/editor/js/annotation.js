@@ -243,6 +243,7 @@ Y.extend(ANNOTATION, Y.Base, {
             this.displayrotation = config.parent_annot_element.displayrotation;
             this.borderstyle = config.parent_annot_element.borderstyle || 'solid';
             this.parent_annot = parseInt(config.parent_annot_element.id, 10);
+            this.answerrequested = parseInt(config.parent_annot_element.answerrequested, 10) || 0;
             this.studentstatus = parseInt(config.parent_annot_element.studentstatus, 10) || 0;
             this.parent_annot_element = config.parent_annot_element;
         } else {
