@@ -36,6 +36,7 @@ class assign_feedback_editpdfplus_admin {
 
     /** @var stdClass $course current course */
     private $course = null;
+
     /** @var stdClass $context current context */
     private $context = null;
 
@@ -200,7 +201,7 @@ class assign_feedback_editpdfplus_admin {
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;
     }
-    
+
     /**
      * Create a admin widget for rendering the editor.
      *
@@ -216,18 +217,28 @@ class assign_feedback_editpdfplus_admin {
         $typetools = page_editor::get_typetools(null);
         $axis = page_editor::get_axis(array($this->context->id));
         $toolbars = $this->prepareToolbar($axis, $tools);
+
         // get all accessibled toolbars
-        $courses = get_courses();
         $contextListToCheck = array();
-        foreach ($courses as $course) {
-            $contextid = context_course::instance($course->id);
-            $coursecontextsTmp = array_filter(explode('/', $contextid->path), 'strlen');
-            foreach ($coursecontextsTmp as $value) {
-                if ($value != $this->context->id && !in_array($value, $contextListToCheck)) {
-                    $contextListToCheck[] = $value;
-                }
+        $contextsIdAxes = admin_editor::get_all_different_contexts();
+        foreach ($contextsIdAxes as $contextTmp) {
+            $contextObj = context::instance_by_id($contextTmp->contextid);
+            //$contextObj = context_system::instance_by_id($contextTmp->contextid, IGNORE_MISSING);
+            if ($contextObj /* && has_capability('assignfeedback/editpdfplus:use', $contextObj) */ && has_capability('assignfeedback/editpdfplus:managetools', $contextObj, null, false) && $contextTmp->contextid != $this->context->id) {
+                $contextListToCheck[] = $contextTmp->contextid;
             }
         }
+        /* $courses = get_courses();
+          $contextListToCheck = array();
+          foreach ($courses as $course) {
+          $contextid = context_course::instance($course->id);
+          $coursecontextsTmp = array_filter(explode('/', $contextid->path), 'strlen');
+          foreach ($coursecontextsTmp as $value) {
+          if ($value != $this->context->id && !in_array($value, $contextListToCheck)) {
+          $contextListToCheck[] = $value;
+          }
+          }
+          } */
         $axisDispo = array();
         $toolDispo = page_editor::get_tools($contextListToCheck);
         foreach ($contextListToCheck as $value) {

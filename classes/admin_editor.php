@@ -243,6 +243,18 @@ class admin_editor {
     }
 
     /**
+     * Get all diferent contexts id
+     * @global type $DB
+     * @param Integer $axisid axis' id
+     * @return array<\assignfeedback_editpdfplus\tool> the toolbar, order by order_tool
+     */
+    public static function get_all_different_contexts() {
+        global $DB;
+        $records = $DB->get_records_sql("SELECT DISTINCT(contextid) FROM `mdl_assignfeedback_editpp_axis`");
+        return $records;
+    }
+
+    /**
      * Update a tool
      * @global type $DB
      * @param object $toolJson object contains tool's values to update
