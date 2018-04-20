@@ -220,6 +220,7 @@ class assign_feedback_editpdfplus_admin {
 
         // get all accessibled toolbars
         $contextListToCheck = array();
+        $contextListToCheck[] = 1;
         $contextsIdAxes = admin_editor::get_all_different_contexts();
         foreach ($contextsIdAxes as $contextTmp) {
             $contextObj = context::instance_by_id($contextTmp->contextid);
