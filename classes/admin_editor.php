@@ -243,10 +243,9 @@ class admin_editor {
     }
 
     /**
-     * Get all diferent contexts id
+     * Get all different contexts id
      * @global type $DB
-     * @param Integer $axisid axis' id
-     * @return array<\assignfeedback_editpdfplus\tool> the toolbar, order by order_tool
+     * @return array<\assignfeedback_editpdfplus\axis> the axis with just their contextid
      */
     public static function get_all_different_contexts() {
         global $DB;
