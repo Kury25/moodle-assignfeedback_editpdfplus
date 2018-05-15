@@ -37,7 +37,7 @@ use \assignfeedback_editpdfplus\page_editor;
  */
 class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
-    /** @var boolean|null $enabledcache Cached lookup of the is_enabled function */
+    /** @var boolean|null $enabledcache Cached lookup of the is_available function */
     private $enabledcache = null;
 
     /**
@@ -58,7 +58,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function get_widget($userid, $grade, $readonly) {
         $attempt = -1;
-        if ($grade && $grade->attemptnumber) {
+        if ($grade && isset($grade->attemptnumber)) {
             $attempt = $grade->attemptnumber;
         } else {
             $grade = $this->assignment->get_user_grade($userid, true);
@@ -81,7 +81,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
                 $axis = $axistmp;
             }
         }
-        //$axis = page_editor::get_axis($coursecontexts);    
         $tools = page_editor::get_tools($coursecontexts);
         foreach ($axis as $ax) {
             $toolbars[$ax->id]['axeid'] = $ax->id;
@@ -344,7 +343,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool|string activate or not | special
      */
     private function is_enabled_precheck($isajax = false) {
-        global $PAGE;
+        global $PAGE, $DB;
         if (in_array($PAGE->url->get_param('action'), array('grade', 'grader'))) {
             // Step 1.
             // Only do this if we're on the grading interface for minimal execution flow disruption.
@@ -375,26 +374,27 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
                     if ($isajax && $userid) {
                         if ($this->assignment->get_instance()->teamsubmission) {
                             // groups enabled, use group submission
-                            $participants = $this->assignment->get_shared_group_members($this->assignment->get_course_module(), $userid);
+                            $submission = $this->assignment->get_group_submission($userid, 0, false);
                         } else {
-                            $participants = array($userid);
+                            $submission = $this->assignment->get_user_submission($userid, false);
+                        }
+                        $user = $DB->get_record('user', array('id' => $userid));
+                        if (!$submission) {
+                            return false;
+                        } else {
+                            $files = $plugin->get_files($submission, $user);
                         }
                         // That's the user we're currently grading, loading the UI via AJAX.
                     } else {
-                        $participants = array_keys($this->assignment->list_participants(0, true));
                         // We don't know yet which user we'll be grading (initial full page load of grading interface),
                         // so we have to take all assignment participants into account.
+                        $fs = get_file_storage();
+                        $files = $fs->get_area_files($this->assignment->get_context()->id, 'assignsubmission_file', ASSIGNSUBMISSION_FILE_FILEAREA, false, 'timemodified', false);
+                        // We've now got all submission files, let's check them out.
                     }
-                    $fs = get_file_storage();
-                    $files = $fs->get_area_files($this->assignment->get_context()->id, 'assignsubmission_file', ASSIGNSUBMISSION_FILE_FILEAREA, false, 'timemodified', false);
-                    // We've now got all submission files, let's check them out.
                     $supported_extensions = array('bmp', 'doc', 'docx', 'eps', 'fodt', 'gif', 'jpeg', 'jpg', 'odt', 'ott', 'pdf', 'png', 'rtf', 'svg', 'tiff');
                     $nbfiles = 0;
                     foreach ($files as $file) {
-                        if (!in_array($file->get_userid(), $participants)) {
-                            continue;
-                            // Don't take this file into account as it does not belong to the relevant participant(s).
-                        }
                         $extension = core_text::strtolower(pathinfo($file->get_filename(), PATHINFO_EXTENSION));
                         if (in_array($extension, $supported_extensions)) {
                             $nbfiles++;
@@ -432,24 +432,24 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         // No reason not to activate the annotation interface.
     }
 
-    public function is_available() {
-        return $this->is_enabled();
+    public function is_enabled() {
+        return $this->is_available();
     }
 
     /**
-     * Automatically enable or disable editpdfplus feedback plugin based on
-     * whether the ghostscript path is set correctly.
+     * Determine if ghostscript is available and working.
      *
      * @return bool
      */
-    public function is_enabled() {
+    public function is_available() {
         if ($this->enabledcache === null) {
             $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
-            if ($this->assignment->get_context()) {
-                $this->enabledcache = ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
-            } else {
-                $this->enabledcache = false;
-            }
+            //if ($this->assignment->get_context()) {
+            //    $this->enabledcache = ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
+            //} else {
+            //    $this->enabledcache = false;
+            //}
+            $this->enabledcache = $this->assignment->get_context() && ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
         }
         return $this->enabledcache;
     }
@@ -460,7 +460,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool false
      */
     public function is_configurable() {
-        return false;
+        return $this->is_available();
     }
 
     /**

@@ -53,8 +53,9 @@ if (!$assignment->can_view_submission($userid)) {
 if ($action === 'pollconversions') {
     $draft = true;
     if (!has_capability('mod/assign:grade', $context)) {
+        // A student always sees the readonly version.
+        $readonly = true;
         $draft = false;
-        $readonly = true; // A student always sees the readonly version.
         require_capability('mod/assign:submit', $context);
     }
 
@@ -83,7 +84,6 @@ if ($action === 'pollconversions') {
 
         $response->pagecount = $combineddocument->get_page_count();
 
-        //$grade = $assignment->get_user_grade($userid, true);
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
         // The readonly files are stored in a different file area.
@@ -107,7 +107,6 @@ if ($action === 'pollconversions') {
             }
             $annotations = page_editor::get_annotations($grade->id, $index, $draft);
             $page->annotations = $annotations;
-            //array_push($response->pages, $page);
             $response->pages[] = $page;
 
             $component = 'assignfeedback_editpdfplus';
@@ -134,7 +133,7 @@ if ($action === 'pollconversions') {
     $response = new stdClass();
     $response->errors = array();
 
-    $grade = $assignment->get_user_grade($userid, true);
+    $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
     $pagejson = required_param('page', PARAM_RAW);
     $page = json_decode($pagejson);
@@ -146,6 +145,7 @@ if ($action === 'pollconversions') {
     }
     echo json_encode($response);
     die();
+
 } else if ($action == 'generatepdf') {
 
     $refresh = optional_param('refresh', false, PARAM_BOOL);
@@ -218,7 +218,7 @@ if ($action === 'pollconversions') {
 } else if ($action == 'deletefeedbackdocument') {
     require_capability('mod/assign:grade', $context);
 
-    $grade = $assignment->get_user_grade($userid, true);
+    $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
     $result = document_services::delete_feedback_document($assignment, $userid, $attemptnumber);
 
     $result = $result && page_editor::unrelease_drafts($grade->id);
