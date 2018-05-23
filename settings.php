@@ -24,6 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Enabled by default.
+$settings->add(new admin_setting_configcheckbox('assignfeedback_editpdfplus/default',
+                   new lang_string('default', 'assignfeedback_editpdfplus'),
+                   new lang_string('default_help', 'assignfeedback_editpdfplus'), 1));
+
 // Ghostscript setting.
 $systempathslink = new moodle_url('/admin/settings.php', array('section' => 'systempaths'));
 $systempathlink = html_writer::link($systempathslink, get_string('systempaths', 'admin'));

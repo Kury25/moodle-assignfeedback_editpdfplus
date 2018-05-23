@@ -175,7 +175,7 @@ class assign_feedback_editpdfplus_admin {
             $compteur = 0;
             foreach ($tooltextsarray as $value) {
                 if ($value && $value != '"') {
-                    $obj = new object();
+                    $obj = new stdClass();
                     $obj->text = /* substr( */$value/* ,1,-1) */;
                     if (substr($obj->text, 0, 1) == '"') {
                         $obj->text = substr($obj->text, 1);

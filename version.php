@@ -25,9 +25,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2017100400;
-$plugin->requires  = 2017050500; // Requires this Moodle version.
+$plugin->requires  = 2018050800; // Requires this Moodle version.
 $plugin->dependencies = array(
-    'assignfeedback_editpdf' => 2017050500
+    'assignfeedback_editpdf' => 2018051400
 );
 $plugin->component = 'assignfeedback_editpdfplus';
 

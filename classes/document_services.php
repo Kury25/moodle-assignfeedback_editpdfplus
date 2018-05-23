@@ -99,7 +99,7 @@ EOD;
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
         if (!is_object($assignment)) {
-            $cm = \get_coursemodule_from_instance('assign', $assignment, 0, false, MUST_EXIST);
+            $cm = get_coursemodule_from_instance('assign', $assignment, 0, false, MUST_EXIST);
             $context = \context_module::instance($cm->id);
 
             $assignment = new \assign($context, null, null);
@@ -166,7 +166,7 @@ EOD;
 
         // Capability checks.
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error('nopermission');
         }
 
         $files = array();
@@ -196,7 +196,7 @@ EOD;
                         } else if ($convertedfile = $converter->start_conversion($file, 'pdf')) {
                             $files[$filename] = $convertedfile;
                         }
-                    } else {
+                    } else if ($converter->can_convert_format_to('html', 'pdf')) {
                         // Create a tmp stored_file from this html string.
                         $file = reset($file);
                         // Strip image tags, because they will not be resolvable.
@@ -225,7 +225,6 @@ EOD;
                             $htmlfile = $fs->create_file_from_string($record, $file);
                         }
 
-                        //$convertedfile = $fs->get_converted_document($htmlfile, 'pdf');
                         $convertedfile = $converter->start_conversion($htmlfile, 'pdf');
 
                         if ($convertedfile) {
@@ -315,130 +314,7 @@ EOD;
             $document->combine_files($assignment->get_context()->id, $grade->id);
             return $document;
         }
-
-        /* global $USER, $DB;
-
-          $assignment = self::get_assignment_from_param($assignment);
-
-          // Capability checks.
-          if (!$assignment->can_view_submission($userid)) {
-          \print_error('nopermission');
-          }
-
-          $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-          if ($assignment->get_instance()->teamsubmission) {
-          $submission = $assignment->get_group_submission($userid, 0, false);
-          } else {
-          $submission = $assignment->get_user_submission($userid, false);
-          }
-
-          $contextid = $assignment->get_context()->id;
-          $component = 'assignfeedback_editpdfplus';
-          $filearea = self::COMBINED_PDF_FILEAREA;
-          $itemid = $grade->id;
-          $filepath = '/';
-          $filename = self::COMBINED_PDF_FILENAME;
-          $fs = \get_file_storage();
-
-          $combinedpdf = $fs->get_file($contextid, $component, $filearea, $itemid, $filepath, $filename);
-          if (!$combinedpdf ||
-          ($submission && ($combinedpdf->get_timemodified() < $submission->timemodified))) {
-          return self::generate_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          }
-          return $combinedpdf; */
     }
-
-    /**
-     * This function will take all of the compatible files for a submission
-     * and combine them into one PDF.
-     * 
-     * @param int|\assign $assignment
-     * @param int $userid
-     * @param int $attemptnumber (-1 means latest attempt)
-     * @return stored_file
-     * 
-     * @deprecated since version 31
-     */
-    /* public static function generate_combined_pdf_for_attempt($assignment, $userid, $attemptnumber) {
-      global $CFG;
-
-      require_once($CFG->libdir . '/pdflib.php');
-
-      $assignment = self::get_assignment_from_param($assignment);
-
-      if (!$assignment->can_view_submission($userid)) {
-      \print_error('nopermission');
-      }
-
-      $files = self::list_compatible_submission_files_for_attempt($assignment, $userid, $attemptnumber);
-
-      $pdf = new pdf();
-      if ($files) {
-      // Create a mega joined PDF.
-      $compatiblepdfs = array();
-      foreach ($files as $file) {
-      $compatiblepdf = pdf::ensure_pdf_compatible($file);
-      if ($compatiblepdf) {
-      array_push($compatiblepdfs, $compatiblepdf);
-      }
-      }
-
-      $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/combined/' . self::hash($assignment, $userid, $attemptnumber));
-      $tmpfile = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
-
-      @unlink($tmpfile);
-      try {
-      $pagecount = $pdf->combine_pdfs($compatiblepdfs, $tmpfile);
-      } catch (\Exception $e) {
-      debugging('TCPDF could not process the pdf files:' . $e->getMessage(), DEBUG_DEVELOPER);
-      // TCPDF does not recover from errors so we need to re-initialise the class.
-      $pagecount = 0;
-      }
-      if ($pagecount == 0) {
-      // We at least want a single blank page.
-      debugging('TCPDF did not produce a valid pdf:' . $tmpfile . '. Replacing with a blank pdf.', DEBUG_DEVELOPER);
-      @unlink($tmpfile);
-      $files = false;
-      }
-      }
-      $pdf->Close(); // No real need to close this pdf, because it has been saved by combine_pdfs(), but for clarity.
-
-      $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-      $record = new \stdClass();
-
-      $record->contextid = $assignment->get_context()->id;
-      $record->component = 'assignfeedback_editpdfplus';
-      $record->filearea = self::COMBINED_PDF_FILEAREA;
-      $record->itemid = $grade->id;
-      $record->filepath = '/';
-      $record->filename = self::COMBINED_PDF_FILENAME;
-      $fs = \get_file_storage();
-
-      $fs->delete_area_files($record->contextid, $record->component, $record->filearea, $record->itemid);
-
-      // Detect corrupt generated pdfs and replace with a blank one.
-      if ($files) {
-      $verifypdf = new pdf();
-      $pagecount = $verifypdf->load_pdf($tmpfile);
-      if ($pagecount <= 0) {
-      $files = false;
-      }
-      $verifypdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-      }
-
-      if (!$files) {
-      $file = $fs->create_file_from_string($record, base64_decode(self::BLANK_PDF_BASE64));
-      } else {
-      // This was a combined pdf.
-      $file = $fs->create_file_from_pathname($record, $tmpfile);
-      @unlink($tmpfile);
-
-      // Test the generated file for correctness.
-      $compatiblepdf = pdf::ensure_pdf_compatible($file);
-      }
-
-      return $file;
-      } */
 
     /**
      * This function will return the number of pages of a pdf.
@@ -457,7 +333,7 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error('nopermission');
         }
 
         // When in readonly we can return the number of images in the DB because they should already exist,
@@ -475,26 +351,6 @@ EOD;
         // Get a combined pdf file from all submitted pdf files.
         $document = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
         return $document->get_page_count();
-
-        /* $file = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          if (!$file) {
-          \print_error('Could not generate combined pdf.');
-          }
-
-          // Store the combined pdf file somewhere to be opened by tcpdf.
-          $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/pagetotal/'
-          . self::hash($assignment, $userid, $attemptnumber));
-          $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
-          $file->copy_content_to($combined); // Copy the file.
-          // Get the total number of pages.
-          $pdf = new pdf();
-          $pagecount = $pdf->set_pdf($combined);
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-          // Delete temporary folders and files.
-          @unlink($combined);
-          @rmdir($tmpdir);
-
-          return $pagecount; */
     }
 
     /**
@@ -512,15 +368,11 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error('nopermission');
         }
 
         // Need to generate the page images - first get a combined pdf.
         $document = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-        /* $file = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          if (!$file) {
-          throw new \moodle_exception('Could not generate combined pdf.');
-          } */
 
         $status = $document->get_status();
         if ($status === combined_document::STATUS_FAILED) {
@@ -533,7 +385,6 @@ EOD;
         $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/pageimages/' . self::hash($assignment, $userid, $attemptnumber));
         $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
         $document->get_combined_file()->copy_content_to($combined); // Copy the file.
-        //$file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
 
@@ -561,7 +412,6 @@ EOD;
                 // We catch only moodle_exception here as other exceptions indicate issue with setup not the pdf.
                 $image = pdf::get_error_image($tmpdir, $i);
             }
-            //$image = $pdf->get_image($i);
             $record->filename = basename($image);
             $files[$i] = $fs->create_file_from_pathname($record, $tmpdir . '/' . $image);
             @unlink($tmpdir . '/' . $image);
@@ -600,7 +450,7 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error('nopermission');
         }
 
         if ($assignment->get_instance()->teamsubmission) {
@@ -649,7 +499,6 @@ EOD;
                     }
                 }
             }
-            //if (!$readonly && $first->get_timemodified() < $submission->timemodified) {
             if (!$readonly && ($pagemodified < $submission->timemodified || $blankpage)) {
                 // Image files are stale, we need to regenerate them, except in readonly mode.
                 // We also need to remove the draft annotations and comments associated with this attempt.

@@ -34,6 +34,7 @@ var EDITOR = function () {
     EDITOR.superclass.constructor.apply(this, arguments);
 };
 EDITOR.prototype = {
+
     /**
      * The dialogue used for all action menu displays.
      *
@@ -42,6 +43,7 @@ EDITOR.prototype = {
      * @protected
      */
     dialogue: null,
+
     /**
      * The panel used for all action menu displays.
      *
@@ -50,6 +52,7 @@ EDITOR.prototype = {
      * @protected
      */
     panel: null,
+
     /**
      * The number of pages in the pdf.
      *
@@ -58,6 +61,7 @@ EDITOR.prototype = {
      * @protected
      */
     pagecount: 0,
+
     /**
      * The active page in the editor.
      *
@@ -66,6 +70,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentpage: 0,
+
     /**
      * A list of page objects. Each page has a list of comments and annotations.
      *
@@ -92,6 +97,7 @@ EDITOR.prototype = {
      * @protected
      */
     loadingicon: null,
+
     /**
      * Image object of the current page image.
      *
@@ -100,6 +106,7 @@ EDITOR.prototype = {
      * @protected
      */
     pageimage: null,
+
     /**
      * YUI Graphic class for drawing shapes.
      *
@@ -108,6 +115,7 @@ EDITOR.prototype = {
      * @protected
      */
     graphic: null,
+
     /**
      * Info about the current edit operation.
      *
@@ -116,6 +124,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentedit: new M.assignfeedback_editpdfplus.edit(),
+
     /**
      * Current drawable.
      *
@@ -124,6 +133,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentdrawable: false,
+
     /**
      * Current drawables.
      *
@@ -132,6 +142,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawables: [],
+
     /**
      * Current annotations.
      *
@@ -140,6 +151,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawablesannotations: [],
+
     /**
      * Current annotation when the select tool is used.
      * @property currentannotation
@@ -147,13 +159,23 @@ EDITOR.prototype = {
      * @protected
      */
     currentannotation: null,
+
+    /**
+     * Track the previous annotation so we can remove selection highlights.
+     * @property lastannotation
+     * @type M.assignfeedback_editpdfplus.annotation
+     * @protected
+     */
+    lastannotation: null,
+
     /**
      * Last selected annotation tool
      * @property lastannotationtool
      * @type String
      * @protected
      */
-    lastanntationtool: "pen",
+    lastannotationtool: "pen",
+
     /**
      * The selected stamp picture.
      * @property currentstamp
@@ -161,6 +183,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentstamp: null,
+
     /**
      * The stamps.
      * @property stamps
@@ -168,6 +191,7 @@ EDITOR.prototype = {
      * @protected
      */
     stamps: [],
+
     /**
      * The parents annotations
      * @type Array
@@ -222,6 +246,7 @@ EDITOR.prototype = {
 
         }
     },
+
     /**
      * Called to show/hide buttons and set the current colours/stamps.
      * @method refresh_button_state
@@ -243,6 +268,7 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
     },
+
     /**
      * Called to set the current colours
      * @method refresh_button_color_state
@@ -268,6 +294,7 @@ EDITOR.prototype = {
             button.setStyle('background-color', 'transparent');
         }
     },
+
     /**
      * Called to get the bounds of the drawing region.
      * @method get_canvas_bounds
@@ -282,6 +309,7 @@ EDITOR.prototype = {
 
         return new M.assignfeedback_editpdfplus.rect(offsetleft, offsettop, width, height);
     },
+
     /**
      * Called to translate from window coordinates to canvas coordinates.
      * @method get_canvas_coordinates
@@ -296,6 +324,7 @@ EDITOR.prototype = {
         newpoint.clip(bounds);
         return newpoint;
     },
+
     /**
      * Called to translate from canvas coordinates to window coordinates.
      * @method get_window_coordinates
@@ -307,6 +336,7 @@ EDITOR.prototype = {
 
         return newpoint;
     },
+
     /**
      * Open the edit-pdf editor in the panel in the page instead of a popup.
      * @method open_in_panel
@@ -336,6 +366,7 @@ EDITOR.prototype = {
 
         this.start_generation();
     },
+
     /**
      * Called to open the pdf editing dialogue.
      * @method link_handler
@@ -465,6 +496,7 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * Spwan the PDF to Image conversion on the server.
      *
@@ -503,14 +535,15 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * The info about all pages in the pdf has been returned.
+     *
      * @param string The ajax response as text.
      * @protected
      * @method prepare_pages_for_display
      */
     prepare_pages_for_display: function (data) {
-        //all_pages_loaded: function (responsetext) {
         var i, j, error;
         if (!data.pagecount) {
             if (this.dialogue) {
@@ -714,6 +747,7 @@ EDITOR.prototype = {
 
         return fullurl;
     },
+
     /**
      * Show only annotations from selected axis
      * @public
@@ -725,6 +759,7 @@ EDITOR.prototype = {
         axis.visibility = axe.get('checked');
         this.redraw();
     },
+
     /**
      * Attach listeners and enable the color picker buttons.
      * @protected
@@ -812,6 +847,7 @@ EDITOR.prototype = {
     update_student_feedback: function () {
         this.refresh_pdf();
     },
+
     /**
      * Refresh view with option on question shown or not
      * @protected
@@ -845,6 +881,7 @@ EDITOR.prototype = {
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
+
     /**
      * Change the current tool from a button's call.
      * @protected
@@ -890,6 +927,7 @@ EDITOR.prototype = {
 
         this.refresh_button_state();
     },
+
     /**
      * Refresh the display of each annotation
      * @protected
@@ -924,6 +962,7 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+
     /**
      * JSON encode the current page data - stripping out drawable references
      * which cannot be encoded (light, only for student information).
@@ -941,6 +980,7 @@ EDITOR.prototype = {
         page = {annotations: annotations};
         return Y.JSON.stringify(page);
     },
+
     /**
      * Generate a drawable from the current in progress edit.
      * @protected
@@ -967,6 +1007,7 @@ EDITOR.prototype = {
 
         return drawable;
     },
+
     /**
      * Find an element within the dialogue.
      * @protected
@@ -979,6 +1020,7 @@ EDITOR.prototype = {
             return this.dialogue.get('boundingBox').one(selector);
         }
     },
+
     /**
      * Redraw the active edit.
      * @protected
@@ -990,6 +1032,7 @@ EDITOR.prototype = {
         }
         this.currentdrawable = this.get_current_drawable();
     },
+
     /**
      * Event handler for mousedown or touchstart.
      * @protected
@@ -1003,8 +1046,7 @@ EDITOR.prototype = {
                 scrollleft = canvas.get('docScrollX'),
                 point = {x: e.clientX - offset[0] + scrollleft,
                     y: e.clientY - offset[1] + scrolltop},
-                selected = false,
-                lastannotation;
+                selected = false;
 
         // Ignore right mouse click.
         if (e.button === 3) {
@@ -1032,14 +1074,14 @@ EDITOR.prototype = {
             });
 
             if (selected) {
-                lastannotation = this.currentannotation;
+                this.lastannotation = this.currentannotation;
                 this.currentannotation = selected;
-                if (lastannotation && lastannotation !== selected) {
+                if (this.lastannotation && this.lastannotation !== selected) {
                     // Redraw the last selected annotation to remove the highlight.
-                    if (lastannotation.drawable) {
-                        lastannotation.drawable.erase();
-                        this.drawables.push(lastannotation.draw());
-                        this.drawablesannotations.push(lastannotation);
+                    if (this.lastannotation.drawable) {
+                        this.lastannotation.drawable.erase();
+                        this.drawables.push(this.lastannotation.draw());
+                        this.drawablesannotations.push(this.lastannotation);
                     }
                 }
                 // Redraw the newly selected annotation to show the highlight.
@@ -1048,6 +1090,16 @@ EDITOR.prototype = {
                 }
                 this.drawables.push(this.currentannotation.draw());
                 this.drawablesannotations.push(this.currentannotation);
+            } else {
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = null;
+
+                // Redraw the last selected annotation to remove the highlight.
+                if (this.lastannotation && this.lastannotation.drawable) {
+                    this.lastannotation.drawable.erase();
+                    this.drawables.push(this.lastannotation.draw());
+                    this.drawablesannotations.push(this.lastannotation);
+                }
             }
         }
         if (this.currentannotation) {
@@ -1056,6 +1108,7 @@ EDITOR.prototype = {
                 y: this.currentannotation.y};
         }
     },
+
     /**
      * Event handler for mousemove.
      * @protected
@@ -1101,6 +1154,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Event handler for mouseup or touchend.
      * @protected
@@ -1164,6 +1218,7 @@ EDITOR.prototype = {
             this.handle_tool_button_action("select");
         }
     },
+
     /**
      * Resize the dialogue window when the browser is resized.
      * @public
@@ -1191,6 +1246,7 @@ EDITOR.prototype = {
         this.redraw();
         return true;
     },
+
     /**
      * Factory method for creating annotations of the correct subclass.
      * @public
@@ -1282,6 +1338,7 @@ EDITOR.prototype = {
         }
         return false;
     },
+
     /**
      * AJAX call for refresh PDF with last annotations and comments/status
      * @returns {undefined}
@@ -1333,6 +1390,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page.
      * @protected
@@ -1389,6 +1447,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page fot student view.
      * @protected
@@ -1442,6 +1501,7 @@ EDITOR.prototype = {
         };
         Y.io(ajaxurl, config);
     },
+
     /**
      * Redraw all the comments and annotations.
      * @protected
@@ -1487,6 +1547,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Load the image for this pdf page and remove the loading icon (if there).
      * @protected
@@ -1523,6 +1584,7 @@ EDITOR.prototype = {
 
         this.resize(); // Internally will call 'redraw', after checking the dialogue size.
     },
+
     /**
      * Now we know how many pages there are,
      * we can enable the navigation controls.
@@ -1563,6 +1625,7 @@ EDITOR.prototype = {
         nextbutton.on('click', this.next_page, this);
         nextbutton.on('key', this.next_page, 'down:13', this);
     },
+
     /**
      * Navigate to the previous page.
      * @protected
@@ -1576,6 +1639,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Navigate to the next page.
      * @protected
@@ -1589,6 +1653,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Update any absolutely positioned nodes, within each drawable, when the drawing canvas is scrolled
      * @protected

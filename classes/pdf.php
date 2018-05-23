@@ -83,7 +83,7 @@ class pdf extends \FPDI {
     const MIN_ANNOTATION_HEIGHT = 5;
 
     /** Blank PDF file used during error. */
-    const BLANK_PDF = '/mod/assign/feedback/editpdf/fixtures/blank.pdf';
+    const BLANK_PDF = '/mod/assign/feedback/editpdfplus/fixtures/blank.pdf';
 
     /**
      * Combine the given PDF files into a single PDF. Optionally add a coversheet and coversheet fields.
@@ -558,8 +558,8 @@ class pdf extends \FPDI {
     /**
      * Generate an image of the specified page in the PDF
      * @param int $pageno the page to generate the image of
-     * @throws moodle_exception
-     * @throws coding_exception
+     * @throws \moodle_exception
+     * @throws \coding_exception
      * @return string the filename of the generated image
      */
     public function get_image($pageno) {
@@ -621,59 +621,12 @@ class pdf extends \FPDI {
     public static function ensure_pdf_compatible(\stored_file $file) {
         global $CFG;
 
-        //$temparea = make_temp_directory('assignfeedback_editpdfplus');
+        // Copy the stored_file to local disk for checking.
         $temparea = make_request_directory();
-        //$hash = $file->get_contenthash(); // Use the contenthash to make sure the temp files have unique names.
-        //$tempsrc = $temparea . "/src-$hash.pdf";
-        //$tempdst = $temparea . "/dst-$hash.pdf";
         $tempsrc = $temparea . "/source.pdf";
-        $file->copy_content_to($tempsrc); // Copy the file.
+        $file->copy_content_to($tempsrc);
 
         return self::ensure_pdf_file_compatible($tempsrc);
-
-        /* $pdf = new pdf();
-          $pagecount = 0;
-          try {
-          $pagecount = $pdf->load_pdf($tempsrc);
-          } catch (\Exception $e) {
-          // PDF was not valid - try running it through ghostscript to clean it up.
-          $pagecount = 0;
-          }
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-
-          if ($pagecount > 0) {
-          // Page is valid and can be read by tcpdf.
-          return $tempsrc;
-          }
-
-          $gsexec = \escapeshellarg($CFG->pathtogs);
-          $tempdstarg = \escapeshellarg($tempdst);
-          $tempsrcarg = \escapeshellarg($tempsrc);
-          $command = "$gsexec -q -sDEVICE=pdfwrite -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
-          exec($command);
-          @unlink($tempsrc);
-          if (!file_exists($tempdst)) {
-          // Something has gone wrong in the conversion.
-          return false;
-          }
-
-          $pdf = new pdf();
-          $pagecount = 0;
-          try {
-          $pagecount = $pdf->load_pdf($tempdst);
-          } catch (\Exception $e) {
-          // PDF was not valid - try running it through ghostscript to clean it up.
-          $pagecount = 0;
-          }
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-
-          if ($pagecount <= 0) {
-          @unlink($tempdst);
-          // Could not parse the converted pdf.
-          return false;
-          }
-
-          return $tempdst; */
     }
 
     /**
@@ -771,7 +724,7 @@ class pdf extends \FPDI {
     /**
      * Test that the configured path to ghostscript is correct and working.
      * @param bool $generateimage - If true - a test image will be generated to verify the install.
-     * @return bool
+     * @return \stdClass
      */
     public static function test_gs_path($generateimage = true) {
         global $CFG;

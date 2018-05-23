@@ -46,6 +46,7 @@ class page_editor {
      */
     public static function get_tools($contextidlist) {
         global $DB;
+        
         $tools = array();
         if ($contextidlist) {
             $records = $DB->get_records_list('assignfeedback_editpp_tool', 'contextid', $contextidlist);
@@ -285,12 +286,6 @@ class page_editor {
             $newid = $DB->insert_record('assignfeedback_editpp_annot', $record);
             $parentlink[$oldid] = $newid;
         }
-        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
-          foreach ($records as $record) {
-          unset($record->id);
-          $record->draft = 0;
-          $DB->insert_record('assignfeedback_editpp_cmnt', $record);
-          } */
 
         return true;
     }
@@ -334,12 +329,6 @@ class page_editor {
             $record->draft = 0;
             $DB->insert_record('assignfeedback_editpp_annot', $record);
         }
-        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
-          foreach ($records as $record) {
-          unset($record->id);
-          $record->draft = 0;
-          $DB->insert_record('assignfeedback_editpp_annot', $record);
-          } */
 
         return true;
     }
@@ -384,11 +373,9 @@ class page_editor {
 
         // Delete any existing annotations and comments from current user.
         $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $grade->id));
-        //$DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id));
         // Get gradeid, annotations and comments from sourceuserid.
         $sourceusergrade = $assignment->get_user_grade($sourceuserid, true, $grade->attemptnumber);
         $annotations = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
-        //$comments = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
         $contextid = $assignment->get_context()->id;
         $sourceitemid = $sourceusergrade->id;
 
@@ -397,10 +384,6 @@ class page_editor {
             $annotation->gradeid = $grade->id;
             $DB->insert_record('assignfeedback_editpp_annot', $annotation);
         }
-        /* foreach ($comments as $comment) {
-          $comment->gradeid = $grade->id;
-          $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
-          } */
 
         $fs = get_file_storage();
 
@@ -472,13 +455,6 @@ class page_editor {
         global $CFG;
         switch ($newToolType->label) {
             case 'highlightplus':
-                /*if (isset($CFG->highlightplus_configurable) && (intval($CFG->highlightplus_configurable) == 0 || intval($CFG->highlightplus_configurable) == 1)) {
-                    if (intval($CFG->highlightplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
                 if (isset($CFG->highlightplus_color) && $CFG->highlightplus_color != null && strlen($CFG->highlightplus_color) > 4) {
                     $newToolType->color = $CFG->highlightplus_color;
                 }
@@ -494,26 +470,12 @@ class page_editor {
                 break;
 
             case 'stampplus':
-                /*if (isset($CFG->stampplus_configurable) && (intval($CFG->stampplus_configurable) == 0 || intval($CFG->stampplus_configurable) == 1)) {
-                    if (intval($CFG->stampplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
                 if (isset($CFG->stampplus_color) && $CFG->stampplus_color != null && strlen($CFG->stampplus_color) > 4) {
                     $newToolType->color = $CFG->stampplus_color;
                 }
                 break;
 
             case 'frame':
-                /*if (isset($CFG->frame_configurable) && (intval($CFG->frame_configurable) == 0 || intval($CFG->frame_configurable) == 1)) {
-                    if (intval($CFG->frame_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
                 if (isset($CFG->frame_cartridge_x) && (intval($CFG->frame_cartridge_x) || $CFG->frame_cartridge_x == '0')) {
                     $newToolType->cartridge_x = intval($CFG->frame_cartridge_x);
                 }
@@ -523,13 +485,6 @@ class page_editor {
                 break;
 
             case 'verticalline':
-                /*if (isset($CFG->verticalline_configurable) && (intval($CFG->verticalline_configurable) == 0 || intval($CFG->verticalline_configurable) == 1)) {
-                    if (intval($CFG->verticalline_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
                 if (isset($CFG->verticalline_color) && $CFG->verticalline_color != null && strlen($CFG->verticalline_color) > 4) {
                     $newToolType->color = $CFG->verticalline_color;
                 }
@@ -545,16 +500,6 @@ class page_editor {
                 break;
 
             case 'stampcomment':
-                /*if (isset($CFG->stampcomment_configurable) && (intval($CFG->stampcomment_configurable) == 0 || intval($CFG->stampcomment_configurable) == 1)) {
-                    if (intval($CFG->stampcomment_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                /*if (isset($CFG->stampcomment_color) && $CFG->stampcomment_color != null && strlen($CFG->stampcomment_color) > 4) {
-                    $newToolType->color = $CFG->stampcomment_color;
-                }*/
                 if (isset($CFG->stampcomment_cartridge_color) && $CFG->stampcomment_cartridge_color != null && strlen($CFG->stampcomment_cartridge_color) > 4) {
                     $newToolType->cartridge_color = $CFG->stampcomment_cartridge_color;
                 }
@@ -567,13 +512,6 @@ class page_editor {
                 break;
 
             case 'commentplus':
-                /*if (isset($CFG->commentplus_configurable) && (intval($CFG->commentplus_configurable) == 0 || intval($CFG->commentplus_configurable) == 1)) {
-                    if (intval($CFG->commentplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
                 if (isset($CFG->commentplus_cartridge_color) && $CFG->commentplus_cartridge_color != null && strlen($CFG->commentplus_cartridge_color) > 4) {
                     $newToolType->cartridge_color = $CFG->commentplus_cartridge_color;
                 }

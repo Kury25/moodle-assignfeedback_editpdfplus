@@ -1,5 +1,3 @@
-/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -14,6 +12,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -31,8 +30,10 @@
 var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
+
 ANNOTATION.NAME = "annotation";
 ANNOTATION.ATTRS = {};
+
 Y.extend(ANNOTATION, Y.Base, {
     /**
      * Reference to M.assignfeedback_editpdfplus.editor.
@@ -41,6 +42,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     editor: null,
+
     /**
      * Grade id
      * @property gradeid
@@ -48,6 +50,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     gradeid: 0,
+
     /**
      * Comment page number
      * @property pageno
@@ -55,6 +58,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     pageno: 0,
+
     /**
      * X position
      * @property x
@@ -62,6 +66,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     x: 0,
+
     /**
      * Y position
      * @property y
@@ -69,6 +74,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     y: 0,
+
     /**
      * Ending x position
      * @property endx
@@ -76,6 +82,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endx: 0,
+
     /**
      * Ending y position
      * @property endy
@@ -83,6 +90,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endy: 0,
+
     /**
      * Path
      * @property path
@@ -90,6 +98,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     path: '',
+
     /**
      * Tool.
      * @property toolid
@@ -97,6 +106,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     toolid: 0,
+
     /**
      * Annotation colour.
      * @property colour
@@ -104,6 +114,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     colour: 'red',
+
     /**
      * Reference to M.assignfeedback_editpdfplus.drawable
      * @property drawable
@@ -111,6 +122,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable: false,
+
     /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
@@ -223,6 +235,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     studentanswer: "",
+
     /**
      * Initialise the annotation.
      *
@@ -273,6 +286,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.drawable = false;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
+
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -325,6 +339,7 @@ Y.extend(ANNOTATION, Y.Base, {
             studentstatus: parseInt(this.studentstatus, 10)
         };
     },
+
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -349,6 +364,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
                 offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
                 shape;
+
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
@@ -374,6 +390,7 @@ Y.extend(ANNOTATION, Y.Base, {
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<i class="fa fa-trash" aria-hidden="true"></i>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');
+
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
             });
@@ -382,17 +399,21 @@ Y.extend(ANNOTATION, Y.Base, {
             });
             deletelink.addClass('deleteannotationbutton');
             deletelink.append(deleteicon);
+
             drawingregion.append(deletelink);
             deletelink.setData('annotation', this);
             deletelink.setStyle('zIndex', '200');
+
             deletelink.on('click', this.remove, this);
             deletelink.on('key', this.remove, 'space,enter', this);
+
             deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
             deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;
     },
+
     /**
      * Draw an annotation
      * @public
@@ -1212,12 +1233,14 @@ Y.extend(ANNOTATION, Y.Base, {
      * Delete an annotation
      * @protected
      * @method remove
-     * @param {event} e
+     * @param event
      */
     remove: function (e) {
         var annotations,
                 i;
+
         e.preventDefault();
+
         annotations = this.editor.pages[this.editor.currentpage].annotations;
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
@@ -1231,11 +1254,12 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
+
     /**
      * Move an annotation to a new location.
      * @public
-     * @param {int} newx
-     * @param {int} newy
+     * @param int newx
+     * @param int newy
      * @method move_annotation
      */
     move: function (newx, newy) {
@@ -1243,10 +1267,12 @@ Y.extend(ANNOTATION, Y.Base, {
                 diffy = newy - this.y,
                 newpath, oldpath, xy,
                 x, y;
+
         this.x += diffx;
         this.y += diffy;
         this.endx += diffx;
         this.endy += diffy;
+
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
@@ -1256,36 +1282,41 @@ Y.extend(ANNOTATION, Y.Base, {
                 y = parseInt(xy[1], 10);
                 newpath.push((x + diffx) + ',' + (y + diffy));
             });
+
             this.path = newpath.join(':');
+
         }
         if (this.drawable) {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
     },
+
     /**
      * Draw the in progress edit.
      *
      * @public
      * @method draw_current_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      */
     draw_current_edit: function (edit) {
         var noop = edit && false;
         // Override me please.
         return noop;
     },
+
     /**
      * Promote the current edit to a real annotation.
      *
      * @public
      * @method init_from_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool if width/height is more than min. required.
      */
     init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
+
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
@@ -1296,6 +1327,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
     },
+
     /**
      * Disable canvas event (click on other tool or annotation)
      */
@@ -1303,6 +1335,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         drawingcanvas.detach();
     },
+
     /**
      * Enable canvas event (click on other tool or annotation)
      */
@@ -1314,5 +1347,6 @@ Y.extend(ANNOTATION, Y.Base, {
     }
 
 });
+
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotation = ANNOTATION;

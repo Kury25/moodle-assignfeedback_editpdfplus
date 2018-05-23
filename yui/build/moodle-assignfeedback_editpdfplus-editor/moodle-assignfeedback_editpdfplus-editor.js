@@ -435,6 +435,7 @@ M.assignfeedback_editpdfplus.edit = EDIT;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, SELECTOR */
 
 /**
  * Provides an in browser PDF editor.
@@ -533,8 +534,6 @@ var DRAWABLE = function(editor) {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.drawable = DRAWABLE;
-/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -549,6 +548,7 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -566,8 +566,10 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
 var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
+
 ANNOTATION.NAME = "annotation";
 ANNOTATION.ATTRS = {};
+
 Y.extend(ANNOTATION, Y.Base, {
     /**
      * Reference to M.assignfeedback_editpdfplus.editor.
@@ -576,6 +578,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     editor: null,
+
     /**
      * Grade id
      * @property gradeid
@@ -583,6 +586,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     gradeid: 0,
+
     /**
      * Comment page number
      * @property pageno
@@ -590,6 +594,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     pageno: 0,
+
     /**
      * X position
      * @property x
@@ -597,6 +602,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     x: 0,
+
     /**
      * Y position
      * @property y
@@ -604,6 +610,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     y: 0,
+
     /**
      * Ending x position
      * @property endx
@@ -611,6 +618,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endx: 0,
+
     /**
      * Ending y position
      * @property endy
@@ -618,6 +626,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endy: 0,
+
     /**
      * Path
      * @property path
@@ -625,6 +634,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     path: '',
+
     /**
      * Tool.
      * @property toolid
@@ -632,6 +642,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     toolid: 0,
+
     /**
      * Annotation colour.
      * @property colour
@@ -639,6 +650,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     colour: 'red',
+
     /**
      * Reference to M.assignfeedback_editpdfplus.drawable
      * @property drawable
@@ -646,6 +658,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable: false,
+
     /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
@@ -758,6 +771,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     studentanswer: "",
+
     /**
      * Initialise the annotation.
      *
@@ -808,6 +822,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.drawable = false;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
+
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -860,6 +875,7 @@ Y.extend(ANNOTATION, Y.Base, {
             studentstatus: parseInt(this.studentstatus, 10)
         };
     },
+
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -884,6 +900,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
                 offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
                 shape;
+
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
@@ -909,6 +926,7 @@ Y.extend(ANNOTATION, Y.Base, {
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<i class="fa fa-trash" aria-hidden="true"></i>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');
+
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
             });
@@ -917,17 +935,21 @@ Y.extend(ANNOTATION, Y.Base, {
             });
             deletelink.addClass('deleteannotationbutton');
             deletelink.append(deleteicon);
+
             drawingregion.append(deletelink);
             deletelink.setData('annotation', this);
             deletelink.setStyle('zIndex', '200');
+
             deletelink.on('click', this.remove, this);
             deletelink.on('key', this.remove, 'space,enter', this);
+
             deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
             deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;
     },
+
     /**
      * Draw an annotation
      * @public
@@ -1747,12 +1769,14 @@ Y.extend(ANNOTATION, Y.Base, {
      * Delete an annotation
      * @protected
      * @method remove
-     * @param {event} e
+     * @param event
      */
     remove: function (e) {
         var annotations,
                 i;
+
         e.preventDefault();
+
         annotations = this.editor.pages[this.editor.currentpage].annotations;
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
@@ -1766,11 +1790,12 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
+
     /**
      * Move an annotation to a new location.
      * @public
-     * @param {int} newx
-     * @param {int} newy
+     * @param int newx
+     * @param int newy
      * @method move_annotation
      */
     move: function (newx, newy) {
@@ -1778,10 +1803,12 @@ Y.extend(ANNOTATION, Y.Base, {
                 diffy = newy - this.y,
                 newpath, oldpath, xy,
                 x, y;
+
         this.x += diffx;
         this.y += diffy;
         this.endx += diffx;
         this.endy += diffy;
+
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
@@ -1791,36 +1818,41 @@ Y.extend(ANNOTATION, Y.Base, {
                 y = parseInt(xy[1], 10);
                 newpath.push((x + diffx) + ',' + (y + diffy));
             });
+
             this.path = newpath.join(':');
+
         }
         if (this.drawable) {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
     },
+
     /**
      * Draw the in progress edit.
      *
      * @public
      * @method draw_current_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      */
     draw_current_edit: function (edit) {
         var noop = edit && false;
         // Override me please.
         return noop;
     },
+
     /**
      * Promote the current edit to a real annotation.
      *
      * @public
      * @method init_from_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool if width/height is more than min. required.
      */
     init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
+
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
@@ -1831,6 +1863,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
     },
+
     /**
      * Disable canvas event (click on other tool or annotation)
      */
@@ -1838,6 +1871,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         drawingcanvas.detach();
     },
+
     /**
      * Enable canvas event (click on other tool or annotation)
      */
@@ -1849,6 +1883,7 @@ Y.extend(ANNOTATION, Y.Base, {
     }
 
 });
+
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotation = ANNOTATION;
 // This file is part of Moodle - http://moodle.org/
@@ -1865,6 +1900,7 @@ M.assignfeedback_editpdfplus.annotation = ANNOTATION;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -1985,6 +2021,7 @@ M.assignfeedback_editpdfplus.annotationline = ANNOTATIONLINE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2099,6 +2136,7 @@ M.assignfeedback_editpdfplus.annotationrectangle = ANNOTATIONRECTANGLE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2213,6 +2251,7 @@ M.assignfeedback_editpdfplus.annotationoval = ANNOTATIONOVAL;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2373,6 +2412,7 @@ M.assignfeedback_editpdfplus.annotationpen = ANNOTATIONPEN;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2754,6 +2794,7 @@ M.assignfeedback_editpdfplus.annotationhighlightplus = ANNOTATIONHIGHLIGHTPLUS;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global SELECTOR */
 
 /**
  * Provides an in browser PDF editor.
@@ -4481,7 +4522,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationcommentplus = ANNOTATIONCOMMENTPLUS;
 var DROPDOWN_NAME = "Dropdown menu",
-    DROPDOWN;
+        DROPDOWN;
 
 /**
  * Provides an in browser PDF editor.
@@ -4497,7 +4538,7 @@ var DROPDOWN_NAME = "Dropdown menu",
  * @constructor
  * @extends M.core.dialogue
  */
-DROPDOWN = function(config) {
+DROPDOWN = function (config) {
     config.draggable = false;
     config.centered = false;
     config.width = 'auto';
@@ -4513,7 +4554,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         var button, body, headertext, bb;
         DROPDOWN.superclass.initializer.call(this, config);
 
@@ -4531,7 +4572,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
         headertext.setHTML(this.get('headerText'));
         body.prepend(headertext);
 
-        body.on('clickoutside', function(e) {
+        body.on('clickoutside', function (e) {
             if (this.get('visible')) {
                 // Note: we need to compare ids because for some reason - sometimes button is an Object, not a Y.Node.
                 if (e.target.get('id') !== button.get('id') && e.target.ancestor().get('id') !== button.get('id')) {
@@ -4541,7 +4582,10 @@ Y.extend(DROPDOWN, M.core.dialogue, {
             }
         }, this);
 
-        button.on('click', function(e) {e.preventDefault(); this.show();}, this);
+        button.on('click', function (e) {
+            e.preventDefault();
+            this.show();
+        }, this);
         button.on('key', this.show, 'enter,space', this);
     },
 
@@ -4551,16 +4595,16 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method show
      * @return void
      */
-    show : function() {
+    show: function () {
         var button = this.get('buttonNode'),
-            result = DROPDOWN.superclass.show.call(this);
+                result = DROPDOWN.superclass.show.call(this);
         this.align(button, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.BL]);
 
         return result;
     }
 }, {
-    NAME : DROPDOWN_NAME,
-    ATTRS : {
+    NAME: DROPDOWN_NAME,
+    ATTRS: {
         /**
          * The header for the drop down (only accessible to screen readers).
          *
@@ -4568,8 +4612,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type String
          * @default ''
          */
-        headerText : {
-            value : ''
+        headerText: {
+            value: ''
         },
 
         /**
@@ -4579,8 +4623,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type Y.Node
          * @default null
          */
-        buttonNode : {
-            value : null
+        buttonNode: {
+            value: null
         }
     }
 });
@@ -4596,7 +4640,7 @@ Y.Base.modifyAttrs(DROPDOWN, {
      * @default false
      */
     modal: {
-        getter: function() {
+        getter: function () {
             return false;
         }
     }
@@ -4644,9 +4688,6 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             var button, listitem, title;
 
             title = M.util.get_string(colour, 'assignfeedback_editpdfplus');
-            //iconname = this.get('iconprefix') + colour;
-            //img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
-            //button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
             if (colour === "white" || colour === "yellowlemon") {
                 iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
                         + '<i class="fa fa-square fa-stack-2x" style="color:#E3E3E3;"></i>'
@@ -4789,6 +4830,7 @@ var EDITOR = function () {
     EDITOR.superclass.constructor.apply(this, arguments);
 };
 EDITOR.prototype = {
+
     /**
      * The dialogue used for all action menu displays.
      *
@@ -4797,6 +4839,7 @@ EDITOR.prototype = {
      * @protected
      */
     dialogue: null,
+
     /**
      * The panel used for all action menu displays.
      *
@@ -4805,6 +4848,7 @@ EDITOR.prototype = {
      * @protected
      */
     panel: null,
+
     /**
      * The number of pages in the pdf.
      *
@@ -4813,6 +4857,7 @@ EDITOR.prototype = {
      * @protected
      */
     pagecount: 0,
+
     /**
      * The active page in the editor.
      *
@@ -4821,6 +4866,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentpage: 0,
+
     /**
      * A list of page objects. Each page has a list of comments and annotations.
      *
@@ -4847,6 +4893,7 @@ EDITOR.prototype = {
      * @protected
      */
     loadingicon: null,
+
     /**
      * Image object of the current page image.
      *
@@ -4855,6 +4902,7 @@ EDITOR.prototype = {
      * @protected
      */
     pageimage: null,
+
     /**
      * YUI Graphic class for drawing shapes.
      *
@@ -4863,6 +4911,7 @@ EDITOR.prototype = {
      * @protected
      */
     graphic: null,
+
     /**
      * Info about the current edit operation.
      *
@@ -4871,6 +4920,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentedit: new M.assignfeedback_editpdfplus.edit(),
+
     /**
      * Current drawable.
      *
@@ -4879,6 +4929,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentdrawable: false,
+
     /**
      * Current drawables.
      *
@@ -4887,6 +4938,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawables: [],
+
     /**
      * Current annotations.
      *
@@ -4895,6 +4947,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawablesannotations: [],
+
     /**
      * Current annotation when the select tool is used.
      * @property currentannotation
@@ -4902,13 +4955,23 @@ EDITOR.prototype = {
      * @protected
      */
     currentannotation: null,
+
+    /**
+     * Track the previous annotation so we can remove selection highlights.
+     * @property lastannotation
+     * @type M.assignfeedback_editpdfplus.annotation
+     * @protected
+     */
+    lastannotation: null,
+
     /**
      * Last selected annotation tool
      * @property lastannotationtool
      * @type String
      * @protected
      */
-    lastanntationtool: "pen",
+    lastannotationtool: "pen",
+
     /**
      * The selected stamp picture.
      * @property currentstamp
@@ -4916,6 +4979,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentstamp: null,
+
     /**
      * The stamps.
      * @property stamps
@@ -4923,6 +4987,7 @@ EDITOR.prototype = {
      * @protected
      */
     stamps: [],
+
     /**
      * The parents annotations
      * @type Array
@@ -4977,6 +5042,7 @@ EDITOR.prototype = {
 
         }
     },
+
     /**
      * Called to show/hide buttons and set the current colours/stamps.
      * @method refresh_button_state
@@ -4998,6 +5064,7 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
     },
+
     /**
      * Called to set the current colours
      * @method refresh_button_color_state
@@ -5023,6 +5090,7 @@ EDITOR.prototype = {
             button.setStyle('background-color', 'transparent');
         }
     },
+
     /**
      * Called to get the bounds of the drawing region.
      * @method get_canvas_bounds
@@ -5037,6 +5105,7 @@ EDITOR.prototype = {
 
         return new M.assignfeedback_editpdfplus.rect(offsetleft, offsettop, width, height);
     },
+
     /**
      * Called to translate from window coordinates to canvas coordinates.
      * @method get_canvas_coordinates
@@ -5051,6 +5120,7 @@ EDITOR.prototype = {
         newpoint.clip(bounds);
         return newpoint;
     },
+
     /**
      * Called to translate from canvas coordinates to window coordinates.
      * @method get_window_coordinates
@@ -5062,6 +5132,7 @@ EDITOR.prototype = {
 
         return newpoint;
     },
+
     /**
      * Open the edit-pdf editor in the panel in the page instead of a popup.
      * @method open_in_panel
@@ -5091,6 +5162,7 @@ EDITOR.prototype = {
 
         this.start_generation();
     },
+
     /**
      * Called to open the pdf editing dialogue.
      * @method link_handler
@@ -5220,6 +5292,7 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * Spwan the PDF to Image conversion on the server.
      *
@@ -5258,14 +5331,15 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * The info about all pages in the pdf has been returned.
+     *
      * @param string The ajax response as text.
      * @protected
      * @method prepare_pages_for_display
      */
     prepare_pages_for_display: function (data) {
-        //all_pages_loaded: function (responsetext) {
         var i, j, error;
         if (!data.pagecount) {
             if (this.dialogue) {
@@ -5469,6 +5543,7 @@ EDITOR.prototype = {
 
         return fullurl;
     },
+
     /**
      * Show only annotations from selected axis
      * @public
@@ -5480,6 +5555,7 @@ EDITOR.prototype = {
         axis.visibility = axe.get('checked');
         this.redraw();
     },
+
     /**
      * Attach listeners and enable the color picker buttons.
      * @protected
@@ -5567,6 +5643,7 @@ EDITOR.prototype = {
     update_student_feedback: function () {
         this.refresh_pdf();
     },
+
     /**
      * Refresh view with option on question shown or not
      * @protected
@@ -5600,6 +5677,7 @@ EDITOR.prototype = {
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
+
     /**
      * Change the current tool from a button's call.
      * @protected
@@ -5645,6 +5723,7 @@ EDITOR.prototype = {
 
         this.refresh_button_state();
     },
+
     /**
      * Refresh the display of each annotation
      * @protected
@@ -5679,6 +5758,7 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+
     /**
      * JSON encode the current page data - stripping out drawable references
      * which cannot be encoded (light, only for student information).
@@ -5696,6 +5776,7 @@ EDITOR.prototype = {
         page = {annotations: annotations};
         return Y.JSON.stringify(page);
     },
+
     /**
      * Generate a drawable from the current in progress edit.
      * @protected
@@ -5722,6 +5803,7 @@ EDITOR.prototype = {
 
         return drawable;
     },
+
     /**
      * Find an element within the dialogue.
      * @protected
@@ -5734,6 +5816,7 @@ EDITOR.prototype = {
             return this.dialogue.get('boundingBox').one(selector);
         }
     },
+
     /**
      * Redraw the active edit.
      * @protected
@@ -5745,6 +5828,7 @@ EDITOR.prototype = {
         }
         this.currentdrawable = this.get_current_drawable();
     },
+
     /**
      * Event handler for mousedown or touchstart.
      * @protected
@@ -5758,8 +5842,7 @@ EDITOR.prototype = {
                 scrollleft = canvas.get('docScrollX'),
                 point = {x: e.clientX - offset[0] + scrollleft,
                     y: e.clientY - offset[1] + scrolltop},
-                selected = false,
-                lastannotation;
+                selected = false;
 
         // Ignore right mouse click.
         if (e.button === 3) {
@@ -5787,14 +5870,14 @@ EDITOR.prototype = {
             });
 
             if (selected) {
-                lastannotation = this.currentannotation;
+                this.lastannotation = this.currentannotation;
                 this.currentannotation = selected;
-                if (lastannotation && lastannotation !== selected) {
+                if (this.lastannotation && this.lastannotation !== selected) {
                     // Redraw the last selected annotation to remove the highlight.
-                    if (lastannotation.drawable) {
-                        lastannotation.drawable.erase();
-                        this.drawables.push(lastannotation.draw());
-                        this.drawablesannotations.push(lastannotation);
+                    if (this.lastannotation.drawable) {
+                        this.lastannotation.drawable.erase();
+                        this.drawables.push(this.lastannotation.draw());
+                        this.drawablesannotations.push(this.lastannotation);
                     }
                 }
                 // Redraw the newly selected annotation to show the highlight.
@@ -5803,6 +5886,16 @@ EDITOR.prototype = {
                 }
                 this.drawables.push(this.currentannotation.draw());
                 this.drawablesannotations.push(this.currentannotation);
+            } else {
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = null;
+
+                // Redraw the last selected annotation to remove the highlight.
+                if (this.lastannotation && this.lastannotation.drawable) {
+                    this.lastannotation.drawable.erase();
+                    this.drawables.push(this.lastannotation.draw());
+                    this.drawablesannotations.push(this.lastannotation);
+                }
             }
         }
         if (this.currentannotation) {
@@ -5811,6 +5904,7 @@ EDITOR.prototype = {
                 y: this.currentannotation.y};
         }
     },
+
     /**
      * Event handler for mousemove.
      * @protected
@@ -5856,6 +5950,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Event handler for mouseup or touchend.
      * @protected
@@ -5919,6 +6014,7 @@ EDITOR.prototype = {
             this.handle_tool_button_action("select");
         }
     },
+
     /**
      * Resize the dialogue window when the browser is resized.
      * @public
@@ -5946,6 +6042,7 @@ EDITOR.prototype = {
         this.redraw();
         return true;
     },
+
     /**
      * Factory method for creating annotations of the correct subclass.
      * @public
@@ -6037,6 +6134,7 @@ EDITOR.prototype = {
         }
         return false;
     },
+
     /**
      * AJAX call for refresh PDF with last annotations and comments/status
      * @returns {undefined}
@@ -6088,6 +6186,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page.
      * @protected
@@ -6144,6 +6243,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page fot student view.
      * @protected
@@ -6197,6 +6297,7 @@ EDITOR.prototype = {
         };
         Y.io(ajaxurl, config);
     },
+
     /**
      * Redraw all the comments and annotations.
      * @protected
@@ -6242,6 +6343,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Load the image for this pdf page and remove the loading icon (if there).
      * @protected
@@ -6278,6 +6380,7 @@ EDITOR.prototype = {
 
         this.resize(); // Internally will call 'redraw', after checking the dialogue size.
     },
+
     /**
      * Now we know how many pages there are,
      * we can enable the navigation controls.
@@ -6318,6 +6421,7 @@ EDITOR.prototype = {
         nextbutton.on('click', this.next_page, this);
         nextbutton.on('key', this.next_page, 'down:13', this);
     },
+
     /**
      * Navigate to the previous page.
      * @protected
@@ -6331,6 +6435,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Navigate to the next page.
      * @protected
@@ -6344,6 +6449,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Update any absolutely positioned nodes, within each drawable, when the drawing canvas is scrolled
      * @protected

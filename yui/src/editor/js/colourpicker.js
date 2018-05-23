@@ -38,9 +38,6 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             var button, listitem, title;
 
             title = M.util.get_string(colour, 'assignfeedback_editpdfplus');
-            //iconname = this.get('iconprefix') + colour;
-            //img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
-            //button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
             if (colour === "white" || colour === "yellowlemon") {
                 iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
                         + '<i class="fa fa-square fa-stack-2x" style="color:#E3E3E3;"></i>'
