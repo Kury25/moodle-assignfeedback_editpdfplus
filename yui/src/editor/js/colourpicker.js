@@ -1,3 +1,5 @@
+/* global Y, M */
+
 var COLOURPICKER_NAME = "Colourpicker",
         COLOURPICKER;
 

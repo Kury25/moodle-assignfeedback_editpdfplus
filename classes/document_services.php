@@ -610,23 +610,11 @@ EOD;
         }
 
         $file = $document->get_combined_file();
-
         $tmpdir = make_temp_directory('assignfeedback_editpdfplus/final/' . self::hash($assignment, $userid, $attemptnumber));
         $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
         $file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
-
-        $fs = get_file_storage();
-        $stamptmpdir = make_temp_directory('assignfeedback_editpdfplus/stamps/' . self::hash($assignment, $userid, $attemptnumber));
-        $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-        // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $stamptmpdir . '/' . $file->get_filename();
-                $file->copy_content_to($filename); // Copy the file.
-            }
-        }
 
         $pagecount = $pdf->set_pdf($combined);
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -642,7 +630,7 @@ EOD;
             $annotations = page_editor::get_annotations($grade->id, $i, false);
 
             foreach ($annotations as $annotation) {
-                $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
+                $pdf->add_annotation($annotation, $annotation->path, $compteur);
                 if ($annotation->textannot && !$annotation->parent_annot) {
                     $annotation_index[$annotation->id] = $compteur;
                     $compteur++;
@@ -705,14 +693,11 @@ EOD;
         $finalcomment = page_editor::get_feedback_comments($grade->id);
         $pdf->writeHTMLCell(0, 0, 40, 70, $finalcomment->commenttext);
 
-        fulldelete($stamptmpdir);
-
         $filename = self::get_downloadable_feedback_filename($assignment, $userid, $attemptnumber);
         $filename = clean_param($filename, PARAM_FILE);
 
         $generatedpdf = $tmpdir . '/' . $filename;
         $pdf->save_pdf($generatedpdf);
-
 
         $record = new \stdClass();
 
@@ -723,8 +708,8 @@ EOD;
         $record->filepath = '/';
         $record->filename = $filename;
 
-
         // Only keep one current version of the generated pdf.
+        $fs = get_file_storage();
         $fs->delete_area_files($record->contextid, $record->component, $record->filearea, $record->itemid);
 
         $file = $fs->create_file_from_pathname($record, $generatedpdf);

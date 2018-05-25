@@ -84,14 +84,6 @@ var EDIT = function() {
     this.annotationcolour = 'red';
 
     /**
-     * The current stamp image.
-     * @property stamp
-     * @type String
-     * @public
-     */
-    this.stamp = '';
-
-    /**
      * List of points the the current drawing path.
      * @property path
      * @type M.assignfeedback_editpdfplus.point[]

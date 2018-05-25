@@ -49,9 +49,6 @@ class assignfeedback_editpdfplus_widget implements renderable {
     /** @var string $downloadfilename */
     public $downloadfilename = null;
 
-    /** @var string[] $stampfiles */
-    public $stampfiles = array();
-
     /** @var bool $readonly */
     public $readonly = true;
 
@@ -68,19 +65,17 @@ class assignfeedback_editpdfplus_widget implements renderable {
      * @param int $attemptnumber - The attempt number we are grading
      * @param moodle_url $downloadurl - A url to download the current generated pdf.
      * @param string $downloadfilename - Name of the generated pdf.
-     * @param string[] $stampfiles - The file names of the stamps.
      * @param bool $readonly - Show the readonly interface (no tools).
      * @param integer $pagetotal - The total number of pages.
      * @param tool[] $toolbars - the different tool to display
      * @param axis[] $axis - the different axis to display
      */
-    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $toolbars, $axis) {
+    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $readonly, $toolbars, $axis) {
         $this->assignment = $assignment;
         $this->userid = $userid;
         $this->attemptnumber = $attemptnumber;
         $this->downloadurl = $downloadurl;
         $this->downloadfilename = $downloadfilename;
-        $this->stampfiles = $stampfiles;
         $this->readonly = $readonly;
         $this->toolbars = $toolbars;
         $this->axis = $axis;

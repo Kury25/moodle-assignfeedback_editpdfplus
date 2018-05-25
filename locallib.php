@@ -66,10 +66,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
         $feedbackfile = document_services::get_feedback_document($this->assignment->get_instance()->id, $userid, $attempt);
 
-        $stampfiles = array();
-        $fs = get_file_storage();
-        $syscontext = context_system::instance();
-
         // get the costum toolbars
         $toolbars = array();
         $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
@@ -92,34 +88,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             }
         }
 
-        // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $file->get_filename();
-                if ($filename !== '.') {
-
-                    $existingfile = $fs->get_file($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename());
-                    if (!$existingfile) {
-                        $newrecord = new stdClass();
-                        $newrecord->contextid = $this->assignment->get_context()->id;
-                        $newrecord->itemid = $grade->id;
-                        $fs->create_file_from_storedfile($newrecord, $file);
-                    }
-                }
-            }
-        }
-
-        // Now get the full list of stamp files for this instance.
-        if ($files = $fs->get_area_files($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $file->get_filename();
-                if ($filename !== '.') {
-                    $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename(), false);
-                    array_push($stampfiles, $url->out());
-                }
-            }
-        }
-
         $url = false;
         $filename = '';
         if ($feedbackfile) {
@@ -127,7 +95,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $filename = $feedbackfile->get_filename();
         }
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $toolbars, $axis);
+        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $readonly, $toolbars, $axis);
         return $widget;
     }
 

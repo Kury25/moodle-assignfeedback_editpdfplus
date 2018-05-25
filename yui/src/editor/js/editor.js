@@ -174,23 +174,7 @@ EDITOR.prototype = {
      * @type String
      * @protected
      */
-    lastannotationtool: "pen",
-
-    /**
-     * The selected stamp picture.
-     * @property currentstamp
-     * @type String
-     * @protected
-     */
-    currentstamp: null,
-
-    /**
-     * The stamps.
-     * @property stamps
-     * @type Array
-     * @protected
-     */
-    stamps: [],
+    lastannotationtool: null,
 
     /**
      * The parents annotations
@@ -248,7 +232,7 @@ EDITOR.prototype = {
     },
 
     /**
-     * Called to show/hide buttons and set the current colours/stamps.
+     * Called to show/hide buttons and set the current colours.
      * @method refresh_button_state
      */
     refresh_button_state: function () {
@@ -729,26 +713,6 @@ EDITOR.prototype = {
     },
 
     /**
-     * Get the full pluginfile url for an image file - just given the filename.
-     *
-     * @public
-     * @method get_stamp_image_url
-     * @param string filename
-     */
-    get_stamp_image_url: function (filename) {
-        var urls = this.get('stampfiles'),
-                fullurl = '';
-
-        Y.Array.each(urls, function (url) {
-            if (url.indexOf(filename) > 0) {
-                fullurl = url;
-            }
-        }, this);
-
-        return fullurl;
-    },
-
-    /**
      * Show only annotations from selected axis
      * @public
      * @param {type} edit
@@ -914,7 +878,7 @@ EDITOR.prototype = {
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
+        if (tool !== "comment" && tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
         }
 
@@ -1711,10 +1675,6 @@ Y.extend(EDITOR, Y.Base, EDITOR.prototype, {
         readonly: {
             validator: Y.Lang.isBoolean,
             value: true
-        },
-        stampfiles: {
-            validator: Y.Lang.isArray,
-            value: ''
         }
     }
 });

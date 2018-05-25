@@ -62,7 +62,6 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         // We only need to backup the files in the final pdf area, and the readonly page images - the others can be regenerated.
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, 'gradeid');
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, 'gradeid');
-        $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', 'stamps', 'gradeid');
         return $subplugin;
     }
     

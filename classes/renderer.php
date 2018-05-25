@@ -347,7 +347,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 'assignmentid' => $widget->assignment,
                 'userid' => $widget->userid,
                 'attemptnumber' => $widget->attemptnumber,
-                'stampfiles' => $widget->stampfiles,
                 'readonly' => $widget->readonly));
 
         $this->page->requires->yui_module('moodle-assignfeedback_editpdfplus-editor', 'M.assignfeedback_editpdfplus.editor.init', $editorparams);

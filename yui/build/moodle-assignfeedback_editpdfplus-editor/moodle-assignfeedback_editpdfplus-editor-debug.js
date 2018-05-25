@@ -41,7 +41,6 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
             UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
             UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
             UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
-            STAMPSBUTTON: '.currentstampbutton',
             DIALOGUE: '.' + CSS.DIALOGUE,
             CUSTOMTOOLBARID: '#toolbaraxis',
             CUSTOMTOOLBARS: '.customtoolbar',
@@ -401,14 +400,6 @@ var EDIT = function() {
      * @public
      */
     this.annotationcolour = 'red';
-
-    /**
-     * The current stamp image.
-     * @property stamp
-     * @type String
-     * @public
-     */
-    this.stamp = '';
 
     /**
      * List of points the the current drawing path.
@@ -4648,6 +4639,8 @@ Y.Base.modifyAttrs(DROPDOWN, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.dropdown = DROPDOWN;
+/* global Y, M */
+
 var COLOURPICKER_NAME = "Colourpicker",
         COLOURPICKER;
 
@@ -4970,23 +4963,7 @@ EDITOR.prototype = {
      * @type String
      * @protected
      */
-    lastannotationtool: "pen",
-
-    /**
-     * The selected stamp picture.
-     * @property currentstamp
-     * @type String
-     * @protected
-     */
-    currentstamp: null,
-
-    /**
-     * The stamps.
-     * @property stamps
-     * @type Array
-     * @protected
-     */
-    stamps: [],
+    lastannotationtool: null,
 
     /**
      * The parents annotations
@@ -5044,7 +5021,7 @@ EDITOR.prototype = {
     },
 
     /**
-     * Called to show/hide buttons and set the current colours/stamps.
+     * Called to show/hide buttons and set the current colours.
      * @method refresh_button_state
      */
     refresh_button_state: function () {
@@ -5525,26 +5502,6 @@ EDITOR.prototype = {
     },
 
     /**
-     * Get the full pluginfile url for an image file - just given the filename.
-     *
-     * @public
-     * @method get_stamp_image_url
-     * @param string filename
-     */
-    get_stamp_image_url: function (filename) {
-        var urls = this.get('stampfiles'),
-                fullurl = '';
-
-        Y.Array.each(urls, function (url) {
-            if (url.indexOf(filename) > 0) {
-                fullurl = url;
-            }
-        }, this);
-
-        return fullurl;
-    },
-
-    /**
      * Show only annotations from selected axis
      * @public
      * @param {type} edit
@@ -5710,7 +5667,7 @@ EDITOR.prototype = {
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
+        if (tool !== "comment" && tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
         }
 
@@ -6507,10 +6464,6 @@ Y.extend(EDITOR, Y.Base, EDITOR.prototype, {
         readonly: {
             validator: Y.Lang.isBoolean,
             value: true
-        },
-        stampfiles: {
-            validator: Y.Lang.isArray,
-            value: ''
         }
     }
 });
