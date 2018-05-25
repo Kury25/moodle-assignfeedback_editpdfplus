@@ -99,7 +99,7 @@ class utils_stamp {
         imagealphablending($imageTmp, false);
 
         // Create font colors
-        $fontColor = imagecolorallocate($imageTmp, $colorRGB['r'], $colorRGB['g'], $colorRGB['b']);
+        $fontColor = imagecolorallocate($imageTmp, $colorRGB['red'], $colorRGB['green'], $colorRGB['blue']);
         $background = imagecolorallocatealpha($imageTmp, 255, 0, 255, 127);
 
         // Draw rectangle

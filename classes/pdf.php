@@ -383,13 +383,13 @@ class pdf extends \FPDI {
                 break;
             case 'stampcomment':
                 if ($annotation->displayrotation == 1) {
-                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-v");
+                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-v", $colourcartridge);
                     //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
                     //$h = 20; //abs($sy - $ey);
                     //$w = $h * 37 / 96;
                     $sx = min($sx, $ex) - 6;
                 } else {
-                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-h");
+                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-h", $colourcartridge);
                     //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
                     //$w = 20; //abs($sx - $ex);
                     //$h = $w * 37 / 96;
@@ -407,7 +407,7 @@ class pdf extends \FPDI {
                 $this->SetXY($scartx, $scarty);
                 break;
             case 'commentplus':
-                $imgFileFromFA = utils_stamp::getPngFromFont("commenting");
+                $imgFileFromFA = utils_stamp::getPngFromFont("commenting", $colourcartridge);
                 //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
                 $w = 16 * $this->scale;
                 $h = 16 * $this->scale;
