@@ -34,7 +34,7 @@
         <p>{{# str }} adminaxisdelete_question, assignfeedback_editpdfplus {{/ str }}</p>
         {{{render}}}
         <button type="button" class="btn btn-primary" id="axisDelSubmit">{{# str }} adminaxisdelete_ok, assignfeedback_editpdfplus {{/ str }}</button>
-        <button type="button" class="btn btn-default" id="axisDelCancel">{{# str }} adminaxisdelete_ko, assignfeedback_editpdfplus {{/ str }}</button>
+        <button type="button" class="btn" id="axisDelCancel">{{# str }} adminaxisdelete_ko, assignfeedback_editpdfplus {{/ str }}</button>
     </div>
 </div>
 {{# js }}
@@ -67,7 +67,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
             }
-            $("#editpdlplus_axes").prop('disabled',false);
+            $("#editpdlplus_axes").removeAttr('disabled');
         }).fail(notification.exception);
     });
     $("#axisDelCancel").on("click", function () {
@@ -75,7 +75,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
         $("#axistool").show();
         $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
         $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
-        $("#editpdlplus_axes").prop('disabled',false);
+        $("#editpdlplus_axes").removeAttr('disabled');
     });
 });
 {{/ js }}

@@ -226,20 +226,26 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
+                var toolbar = this.get_toolbar();
                 if (!this.editor.get('readonly')) {
-                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
+                    var buttonrender = "<button id='"
+                            + this.divcartridge
+                            + "_buttonpencil' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                     buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
-                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
+                    var buttonadd = "<button id='"
+                            + this.divcartridge
+                            + "_buttonadd' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                     buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
-                    divconteneurdisplay.append(buttonrenderdisplay);
-                    divconteneurdisplay.append(buttonadddisplay);
+                    toolbar.append(buttonrenderdisplay);
+                    toolbar.append(buttonadddisplay);
                 }
+                divconteneurdisplay.append(toolbar);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition

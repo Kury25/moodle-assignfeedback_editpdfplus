@@ -113,7 +113,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             }
             $iconhtml = html_writer::tag("i", "", array('class' => 'fa ' . $class,
                         'aria-hidden' => 'true'));
-            $iconparams = array('data-tool' => $tool, 'class' => $tool . 'button btn btn-default', 'type' => 'button');
+            $iconparams = array('data-tool' => $tool, 'class' => $tool . 'button btn', 'type' => 'button');
             if ($disabled) {
                 $iconparams['disabled'] = 'true';
             }
@@ -161,7 +161,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                     break;
             }
             $iconparams = array('data-tool' => $datatool,
-                'class' => $class . 'button btn btn-default costumtoolbarbutton',
+                'class' => $class . 'button btn costumtoolbarbutton',
                 'id' => 'ctbutton' . $fulltool->id,
                 'type' => 'button');
         }
@@ -217,7 +217,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
        $iconhtmlP = html_writer::tag("i", "", array('class' => 'fa fa-caret-left fa-2x',
                     'aria-hidden' => 'true'));
         $navigation1 .= html_writer::tag('button', $iconhtmlP, array('disabled' => 'true',
-                    'class' => 'btn btn-default navigate-previous-button',
+                    'class' => 'btn navigate-previous-button',
                     'type' => 'button',
                     'accesskey' => $this->get_shortcut('navigate-previous-button')));
 
@@ -227,7 +227,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $iconhtmlN = html_writer::tag("i", "", array('class' => 'fa fa-caret-right fa-2x',
                     'aria-hidden' => 'true'));
         $navigation1 .= html_writer::tag('button', $iconhtmlN, array('disabled' => 'true',
-                    'class' => 'btn btn-default navigate-next-button',
+                    'class' => 'btn navigate-next-button',
                     'type' => 'button',
                     'accesskey' => $this->get_shortcut('navigate-next-button')));
 
@@ -281,7 +281,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $courseid));
             $toolbar003 .= html_writer::tag('button',
                     html_writer::tag("i", "", array('class' => 'fa fa-wrench','aria-hidden' => 'true')),
-                    array('class' => 'button btn btn-default', 'type' => 'button'));
+                    array('class' => 'button btn', 'type' => 'button'));
             $toolbar003 = html_writer::link($lienAdmin, $toolbar003);
             $toolbar003 = html_writer::div($toolbar003, 'toolbar', array('role' => 'toolbar'));
             //$url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $course->id));
@@ -297,7 +297,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                             [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')], 'questionselection', 0, FALSE, array('class' => 'form-control'));
             $axischoice = html_writer::select(
                             [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')], 'statutselection', 0, FALSE, array('class' => 'form-control'));
-            $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'button btn btn-default', 'id' => 'student_valide_button'));
+            $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'button btn', 'id' => 'student_valide_button'));
             $toolbaraxis .= html_writer::div($validatebutton, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($axischoice, 'toolbar ', array('role' => 'toolbar'));
             $toolbaraxis .= html_writer::div($questionchoice, 'toolbar ', array('role' => 'toolbar'));

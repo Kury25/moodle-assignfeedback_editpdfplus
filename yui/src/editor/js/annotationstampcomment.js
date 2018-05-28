@@ -166,7 +166,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
-            divdisplay.append(divconteneurdisplay);
+            var toolbar = this.get_toolbar();
             if (!this.editor.get('readonly')) {
                 var rotationvalue = 0;
                 if (this.displayrotation > 0) {
@@ -177,16 +177,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                         + "_rotation' value="
                         + rotationvalue
                         + " />");
-                divconteneurdisplay.append(inputrotationdisplay);
+                toolbar.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        + "_buttonrotation' class='btn btn-sm btn-outline-dark' type='button'>"
                         + '<i class="fa fa-refresh" aria-hidden="true"></i>'
                         + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
-                divconteneurdisplay.append(buttonrotationdisplay);
+                toolbar.append(buttonrotationdisplay);
             }
+            divconteneurdisplay.append(toolbar);
+            divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {

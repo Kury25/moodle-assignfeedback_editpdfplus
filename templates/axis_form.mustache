@@ -34,7 +34,7 @@
     <div class="panel-body" style="text-align: center;">
         {{{render}}}
         <button type="button" class="btn btn-primary" id="axisFormSubmit">{{# str }} adminaxis_save, assignfeedback_editpdfplus {{/ str }}</button>
-        <button type="button" class="btn btn-default" id="axisFormCancel">{{# str }} adminaxis_cancel, assignfeedback_editpdfplus {{/ str }}</button>
+        <button type="button" class="btn" id="axisFormCancel">{{# str }} adminaxis_cancel, assignfeedback_editpdfplus {{/ str }}</button>
     </div>
 </div>
 {{# js }}
@@ -67,7 +67,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             $("#editpdlplus_axes_worspace").show();
             $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
             $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();
-            $("#editpdlplus_axes").prop('disabled',false);
+            $("#editpdlplus_axes").removeAttr('disabled');
         }).fail(notification.exception);
     });
     $("#axisFormCancel").on("click", function () {
@@ -88,7 +88,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
             $("#editpdlplus_axes_worspace").show();
         }
-        $("#editpdlplus_axes").prop('disabled',false);
+        $("#editpdlplus_axes").removeAttr('disabled');
     });
 });
 {{/ js }}

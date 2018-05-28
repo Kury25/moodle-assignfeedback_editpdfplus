@@ -557,10 +557,8 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
 var ANNOTATION = function (config) {
     ANNOTATION.superclass.constructor.apply(this, [config]);
 };
-
 ANNOTATION.NAME = "annotation";
 ANNOTATION.ATTRS = {};
-
 Y.extend(ANNOTATION, Y.Base, {
     /**
      * Reference to M.assignfeedback_editpdfplus.editor.
@@ -569,7 +567,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     editor: null,
-
     /**
      * Grade id
      * @property gradeid
@@ -577,7 +574,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     gradeid: 0,
-
     /**
      * Comment page number
      * @property pageno
@@ -585,7 +581,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     pageno: 0,
-
     /**
      * X position
      * @property x
@@ -593,7 +588,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     x: 0,
-
     /**
      * Y position
      * @property y
@@ -601,7 +595,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     y: 0,
-
     /**
      * Ending x position
      * @property endx
@@ -609,7 +602,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endx: 0,
-
     /**
      * Ending y position
      * @property endy
@@ -617,7 +609,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     endy: 0,
-
     /**
      * Path
      * @property path
@@ -625,7 +616,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     path: '',
-
     /**
      * Tool.
      * @property toolid
@@ -633,7 +623,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     toolid: 0,
-
     /**
      * Annotation colour.
      * @property colour
@@ -641,7 +630,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     colour: 'red',
-
     /**
      * Reference to M.assignfeedback_editpdfplus.drawable
      * @property drawable
@@ -649,7 +637,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     drawable: false,
-
     /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
@@ -762,7 +749,6 @@ Y.extend(ANNOTATION, Y.Base, {
      * @public
      */
     studentanswer: "",
-
     /**
      * Initialise the annotation.
      *
@@ -813,7 +799,6 @@ Y.extend(ANNOTATION, Y.Base, {
         this.drawable = false;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
-
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -866,7 +851,6 @@ Y.extend(ANNOTATION, Y.Base, {
             studentstatus: parseInt(this.studentstatus, 10)
         };
     },
-
     /**
      * Clean a comment record, returning an oject with only fields that are valid.
      * @public
@@ -891,7 +875,6 @@ Y.extend(ANNOTATION, Y.Base, {
                 drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
                 offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY(),
                 shape;
-
         if (this.editor.currentannotation === this) {
             // Draw a highlight around the annotation.
             bounds = new M.assignfeedback_editpdfplus.rect();
@@ -917,7 +900,6 @@ Y.extend(ANNOTATION, Y.Base, {
             // Add a delete X to the annotation.
             var deleteicon = Y.Node.create('<i class="fa fa-trash" aria-hidden="true"></i>'),
                     deletelink = Y.Node.create('<a href="#" role="button"></a>');
-
             deleteicon.setAttrs({
                 'alt': M.util.get_string('deleteannotation', 'assignfeedback_editpdfplus')
             });
@@ -926,21 +908,17 @@ Y.extend(ANNOTATION, Y.Base, {
             });
             deletelink.addClass('deleteannotationbutton');
             deletelink.append(deleteicon);
-
             drawingregion.append(deletelink);
             deletelink.setData('annotation', this);
             deletelink.setStyle('zIndex', '200');
-
             deletelink.on('click', this.remove, this);
             deletelink.on('key', this.remove, 'space,enter', this);
-
             deletelink.setX(offsetcanvas[0] + bounds.x + bounds.width - 18);
             deletelink.setY(offsetcanvas[1] + bounds.y + bounds.height - 18);
             this.drawable.nodes.push(deletelink);
         }
         return this.drawable;
     },
-
     /**
      * Draw an annotation
      * @public
@@ -1074,11 +1052,11 @@ Y.extend(ANNOTATION, Y.Base, {
         var diveditiondisplay = Y.Node.create(divedition);
         var propositions = this.tooltype.texts;
         if (propositions && propositions.length > 0) {
-            var divproposition = "<div></div>";
+            var divproposition = "<div class='btn-group-vertical aepp-toolbar-vertical'></div>";
             var divpropositiondisplay = Y.Node.create(divproposition);
             var propositionarray = propositions.split('","');
             for (var i = 0; i < propositionarray.length; i++) {
-                var buttontmp = "<button class='btn btn-default' type='button' style='width:100%;font-size: x-small;'>"
+                var buttontmp = "<button class='btn btn-outline-dark' type='button'>"
                         + propositionarray[i].replace('"', '')
                         + "</button>";
                 var buttontmpdisplay = Y.Node.create(buttontmp);
@@ -1103,7 +1081,6 @@ Y.extend(ANNOTATION, Y.Base, {
         divvisu += this.get_valref().replace(/\n/g, "<br/>");
         divvisu += "</div>";
         var divvisudisplay = Y.Node.create(divvisu);
-
         if (this.answerrequested === 1) {
             var divinput = Y.Node.create("<div></div>");
             var hr = Y.Node.create("<hr style='margin-bottom:0px;'/>");
@@ -1123,13 +1100,12 @@ Y.extend(ANNOTATION, Y.Base, {
             rep = this.studentanswer;
             var buttonsave = "<button id='"
                     + this.divcartridge
-                    + "_buttonsavestudentanswer' style='margin-left:110px;' class='btn btn-default' type='button'>"
+                    + "_buttonsavestudentanswer' style='margin-left:110px;' class='btn' type='button'>"
                     //+ M.util.image_url('e/save', 'core')
                     + "<i class='fa fa-floppy-o' aria-hidden='true'></i>"
                     + "</button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_studentanswer, this, null);
-
             divinput.append(hr);
             divinput.append(label);
             divinput.append(buttonsavedisplay);
@@ -1163,22 +1139,33 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(divinputdisplay);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
-        readonly = this.editor.get('readonly');
-        if (!readonly) {
-            divconteneurdisplay.append(this.get_button_visibility_left());
-            divconteneurdisplay.append(this.get_button_visibility_right());
-            divconteneurdisplay.append(this.get_button_save());
-            divconteneurdisplay.append(this.get_button_cancel());
-            if (this.tooltype.reply === 1) {
-                divconteneurdisplay.append(this.get_button_question());
-            }
-            divconteneurdisplay.append(this.get_button_remove());
-        } else {
-            divconteneurdisplay.append(this.get_button_student_status());
-        }
 
         return divconteneurdisplay;
     },
+
+    /**
+     * get the html node for toolbar on annotation
+     * @return node
+     */
+    get_toolbar: function () {
+        var divtoolbar = "<div id='" + this.divcartridge + "_toolbar' class='btn-group btn-group-sm aepp-toolbar'></div>";
+        var divtoolbardisplay = Y.Node.create(divtoolbar);
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divtoolbardisplay.append(this.get_button_visibility_left());
+            divtoolbardisplay.append(this.get_button_visibility_right());
+            divtoolbardisplay.append(this.get_button_save());
+            divtoolbardisplay.append(this.get_button_cancel());
+            if (this.tooltype.reply === 1) {
+                divtoolbardisplay.append(this.get_button_question());
+            }
+            divtoolbardisplay.append(this.get_button_remove());
+        } else {
+            divtoolbardisplay.append(this.get_button_student_status());
+        }
+        return divtoolbardisplay;
+    },
+
     /**
      * get the html node for student button to set status
      * @return node
@@ -1202,11 +1189,9 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttonstatus1display = Y.Node.create(buttonstatus1);
         var buttonstatus2display = Y.Node.create(buttonstatus2);
         var buttonstatus3display = Y.Node.create(buttonstatus3);
-
         buttonstatus1display.on('click', this.change_status, this, 0);
         buttonstatus2display.on('click', this.change_status, this, 1);
         buttonstatus3display.on('click', this.change_status, this, 2);
-
         var buttonstatusdisplay = Y.Node.create("<div id='"
                 + this.divcartridge
                 + "_radioContainer' style='display:inline;'></div>");
@@ -1220,7 +1205,8 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_right: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' class='btn btn-default' type='button'>";
+        var buttonvisibility = "<button id='" + this.divcartridge
+                + "_buttonedit_right' class='btn btn-sm btn-outline-dark' type='button'>";
         buttonvisibility += "<i class='fa fa-arrow-right' aria-hidden='true'></i>";
         buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
@@ -1232,7 +1218,8 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_left: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_left' class='btn btn-default' type='button'>";
+        var buttonvisibility = "<button id='" + this.divcartridge
+                + "_buttonedit_left' class='btn btn-sm btn-outline-dark' type='button'>";
         buttonvisibility += "<i class='fa fa-arrow-left' aria-hidden='true'></i>";
         buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
@@ -1246,7 +1233,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_save: function () {
         var buttonsave = "<button id='"
                 + this.divcartridge
-                + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-default' type='button'>"
+                + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-check' aria-hidden='true'></i>"
                 + "</button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
@@ -1260,7 +1247,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_cancel: function () {
         var buttoncancel = "<button id='"
                 + this.divcartridge
-                + "_buttoncancel' style='display:none;' class='btn btn-default' type='button'>"
+                + "_buttoncancel' style='display:none;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-undo' aria-hidden='true'></i>"
                 + "</button>";
         var buttoncanceldisplay = Y.Node.create(buttoncancel);
@@ -1274,7 +1261,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_question: function () {
         var buttonquestion = "<button id='"
                 + this.divcartridge
-                + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + '<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
                 + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
                 + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
@@ -1291,7 +1278,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_remove: function () {
         var buttontrash = "<button id='"
                 + this.divcartridge
-                + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-trash' aria-hidden='true'></i>"
                 + "</button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
@@ -1495,16 +1482,13 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     move_cartridge_continue: function (e) {
         e.preventDefault();
-
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
                 clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                         e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
@@ -1515,26 +1499,20 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     move_cartridge_stop: function (e) {
         e.preventDefault();
-
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         canvas.detach('mousemove', this.move_cartridge_continue, this);
         canvas.detach('mouseup', this.move_cartridge_stop, this);
-
         var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                 e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-
         this.cartridgex += diffx;
         this.cartridgey += diffy;
-
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-
         this.editor.save_current_page();
     },
     /**
@@ -1765,9 +1743,7 @@ Y.extend(ANNOTATION, Y.Base, {
     remove: function (e) {
         var annotations,
                 i;
-
         e.preventDefault();
-
         annotations = this.editor.pages[this.editor.currentpage].annotations;
         for (i = 0; i < annotations.length; i++) {
             if (annotations[i] === this) {
@@ -1781,7 +1757,6 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
     },
-
     /**
      * Move an annotation to a new location.
      * @public
@@ -1794,12 +1769,10 @@ Y.extend(ANNOTATION, Y.Base, {
                 diffy = newy - this.y,
                 newpath, oldpath, xy,
                 x, y;
-
         this.x += diffx;
         this.y += diffy;
         this.endx += diffx;
         this.endy += diffy;
-
         if (this.path) {
             newpath = [];
             oldpath = this.path.split(':');
@@ -1809,16 +1782,13 @@ Y.extend(ANNOTATION, Y.Base, {
                 y = parseInt(xy[1], 10);
                 newpath.push((x + diffx) + ',' + (y + diffy));
             });
-
             this.path = newpath.join(':');
-
         }
         if (this.drawable) {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
     },
-
     /**
      * Draw the in progress edit.
      *
@@ -1831,7 +1801,6 @@ Y.extend(ANNOTATION, Y.Base, {
         // Override me please.
         return noop;
     },
-
     /**
      * Promote the current edit to a real annotation.
      *
@@ -1843,7 +1812,6 @@ Y.extend(ANNOTATION, Y.Base, {
     init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
-
         this.gradeid = this.editor.get('gradeid');
         this.pageno = this.editor.currentpage;
         this.x = bounds.x;
@@ -1854,7 +1822,6 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = '';
         return (bounds.has_min_width() && bounds.has_min_height());
     },
-
     /**
      * Disable canvas event (click on other tool or annotation)
      */
@@ -1862,7 +1829,6 @@ Y.extend(ANNOTATION, Y.Base, {
         var drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         drawingcanvas.detach();
     },
-
     /**
      * Enable canvas event (click on other tool or annotation)
      */
@@ -1874,7 +1840,6 @@ Y.extend(ANNOTATION, Y.Base, {
     }
 
 });
-
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotation = ANNOTATION;
 // This file is part of Moodle - http://moodle.org/
@@ -2707,6 +2672,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -3270,7 +3237,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
-            divdisplay.append(divconteneurdisplay);
+            var toolbar = this.get_toolbar();
             if (!this.editor.get('readonly')) {
                 var rotationvalue = 0;
                 if (this.displayrotation > 0) {
@@ -3281,16 +3248,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                         + "_rotation' value="
                         + rotationvalue
                         + " />");
-                divconteneurdisplay.append(inputrotationdisplay);
+                toolbar.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        + "_buttonrotation' class='btn btn-sm btn-outline-dark' type='button'>"
                         + '<i class="fa fa-refresh" aria-hidden="true"></i>'
                         + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
-                divconteneurdisplay.append(buttonrotationdisplay);
+                toolbar.append(buttonrotationdisplay);
             }
+            divconteneurdisplay.append(toolbar);
+            divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
@@ -3620,20 +3589,26 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
+                var toolbar = this.get_toolbar();
                 if (!this.editor.get('readonly')) {
-                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
+                    var buttonrender = "<button id='"
+                            + this.divcartridge
+                            + "_buttonpencil' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                     buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
-                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
+                    var buttonadd = "<button id='"
+                            + this.divcartridge
+                            + "_buttonadd' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                     buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
-                    divconteneurdisplay.append(buttonrenderdisplay);
-                    divconteneurdisplay.append(buttonadddisplay);
+                    toolbar.append(buttonrenderdisplay);
+                    toolbar.append(buttonadddisplay);
                 }
+                divconteneurdisplay.append(toolbar);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition
@@ -4196,6 +4171,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -4421,6 +4398,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -4709,7 +4688,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
                         + '</span>');
             }
             iconGoutte.setAttribute('data-colour', colour);
-            button = Y.Node.create('<button class="btn btn-default btn-sm" type="button"></button>');
+            button = Y.Node.create('<button class="btn btn-sm" type="button"></button>');
             button.append(iconGoutte);
             button.setAttribute('data-colour', colour);
             button.setAttribute('data-rgb', rgb);

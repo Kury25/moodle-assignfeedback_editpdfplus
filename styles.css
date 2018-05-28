@@ -393,10 +393,25 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_verticalline_conteneur > button,
 .assignfeedback_editpdfplus_stampcomment_conteneur > button,
 .assignfeedback_editpdfplus_commentplus_conteneur > button {
-    margin: 0;
     margin-left: 2px;
     padding: 0;
     height: 20px;
+}
+.assignfeedback_editpdfplus_widget .aepp-toolbar,
+.assignfeedback_editpdfplus_widget_admin .aepp-toolbar {
+    height: 20px;
+}
+.assignfeedback_editpdfplus_widget .aepp-toolbar .btn-sm,
+.assignfeedback_editpdfplus_widget_admin .aepp-toolbar .btn-sm {
+    padding: 0 2px;
+}
+.assignfeedback_editpdfplus_widget .aepp-toolbar-vertical,
+.assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical {
+    width:100%;
+}
+.assignfeedback_editpdfplus_widget .aepp-toolbar-vertical .btn,
+.assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical .btn {
+    font-size: small;
 }
 .assignfeedback_editpdfplus_highlightplus_input,
 .assignfeedback_editpdfplus_frame_input,

@@ -269,7 +269,7 @@ class assign_feedback_editpdfplus_admin {
             foreach ($tools as $tool) {
                 if ($tool->axis == $ax->id) {
                     if ($tool->enabled == "1") {
-                        $tool->button = "btn-default";
+                        $tool->button = "";
                         $tool->style = "";
                     } else {
                         $tool->button = "";

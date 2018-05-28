@@ -235,10 +235,9 @@ define(['./global'],
              * @return {string} HTML code
              */
             Tool.prototype.getButton = function (selectToolId) {
-                var classButton = "btn-default";
+                var classButton = "";
                 var style = "";
                 if (this.enabled !== 1) {
-                    classButton = "";
                     style = "background-image:none;background-color:#CCCCCC;";
                 }
                 if (this.id === selectToolId) {

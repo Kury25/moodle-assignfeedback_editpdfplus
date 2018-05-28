@@ -61,8 +61,11 @@ define(['jquery', './annotation'],
              */
             AnnotationCommentplus.prototype.draw = function (canevas) {
                 if (canevas) {
+                    var color = this.get_color_cartridge();
                     var divComment = "<div id='" + this.id + "'>"
-                            + "<i class='fa fa-commenting' aria-hidden='true' style='color:black;'></i>"
+                            + "<i class='fa fa-commenting' aria-hidden='true' style='color:"
+                            + color
+                            + ";'></i>"
                             + "</div>";
                     canevas.append(divComment);
                     $("#" + this.id).css('color', this.get_color());
@@ -98,6 +101,8 @@ define(['jquery', './annotation'],
 
                     //creation input
                     var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);
+                    var toolbar = this.get_toolbar();
+                    divconteneurdisplay.append(toolbar);
 
                     //creation de la div d'edition
                     //if (!this.editor.get('readonly')) {

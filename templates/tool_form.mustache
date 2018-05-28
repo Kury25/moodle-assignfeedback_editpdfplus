@@ -40,17 +40,17 @@
             <td style="text-align: right;padding-left: 20px;">
                 {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :
                 <div class="btn-group">
-                    <button type="button" class="btn btn-default" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}save{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
+                    <button type="button" class="btn" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}save{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
                     {{#tool.id}}
-                    <button type="button" class="btn btn-default" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-default" id="toolEnabled"><i class="fa fa-eye{{^tool.enabled}}-slash{{/tool.enabled}}" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-default {{^tool.removable}}disabled{{/tool.removable}}" id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                    <button type="button" class="btn" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
+                    <button type="button" class="btn" id="toolEnabled"><i class="fa fa-eye{{^tool.enabled}}-slash{{/tool.enabled}}" aria-hidden="true"></i></button>
+                    <button type="button" class="btn" {{^tool.removable}}disabled{{/tool.removable}} id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
                     {{/tool.id}}
                 </div>
             </td>
             <td class='assignfeedback_editpdfplus_widget_admin_tool_col2'>
                 {{#tool.id}}
-                <button type="button" class="btn btn-default" id="toolRefesh"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                <button type="button" class="btn" id="toolRefesh"><i class="fa fa-refresh" aria-hidden="true"></i></button>
                 {{/tool.id}}
             </td>
         </tr>

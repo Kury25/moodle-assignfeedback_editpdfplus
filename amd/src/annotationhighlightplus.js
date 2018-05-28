@@ -98,6 +98,8 @@ define(['jquery', './annotation'],
 
                     //creation input
                     var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);
+                    var toolbar = this.get_toolbar();
+                    divconteneurdisplay.append(toolbar);
 
                     //creation de la div d'edition
                     //if (!this.editor.get('readonly')) {
