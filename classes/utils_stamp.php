@@ -71,11 +71,29 @@ class utils_stamp {
         $outputDirectory = $CFG->dataroot . self::STAMPS_FILEAREA;
         $fileName = sprintf("%s%s.png", $outputDirectory, $iconName);
 
+        $dirPath = dirname($fileName);
+        if (!is_dir($dirPath) || !file_exists($dirPath)) {
+            //try to create the directory
+            self::mkdirRecursive($dirPath, 0777);
+        }
+
         //get RGB color
         $colorRGB = utils_color::hex2RGB($color);
 
         //put image into file and return
         return self::putIconIntoFile($charFAHexaCode, $fileName, $colorRGB, $fontSize);
+    }
+
+    /**
+     * Create a final directory with its path
+     * 
+     * @param String $pathname Path to final directory to create
+     * @param String $mode Linux right
+     * @return Boolean If directory is created
+     */
+    public static function mkdirRecursive($pathname, $mode) {
+        is_dir(dirname($pathname)) || mkdir_recursive(dirname($pathname), $mode);
+        return is_dir($pathname) || @mkdir($pathname, $mode);
     }
 
     /**
