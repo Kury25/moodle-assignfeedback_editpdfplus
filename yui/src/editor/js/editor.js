@@ -275,7 +275,7 @@ EDITOR.prototype = {
                     button.one('i').setStyle('color', this.currentedit.annotationcolour);
                     break;
             }
-            button.setStyle('background-color', 'transparent');
+            button.setStyle('background-color', '');
         }
     },
 

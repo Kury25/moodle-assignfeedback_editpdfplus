@@ -41,13 +41,13 @@ use \assignfeedback_editpdfplus\utils_color;
 class utils_stamp {
 
     /** Path of fontawesome font scss */
-    const FA_SCSS_PATH = '/lib/fonts/font-awesome-4.7.0/scss/_variables.scss';
+    const FA_SCSS_PATH = "/mod/assign/feedback/editpdfplus/fonts/fa/_variables.scss";
 
     /** Path of fontawesome font */
     const FA_PATH = '/lib/fonts/fontawesome-webfont.ttf';
 
     /** File area for the stamps */
-    const STAMPS_FILEAREA = '/temp/assignfeedback_editpdfplus/stamps/';
+    const STAMPS_FILEAREA = '/assignfeedback_editpdfplus/stamps/';
 
     /**
      * Convert a FontAwesome icon into a PNG file
@@ -68,7 +68,7 @@ class utils_stamp {
         }
 
         //create final file
-        $outputDirectory = $CFG->dataroot . self::STAMPS_FILEAREA;
+        $outputDirectory = $CFG->tempdir . self::STAMPS_FILEAREA;
         $fileName = sprintf("%s%s.png", $outputDirectory, $iconName);
 
         $dirPath = dirname($fileName);
@@ -125,6 +125,9 @@ class utils_stamp {
         imagealphablending($imageTmp, true);
 
         // Add the text using the Font
+        if (!file_exists($CFG->dirroot . self::FA_PATH)) {
+            return null;
+        }
         $fontPath = $CFG->dirroot . self::FA_PATH;
         list($fontX, $fontY) = self::imageTTFCenter($imageTmp, $charFACode, $fontPath, $fontSize);
         imagettftext($imageTmp, $fontSize, 0, $fontX, $fontY, $fontColor, $fontPath, $charFACode);
@@ -310,6 +313,9 @@ class utils_stamp {
         global $CFG;
 
         //open scss file
+        if (!file_exists($CFG->dirroot . self::FA_SCSS_PATH)) {
+            return null;
+        }
         $readBuffer = file_get_contents($CFG->dirroot . self::FA_SCSS_PATH);
         $lines = explode("\n", $readBuffer);
 
