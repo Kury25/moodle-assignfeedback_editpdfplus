@@ -26,17 +26,14 @@
     * id - form id
 }}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        {{title}}
-    </div>
-    <div class="panel-body" style="text-align: center;">
-        <p>{{# str }} adminaxisdelete_question, assignfeedback_editpdfplus {{/ str }}</p>
-        {{{render}}}
-        <button type="button" class="btn btn-primary" id="axisDelSubmit">{{# str }} adminaxisdelete_ok, assignfeedback_editpdfplus {{/ str }}</button>
-        <button type="button" class="btn" id="axisDelCancel">{{# str }} adminaxisdelete_ko, assignfeedback_editpdfplus {{/ str }}</button>
-    </div>
+<div class="card-header">{{title}}</div>
+<div class="card-body text-primary">
+    <p>{{# str }} adminaxisdelete_question, assignfeedback_editpdfplus {{/ str }}</p>
+    {{{render}}}
+    <button type="button" class="btn btn-primary" id="axisDelSubmit">{{# str }} adminaxisdelete_ok, assignfeedback_editpdfplus {{/ str }}</button>
+    <button type="button" class="btn" id="axisDelCancel">{{# str }} adminaxisdelete_ko, assignfeedback_editpdfplus {{/ str }}</button>
 </div>
+
 {{# js }}
 require(['jquery','core/ajax','core/notification'], function($,ajax,notification) {
     var formid='{{id}}';
@@ -50,12 +47,13 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
             }
         ])[0].done(function(message) {
             if (message[0].message === "1"){
-                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').hide();   
                 $("#editpdlplus_axes option:selected").remove();
                 $("#editpdlplus_axes").change();
                 $("#axistool").show();
             }else{
-                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body > .panel > .panel-body').append("<div class='alert alert-danger' style='margin-top: 5px;'>"+message[0].message+"</div>");
+                $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').append("<div class='alert alert-danger' style='margin-top: 5px;'>"+message[0].message+"</div>");
             }
             var selectAxis = $("#editpdlplus_axes").val();
             if (selectAxis && selectAxis !== "") {
@@ -71,7 +69,8 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
         }).fail(notification.exception);
     });
     $("#axisDelCancel").on("click", function () {
-        $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+        $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').html("");
+        $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').hide();
         $("#axistool").show();
         $('#assignfeedback_editpdfplus_widget_admin_toolheader').show();
         $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').show();

@@ -433,14 +433,14 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     $("#editpdlplus_axes_worspace").hide();
                 }
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
-                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
                 $("#editpdlplus_axes").prop('disabled', true);
                 var params = {};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisadd', contextid, params)
                         .done(function (html, js) {
-                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body',
+                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_addaxis',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
@@ -452,7 +452,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 $("#message_edit_tool").hide();
                 $("#axistool").hide();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').show();
-                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
                 $("#editpdlplus_axes").prop('disabled', true);
@@ -460,7 +460,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 var params = {axeid: axeid};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisedit', contextid, params)
                         .done(function (html, js) {
-                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body',
+                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
@@ -474,7 +474,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     $("#message_edit_tool").hide();
                     $("#axistool").hide();
                     $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
-                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').html("");
                     $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                     $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
                     $("#editpdlplus_axes").prop('disabled', true);
@@ -482,7 +482,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     var params = {axeid: axeid};
                     fragment.loadFragment('assignfeedback_editpdfplus', 'axisdel', contextid, params)
                             .done(function (html, js) {
-                                templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body',
+                                templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis',
                                         html, js);
                             }.bind(this)).fail(notification.exception);
                 }
