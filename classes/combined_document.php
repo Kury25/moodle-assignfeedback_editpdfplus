@@ -188,7 +188,6 @@ class combined_document {
                 switch ($status) {
                     case \core_files\conversion::STATUS_COMPLETE:
                         continue;
-                        break;
                     default:
                         $converter->poll_conversion($conversion);
                 }

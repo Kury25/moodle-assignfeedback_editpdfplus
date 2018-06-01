@@ -36,6 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
 
+    const GRADE = 'grade';
+
     /**
      * Returns the paths to be handled by the subplugin at assignment level
      * @return array
@@ -66,8 +68,8 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $data = (object) $data;
 
         // In this case the id is the old gradeid which will be mapped.
-        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, 'grade', null, $data->gradeid);
-        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, 'grade', null, $data->gradeid);
+        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, self::GRADE, null, $data->gradeid);
+        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, self::GRADE, null, $data->gradeid);
     }
 
     /**
@@ -81,7 +83,7 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $oldgradeid = $data->gradeid;
         // The mapping is set in the restore for the core assign activity
         // when a grade node is processed.
-        $data->gradeid = $this->get_mappingid('grade', $data->gradeid);
+        $data->gradeid = $this->get_mappingid(self::GRADE, $data->gradeid);
 
         $DB->insert_record('assignfeedback_editpp_annot', $data);
     }

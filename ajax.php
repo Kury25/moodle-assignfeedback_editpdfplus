@@ -33,6 +33,10 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 require_sesskey();
 
+const PLUGIN_NAME = "assignfeedback_editpdfplus";
+const PERMISSION_ASSIGN_GRADE = "mod/assign:grade";
+const PERMISSION_ASSIGN_SUBMIT = "mod/assign:submit";
+
 $action = optional_param('action', '', PARAM_ALPHANUM);
 $assignmentid = required_param('assignmentid', PARAM_INT);
 $userid = required_param('userid', PARAM_INT);
@@ -52,11 +56,11 @@ if (!$assignment->can_view_submission($userid)) {
 
 if ($action === 'pollconversions') {
     $draft = true;
-    if (!has_capability('mod/assign:grade', $context)) {
+    if (!has_capability(PERMISSION_ASSIGN_GRADE, $context)) {
         // A student always sees the readonly version.
         $readonly = true;
         $draft = false;
-        require_capability('mod/assign:submit', $context);
+        require_capability(PERMISSION_ASSIGN_SUBMIT, $context);
     }
 
     if ($readonly) {
@@ -96,7 +100,7 @@ if ($action === 'pollconversions') {
             $index = count($response->pages);
             $page = new stdClass();
             //$comments = page_editor::get_comments($grade->id, $index, $draft);
-            $page->url = moodle_url::make_pluginfile_url($context->id, 'assignfeedback_editpdfplus', $filearea, $grade->id, '/', $pagefile->get_filename())->out();
+            $page->url = moodle_url::make_pluginfile_url($context->id, PLUGIN_NAME, $filearea, $grade->id, '/', $pagefile->get_filename())->out();
             //$page->comments = $comments;
             if ($imageinfo = $pagefile->get_imageinfo()) {
                 $page->width = $imageinfo['width'];
@@ -109,7 +113,7 @@ if ($action === 'pollconversions') {
             $page->annotations = $annotations;
             $response->pages[] = $page;
 
-            $component = 'assignfeedback_editpdfplus';
+            $component = PLUGIN_NAME;
             $filearea = document_services::PAGE_IMAGE_FILEAREA;
             $filepath = '/';
             $fs = get_file_storage();
@@ -128,7 +132,7 @@ if ($action === 'pollconversions') {
     echo json_encode($response);
     die();
 } else if ($action == 'savepage') {
-    require_capability('mod/assign:grade', $context);
+    require_capability(PERMISSION_ASSIGN_GRADE, $context);
 
     $response = new stdClass();
     $response->errors = array();
@@ -141,19 +145,18 @@ if ($action === 'pollconversions') {
 
     $added = page_editor::set_annotations($grade->id, $index, $page->annotations);
     if ($added != count($page->annotations)) {
-        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
+        array_push($response->errors, get_string('couldnotsavepage', PLUGIN_NAME, $index + 1));
     }
     echo json_encode($response);
     die();
-
 } else if ($action == 'generatepdf') {
 
     $refresh = optional_param('refresh', false, PARAM_BOOL);
 
     if (!$refresh) {
-        require_capability('mod/assign:grade', $context);
+        require_capability(PERMISSION_ASSIGN_GRADE, $context);
     } else {
-        require_capability('mod/assign:submit', $context);
+        require_capability(PERMISSION_ASSIGN_SUBMIT, $context);
     }
     $response = new stdClass();
     $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -161,7 +164,7 @@ if ($action === 'pollconversions') {
 
     $response->url = '';
     if ($file) {
-        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, 'assignfeedback_editpdfplus', document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
+        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, PLUGIN_NAME, document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
         $response->url = $url->out(true);
         $response->filename = $file->get_filename();
     }
@@ -198,7 +201,7 @@ if ($action === 'pollconversions') {
                 . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='"
                 . $response->url
                 . "'>lien</a></p>"
-                . "<i>Ceci est un mail automatique.</i>";
+                . "<i>Ceci est un mail automatique, merci de ne pas y répondre.</i>";
         foreach ($teachers as $teacher) {
             $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
         }
@@ -207,7 +210,7 @@ if ($action === 'pollconversions') {
     echo json_encode($response);
     die();
 } else if ($action == 'revertchanges') {
-    require_capability('mod/assign:grade', $context);
+    require_capability(PERMISSION_ASSIGN_GRADE, $context);
 
     $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
@@ -216,7 +219,7 @@ if ($action === 'pollconversions') {
     echo json_encode($result);
     die();
 } else if ($action == 'deletefeedbackdocument') {
-    require_capability('mod/assign:grade', $context);
+    require_capability(PERMISSION_ASSIGN_GRADE, $context);
 
     $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
     $result = document_services::delete_feedback_document($assignment, $userid, $attemptnumber);
@@ -225,7 +228,7 @@ if ($action === 'pollconversions') {
     echo json_encode($result);
     die();
 } else if ($action == 'updatestudentview') {
-    require_capability('mod/assign:submit', $context);
+    require_capability(PERMISSION_ASSIGN_SUBMIT, $context);
 
     $response = new stdClass();
     $response->errors = array();
@@ -238,7 +241,7 @@ if ($action === 'pollconversions') {
 
     $added = page_editor::update_annotations_status($page->annotations);
     if ($added != count($page->annotations)) {
-        array_push($response->errors, get_string('couldnotsavepage', 'assignfeedback_editpdfplus', $index + 1));
+        array_push($response->errors, get_string('couldnotsavepage', PLUGIN_NAME, $index + 1));
     }
     echo json_encode($response);
     die();
