@@ -174,7 +174,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     private function render_toolbar_axis(assignfeedback_editpdfplus\axis $axis) {
         $iconhtml = $axis->label;
         $iconparams = array('type' => 'checkbox', 'class' => 'axis', 'id' => 'ctaxis' . $axis->id, 'value' => $axis->id);
-        return html_writer::tag('input', $iconhtml, $iconparams);
+        $inputhtml = html_writer::tag('input', "", $iconparams);
+        $labelHtml = html_writer::label($inputhtml . $iconhtml, "", true, array('class' => 'checkbox-inline mt-2 mr-2'));
+        return $labelHtml;
     }
 
     /**
@@ -278,8 +280,8 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 $toolbarCostumdiv .= $toolbarCostumUnit;
             }
 
-            $axischoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), "btn-group btn-group-sm mr-0", array('role' => 'group'));
-            $toolbarAxis = $axischoice;
+            $statuschoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), "btn-group btn-group-sm mr-0", array('role' => 'group'));
+            $toolbarAxis = $statuschoice;
 
             // Toolbar pour lien creation palette
             $courseid = $this->page->course->id;
@@ -291,26 +293,22 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $toolbarAdminBlock = html_writer::div($toolbarAdmin, "btn-group btn-group-sm mr-3", array('role' => 'group'));
         } else {
 
-            //TODO
-            $toolbarAxis = "<div class='navigation' style='padding-left:10px;'><div style='display:inline;margin-right:5px;text-align:left;'>";
             $axis = $widget->axis;
+            $toolbaraxisContent = "";
             foreach ($axis as $ax) {
-                $toolbarAxis .= $this->render_toolbar_axis($ax);
-                $toolbarAxis .= "</div><div style='display:inline;margin-left:5px;text-align:left;'>";
+                $toolbaraxisContent .= $this->render_toolbar_axis($ax);
             }
-            $toolbarAxis .= "</div></div>";
+            $toolbarAxis = html_writer::div($toolbaraxisContent, "btn-group btn-group-sm mr-2", array('role' => 'group'));
 
             $questionchoice = html_writer::select(
                             [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')], 'questionselection', 0, FALSE, array('class' => 'form-control'));
-            $axischoice = html_writer::select(
+            $statuschoice = html_writer::select(
                             [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')], 'statutselection', 0, FALSE, array('class' => 'form-control'));
             $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'btn btn-secondary', 'id' => 'student_valide_button'));
-            $toolbarAxis .= html_writer::div($validatebutton, 'toolbar ', array('role' => 'toolbar'));
-            $toolbarAxis .= html_writer::div($axischoice, 'toolbar ', array('role' => 'toolbar'));
-            $toolbarAxis .= html_writer::div($questionchoice, 'toolbar ', array('role' => 'toolbar'));
+            $toolbarAxis .= html_writer::div($statuschoice, 'btn-group btn-group-sm', array('role' => 'group'));
+            $toolbarAxis .= html_writer::div($questionchoice, 'btn-group btn-group-sm mr-3', array('role' => 'group'));
+            $toolbarAxis .= html_writer::div($validatebutton, 'btn-group btn-group-sm mr-0', array('role' => 'group'));
         }
-
-        //$navigationcontent = html_writer::div(, "collapse navbar-collapse", array('id' => 'navbarSupportedContent'));
 
         $pageheadercontent = $navigationBlock
                 . $toolbarAdminBlock
