@@ -56,17 +56,29 @@ class tool {
     /** @var string texts for this annotation. */
     public $texts = '';
 
+    /** @var array texts for this annotation. */
+    public $textsarray = '';
+
     /** @var string label of this annotation */
     public $label = '';
 
     /** @var boolean, allow reply or not */
     public $reply = 0;
-    
+
     /** @var boolean, if tool is actived or not */
     public $enabled = 1;
-    
+
     /** @var int order_tool, order in toolbar */
     public $order_tool = 1000;
+
+    /**  @var boolean, can be removed or not */
+    public $removable = false;
+
+    /**  @var string, button class, which will a graphic representation  */
+    public $button = "";
+
+    /**  @var string, html style which will a graphic representation  */
+    public $style = "";
 
     /**
      * Convert a compatible stdClass into an instance of this class.
@@ -84,6 +96,68 @@ class tool {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Initialize a minimal tool
+     * @param int $contextid context id of the tool
+     * @param int $axeid axis for the tool
+     */
+    public function init($contextid, $axeid) {
+        $this->contextid = $contextid;
+        $this->enabled = true;
+        $this->axis = $axeid;
+        $this->removable = true;
+    }
+
+    /**
+     * Get text proposals and transform it into an array
+     * @return \assignfeedback_editpdfplus\stdClass
+     */
+    public function initToolTextsArray() {
+        if (!$this->texts) {
+            $this->textsarray = null;
+        } else {
+            $tooltextsarray = explode("\",\"", $this->texts);
+            $compteur = 0;
+            $result = array();
+            foreach ($tooltextsarray as $value) {
+                if (!$value || $value == '"') {
+                    continue;
+                }
+                $obj = new \stdClass();
+                $obj->text = $value;
+                if (substr($obj->text, 0, 1) == '"') {
+                    $obj->text = substr($obj->text, 1);
+                }
+                if (substr($obj->text, -1) == '"') {
+                    $obj->text = substr($obj->text, 0, -1);
+                }
+                $obj->index = $compteur;
+                $result[] = $obj;
+                $compteur++;
+            }
+
+            $this->textsarray = $result;
+        }
+    }
+
+    public function setDesign() {
+        if ($this->enabled == "1") {
+            //$this->button = "";
+            $this->style = "";
+        } else {
+            //$this->button = "";
+            $this->style = "background-image:none;background-color:#CCCCCC;";
+        }
+        if ($this->type == "4") {
+            $this->label = '| ' . $this->label . ' |';
+        } elseif ($this->type == "5") {
+            $this->label = '| ' . $this->label;
+        }
+        if ($this->type == "4" || $this->type == "1") {
+            $this->style .= "text-decoration: underline;";
         }
     }
 

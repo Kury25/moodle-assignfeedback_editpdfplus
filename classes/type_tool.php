@@ -90,4 +90,44 @@ class type_tool {
         }
     }
 
+    /**
+     * Init color of the type tool, and control the value before affected it (null, size...)
+     * @param string $color
+     */
+    public function setColor($color) {
+        if (isset($color) && strlen($color) > 4) {
+            $this->color = $color;
+        }
+    }
+
+    /**
+     * Init cartridge color of the type tool, and control the value before affected it (null, size...)
+     * @param string $cartridge_color
+     */
+    public function setCartridgeColor($cartridge_color) {
+        if (isset($cartridge_color) && strlen($cartridge_color) > 4) {
+            $this->cartridge_color = $cartridge_color;
+        }
+    }
+
+    /**
+     * Init the cartridge X position of the type tool, and control the value before affected it (null, intval...)
+     * @param string $cartridge_x
+     */
+    public function setCartridgeX($cartridge_x) {
+        if (isset($cartridge_x) && intval($cartridge_x)) {
+            $this->cartridge_x = intval($cartridge_x);
+        }
+    }
+
+    /**
+     * Init the cartridge Y position of the type tool, and control the value before affected it (null, intval...)
+     * @param string $cartridge_y
+     */
+    public function setCartridgeY($cartridge_y) {
+        if (isset($cartridge_y) && intval($cartridge_y)) {
+            $this->cartridge_y = intval($cartridge_y);
+        }
+    }
+
 }

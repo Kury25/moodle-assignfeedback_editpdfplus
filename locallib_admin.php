@@ -31,8 +31,11 @@ use \assignfeedback_editpdfplus\form\axis_import_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
 use \assignfeedback_editpdfplus\form\tool_order_form;
 use \assignfeedback_editpdfplus\admin_editor;
+use assignfeedback_editpdfplus\tool;
 
 class assign_feedback_editpdfplus_admin {
+
+    const PLUGIN_NAME = "assignfeedback_editpdfplus";
 
     /** @var stdClass $course current course */
     private $course = null;
@@ -55,7 +58,7 @@ class assign_feedback_editpdfplus_admin {
         global $PAGE;
 
         $html = '';
-        $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
+        $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
         $axisimportform = new axis_import_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_import_axis"));
         $axisimportform->id = "assignfeedback_editpdfplus_import_axis";
         $axisimportform->title = "";
@@ -102,7 +105,7 @@ class assign_feedback_editpdfplus_admin {
             $formAxis->title = "Ajouter un nouvel axe";
             $formAxis->action = "add";
         }
-        $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
+        $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
         $formAxis->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_axisform($formAxis);
         return $html;
@@ -131,7 +134,7 @@ class assign_feedback_editpdfplus_admin {
         $formAxis->id = "assignfeedback_editpdfplus_del_axis";
         $formAxis->title = "Supprimer l'axe";
         $formAxis->action = "del";
-        $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
+        $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
         $formAxis->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_axisdelform($formAxis);
         return $html;
@@ -154,50 +157,24 @@ class assign_feedback_editpdfplus_admin {
         $data->sesskey = sesskey();
         $data->actionurl = "/moodle/lib/ajax/service.php";
         $data->formid = "assignfeedback_editpdfplus_edit_tool";
+        $tool = new \assignfeedback_editpdfplus\tool();
         if ($toolid != null) {
-            $data->tool = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
-            $data->tool->removable = true;
+            $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
+            $tool = new tool($record);
             $nbEnregistrements = $DB->get_record_sql('SELECT count(*) as val FROM {assignfeedback_editpp_annot} WHERE toolid = ?', array('toolid' => $toolid));
-            if ($nbEnregistrements->val > 0) {
-                $data->tool->removable = false;
-            }
+            $tool->removable = ($nbEnregistrements->val > 0) ? false : true;
         } else {
-            $tool = new \assignfeedback_editpdfplus\tool();
-            $tool->contextid = $this->context->id;
-            $tool->enabled = true;
-            $tool->axis = $axisid;
-            $tool->removable = true;
-            $data->tool = $tool;
+            $tool->init($this->context->id, $axisid);
         }
-        $tooltexts = $data->tool->texts;
-        if ($tooltexts) {
-            $tooltextsarray = explode("\",\"", $tooltexts);
-            $compteur = 0;
-            foreach ($tooltextsarray as $value) {
-                if ($value && $value != '"') {
-                    $obj = new stdClass();
-                    $obj->text = /* substr( */$value/* ,1,-1) */;
-                    if (substr($obj->text, 0, 1) == '"') {
-                        $obj->text = substr($obj->text, 1);
-                    }
-                    if (substr($obj->text, -1) == '"') {
-                        $obj->text = substr($obj->text, 0, -1);
-                    }
-                    $obj->index = $compteur;
-                    $data->tool->textsarray[] = $obj;
-                    $compteur++;
-                }
-            }
-        } else {
-            $data->tool->textsarray = null;
-        }
+        $tool->initToolTextsArray();
+        $data->tool = $tool;
         $data->tools = admin_editor::get_typetools();
         foreach ($data->tools as $toolRef) {
-            $toolRef->libelle = get_string('typetool_' . $toolRef->label, 'assignfeedback_editpdfplus');
+            $toolRef->libelle = get_string('typetool_' . $toolRef->label, self::PLUGIN_NAME);
         }
         $axis = page_editor::get_axis(array($this->context->id));
         $data->axis = $axis;
-        $renderer = $PAGE->get_renderer('assignfeedback_editpdfplus');
+        $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_toolform($data);
         return $html;
     }
@@ -268,21 +245,7 @@ class assign_feedback_editpdfplus_admin {
             $toolbar->tools = array();
             foreach ($tools as $tool) {
                 if ($tool->axis == $ax->id) {
-                    if ($tool->enabled == "1") {
-                        $tool->button = "";
-                        $tool->style = "";
-                    } else {
-                        $tool->button = "";
-                        $tool->style = "background-image:none;background-color:#CCCCCC;";
-                    }
-                    if ($tool->type == "4") {
-                        $tool->label = '| ' . $tool->label . ' |';
-                    } elseif ($tool->type == "5") {
-                        $tool->label = '| ' . $tool->label;
-                    }
-                    if ($tool->type == "4" || $tool->type == "1") {
-                        $tool->style .= "text-decoration: underline;";
-                    }
+                    $tool->setDesign();
                     $toolbar->tools[] = $tool;
                     $ax->children++;
                 }

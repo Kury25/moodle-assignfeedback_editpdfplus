@@ -54,11 +54,11 @@ class annotation {
 
     /** @var int ending location in pixels. Image resolution is 100 pixels per inch */
     public $endy = 0;
-    
-    /** @var int starting location of cartridge in pixels. Image resolution is 100 pixels per inch */    
+
+    /** @var int starting location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridgex = 0;
 
-    /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */    
+    /** @var int ending location of cartridge in pixels. Image resolution is 100 pixels per inch */
     public $cartridgey = 0;
 
     /** @var string path information for drawing the annotation. */
@@ -84,13 +84,13 @@ class annotation {
 
     /** @var int parent_annot */
     public $parent_annot = 0;
-    
+
     /** @var int answerrequested */
     public $answerrequested = 0;
-    
+
     /** @var int studentstatus */
     public $studentstatus = 0;
-    
+
     /** @var string studentanswer */
     public $studentanswer = "";
 
@@ -111,6 +111,15 @@ class annotation {
                 }
             }
         }
+    }
+
+    /**
+     * Check if the annotation has a real text which can be printed of displayed
+     * If the annotation has a parent, it will be always no : the parent will give the text for all of its children
+     * @return boolean
+     */
+    public function hasReadableComment() {
+        return $this->textannot && !$this->parent_annot;
     }
 
 }

@@ -36,19 +36,21 @@ namespace assignfeedback_editpdfplus;
  */
 class utils_color {
 
+    const DEFAULTCOLOR = "default";
+
     /**
      * Get RGB color from label of color or hexa code
      * 
      * @param string $color Color name or Hexa code
      * @return array()
      */
-    public static function getColorRGB($color = "default") {
+    public static function getColorRGB($color = self::DEFAULTCOLOR) {
         if (substr($color, 0, 1) == '#') {
             $hexaCode = self::hex2RGB($color);
             if ($hexaCode) {
                 return $hexaCode;
             }
-            $color = "default";
+            $color = self::DEFAULTCOLOR;
         }
         return self::colorNameToRGB($color);
     }
@@ -95,7 +97,7 @@ class utils_color {
         if (isset(self::$colorsMap[$colorNameLower])) {
             return self::$colorsMap[$colorNameLower];
         }
-        return self::$colorsMap["default"];
+        return self::$colorsMap[self::DEFAULTCOLOR];
     }
 
     /**
@@ -579,7 +581,7 @@ class utils_color {
         "blue" => array(125, 159, 211), //array(3, 67, 223),
         "green" => array(153, 202, 62), //array(21, 176, 26),
         "purple" => array(126, 30, 156),
-        "default" => array(239, 69, 64)
+        self::DEFAULTCOLOR => array(239, 69, 64)
     );
 
 }

@@ -38,6 +38,26 @@ use assignfeedback_editpdfplus\axis;
  */
 class admin_editor {
 
+    const BDDTABLETOOL = "assignfeedback_editpp_tool";
+    const BDDTABLEAXE = "assignfeedback_editpp_axis";
+    const BDDTABLETOOLTYPE = "assignfeedback_editpp_typet";
+    const CONTEXTIDLIB = "contextid";
+
+    /**
+     * Make an SQL moodle select request from the 3 arguments
+     * @param string $select the select part
+     * @param string $table the moodle table
+     * @param string $where the where part
+     * @return string the string request
+     */
+    public static function makeSqlRequestSelect($select, $table, $where = null) {
+        $request = 'SELECT ' . $select . ' FROM {' . $table . '} ';
+        if ($where) {
+            $request .= " WHERE " . $where;
+        }
+        return $request;
+    }
+
     /**
      * Add an axis
      * @global type $DB
@@ -48,7 +68,8 @@ class admin_editor {
     public static function add_axis($axisLabel, $context) {
         global $DB;
 
-        $record = $DB->get_record_sql('SELECT max(order_axis) as order_max FROM {assignfeedback_editpp_axis} WHERE contextid = :contextid', array('contextid' => $context));
+        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+                , array(self::CONTEXTIDLIB => $context));
 
         $axis = new axis();
         $axis->contextid = $context;
@@ -59,7 +80,7 @@ class admin_editor {
             $axis->order_axis = $record->order_max + 1;
         }
 
-        return $DB->insert_record('assignfeedback_editpp_axis', $axis);
+        return $DB->insert_record(self::BDDTABLEAXE, $axis);
     }
 
     /**
@@ -97,7 +118,7 @@ class admin_editor {
             $tool->order_tool = $maxindice + 1;
         }
 
-        $toolid = $DB->insert_record('assignfeedback_editpp_tool', $tool);
+        $toolid = $DB->insert_record(self::BDDTABLETOOL, $tool);
 
         if ($toolid > 0) {
             if ($reorder) {
@@ -110,17 +131,17 @@ class admin_editor {
 
     public static function edit_tool_order($data) {
         global $DB;
-        $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->toolid), '*', MUST_EXIST);
+        $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->toolid), '*', MUST_EXIST);
         $toolCurrent = new tool($record);
         $previousorder = -1;
         $toolPrevious = null;
         $toolNext = null;
         if ($data->previoustoolid) {
-            $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->previoustoolid), '*', MUST_EXIST);
+            $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->previoustoolid), '*', MUST_EXIST);
             $toolPrevious = new tool($record);
             $previousorder = $toolPrevious->order_tool + 1;
         } elseif ($data->nexttoolid) {
-            $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $data->nexttoolid), '*', MUST_EXIST);
+            $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->nexttoolid), '*', MUST_EXIST);
             $toolNext = new tool($record);
             $previousorder = $toolNext->order_tool - 1;
         }
@@ -130,7 +151,7 @@ class admin_editor {
             }
             $toolCurrent->order_tool = $previousorder;
             debugging($previousorder);
-            if ($DB->update_record('assignfeedback_editpp_tool', $toolCurrent)) {
+            if ($DB->update_record(self::BDDTABLETOOL, $toolCurrent)) {
                 admin_editor::reorder_tool($toolCurrent->axis, $data->toolid);
             }
         }
@@ -147,7 +168,8 @@ class admin_editor {
         global $DB;
 
         $tools = array();
-        $records = $DB->get_records_sql('SELECT * FROM {assignfeedback_editpp_tool} WHERE axis = :axisid ORDER BY order_tool ASC', array('axisid' => $axisid));
+        $records = $DB->get_records_sql(self::makeSqlRequestSelect("*", self::BDDTABLETOOL, "axis = :axisid ORDER BY order_tool ASC")
+                , array('axisid' => $axisid));
         foreach ($records as $record) {
             array_push($tools, new tool($record));
         }
@@ -164,11 +186,11 @@ class admin_editor {
                     if ($toolid && $tool->id == $toolid) {
                         $tool->order_tool = $lastTool->order_tool;
                         $lastTool->order_tool = $compteurPrecedent + 1;
-                        $DB->update_record('assignfeedback_editpp_tool', $tool);
-                        $DB->update_record('assignfeedback_editpp_tool', $lastTool);
+                        $DB->update_record(self::BDDTABLETOOL, $tool);
+                        $DB->update_record(self::BDDTABLETOOL, $lastTool);
                     } else {
                         $tool->order_tool = $compteurPrecedent + $decalage;
-                        $DB->update_record('assignfeedback_editpp_tool', $tool);
+                        $DB->update_record(self::BDDTABLETOOL, $tool);
                         $lastTool = $tool;
                     }
                     //$decalage++;
@@ -191,9 +213,9 @@ class admin_editor {
     public static function edit_axis($axeid, $axisLabel) {
         global $DB;
 
-        $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
+        $axis = $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
         $axis->label = $axisLabel;
-        return $DB->update_record('assignfeedback_editpp_axis', $axis);
+        return $DB->update_record(self::BDDTABLEAXE, $axis);
     }
 
     /**
@@ -204,7 +226,7 @@ class admin_editor {
      */
     public static function del_axis($axeid) {
         global $DB;
-        return $DB->delete_records('assignfeedback_editpp_axis', array('id' => $axeid));
+        return $DB->delete_records(self::BDDTABLEAXE, array('id' => $axeid));
     }
 
     /**
@@ -215,7 +237,7 @@ class admin_editor {
      */
     public static function del_tool($tool) {
         global $DB;
-        return $DB->delete_records('assignfeedback_editpp_tool', array('id' => $tool->toolid));
+        return $DB->delete_records(self::BDDTABLETOOL, array('id' => $tool->toolid));
     }
 
     /**
@@ -227,7 +249,7 @@ class admin_editor {
     public static function get_tools_by_axis($axisid) {
         global $DB;
         $tools = array();
-        $records = $DB->get_records('assignfeedback_editpp_tool', array('axis' => $axisid));
+        $records = $DB->get_records(self::BDDTABLETOOL, array('axis' => $axisid));
         foreach ($records as $record) {
             array_push($tools, new tool($record));
         }
@@ -249,7 +271,7 @@ class admin_editor {
      */
     public static function get_all_different_contexts() {
         global $DB;
-        $records = $DB->get_records_sql("SELECT DISTINCT(contextid) FROM `mdl_assignfeedback_editpp_axis`");
+        $records = $DB->get_records_sql(self::makeSqlRequestSelect("DISTINCT(" . self::CONTEXTIDLIB . ")", self::BDDTABLEAXE));
         return $records;
     }
 
@@ -262,7 +284,7 @@ class admin_editor {
     public static function edit_tool($toolJson) {
         global $DB;
 
-        $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolJson->toolid), '*', MUST_EXIST);
+        $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $toolJson->toolid), '*', MUST_EXIST);
         $tool = new tool($record);
         $tool->axis = $toolJson->toolaxis;
         $tool->type = $toolJson->typetool;
@@ -282,7 +304,7 @@ class admin_editor {
             $tool->order_tool = $toolJson->order;
             $reorder = true;
         }
-        if ($DB->update_record('assignfeedback_editpp_tool', $tool)) {
+        if ($DB->update_record(self::BDDTABLETOOL, $tool)) {
             if ($reorder) {
                 admin_editor::reorder_tool($tool->axis, $tool->id);
             }
@@ -298,7 +320,7 @@ class admin_editor {
     public static function get_typetools() {
         global $DB;
         $typetools = array();
-        $records = $DB->get_records('assignfeedback_editpp_typet', array('configurable' => 1));
+        $records = $DB->get_records(self::BDDTABLETOOLTYPE, array('configurable' => 1));
         foreach ($records as $record) {
             $newTypeTool = page_editor::custom_type_tool(new type_tool($record));
             if ($newTypeTool->configurable > 0) {
@@ -316,7 +338,7 @@ class admin_editor {
      */
     public static function getAxisById($axeid) {
         global $DB;
-        $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
+        $axis = $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
         return $axis;
     }
 
@@ -329,7 +351,8 @@ class admin_editor {
      */
     public static function import_axis($axisOrigin, $context) {
         global $DB;
-        $record = $DB->get_record_sql('SELECT max(order_axis) as order_max FROM {assignfeedback_editpp_axis} WHERE contextid = :contextid', array('contextid' => $context));
+        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+                , array(self::CONTEXTIDLIB => $context));
 
         $axis = new axis();
         $axis->contextid = $context;
@@ -340,7 +363,7 @@ class admin_editor {
             $axis->order_axis = $record->order_max + 1;
         }
 
-        return $DB->insert_record('assignfeedback_editpp_axis', $axis);
+        return $DB->insert_record(self::BDDTABLEAXE, $axis);
     }
 
     /**
@@ -353,7 +376,8 @@ class admin_editor {
      */
     public static function import_tool($toolToImport, $axeNew, $context) {
         global $DB;
-        $record = $DB->get_record_sql('SELECT max(order_tool) as order_max FROM {assignfeedback_editpp_tool} WHERE contextid = :contextid', array('axis' => $axeNew->id, 'contextid' => $context));
+        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_tool) as order_max", self::BDDTABLETOOL, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+                , array('axis' => $axeNew->id, self::CONTEXTIDLIB => $context));
 
         $tool = new tool();
         $tool->axis = $axeNew;
@@ -371,7 +395,7 @@ class admin_editor {
         } else {
             $tool->order_tool = $record->order_max + 1;
         }
-        return $DB->insert_record('assignfeedback_editpp_tool', $tool);
+        return $DB->insert_record(self::BDDTABLETOOL, $tool);
     }
 
 }

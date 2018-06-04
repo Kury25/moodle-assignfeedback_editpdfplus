@@ -177,30 +177,29 @@ if ($action === 'pollconversions') {
         $modulename = get_string('modulename', 'assign');
         $assignmentname = $assignment->get_instance()->name;
         $formatparams = array('context' => $contextb->get_course_context());
+        $flecheHtml = ' → ';
+        $retourChariot = "\n";
         $body = format_string($course->shortname, true, $formatparams)
-                . ' -> '
+                . $flecheHtml
                 . $modulename
-                . ' -> '
-                . format_string($assignmentname, true, $formatparams) . "\n"
-                . "\n---------------------------------------------------------------------\n"
+                . $flecheHtml
+                . format_string($assignmentname, true, $formatparams) . $retourChariot
+                . $retourChariot . "---------------------------------------------------------------------" . $retourChariot
                 . "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : "
                 . $response->url
-                . "\n\nCeci est un mail automatique.";
+                . $retourChariot . $retourChariot . "Ceci est un mail automatique.";
         $bodyhtml = '<p><font face="sans-serif">'
-                . '<a href="' . $CFG->wwwroot . '/course/view.php?id=' . $course->id . '">'
-                . format_string($course->shortname, true, $formatparams)
-                . '</a> ->'
-                . '<a href="' . $CFG->wwwroot . '/mod/assign/index.php?id=' . $course->id . '">'
-                . $modulename
-                . '</a> ->'
-                . '<a href="' . $CFG->wwwroot . '/mod/assign/view.php?id=' . $coursemodule->id . '">'
-                . format_string($assignmentname, true, $formatparams)
-                . '</a></font></p>'
-                . '<hr /><font face="sans-serif">'
+                . getHtmlLink($CFG->wwwroot . '/course/view.php?id=' . $course->id, format_string($course->shortname, true, $formatparams))
+                . $flecheHtml
+                . getHtmlLink($CFG->wwwroot . '/mod/assign/index.php?id=' . $course->id, $modulename)
+                . $flecheHtml
+                . getHtmlLink($CFG->wwwroot . '/mod/assign/view.php?id=' . $coursemodule->id, format_string($assignmentname, true, $formatparams))
+                . '</font></p>'
+                . '<hr/><font face="sans-serif">'
                 . "<b>Information Moodle</b><br/>"
-                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce <a href='"
-                . $response->url
-                . "'>lien</a></p>"
+                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce "
+                . getHtmlLink($response->url, "lien")
+                . "</p>"
                 . "<i>Ceci est un mail automatique, merci de ne pas y répondre.</i>";
         foreach ($teachers as $teacher) {
             $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
@@ -247,3 +246,6 @@ if ($action === 'pollconversions') {
     die();
 }
 
+function getHtmlLink($url, $text) {
+    return '<a href="' . $url . '">' . $text . '</a>';
+}

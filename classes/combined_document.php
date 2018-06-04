@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -110,6 +111,8 @@ class combined_document {
 
                     case \core_files\conversion::STATUS_FAILED:
                         return self::STATUS_FAILED;
+                    default :
+                        break;
                 }
             }
         }
@@ -119,6 +122,7 @@ class combined_document {
             return self::STATUS_READY;
         }
     }
+
     /**
      * Set the completed combined file.
      *
@@ -394,12 +398,13 @@ class combined_document {
      */
     protected function get_stored_file_record($contextid, $itemid) {
         return (object) [
-            'contextid' => $contextid,
-            'component' => 'assignfeedback_editpdfplus',
-            'filearea' => document_services::COMBINED_PDF_FILEAREA,
-            'itemid' => $itemid,
-            'filepath' => '/',
-            'filename' => document_services::COMBINED_PDF_FILENAME,
+                    'contextid' => $contextid,
+                    'component' => 'assignfeedback_editpdfplus',
+                    'filearea' => document_services::COMBINED_PDF_FILEAREA,
+                    'itemid' => $itemid,
+                    'filepath' => '/',
+                    'filename' => document_services::COMBINED_PDF_FILENAME,
         ];
     }
+
 }
