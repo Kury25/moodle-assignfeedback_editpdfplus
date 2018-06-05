@@ -50,7 +50,7 @@ class utils_stamp {
     const STAMPS_FILEAREA = '/assignfeedback_editpdfplus/stamps/';
 
     /** Number of months when the stamps should be renewed */
-    const REFRESH_TIME = 6;
+    const REFRESH_TIME = 1;
 
     /**
      * Convert a FontAwesome icon into a PNG file
