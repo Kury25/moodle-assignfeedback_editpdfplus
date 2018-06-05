@@ -49,6 +49,9 @@ class utils_stamp {
     /** File area for the stamps */
     const STAMPS_FILEAREA = '/assignfeedback_editpdfplus/stamps/';
 
+    /** Number of months when the stamps should be renewed */
+    const REFRESH_TIME = 6;
+
     /**
      * Convert a FontAwesome icon into a PNG file
      * Main method 
@@ -67,18 +70,28 @@ class utils_stamp {
             return null;
         }
 
+        //get RGB color
+        $colorRGB = utils_color::hex2RGB($color);
+        if (!$colorRGB) {
+            return null;
+        }
+
         //create final file
         $outputDirectory = $CFG->tempdir . self::STAMPS_FILEAREA;
-        $fileName = sprintf("%s%s.png", $outputDirectory, $iconName);
+        $fileName = sprintf("%s%s_%s-%s-%s_%s.png", $outputDirectory, $iconName, $colorRGB['red'], $colorRGB['green'], $colorRGB['blue'], $fontSize);
 
         $dirPath = dirname($fileName);
         if (!is_dir($dirPath) || !file_exists($dirPath)) {
             //try to create the directory
             self::mkdirRecursive($dirPath, 0777);
+        } else if (file_exists($fileName)) {
+            //check if the file is not too old
+            $lastDateRefresh = mktime(0, 0, 0, date("m") - self::REFRESH_TIME, date("d"), date("Y"));
+            $dateCreation = filemtime($fileName);
+            if ($lastDateRefresh < $dateCreation) {
+                return $fileName;
+            }
         }
-
-        //get RGB color
-        $colorRGB = utils_color::hex2RGB($color);
 
         //put image into file and return
         return self::putIconIntoFile($charFAHexaCode, $fileName, $colorRGB, $fontSize);

@@ -58,14 +58,14 @@ class utils_color {
     /**
      * Convert a hexa decimal color code to its RGB equivalent
      *
-     * @param string $hexStr (hexadecimal color value)
+     * @param string $hexStrRaw (hexadecimal color value)
      * @param boolean $returnAsString (if set true, returns the value separated by the separator character. Otherwise returns associative array)
      * @param string $seperator (to separate RGB values. Applicable only if second parameter is true.)
      * @return array or string (depending on second parameter. Returns False if invalid hex color value)
      */
-    public static function hex2RGB($hexStr, $returnAsString = false, $seperator = ',') {
+    public static function hex2RGB($hexStrRaw, $returnAsString = false, $seperator = ',') {
         // Gets a proper hex string
-        $hexStr = preg_replace("/[^0-9A-Fa-f]/", '', $hexStr);
+        $hexStr = preg_replace("/[^0-9A-Fa-f]/", '', $hexStrRaw);
         $rgbArray = array();
         //If a proper hex code, convert using bitwise operation. No overhead... faster
         if (strlen($hexStr) == 6) {
