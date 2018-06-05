@@ -274,7 +274,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                         $toolbartmp .= $this->render_toolbar_button('', $tool);
                     }
                 }
-                $toolbarCostum[] = html_writer::div($toolbartmp, "btn-group btn-group-sm mr-3", array('role' => 'group', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
+                $toolbarCostum[] = html_writer::div($toolbartmp, "btn-group btn-group-sm mr-3 customtoolbar", array('role' => 'group', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
             }
             foreach ($toolbarCostum as $toolbarCostumUnit) {
                 $toolbarCostumdiv .= $toolbarCostumUnit;
