@@ -9,7 +9,7 @@
     position: relative;
     min-width: 817px;
     min-height: 400px;
-    cursor: crosshair;
+    cursor: move;
     background-repeat: no-repeat;
     background-color: #ccc;
     margin-left: auto;
@@ -259,12 +259,6 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_widget .pageheader button:hover {
     background-color: #ebebeb;
     background-image: radial-gradient(ellipse at center, #fff 60%, #dfdfdf 100%);
-}
-
-.assignfeedback_editpdfplus_widget .pageheader button.assignfeedback_editpdfplus_selectedbutton:hover,
-.assignfeedback_editpdfplus_widget .pageheader button.assignfeedback_editpdfplus_selectedbutton {
-    background-color: #dfdfdf;
-    background-image: radial-gradient(ellipse at center, #fff 40%, #dfdfdf 100%);
 }
 
 .assignfeedback_editpdfplus_widget .commentdrawable img {

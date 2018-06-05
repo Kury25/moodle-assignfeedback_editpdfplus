@@ -246,7 +246,7 @@ EDITOR.prototype = {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
         if (currenttoolnode) {
-            currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.addClass('active');
             currenttoolnode.setAttribute('aria-pressed', 'true');
         }
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
@@ -871,7 +871,7 @@ EDITOR.prototype = {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
         if (currenttoolnode) {
-            currenttoolnode.removeClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.removeClass('active');
             currenttoolnode.setAttribute('aria-pressed', 'false');
         }
         //update le currentedit object with the new tool
