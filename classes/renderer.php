@@ -24,6 +24,8 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
+use \assignfeedback_editpdfplus\bdd\tool_generic;
+
 /**
  * A custom renderer class that extends the plugin_renderer_base and is used by the editpdf feedback plugin.
  *
@@ -33,32 +35,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
-    /**
-     * Return the PDF button shortcut.
-     *
-     * @param string $name the name of a specific button.
-     * @return string the specific shortcut.
-     */
-    private function get_shortcut($name) {
-
-        $shortcuts = array('navigate-previous-button' => 'j',
-            'navigate-page-select' => 'k',
-            'navigate-next-button' => 'l',
-            'select' => 'c',
-            'drag' => 'd',
-            'pen' => 'y',
-            'line' => 'u',
-            'rectangle' => 'i',
-            'oval' => 'o',
-            'highlight' => 'p',
-            'annotationcolour' => 'r',
-            'stamp' => 'n',
-            'currentstamp' => 'm');
-
-
-        // Return the shortcut.
-        return $shortcuts[$name];
-    }
+    const TOOL_NAVPAGESELECT = "navigate-page-select";
+    const TOOL_NAVPAGENEXT = "navigate-next-button";
+    const TOOL_SELECT = "select";
+    const TOOL_DRAG = "drag";
+    const TOOL_ANNOTATIONCOLOR = "annotationcolour";
 
     /**
      * Render a single colour button.
@@ -68,110 +49,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
      * @param bool $disabled Optional - Is this button disabled.
      * @return string
      */
-    private function render_toolbar_button($tool, assignfeedback_editpdfplus\tool $fulltool = null, $accesskey = null, $disabled = false) {
-
-        if (!$fulltool) {
-            // Build button alt text.
-            $alttext = new stdClass();
-            $alttext->tool = $tool;
-            if (!empty($accesskey)) {
-                $alttext->shortcut = '(Alt/Shift-Alt/Ctrl-Option + ' . $accesskey . ')';
-            } else {
-                $alttext->shortcut = '';
-            }
-            $iconalt = get_string('toolbarbutton', 'assignfeedback_editpdfplus', $alttext);
-
-            $class = "";
-            switch ($tool) {
-                case "drag":
-                    $class = "fa-hand-paper-o";
-                    break;
-                case "select":
-                    $class = "fa-mouse-pointer";
-                    break;
-                case "pen":
-                    $class = "fa-pencil";
-                    break;
-                case "line":
-                    $class = "fa-minus";
-                    break;
-                case "rectangle":
-                    $class = "fa-square-o";
-                    break;
-                case "oval":
-                    $class = "fa-circle-o";
-                    break;
-                case "highlight":
-                    $class = "fa-paint-brush";
-                    break;
-                case "annotationcolour":
-                    $class = "fa-tint"; //,'style'=>'color:red;'
-                    break;
-                default:
-                    break;
-            }
-            $iconhtml = html_writer::tag("i", "", array('class' => 'fa ' . $class,
-                        'aria-hidden' => 'true'));
-            $iconparams = array('data-tool' => $tool, 'class' => $tool . 'button btn btn-secondary', 'type' => 'button');
-            if ($disabled) {
-                $iconparams['disabled'] = 'true';
-            }
-        } else {
-            $iconalt = $fulltool->label;
-            $iconhtml = $fulltool->label;
-            if ($fulltool->type == 4) {
-                $iconhtml = '| ' . $fulltool->label . ' |';
-            }
-            if ($fulltool->type == 5) {
-                $iconhtml = '| ' . $fulltool->label;
-            }
-            $datatool = '';
-            $class = '';
-            switch ($fulltool->type) {
-                case 1:
-                    $datatool = 'highlightplus';
-                    $class = 'highlightplus';
-                    break;
-                case 2:
-                    $datatool = 'lineplus';
-                    $class = 'lineplus';
-                    break;
-                case 3:
-                    $datatool = 'stampplus';
-                    $class = 'stampplus';
-                    break;
-                case 4:
-                    $datatool = 'frame';
-                    $class = 'frame';
-                    break;
-                case 5:
-                    $datatool = 'verticalline';
-                    $class = 'verticalline';
-                    break;
-                case 6:
-                    $datatool = 'stampcomment';
-                    $class = 'stampcomment';
-                    break;
-                case 7:
-                    $datatool = 'commentplus';
-                    $class = 'commentplus';
-                    break;
-                default:
-                    break;
-            }
-            $iconparams = array('data-tool' => $datatool,
-                'class' => $class . 'btn costumtoolbarbutton btn btn-secondary',
-                'id' => 'ctbutton' . $fulltool->id,
-                'type' => 'button');
-        }
-
-        if (!empty($accesskey)) {
-            $iconparams['accesskey'] = $accesskey;
-        }
-        return html_writer::tag('button', $iconhtml, $iconparams);
+    private function render_toolbar_button(assignfeedback_editpdfplus\bdd\tool $fulltool = null, $disabled = false) {
+        $displayArray = $fulltool->getRendererBoutonHTMLDisplay($disabled);
+        return html_writer::tag('button', $displayArray["content"], $displayArray["parameters"]);
     }
 
-    private function render_toolbar_axis(assignfeedback_editpdfplus\axis $axis) {
+    private function render_toolbar_axis(assignfeedback_editpdfplus\bdd\axis $axis) {
         $iconhtml = $axis->label;
         $iconparams = array('type' => 'checkbox', 'class' => 'axis', 'id' => 'ctaxis' . $axis->id, 'value' => $axis->id);
         $inputhtml = html_writer::tag('input', "", $iconparams);
@@ -207,11 +90,11 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $body = '';
 
-        $tooglenavigation = html_writer::tag("button", '<span class="navbar-toggler-icon"></span>', array('class' => 'navbar-toggler',
-                    'type' => 'button',
-                    'data-toggle' => "collapse",
-                    'data-target' => "#navbarSupportedContent",
-                    'aria-expanded' => "Toggle navigation"));
+        /* $tooglenavigation = html_writer::tag("button", '<span class="navbar-toggler-icon"></span>', array('class' => 'navbar-toggler',
+          'type' => 'button',
+          'data-toggle' => "collapse",
+          'data-target' => "#navbarSupportedContent",
+          'aria-expanded' => "Toggle navigation")); */
 
         // Create the page navigation.
         $navigation = '';
@@ -230,14 +113,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                     'type' => 'button',
                     'accesskey' => $this->get_shortcut('navigate-previous-button')));
         $navigation .= html_writer::tag('select', null, array('disabled' => 'true',
-                    'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => 'navigate-page-select',
-                    'accesskey' => $this->get_shortcut('navigate-page-select')));
+                    'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => self::TOOL_NAVPAGESELECT,
+                    'accesskey' => $this->get_shortcut(self::TOOL_NAVPAGESELECT)));
         $iconhtmlN = html_writer::tag("i", "", array('class' => 'fa fa-caret-right fa-2x',
                     'aria-hidden' => 'true'));
         $navigation .= html_writer::tag('button', $iconhtmlN, array('disabled' => 'true',
-                    'class' => 'btn btn-secondary navigate-next-button',
+                    'class' => 'btn btn-secondary ' . self::TOOL_NAVPAGENEXT,
                     'type' => 'button',
-                    'accesskey' => $this->get_shortcut('navigate-next-button')));
+                    'accesskey' => $this->get_shortcut(self::TOOL_NAVPAGENEXT)));
 
         $navigationBlock = html_writer::div($navigation, "btn-group btn-group-sm mr-auto", array('role' => 'group'));
 
@@ -250,29 +133,32 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         if (!$widget->readonly) {
             /** Toolbar n°0 : basic tools * */
             // Select Tool.
-            $toolbarBase = $this->render_toolbar_button('drag', null, $this->get_shortcut('drag'));
-            $toolbarBase .= $this->render_toolbar_button('select', null, $this->get_shortcut('select'));
+            $dragTool = new tool_generic();
+            $dragTool->label = self::TOOL_DRAG;
+            $toolbarBase = $this->render_toolbar_button($dragTool);
+            $selectTool = new tool_generic();
+            $selectTool->label = self::TOOL_SELECT;
+            $toolbarBase .= $this->render_toolbar_button($selectTool);
             $toolbarBaseBlock = html_writer::div($toolbarBase, "btn-group btn-group-sm mr-3", array('role' => 'group'));
 
-            // Other Tools.
-            $toolbarDraw = $this->render_toolbar_button('pen', null, $this->get_shortcut('pen'));
-            $toolbarDraw .= $this->render_toolbar_button('line', null, $this->get_shortcut('line'));
-            $toolbarDraw .= $this->render_toolbar_button('rectangle', null, $this->get_shortcut('rectangle'));
-            $toolbarDraw .= $this->render_toolbar_button('oval', null, $this->get_shortcut('oval'));
-            $toolbarDraw .= $this->render_toolbar_button('highlight', null, $this->get_shortcut('highlight'));
-            $toolbarDraw .= $this->render_toolbar_button('annotationcolour', null, $this->get_shortcut('annotationcolour'));
+            // Generic Tools.
+            $toolbarDraw = '';
+            foreach ($widget->genericToolbar as $tool) {
+                $toolbarDraw .= $this->render_toolbar_button($tool);
+            }
+            $colorTool = new tool_generic();
+            $colorTool->label = self::TOOL_ANNOTATIONCOLOR;
+            $toolbarDraw .= $this->render_toolbar_button($colorTool);
             $toolbarDrawBlock = html_writer::div($toolbarDraw, "btn-group btn-group-sm", array('role' => 'group'));
 
             /** Costum toolbars * */
             $toolbarCostum = array();
             $axis = array();
-            foreach ($widget->toolbars as $toolbar) {
+            foreach ($widget->customToolbars as $toolbar) {
                 $axis[$toolbar['axeid']] = $toolbar['label'];
                 $toolbartmp = '';
                 foreach ($toolbar['tool'] as $tool) {
-                    if ($tool->enabled) {
-                        $toolbartmp .= $this->render_toolbar_button('', $tool);
-                    }
+                    $toolbartmp .= $this->render_toolbar_button($tool);
                 }
                 $toolbarCostum[] = html_writer::div($toolbartmp, "btn-group btn-group-sm mr-3 customtoolbar", array('role' => 'group', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
             }
@@ -319,14 +205,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $mainnavigation = html_writer::div($pageheadercontent, "btn-toolbar btn-group-sm bg-light p-1", array('role' => 'toolbar', 'style' => 'min-height:50px;'));
 
         // Toobars written in reverse order because they are floated right.
-        $pageheader = $mainnavigation; //html_writer::div($mainnavigation, 'pageheader', array('style' => 'padding:0'));
-        /* html_writer::div($divnavigation1 .
-          $toolbar002 .
-          $toolbaraxis .
-          $toolbarCostumdiv .
-          $toolbar001 .
-          $toolbar003 .
-          $clearfix, 'pageheader', array('style' => 'padding:0')); */
+        $pageheader = $mainnavigation;
 
         $body .= $pageheader;
 
@@ -382,8 +261,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             'addtoquicklist',
             'filter',
             'deleteannotation',
-            'stamp',
-            'stamppicker',
             'cannotopenpdf',
             'pagenumber',
             'student_statut_nc',

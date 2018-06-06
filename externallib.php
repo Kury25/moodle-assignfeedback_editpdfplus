@@ -103,14 +103,6 @@ class assignfeedback_editpdfplus_external extends external_api {
     }
 
     /**
-     * Returns description of method parameters
-     * @return external_function_parameters
-     */
-    public static function submit_axis_form_parameters() {
-        return self::submit_generic_form_parameters();
-    }
-
-    /**
      * Extract and parse json data string into an array
      * @param external_function_parameters $externalFunctionParameter
      * @param String $jsonformdata
@@ -143,6 +135,14 @@ class assignfeedback_editpdfplus_external extends external_api {
 
     public static function getMessageError() {
         return array(self::MESSAGELIB => get_string("admin_messageko", self::PLUGINNAME));
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_axis_form_parameters() {
+        return self::submit_generic_form_parameters();
     }
 
     /**

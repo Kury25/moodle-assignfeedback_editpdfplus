@@ -229,13 +229,13 @@ class pdf extends \FPDI {
     /**
      * Add an annotation to the current page
      * 
-     * @param \assignfeedback_editpdfplus\annotation $annotation
+     * @param \assignfeedback_editpdfplus\bdd\annotation $annotation
      * @param int[]|string $path optional for 'pen' annotations this is an array of x and y coordinates for
      *              the line, for 'stamp' annotations it is the name of the stamp file (without the path)
      * @param type $annotation_index
      * @return bool true if successful (always)
      */
-    public function add_annotation(annotation $annotation, $path, $annotation_index) {
+    public function add_annotation(bdd\annotation $annotation, $path, $annotation_index) {
         if (!$this->filename) {
             return false;
         }
@@ -253,7 +253,7 @@ class pdf extends \FPDI {
         //$type = 'line';
         $toolid = $annotation->toolid;
         $toolObject = page_editor::get_tool($toolid);
-        $typetool = page_editor::get_type_tool($toolObject->type);
+        $typetool = $toolObject->typeObject;
         $type = $typetool->label;
         $colourcartridge = $toolObject->cartridge_color;
         if (!$colourcartridge) {

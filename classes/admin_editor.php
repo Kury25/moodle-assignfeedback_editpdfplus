@@ -25,7 +25,8 @@
 
 namespace assignfeedback_editpdfplus;
 
-use assignfeedback_editpdfplus\axis;
+use assignfeedback_editpdfplus\bdd\axis;
+use assignfeedback_editpdfplus\bdd\type_tool;
 
 /**
  * This class performs crud operations on comments and annotations from a page of a response.
@@ -88,7 +89,7 @@ class admin_editor {
      * @global type $DB
      * @param object $data object with contains tool' info
      * @param Integer $contextid context's id
-     * @return \assignfeedback_editpdfplus\tool created tool
+     * @return \assignfeedback_editpdfplus\bdd\tool created tool
      */
     public static function add_tool($data, $contextid) {
         global $DB;
@@ -232,7 +233,7 @@ class admin_editor {
     /**
      * Delete a tool
      * @global type $DB
-     * @param \assignfeedback_editpdfplus\tool $tool
+     * @param \assignfeedback_editpdfplus\bdd\tool $tool
      * @return Boolean true if the remove is ok
      */
     public static function del_tool($tool) {
@@ -244,7 +245,7 @@ class admin_editor {
      * Get all tools by an axis' id
      * @global type $DB
      * @param Integer $axisid axis' id
-     * @return array<\assignfeedback_editpdfplus\tool> the toolbar, order by order_tool
+     * @return array<\assignfeedback_editpdfplus\bdd\tool> the toolbar, order by order_tool
      */
     public static function get_tools_by_axis($axisid) {
         global $DB;
@@ -267,7 +268,7 @@ class admin_editor {
     /**
      * Get all different contexts id
      * @global type $DB
-     * @return array<\assignfeedback_editpdfplus\axis> the axis with just their contextid
+     * @return array<\assignfeedback_editpdfplus\bdd\axis> the axis with just their contextid
      */
     public static function get_all_different_contexts() {
         global $DB;
@@ -279,7 +280,7 @@ class admin_editor {
      * Update a tool
      * @global type $DB
      * @param object $toolJson object contains tool's values to update
-     * @return \assignfeedback_editpdfplus\tool
+     * @return \assignfeedback_editpdfplus\bdd\tool
      */
     public static function edit_tool($toolJson) {
         global $DB;
@@ -315,7 +316,7 @@ class admin_editor {
 
     /**
      * Get all the type tools which are configurabled.
-     * @return array<\assignfeedback_editpdfplus\type_tool> array of type tools
+     * @return array<\assignfeedback_editpdfplus\bdd\type_tool> array of type tools
      */
     public static function get_typetools() {
         global $DB;
@@ -334,7 +335,7 @@ class admin_editor {
      * Get axis by its id
      * @global type $DB
      * @param Integer $axeid axis' id
-     * @return \assignfeedback_editpdfplus\axis the axis
+     * @return \assignfeedback_editpdfplus\bdd\axis the axis
      */
     public static function getAxisById($axeid) {
         global $DB;
@@ -345,7 +346,7 @@ class admin_editor {
     /**
      * Clone an axis to the context given in parameter
      * @global type $DB
-     * @param \assignfeedback_editpdfplus\axis $axisOrigin
+     * @param \assignfeedback_editpdfplus\bdd\axis $axisOrigin
      * @param Integer $context context's id
      * @return Integer id of the imported axis
      */
@@ -369,8 +370,8 @@ class admin_editor {
     /**
      * Clone a tool to a new axis
      * @global type $DB
-     * @param \assignfeedback_editpdfplus\tool $toolToImport tool to duplicate
-     * @param \assignfeedback_editpdfplus\axis $axeNew axis to attached new tool
+     * @param \assignfeedback_editpdfplus\bdd\tool $toolToImport tool to duplicate
+     * @param \assignfeedback_editpdfplus\bdd\axis $axeNew axis to attached new tool
      * @param Integer $context context's id
      * @return Integer id of tool's created
      */

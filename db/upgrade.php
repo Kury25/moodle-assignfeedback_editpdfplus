@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use assignfeedback_editpdfplus\type_tool;
+use assignfeedback_editpdfplus\bdd\type_tool;
 
 /**
  * EditPDF upgrade code

@@ -25,7 +25,11 @@
 
 namespace assignfeedback_editpdfplus;
 
-use assignfeedback_editpdfplus\tool;
+use assignfeedback_editpdfplus\bdd\type_tool;
+use assignfeedback_editpdfplus\bdd\tool;
+use assignfeedback_editpdfplus\bdd\tool_generic;
+use assignfeedback_editpdfplus\bdd\axis;
+use assignfeedback_editpdfplus\bdd\annotation;
 
 /**
  * This class performs crud operations on comments and annotations from a page of a response.
@@ -54,6 +58,12 @@ class page_editor {
     public static function get_tools($contextidlist) {
         global $DB;
 
+        $typeToolsRaw = self::get_typetools(null);
+        $typeTools = array();
+        foreach ($typeToolsRaw as $typeTool) {
+            $typeTools[$typeTool->id] = $typeTool;
+        }
+
         $tools = array();
         if ($contextidlist) {
             $records = $DB->get_records_list(self::BDDTABLEOOL, self::CONTEXTID, $contextidlist);
@@ -61,9 +71,14 @@ class page_editor {
             $records = $DB->get_records(self::BDDTABLEOOL);
         }
         foreach ($records as $record) {
-            //if ($record->enabled == 1) {
-            array_push($tools, new tool($record));
-            //}
+            $tooltmp = null;
+            if (7 < $record->type && $record->type < 13) {
+                $tooltmp = new tool_generic($record);
+            } else {
+                $tooltmp = new tool($record);
+            }
+            $tooltmp->typeObject = $typeTools[$tooltmp->type];
+            array_push($tools, $tooltmp);
         }
         usort($tools, function($a, $b) {
             $al = $a->order_tool;
@@ -85,7 +100,10 @@ class page_editor {
         global $DB;
         $record = $DB->get_record(self::BDDTABLEOOL, array('id' => $toolid), '*', IGNORE_MISSING);
         if ($record) {
-            return new tool($record);
+            $tool = new tool($record);
+            $typetool = self::get_type_tool($tool->type);
+            $tool->typeObject = $typetool;
+            return $tool;
         }
         return false;
     }
@@ -157,7 +175,7 @@ class page_editor {
      * @param int $gradeid
      * @param int $pageno
      * @param bool $draft
-     * @return annotation[]
+     * @return bdd\annotation[]
      */
     public static function get_annotations($gradeid, $pageno, $draft) {
         global $DB;

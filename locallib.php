@@ -82,9 +82,15 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $toolbars[$ax->id]['axeid'] = $ax->id;
             $toolbars[$ax->id]['label'] = $ax->label;
             foreach ($tools as $tool) {
-                if ($tool->axis == $ax->id) {
+                if ($tool->axis == $ax->id && $tool->enabled) {
                     $toolbars[$ax->id]['tool'][$tool->id] = $tool;
                 }
+            }
+        }
+        $toolbarGeneric = array();
+        foreach ($tools as $tool) {
+            if ($tool->axis == 0 && $tool->enabled) {
+                $toolbarGeneric[$tool->id] = $tool;
             }
         }
 
@@ -95,7 +101,17 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $filename = $feedbackfile->get_filename();
         }
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $readonly, $toolbars, $axis);
+        $widget = new assignfeedback_editpdfplus_widget(array(
+            'assignment' => $this->assignment->get_instance()->id,
+            'userid' => $userid,
+            'attemptnumber' => $attempt,
+            'downloadurl' => $url,
+            'downloadfilename' => $filename,
+            'readonly' => $readonly,
+            'customToolbars' => $toolbars,
+            'genericToolbar' => $toolbarGeneric,
+            'axis' => $axis
+        ));
         return $widget;
     }
 

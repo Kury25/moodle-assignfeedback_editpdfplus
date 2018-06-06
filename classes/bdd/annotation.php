@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace assignfeedback_editpdfplus;
+namespace assignfeedback_editpdfplus\bdd;
 
 /**
  * This class adds and removes annotations from a page of a response.

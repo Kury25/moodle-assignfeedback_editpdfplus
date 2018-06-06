@@ -22,7 +22,6 @@
  * @copyright  2016 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -53,8 +52,11 @@ class assignfeedback_editpdfplus_widget implements renderable {
     public $readonly = true;
 
     /** @var tool[] $toolbars */
-    public $toolbars = array();
-    
+    public $customToolbars = array();
+
+    /** @var tool[] $toolbars */
+    public $genericToolbar = array();
+
     /** @var axis[] $toolbars */
     public $axis = array();
 
@@ -70,15 +72,16 @@ class assignfeedback_editpdfplus_widget implements renderable {
      * @param tool[] $toolbars - the different tool to display
      * @param axis[] $axis - the different axis to display
      */
-    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $readonly, $toolbars, $axis) {
-        $this->assignment = $assignment;
-        $this->userid = $userid;
-        $this->attemptnumber = $attemptnumber;
-        $this->downloadurl = $downloadurl;
-        $this->downloadfilename = $downloadfilename;
-        $this->readonly = $readonly;
-        $this->toolbars = $toolbars;
-        $this->axis = $axis;
+    public function __construct($args) {//$assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $readonly, $toolbars, $axis) {
+        $this->assignment = $args["assignment"];
+        $this->userid = $args["userid"];
+        $this->attemptnumber = $args["attemptnumber"];
+        $this->downloadurl = $args["downloadurl"];
+        $this->downloadfilename = $args["downloadfilename"];
+        $this->readonly = $args["readonly"];
+        $this->customToolbars = $args["customToolbars"];
+        $this->genericToolbar = $args["genericToolbar"];
+        $this->axis = $args["axis"];
     }
 
 }

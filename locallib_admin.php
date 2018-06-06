@@ -31,7 +31,7 @@ use \assignfeedback_editpdfplus\form\axis_import_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
 use \assignfeedback_editpdfplus\form\tool_order_form;
 use \assignfeedback_editpdfplus\admin_editor;
-use assignfeedback_editpdfplus\tool;
+use assignfeedback_editpdfplus\bdd\tool;
 
 class assign_feedback_editpdfplus_admin {
 
@@ -157,7 +157,7 @@ class assign_feedback_editpdfplus_admin {
         $data->sesskey = sesskey();
         $data->actionurl = "/moodle/lib/ajax/service.php";
         $data->formid = "assignfeedback_editpdfplus_edit_tool";
-        $tool = new \assignfeedback_editpdfplus\tool();
+        $tool = new tool();
         if ($toolid != null) {
             $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
             $tool = new tool($record);

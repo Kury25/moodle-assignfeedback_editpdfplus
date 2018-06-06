@@ -265,7 +265,6 @@ EOD;
      * @return combined_document
      */
     public static function get_combined_document_for_attempt($assignment, $userid, $attemptnumber) {
-        global $USER, $DB;
 
         $assignment = self::get_assignment_from_param($assignment);
 

@@ -23,7 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace assignfeedback_editpdfplus;
+namespace assignfeedback_editpdfplus\bdd;
 
 /**
  * Description of tool
@@ -43,6 +43,9 @@ class tool {
 
     /** @var int type */
     public $type = null;
+
+    /** @var strClass type */
+    public $typeObject = null;
 
     /** @var string colors used */
     public $colors = '';
@@ -79,6 +82,9 @@ class tool {
 
     /**  @var string, html style which will a graphic representation  */
     public $style = "";
+
+    /**  @var string, html class which will a graphic representation  */
+    public $displayClass = "";
 
     /**
      * Convert a compatible stdClass into an instance of this class.
@@ -144,21 +150,52 @@ class tool {
     }
 
     public function setDesign() {
-        if ($this->enabled == "1") {
-            //$this->button = "";
-            $this->style = "";
-        } else {
-            //$this->button = "";
-            $this->style = "background-image:none;background-color:#CCCCCC;";
-        }
+        $this->label = $this->getButtonLabel();
+        $this->style = $this->getStyleButton();
+    }
+
+    private function getButtonLabel() {
         if ($this->type == "4") {
-            $this->label = '| ' . $this->label . ' |';
-        } elseif ($this->type == "5") {
-            $this->label = '| ' . $this->label;
+            return '| ' . $this->label . ' |';
+        }
+        if ($this->type == "5") {
+            return '| ' . $this->label;
+        }
+        return $this->label;
+    }
+
+    private function getStyleButton() {
+        $style = "";
+        if ($this->enabled == "0") {
+            $style .= "background-image:none;background-color:#CCCCCC;";
         }
         if ($this->type == "4" || $this->type == "1") {
-            $this->style .= "text-decoration: underline;";
+            $style .= "text-decoration: underline;";
         }
+        return $style;
+    }
+
+    public function getRendererBoutonHTMLDisplay($disabled = false) {
+        $iconhtml = $this->getButtonLabel();
+        if (!$this->typeObject) {
+            return array(
+                'content' => $iconhtml,
+                'parameters' => null
+            );
+        }
+        $datatool = $this->typeObject->label;
+        $iconparams = array('data-tool' => $datatool,
+            'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-secondary',
+            'id' => 'ctbutton' . $this->id,
+            'type' => 'button',
+            'style' => $this->getStyleButton());
+        if ($disabled) {
+            $iconparams['disabled'] = 'true';
+        }
+        return array(
+            'content' => $iconhtml,
+            'parameters' => $iconparams
+        );
     }
 
 }

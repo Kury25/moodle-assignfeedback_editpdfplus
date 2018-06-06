@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 use \assignfeedback_editpdfplus\document_services;
 use \assignfeedback_editpdfplus\page_editor;
 use \assignfeedback_editpdfplus\pdf;
-use \assignfeedback_editpdfplus\annotation;
+use \assignfeedback_editpdfplus\bdd\annotation;
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');

@@ -22,7 +22,6 @@
  * @copyright 2017 Université de Lausanne
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -33,92 +32,92 @@ function xmldb_assignfeedback_editpdfplus_install() {
 
     //init DB with data example
     //axis
-    $axis1 = new assignfeedback_editpdfplus\axis();
+    $axis1 = new assignfeedback_editpdfplus\bdd\axis();
     $axis1->contextid = 1;
     $axis1->label = "Axis 1 : grammar / syntax";
     $axis1->order_axis = 1;
-    $axis2 = new assignfeedback_editpdfplus\axis();
+    $axis2 = new assignfeedback_editpdfplus\bdd\axis();
     $axis2->contextid = 1;
     $axis2->label = "Axis 2 : contents";
     $axis2->order_axis = 2;
-    $axis3 = new assignfeedback_editpdfplus\axis();
+    $axis3 = new assignfeedback_editpdfplus\bdd\axis();
     $axis3->contextid = 1;
     $axis3->label = "Axis 3 : others";
     $axis3->order_axis = 3;
     $axis = array($axis1, $axis2, $axis3);
     $DB->insert_records('assignfeedback_editpp_axis', $axis);
     //tool type
-    $tytool1 = new assignfeedback_editpdfplus\type_tool();
+    $tytool1 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool1->cartridge_color = "#FF6F40";
     $tytool1->cartridge_x = 0;
     $tytool1->cartridge_y = -24;
     $tytool1->color = "#FFFF40";
     $tytool1->contextid = 1;
     $tytool1->label = "highlightplus";
-    $tytool2 = new assignfeedback_editpdfplus\type_tool();
+    $tytool2 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool2->cartridge_color = null;
     $tytool2->cartridge_x = null;
     $tytool2->cartridge_y = null;
     $tytool2->color = "red";
     $tytool2->contextid = 1;
     $tytool2->label = "stampplus";
-    $tytool3 = new assignfeedback_editpdfplus\type_tool();
+    $tytool3 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool3->cartridge_color = null;
     $tytool3->cartridge_x = 5;
     $tytool3->cartridge_y = -8;
     $tytool3->color = "#FF0000";
     $tytool3->contextid = 1;
     $tytool3->label = "frame";
-    $tytool4 = new assignfeedback_editpdfplus\type_tool();
+    $tytool4 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool4->cartridge_color = "#0000FF";
     $tytool4->cartridge_x = 5;
     $tytool4->cartridge_y = 0;
     $tytool4->color = "#0000FF";
     $tytool4->contextid = 1;
     $tytool4->label = "verticalline";
-    $tytool5 = new assignfeedback_editpdfplus\type_tool();
+    $tytool5 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool5->cartridge_color = "#000099";
     $tytool5->cartridge_x = 35;
     $tytool5->cartridge_y = -4;
     $tytool5->color = "#000099";
     $tytool5->contextid = 1;
     $tytool5->label = "stampcomment";
-    $tytool6 = new assignfeedback_editpdfplus\type_tool();
+    $tytool6 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool6->cartridge_color = "#000000";
     $tytool6->cartridge_x = null;
     $tytool6->cartridge_y = null;
     $tytool6->color = null;
     $tytool6->contextid = 1;
     $tytool6->label = "commentplus";
-    $tytool7 = new assignfeedback_editpdfplus\type_tool();
+    $tytool7 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool7->cartridge_color = null;
     $tytool7->cartridge_x = null;
     $tytool7->cartridge_y = null;
     $tytool7->color = null;
     $tytool7->contextid = 1;
     $tytool7->label = "pen";
-    $tytool8 = new assignfeedback_editpdfplus\type_tool();
+    $tytool8 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool8->cartridge_color = null;
     $tytool8->cartridge_x = null;
     $tytool8->cartridge_y = null;
     $tytool8->color = null;
     $tytool8->contextid = 1;
     $tytool8->label = "line";
-    $tytool9 = new assignfeedback_editpdfplus\type_tool();
+    $tytool9 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool9->cartridge_color = null;
     $tytool9->cartridge_x = null;
     $tytool9->cartridge_y = null;
     $tytool9->color = null;
     $tytool9->contextid = 1;
     $tytool9->label = "rectangle";
-    $tytool10 = new assignfeedback_editpdfplus\type_tool();
+    $tytool10 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool10->cartridge_color = null;
     $tytool10->cartridge_x = null;
     $tytool10->cartridge_y = null;
     $tytool10->color = null;
     $tytool10->contextid = 1;
     $tytool10->label = "oval";
-    $tytool11 = new assignfeedback_editpdfplus\type_tool();
+    $tytool11 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool11->cartridge_color = null;
     $tytool11->cartridge_x = null;
     $tytool11->cartridge_y = null;
@@ -128,7 +127,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tytools = array($tytool1, $tytool2, $tytool3, $tytool4, $tytool5, $tytool6, $tytool7, $tytool8, $tytool9, $tytool10, $tytool11);
     $DB->insert_records('assignfeedback_editpp_typet', $tytools);
     //tools
-    $tool1 = new assignfeedback_editpdfplus\tool();
+    $tool1 = new assignfeedback_editpdfplus\bdd\tool();
     $tool1->axis = 0;
     $tool1->cartridge = null;
     $tool1->cartridge_color = null;
@@ -140,7 +139,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool1->reply = 0;
     $tool1->texts = null;
     $tool1->type = 8;
-    $tool2 = new assignfeedback_editpdfplus\tool();
+    $tool2 = new assignfeedback_editpdfplus\bdd\tool();
     $tool2->axis = 0;
     $tool2->cartridge = null;
     $tool2->cartridge_color = null;
@@ -152,7 +151,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool2->reply = 0;
     $tool2->texts = null;
     $tool2->type = 9;
-    $tool3 = new assignfeedback_editpdfplus\tool();
+    $tool3 = new assignfeedback_editpdfplus\bdd\tool();
     $tool3->axis = 0;
     $tool3->cartridge = null;
     $tool3->cartridge_color = null;
@@ -164,7 +163,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool3->reply = 0;
     $tool3->texts = null;
     $tool3->type = 10;
-    $tool4 = new assignfeedback_editpdfplus\tool();
+    $tool4 = new assignfeedback_editpdfplus\bdd\tool();
     $tool4->axis = 0;
     $tool4->cartridge = null;
     $tool4->cartridge_color = null;
@@ -176,7 +175,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool4->reply = 0;
     $tool4->texts = null;
     $tool4->type = 11;
-    $tool5 = new assignfeedback_editpdfplus\tool();
+    $tool5 = new assignfeedback_editpdfplus\bdd\tool();
     $tool5->axis = 0;
     $tool5->cartridge = null;
     $tool5->cartridge_color = null;
@@ -188,7 +187,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool5->reply = 0;
     $tool5->texts = null;
     $tool5->type = 12;
-    $tool6 = new assignfeedback_editpdfplus\tool();
+    $tool6 = new assignfeedback_editpdfplus\bdd\tool();
     $tool6->axis = 1;
     $tool6->cartridge = "Axis1";
     $tool6->cartridge_color = null;
@@ -200,7 +199,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool6->reply = 1;
     $tool6->texts = null;
     $tool6->type = 7;
-    $tool7 = new assignfeedback_editpdfplus\tool();
+    $tool7 = new assignfeedback_editpdfplus\bdd\tool();
     $tool7->axis = 1;
     $tool7->cartridge = "LEX";
     $tool7->cartridge_color = null;
@@ -212,7 +211,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool7->reply = 1;
     $tool7->texts = '"wrong meaning","bad word"';
     $tool7->type = 1;
-    $tool8 = new assignfeedback_editpdfplus\tool();
+    $tool8 = new assignfeedback_editpdfplus\bdd\tool();
     $tool8->axis = 1;
     $tool8->cartridge = "REP";
     $tool8->cartridge_color = null;
@@ -224,7 +223,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool8->reply = 1;
     $tool8->texts = '"repetition","duplication"';
     $tool8->type = 4;
-    $tool9 = new assignfeedback_editpdfplus\tool();
+    $tool9 = new assignfeedback_editpdfplus\bdd\tool();
     $tool9->axis = 1;
     $tool9->cartridge = null;
     $tool9->cartridge_color = null;
@@ -236,7 +235,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool9->reply = 0;
     $tool9->texts = null;
     $tool9->type = 3;
-    $tool10 = new assignfeedback_editpdfplus\tool();
+    $tool10 = new assignfeedback_editpdfplus\bdd\tool();
     $tool10->axis = 2;
     $tool10->cartridge = "Axis2";
     $tool10->cartridge_color = null;
@@ -248,7 +247,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool10->reply = 1;
     $tool10->texts = null;
     $tool10->type = 7;
-    $tool11 = new assignfeedback_editpdfplus\tool();
+    $tool11 = new assignfeedback_editpdfplus\bdd\tool();
     $tool11->axis = 2;
     $tool11->cartridge = "LI";
     $tool11->cartridge_color = null;
@@ -260,7 +259,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool11->reply = 1;
     $tool11->texts = '"Connection","Correlation","Relation between these 2 ideas"';
     $tool11->type = 6;
-    $tool12 = new assignfeedback_editpdfplus\tool();
+    $tool12 = new assignfeedback_editpdfplus\bdd\tool();
     $tool12->axis = 3;
     $tool12->cartridge = "Useless";
     $tool12->cartridge_color = "#0000FF";
@@ -272,7 +271,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool12->reply = 0;
     $tool12->texts = null;
     $tool12->type = 1;
-    $tool13 = new assignfeedback_editpdfplus\tool();
+    $tool13 = new assignfeedback_editpdfplus\bdd\tool();
     $tool13->axis = 3;
     $tool13->cartridge = null;
     $tool13->cartridge_color = null;
@@ -284,7 +283,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tool13->reply = 0;
     $tool13->texts = null;
     $tool13->type = 3;
-    $tool14 = new assignfeedback_editpdfplus\tool();
+    $tool14 = new assignfeedback_editpdfplus\bdd\tool();
     $tool14->axis = 3;
     $tool14->cartridge = "Formatting";
     $tool14->cartridge_color = "#FF6F40";

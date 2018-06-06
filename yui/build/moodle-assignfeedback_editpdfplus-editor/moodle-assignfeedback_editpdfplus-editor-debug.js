@@ -5643,6 +5643,8 @@ EDITOR.prototype = {
      * @protected
      */
     handle_tool_button_action: function (tool, toolid, has_parent) {
+        var drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+
         var currenttoolnode;
         // Change style of the pressed button.
         if (this.currentedit.id) {
@@ -5653,6 +5655,7 @@ EDITOR.prototype = {
         if (currenttoolnode) {
             currenttoolnode.removeClass('active');
             currenttoolnode.setAttribute('aria-pressed', 'false');
+            drawingregion.setStyle('cursor', 'auto');
         }
         //update le currentedit object with the new tool
         this.currentedit.tool = tool;
@@ -5660,6 +5663,9 @@ EDITOR.prototype = {
 
         if (tool !== "comment" && tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
+            drawingregion.setStyle('cursor', 'crosshair');
+        } else if (tool === "drag") {
+            drawingregion.setStyle('cursor', 'move');
         }
 
         if (tool !== "select") {
