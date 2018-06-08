@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use \assignfeedback_editpdfplus\bdd\tool_generic;
+use \assignfeedback_editpdfplus\bdd\axis;
 
 /**
  * A custom renderer class that extends the plugin_renderer_base and is used by the editpdf feedback plugin.
@@ -35,31 +36,71 @@ use \assignfeedback_editpdfplus\bdd\tool_generic;
  */
 class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
-    const TOOL_NAVPAGESELECT = "navigate-page-select";
-    const TOOL_NAVPAGENEXT = "navigate-next-button";
+    const PLUGIN_NAME = "assignfeedback_editpdfplus";
     const TOOL_SELECT = "select";
     const TOOL_DRAG = "drag";
     const TOOL_ANNOTATIONCOLOR = "annotationcolour";
+    const HTMLCLASS = "class";
+    const HTMLDISABLED = "disabled";
+    const TOOL_OBJ_LABEL = "label";
 
     /**
-     * Render a single colour button.
-     *
-     * @param string $tool - The key for the lang string.
-     * @param string $accesskey Optional - The access key for the button.
+     * Render a HTML button for a Tool.
+     * 
+     * @param assignfeedback_editpdfplus\bdd\tool $fulltool Object tool to reprensant
      * @param bool $disabled Optional - Is this button disabled.
      * @return string
      */
-    private function render_toolbar_button(assignfeedback_editpdfplus\bdd\tool $fulltool = null, $disabled = false) {
+    private function render_toolbar_button_tool(assignfeedback_editpdfplus\bdd\tool $fulltool, $disabled = false) {
         $displayArray = $fulltool->getRendererBoutonHTMLDisplay($disabled);
-        return html_writer::tag('button', $displayArray["content"], $displayArray["parameters"]);
+        return $this->render_toolbar_button_html($displayArray["content"], $displayArray["parameters"]);
     }
 
-    private function render_toolbar_axis(assignfeedback_editpdfplus\bdd\axis $axis) {
+    /**
+     * Render a simple HTML button
+     * 
+     * @param string $content Button's content
+     * @param array $parameters Button's parameters. Optional
+     * @return string
+     */
+    private function render_toolbar_button_html($content, $parameters = array()) {
+        return html_writer::tag("button", $content, array_merge(array('type' => 'button'), $parameters));
+    }
+
+    /**
+     * Render an icon from FontAwesome class
+     * 
+     * @param string $faClass
+     * @return string
+     */
+    private function render_toolbar_button_icon($faClass = "") {
+        return html_writer::tag("i", "", array(self::HTMLCLASS => 'fa ' . $faClass,
+                    "aria-hidden"));
+    }
+
+    /**
+     * Render a complete toolbar
+     * 
+     * @param string $content buttons or whatever inside the toolbar
+     * @param string $class Optionals classes
+     * @param string $param Optionals parameters
+     * @return string
+     */
+    private function render_toolbar($content, $class = "", $param = array()) {
+        return html_writer::div($content, "btn-group btn-group-sm " . $class, array_merge(array('role' => 'group'), $param));
+    }
+
+    /**
+     * Render a graphic reprensation for an axis in readonly mode (checkbox)
+     * 
+     * @param axis $axis Axis to display
+     * @return string
+     */
+    private function render_toolbar_axis(axis $axis) {
         $iconhtml = $axis->label;
-        $iconparams = array('type' => 'checkbox', 'class' => 'axis', 'id' => 'ctaxis' . $axis->id, 'value' => $axis->id);
+        $iconparams = array('type' => 'checkbox', self::HTMLCLASS => 'axis', 'id' => 'ctaxis' . $axis->id, 'value' => $axis->id);
         $inputhtml = html_writer::tag('input', "", $iconparams);
-        $labelHtml = html_writer::label($inputhtml . $iconhtml, "", true, array('class' => 'checkbox-inline mt-2 mr-2'));
-        return $labelHtml;
+        return html_writer::label($inputhtml . $iconhtml, "", true, array(self::HTMLCLASS => 'checkbox-inline mt-2 mr-2'));
     }
 
     /**
@@ -72,26 +113,22 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $html = '';
 
         //JS declaration
-        $html .= html_writer::div(get_string('jsrequired', 'assignfeedback_editpdfplus'), 'hiddenifjs');
+        $html .= html_writer::div(get_string('jsrequired', self::PLUGIN_NAME), 'hiddenifjs');
 
         //Random id for plugin identification
         $linkid = html_writer::random_id();
-        if ($widget->readonly) {
-            $launcheditorlink = html_writer::tag('a', get_string('viewfeedbackonline', 'assignfeedback_editpdfplus'), array('id' => $linkid, 'class' => 'btn btn-secondary', 'href' => '#'));
-        } else {
-            $launcheditorlink = html_writer::tag('a', get_string('launcheditor', 'assignfeedback_editpdfplus'), array('id' => $linkid, 'class' => 'btn btn-secondary', 'href' => '#'));
-        }
-        $links = $launcheditorlink;
+        $labelLaunchedEditor = ($widget->readonly) ? get_string('viewfeedbackonline', self::PLUGIN_NAME) : get_string('launcheditor', self::PLUGIN_NAME);
+        $links = html_writer::tag('a', $labelLaunchedEditor, array('id' => $linkid, self::HTMLCLASS => 'btn btn-secondary', 'href' => '#'));
         $html .= '<input type="hidden" name="assignfeedback_editpdfplus_haschanges" value="false"/>';
         $html .= html_writer::div($links, 'visibleifjs');
 
         //html header
-        $header = get_string('pluginname', 'assignfeedback_editpdfplus');
+        $header = get_string('pluginname', self::PLUGIN_NAME);
 
         $body = '';
 
-        /* $tooglenavigation = html_writer::tag("button", '<span class="navbar-toggler-icon"></span>', array('class' => 'navbar-toggler',
-          'type' => 'button',
+        /* $tooglenavigation = html_writer::tag("button", '<span class="navbar-toggler-icon"></span>', array(self::HTMLCLASS => 'navbar-toggler',
+          'type' => self::HTMLTYPEBUTTON,
           'data-toggle' => "collapse",
           'data-target' => "#navbarSupportedContent",
           'aria-expanded' => "Toggle navigation")); */
@@ -106,20 +143,17 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $nav_prev = 'nav_prev';
             $nav_next = 'nav_next';
         }
-        $iconhtmlP = html_writer::tag("i", "", array('class' => 'fa fa-caret-left fa-2x',
-                    'aria-hidden' => 'true'));
-        $navigation .= html_writer::tag('button', $iconhtmlP, array('disabled' => 'true',
-                    'class' => 'btn btn-secondary navigate-previous-button',
-                    'type' => 'button'));
-        $navigation .= html_writer::tag('select', null, array('disabled' => 'true',
-                    'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => self::TOOL_NAVPAGESELECT));
-        $iconhtmlN = html_writer::tag("i", "", array('class' => 'fa fa-caret-right fa-2x',
-                    'aria-hidden' => 'true'));
-        $navigation .= html_writer::tag('button', $iconhtmlN, array('disabled' => 'true',
-                    'class' => 'btn btn-secondary ' . self::TOOL_NAVPAGENEXT,
-                    'type' => 'button'));
+        $classNav = "btn btn-secondary ";
+        $iconhtmlP = $this->render_toolbar_button_icon("fa-caret-left fa-2x");
+        $navigation .= $this->render_toolbar_button_html($iconhtmlP, array(self::HTMLDISABLED => 'true',
+            self::HTMLCLASS => $classNav . 'navigate-previous-button'));
+        $navigation .= html_writer::tag('select', null, array(self::HTMLDISABLED => 'true',
+                    'aria-label' => get_string('gotopage', self::PLUGIN_NAME), self::HTMLCLASS => "navigate-page-select"));
+        $iconhtmlN = $this->render_toolbar_button_icon("fa-caret-right fa-2x");
+        $navigation .= $this->render_toolbar_button_html($iconhtmlN, array(self::HTMLDISABLED => 'true',
+            self::HTMLCLASS => $classNav . "navigate-next-button"));
 
-        $navigationBlock = html_writer::div($navigation, "btn-group btn-group-sm mr-auto", array('role' => 'group'));
+        $navigationBlock = $this->render_toolbar($navigation, "mr-auto");
 
         $toolbarBaseBlock = '';
         $toolbarDrawBlock = '';
@@ -131,66 +165,61 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             /** Toolbar n°0 : basic tools * */
             // Select Tool.
             $dragTool = new tool_generic();
-            $dragTool->label = self::TOOL_DRAG;
-            $toolbarBase = $this->render_toolbar_button($dragTool);
+            $dragTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_DRAG));
+            $toolbarBase = $this->render_toolbar_button_tool($dragTool);
             $selectTool = new tool_generic();
-            $selectTool->label = self::TOOL_SELECT;
-            $toolbarBase .= $this->render_toolbar_button($selectTool);
-            $toolbarBaseBlock = html_writer::div($toolbarBase, "btn-group btn-group-sm mr-3", array('role' => 'group'));
+            $selectTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_SELECT));
+            $toolbarBase .= $this->render_toolbar_button_tool($selectTool);
+            $toolbarBaseBlock = $this->render_toolbar($toolbarBase, "mr-3");
 
             // Generic Tools.
             $toolbarDraw = '';
             foreach ($widget->genericToolbar as $tool) {
-                $toolbarDraw .= $this->render_toolbar_button($tool);
+                $toolbarDraw .= $this->render_toolbar_button_tool($tool);
             }
             $colorTool = new tool_generic();
-            $colorTool->label = self::TOOL_ANNOTATIONCOLOR;
-            $toolbarDraw .= $this->render_toolbar_button($colorTool);
-            $toolbarDrawBlock = html_writer::div($toolbarDraw, "btn-group btn-group-sm", array('role' => 'group'));
+            $colorTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_ANNOTATIONCOLOR));
+            $toolbarDraw .= $this->render_toolbar_button_tool($colorTool);
+            $toolbarDrawBlock = $this->render_toolbar($toolbarDraw);
 
             /** Costum toolbars * */
-            $toolbarCostum = array();
             $axis = array();
             foreach ($widget->customToolbars as $toolbar) {
-                $axis[$toolbar['axeid']] = $toolbar['label'];
+                $axis[$toolbar['axeid']] = $toolbar[self::TOOL_OBJ_LABEL];
                 $toolbartmp = '';
                 foreach ($toolbar['tool'] as $tool) {
-                    $toolbartmp .= $this->render_toolbar_button($tool);
+                    $toolbartmp .= $this->render_toolbar_button_tool($tool);
                 }
-                $toolbarCostum[] = html_writer::div($toolbartmp, "btn-group btn-group-sm mr-3 customtoolbar", array('role' => 'group', 'id' => 'toolbaraxis' . $toolbar['axeid'], 'style' => 'display:none;'));
-            }
-            foreach ($toolbarCostum as $toolbarCostumUnit) {
-                $toolbarCostumdiv .= $toolbarCostumUnit;
+                $toolbarCostumdiv .= $this->render_toolbar($toolbartmp, "mr-3 customtoolbar", array('id' => 'toolbaraxis' . $toolbar['axeid']));
             }
 
-            $statuschoice = html_writer::div(html_writer::select($axis, 'axisselection', 0, FALSE), "btn-group btn-group-sm mr-0", array('role' => 'group'));
+            $statuschoice = $this->render_toolbar(html_writer::select($axis, 'axisselection', 0, FALSE), "mr-0");
             $toolbarAxis = $statuschoice;
 
             // Toolbar pour lien creation palette
             $courseid = $this->page->course->id;
             $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $courseid));
-            $toolbarAdmin = html_writer::tag('button', html_writer::tag("i", "", array('class' => 'fa fa-wrench', 'aria-hidden' => 'true')), array(
-                        'class' => 'btn btn-info',
-                        'type' => 'button',
-                        'onclick' => "document.location='" . $lienAdmin->out() . "';"));
-            $toolbarAdminBlock = html_writer::div($toolbarAdmin, "btn-group btn-group-sm mr-3", array('role' => 'group'));
+            $toolbarAdmin = $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-wrench"), array(
+                self::HTMLCLASS => 'btn btn-info',
+                'onclick' => "document.location='" . $lienAdmin->out() . "';"));
+            $toolbarAdminBlock = $this->render_toolbar($toolbarAdmin, "mr-3");
         } else {
-
+            //readonly view
             $axis = $widget->axis;
             $toolbaraxisContent = "";
             foreach ($axis as $ax) {
                 $toolbaraxisContent .= $this->render_toolbar_axis($ax);
             }
-            $toolbarAxis = html_writer::div($toolbaraxisContent, "btn-group btn-group-sm mr-2", array('role' => 'group'));
+            $toolbarAxis = $this->render_toolbar($toolbaraxisContent, "mr-2");
 
             $questionchoice = html_writer::select(
-                            [get_string('question_select', 'assignfeedback_editpdfplus'), get_string('question_select_without', 'assignfeedback_editpdfplus'), get_string('question_select_with', 'assignfeedback_editpdfplus')], 'questionselection', 0, FALSE, array('class' => 'form-control'));
+                            [get_string('question_select', self::PLUGIN_NAME), get_string('question_select_without', self::PLUGIN_NAME), get_string('question_select_with', self::PLUGIN_NAME)], 'questionselection', 0, FALSE, array(self::HTMLCLASS => 'form-control'));
             $statuschoice = html_writer::select(
-                            [get_string('statut_select', 'assignfeedback_editpdfplus'), get_string('statut_select_nc', 'assignfeedback_editpdfplus'), get_string('statut_select_ok', 'assignfeedback_editpdfplus'), get_string('statut_select_ko', 'assignfeedback_editpdfplus')], 'statutselection', 0, FALSE, array('class' => 'form-control'));
-            $validatebutton = html_writer::tag('button', get_string('send_pdf_update', 'assignfeedback_editpdfplus'), array('class' => 'btn btn-secondary', 'id' => 'student_valide_button'));
-            $toolbarAxis .= html_writer::div($statuschoice, 'btn-group btn-group-sm', array('role' => 'group'));
-            $toolbarAxis .= html_writer::div($questionchoice, 'btn-group btn-group-sm mr-3', array('role' => 'group'));
-            $toolbarAxis .= html_writer::div($validatebutton, 'btn-group btn-group-sm mr-0', array('role' => 'group'));
+                            [get_string('statut_select', self::PLUGIN_NAME), get_string('statut_select_nc', self::PLUGIN_NAME), get_string('statut_select_ok', self::PLUGIN_NAME), get_string('statut_select_ko', self::PLUGIN_NAME)], 'statutselection', 0, FALSE, array(self::HTMLCLASS => 'form-control'));
+            $validatebutton = $this->render_toolbar_button_html(get_string('send_pdf_update', self::PLUGIN_NAME), array(self::HTMLCLASS => 'btn btn-secondary', 'id' => 'student_valide_button'));
+            $toolbarAxis .= $this->render_toolbar($statuschoice);
+            $toolbarAxis .= $this->render_toolbar($questionchoice, 'mr-3');
+            $toolbarAxis .= $this->render_toolbar($validatebutton, 'mr-0');
         }
 
         $pageheadercontent = $navigationBlock
@@ -199,31 +228,26 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                 . $toolbarAxis
                 . $toolbarCostumdiv
                 . $toolbarDrawBlock;
-        $mainnavigation = html_writer::div($pageheadercontent, "btn-toolbar btn-group-sm bg-light p-1", array('role' => 'toolbar', 'style' => 'min-height:50px;'));
+        $mainnavigation = html_writer::div($pageheadercontent, "btn-toolbar btn-group-sm bg-light p-1", array('role' => 'toolbar'));
 
-        // Toobars written in reverse order because they are floated right.
-        $pageheader = $mainnavigation;
-
-        $body .= $pageheader;
+        $body .= $mainnavigation;
 
         // Loading progress bar.
-        $progressbar = html_writer::div('', 'bar', array('style' => 'width: 0%'));
-        $progressbar = html_writer::div($progressbar, 'progress progress-info progress-striped active', array('title' => get_string('loadingeditor', 'assignfeedback_editpdfplus'),
+        $progressbar = html_writer::div(html_writer::div('', 'bar'), 'progress progress-info progress-striped active', array('title' => get_string('loadingeditor', self::PLUGIN_NAME),
                     'role' => 'progressbar', 'aria-valuenow' => 0, 'aria-valuemin' => 0,
                     'aria-valuemax' => 100));
-        $progressbarlabel = html_writer::div(get_string('generatingpdf', 'assignfeedback_editpdfplus'), 'progressbarlabel');
+        $progressbarlabel = html_writer::div(get_string('generatingpdf', self::PLUGIN_NAME), 'progressbarlabel');
         $loading = html_writer::div($progressbar . $progressbarlabel, 'loading');
 
-        $canvas = html_writer::div($loading, 'drawingcanvas');
-        $canvas = html_writer::div($canvas, 'drawingregion');
-        $changesmessage = html_writer::tag('div', get_string('draftchangessaved', 'assignfeedback_editpdfplus'), array(
-                    'class' => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
+        $canvas = html_writer::div(html_writer::div($loading, 'drawingcanvas'), 'drawingregion');
+        $changesmessage = html_writer::tag('div', get_string('draftchangessaved', self::PLUGIN_NAME), array(
+                    self::HTMLCLASS => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
         ));
         $changesmessageDiv = html_writer::div($changesmessage, 'unsaved-changes');
         $canvas .= $changesmessageDiv;
 
-        $changesmessage2 = html_writer::tag('div', get_string('nodraftchangessaved', 'assignfeedback_editpdfplus'), array(
-                    'class' => 'assignfeedback_editpdfplus_unsavedchanges_edit warning label label-info'
+        $changesmessage2 = html_writer::tag('div', get_string('nodraftchangessaved', self::PLUGIN_NAME), array(
+                    self::HTMLCLASS => 'assignfeedback_editpdfplus_unsavedchanges_edit warning label label-info'
         ));
         $changesmessage2Div = html_writer::div($changesmessage2, 'unsaved-changes');
         $canvas .= $changesmessage2Div;
@@ -262,7 +286,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             'pagenumber',
             'student_statut_nc',
             'student_answer_lib'
-                ), 'assignfeedback_editpdfplus');
+                ), self::PLUGIN_NAME);
 
         return $html;
     }
@@ -300,9 +324,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
      * @return String
      */
     public function render_assignfeedback_editpdfplus_widget_admin_toolform($data) {
-        $data->map01 = $this->pix_url('map01', 'assignfeedback_editpdfplus');
-        $data->map02 = $this->pix_url('map02', 'assignfeedback_editpdfplus');
-        $data->map03 = $this->pix_url('map03', 'assignfeedback_editpdfplus');
+        $data->map01 = $this->pix_url('map01', self::PLUGIN_NAME);
+        $data->map02 = $this->pix_url('map02', self::PLUGIN_NAME);
+        $data->map03 = $this->pix_url('map03', self::PLUGIN_NAME);
         return $this->render_from_template('assignfeedback_editpdfplus/tool_form', $data);
     }
 

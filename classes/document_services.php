@@ -251,9 +251,7 @@ EOD;
             $htmlfile = $fs->create_file_from_string($fileProperties, $file);
         }
 
-        $convertedfile = $converter->start_conversion($htmlfile, 'pdf');
-
-        return $convertedfile;
+        return $converter->start_conversion($htmlfile, 'pdf');
     }
 
     /**

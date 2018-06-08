@@ -43,6 +43,11 @@ class tool_generic extends tool {
         "annotationcolour" => "fa fa-tint"
     );
 
+    /**
+     * Get elements (display label, parameters) to render a button in HTML
+     * @param bool $disabled if the button must be disabled
+     * @return array
+     */
     public function getRendererBoutonHTMLDisplay($disabled = false) {
         $iconhtml = \html_writer::tag("i", "", array('class' => self::DISPLAY_CLASS_BUTTON[$this->label], 'aria-hidden' => 'true'));
         $iconparams = array(

@@ -107,14 +107,14 @@ class tool {
 
     /**
      * Initialize a minimal tool
-     * @param int $contextid context id of the tool
-     * @param int $axeid axis for the tool
+     * @param array $parameters Optionals parameters to initialize a tool
      */
-    public function init($contextid, $axeid) {
-        $this->contextid = $contextid;
+    public function init($parameters) {
+        $this->contextid = isset($parameters['contextid']) ? $parameters['contextid'] : 0;
         $this->enabled = true;
-        $this->axis = $axeid;
+        $this->axis = isset($parameters['axeid']) ? $parameters['axeid'] : 0;
         $this->removable = true;
+        $this->label = isset($parameters['label']) ? $parameters['label'] : "";
     }
 
     /**
@@ -149,11 +149,18 @@ class tool {
         }
     }
 
+    /**
+     * Set Style and replace label with format symbol for display purpose
+     */
     public function setDesign() {
         $this->label = $this->getButtonLabel();
         $this->style = $this->getStyleButton();
     }
 
+    /**
+     * Calculate a label with format symbol, according to its type
+     * @return string
+     */
     private function getButtonLabel() {
         if ($this->type == "4") {
             return '| ' . $this->label . ' |';
@@ -164,17 +171,26 @@ class tool {
         return $this->label;
     }
 
+    /**
+     * Calculate a sytle for a display in a button, according to its type
+     * @return string
+     */
     private function getStyleButton() {
-        $style = "";
+        $styleTmp = "";
         if ($this->enabled == "0") {
-            $style .= "background-image:none;background-color:#CCCCCC;";
+            $styleTmp .= "background-image:none;background-color:#CCCCCC;";
         }
         if ($this->type == "4" || $this->type == "1") {
-            $style .= "text-decoration: underline;";
+            $styleTmp .= "text-decoration: underline;";
         }
-        return $style;
+        return $styleTmp;
     }
 
+    /**
+     * Get elements (display label, parameters) to render a button in HTML
+     * @param bool $disabled if the button must be disabled
+     * @return array
+     */
     public function getRendererBoutonHTMLDisplay($disabled = false) {
         $iconhtml = $this->getButtonLabel();
         if (!$this->typeObject) {

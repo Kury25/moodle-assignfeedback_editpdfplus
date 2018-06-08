@@ -37,6 +37,8 @@ use \assignfeedback_editpdfplus\page_editor;
  */
 class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
+    const AXISGENERIC = 0;
+
     /** @var boolean|null $enabledcache Cached lookup of the is_available function */
     private $enabledcache = null;
 
@@ -68,6 +70,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
         // get the costum toolbars
         $toolbars = array();
+        $toolbarGeneric = array();
         $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
         $axis = array();
@@ -81,16 +84,15 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         foreach ($axis as $ax) {
             $toolbars[$ax->id]['axeid'] = $ax->id;
             $toolbars[$ax->id]['label'] = $ax->label;
-            foreach ($tools as $tool) {
-                if ($tool->axis == $ax->id && $tool->enabled) {
-                    $toolbars[$ax->id]['tool'][$tool->id] = $tool;
-                }
-            }
         }
-        $toolbarGeneric = array();
         foreach ($tools as $tool) {
-            if ($tool->axis == 0 && $tool->enabled) {
+            if (!$tool->enabled) {
+                continue;
+            }
+            if ($tool->axis == self::AXISGENERIC) {
                 $toolbarGeneric[$tool->id] = $tool;
+            } else if (isset($toolbars[$tool->axis])) {
+                $toolbars[$tool->axis]['tool'][$tool->id] = $tool;
             }
         }
 
@@ -101,7 +103,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $filename = $feedbackfile->get_filename();
         }
 
-        $widget = new assignfeedback_editpdfplus_widget(array(
+        return new assignfeedback_editpdfplus_widget(array(
             'assignment' => $this->assignment->get_instance()->id,
             'userid' => $userid,
             'attemptnumber' => $attempt,
@@ -112,7 +114,6 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             'genericToolbar' => $toolbarGeneric,
             'axis' => $axis
         ));
-        return $widget;
     }
 
     /**

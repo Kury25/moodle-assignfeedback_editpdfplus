@@ -66,13 +66,9 @@ class utils_stamp {
 
         //get hexa code from the key iconName
         $charFAHexaCode = self::getUniCode($iconName);
-        if (!$charFAHexaCode) {
-            return null;
-        }
-
         //get RGB color
         $colorRGB = utils_color::hex2RGB($color);
-        if (!$colorRGB) {
+        if (!$charFAHexaCode || !$colorRGB) {
             return null;
         }
 

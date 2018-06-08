@@ -62,17 +62,19 @@ class assignfeedback_editpdfplus_widget implements renderable {
 
     /**
      * Constructor
-     * @param int $assignment - Assignment instance id
-     * @param int $userid - The user id we are grading
-     * @param int $attemptnumber - The attempt number we are grading
-     * @param moodle_url $downloadurl - A url to download the current generated pdf.
-     * @param string $downloadfilename - Name of the generated pdf.
-     * @param bool $readonly - Show the readonly interface (no tools).
-     * @param integer $pagetotal - The total number of pages.
-     * @param tool[] $toolbars - the different tool to display
-     * @param axis[] $axis - the different axis to display
+     * 
+     * @param array $args Parameters in order to initialize a widget. Should contain : 
+     * int $assignment - Assignment instance id
+     * int $userid - The user id we are grading
+     * int $attemptnumber - The attempt number we are grading
+     * moodle_url $downloadurl - A url to download the current generated pdf.
+     * string $downloadfilename - Name of the generated pdf.
+     * bool $readonly - Show the readonly interface (no tools).
+     * tool[] customToolbars - the different tool to display
+     * tool[] genericToolbar - the generics tools
+     * axis[] $axis - the different axis to display
      */
-    public function __construct($args) {//$assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $readonly, $toolbars, $axis) {
+    public function __construct($args) {
         $this->assignment = $args["assignment"];
         $this->userid = $args["userid"];
         $this->attemptnumber = $args["attemptnumber"];

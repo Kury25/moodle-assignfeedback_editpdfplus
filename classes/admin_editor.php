@@ -27,6 +27,7 @@ namespace assignfeedback_editpdfplus;
 
 use assignfeedback_editpdfplus\bdd\axis;
 use assignfeedback_editpdfplus\bdd\type_tool;
+use assignfeedback_editpdfplus\bdd\tool;
 
 /**
  * This class performs crud operations on comments and annotations from a page of a response.
@@ -272,8 +273,7 @@ class admin_editor {
      */
     public static function get_all_different_contexts() {
         global $DB;
-        $records = $DB->get_records_sql(self::makeSqlRequestSelect("DISTINCT(" . self::CONTEXTIDLIB . ")", self::BDDTABLEAXE));
-        return $records;
+        return $DB->get_records_sql(self::makeSqlRequestSelect("DISTINCT(" . self::CONTEXTIDLIB . ")", self::BDDTABLEAXE));
     }
 
     /**
@@ -339,8 +339,7 @@ class admin_editor {
      */
     public static function getAxisById($axeid) {
         global $DB;
-        $axis = $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
-        return $axis;
+        return $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
     }
 
     /**

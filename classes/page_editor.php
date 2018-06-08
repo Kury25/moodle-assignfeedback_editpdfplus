@@ -281,8 +281,7 @@ class page_editor {
         global $DB;
 
         // Delete the non-draft annotations and comments.
-        $result = $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0)) && $result;
-        return $result;
+        return $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
     }
 
     /**

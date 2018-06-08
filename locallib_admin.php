@@ -162,9 +162,9 @@ class assign_feedback_editpdfplus_admin {
             $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', MUST_EXIST);
             $tool = new tool($record);
             $nbEnregistrements = $DB->get_record_sql('SELECT count(*) as val FROM {assignfeedback_editpp_annot} WHERE toolid = ?', array('toolid' => $toolid));
-            $tool->removable = ($nbEnregistrements->val > 0) ? false : true;
+            $tool->removable = !($nbEnregistrements->val > 0);
         } else {
-            $tool->init($this->context->id, $axisid);
+            $tool->init(array("contextid" => $this->context->id, "axisid" => $axisid));
         }
         $tool->initToolTextsArray();
         $data->tool = $tool;
