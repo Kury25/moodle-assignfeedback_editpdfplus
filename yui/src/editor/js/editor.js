@@ -877,11 +877,11 @@ EDITOR.prototype = {
             currenttoolnode.setAttribute('aria-pressed', 'false');
             drawingregion.setStyle('cursor', 'auto');
         }
-        //update le currentedit object with the new tool
+        //update the currentedit object with the new tool
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "comment" && tool !== "select" && tool !== "drag") {
+        if (tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
             drawingregion.setStyle('cursor', 'crosshair');
         } else if (tool === "drag") {
@@ -1141,38 +1141,36 @@ EDITOR.prototype = {
             return;
         }
 
-        if (this.currentedit.tool !== 'comment') {
-            var toolid = this.currentedit.id;
-            if (this.currentedit.id && this.currentedit.id[0] === 'c') {
-                toolid = this.currentedit.id.substr(8);
+        var toolid = this.currentedit.id;
+        if (this.currentedit.id && this.currentedit.id[0] === 'c') {
+            toolid = this.currentedit.id.substr(8);
+        }
+        annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
+        if (annotation) {
+            if (this.currentdrawable) {
+                this.currentdrawable.erase();
             }
-            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
-            if (annotation) {
-                if (this.currentdrawable) {
-                    this.currentdrawable.erase();
-                }
-                this.currentdrawable = false;
-                if (annotation.init_from_edit(this.currentedit)) {
-                    this.currentannotation = annotation;
-                    annotation.draw_catridge(this.currentedit);
-                    annotation.edit_annot();
-                    if (annotation.parent_annot_element) {
-                        var index = 0;
-                        if (annotation.parent_annot_element.id) {
-                            index = annotation.parent_annot_element.id;
-                        } else {
-                            index = annotation.parent_annot_element.divcartridge;
-                        }
-                        if (this.annotationsparent[index]) {
-                            this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
-                        } else {
-                            this.annotationsparent[index] = [annotation];
-                        }
+            this.currentdrawable = false;
+            if (annotation.init_from_edit(this.currentedit)) {
+                this.currentannotation = annotation;
+                annotation.draw_catridge(this.currentedit);
+                annotation.edit_annot();
+                if (annotation.parent_annot_element) {
+                    var index = 0;
+                    if (annotation.parent_annot_element.id) {
+                        index = annotation.parent_annot_element.id;
+                    } else {
+                        index = annotation.parent_annot_element.divcartridge;
                     }
-                    this.pages[this.currentpage].annotations.push(annotation);
-                    this.drawables.push(annotation.draw());
-                    this.drawablesannotations.push(annotation);
+                    if (this.annotationsparent[index]) {
+                        this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
+                    } else {
+                        this.annotationsparent[index] = [annotation];
+                    }
                 }
+                this.pages[this.currentpage].annotations.push(annotation);
+                this.drawables.push(annotation.draw());
+                this.drawablesannotations.push(annotation);
             }
         }
 

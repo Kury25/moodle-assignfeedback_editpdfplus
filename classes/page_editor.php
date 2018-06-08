@@ -48,6 +48,7 @@ class page_editor {
     const CONTEXTID = "contextid";
     const GRADEID = "gradeid";
     const DRAFLIB = "draft";
+    const AXISGENERIC = 0;
 
     /**
      * Get all tools for a page.
@@ -72,7 +73,7 @@ class page_editor {
         }
         foreach ($records as $record) {
             $tooltmp = null;
-            if (7 < $record->type && $record->type < 13) {
+            if ($record->axis == self::AXISGENERIC) {
                 $tooltmp = new tool_generic($record);
             } else {
                 $tooltmp = new tool($record);

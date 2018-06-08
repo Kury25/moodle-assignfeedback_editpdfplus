@@ -45,7 +45,14 @@ class tool_generic extends tool {
 
     public function getRendererBoutonHTMLDisplay($disabled = false) {
         $iconhtml = \html_writer::tag("i", "", array('class' => self::DISPLAY_CLASS_BUTTON[$this->label], 'aria-hidden' => 'true'));
-        $iconparams = array('data-tool' => $this->label, 'class' => $this->label . 'button generictoolbarbutton btn btn-secondary', 'type' => 'button');
+        $iconparams = array(
+            'data-tool' => $this->label,
+            'class' => $this->label . 'button generictoolbarbutton btn btn-secondary',
+            'type' => 'button'
+        );
+        if ($this->id) {
+            $iconparams['id'] = 'ctbutton' . $this->id;
+        }
         if ($disabled) {
             $iconparams['disabled'] = 'true';
         }

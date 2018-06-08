@@ -110,17 +110,14 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                     'aria-hidden' => 'true'));
         $navigation .= html_writer::tag('button', $iconhtmlP, array('disabled' => 'true',
                     'class' => 'btn btn-secondary navigate-previous-button',
-                    'type' => 'button',
-                    'accesskey' => $this->get_shortcut('navigate-previous-button')));
+                    'type' => 'button'));
         $navigation .= html_writer::tag('select', null, array('disabled' => 'true',
-                    'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => self::TOOL_NAVPAGESELECT,
-                    'accesskey' => $this->get_shortcut(self::TOOL_NAVPAGESELECT)));
+                    'aria-label' => get_string('gotopage', 'assignfeedback_editpdfplus'), 'class' => self::TOOL_NAVPAGESELECT));
         $iconhtmlN = html_writer::tag("i", "", array('class' => 'fa fa-caret-right fa-2x',
                     'aria-hidden' => 'true'));
         $navigation .= html_writer::tag('button', $iconhtmlN, array('disabled' => 'true',
                     'class' => 'btn btn-secondary ' . self::TOOL_NAVPAGENEXT,
-                    'type' => 'button',
-                    'accesskey' => $this->get_shortcut(self::TOOL_NAVPAGENEXT)));
+                    'type' => 'button'));
 
         $navigationBlock = html_writer::div($navigation, "btn-group btn-group-sm mr-auto", array('role' => 'group'));
 
