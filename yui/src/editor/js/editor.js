@@ -236,7 +236,7 @@ EDITOR.prototype = {
      * @method refresh_button_state
      */
     refresh_button_state: function () {
-        var currenttoolnode, drawingregion;
+        var currenttoolnode, drawingregion, drawingcanvas;
 
         this.refresh_button_color_state();
 
@@ -251,6 +251,21 @@ EDITOR.prototype = {
         }
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
+
+        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        switch (this.currentedit.tool) {
+            case 'drag':
+                drawingcanvas.setStyle('cursor', 'move');
+                break;
+            case 'highlight':
+                drawingcanvas.setStyle('cursor', 'text');
+                break;
+            case 'select':
+                drawingcanvas.setStyle('cursor', 'default');
+                break;
+            default:
+                drawingcanvas.setStyle('cursor', 'crosshair');
+        }
     },
 
     /**
@@ -883,9 +898,6 @@ EDITOR.prototype = {
 
         if (tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
-            drawingregion.setStyle('cursor', 'crosshair');
-        } else if (tool === "drag") {
-            drawingregion.setStyle('cursor', 'move');
         }
 
         if (tool !== "select") {
