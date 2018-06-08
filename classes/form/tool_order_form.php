@@ -38,13 +38,15 @@ use moodleform;
  */
 class tool_order_form extends moodleform {
 
+    const HIDDENSTATE = "hidden";
+
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('hidden', 'previoustoolid', 'previoustoolid'); // Add elements to your form
+        $mform->addElement(self::HIDDENSTATE, 'previoustoolid', ''); // Add elements to your form
         $mform->setType('previoustoolid', PARAM_INT);            //Set type of element
-        $mform->addElement('hidden', 'toolid', '');      // Add elements to your form
+        $mform->addElement(self::HIDDENSTATE, 'toolid', '');      // Add elements to your form
         $mform->setType('toolid', PARAM_INT);            //Set type of element
-        $mform->addElement('hidden', 'nexttoolid', '');      // Add elements to your form
+        $mform->addElement(self::HIDDENSTATE, 'nexttoolid', '');      // Add elements to your form
         $mform->setType('nexttoolid', PARAM_INT);            //Set type of element
     }
 

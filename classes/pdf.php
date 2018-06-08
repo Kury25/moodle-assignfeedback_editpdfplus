@@ -25,6 +25,9 @@
 
 namespace assignfeedback_editpdfplus;
 
+use \assignfeedback_editpdfplus\utils_color;
+use \assignfeedback_editpdfplus\utils_stamp;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -48,9 +51,6 @@ class pdf extends \FPDI {
 
     /** @var float used to scale the pixel position of annotations (in the database) to the position in the final PDF */
     protected $scale = 0.0;
-
-    /** @var string the path in which to store generated page images */
-    protected $imagefolder = null;
 
     /** @var string the path to the PDF currently being processed */
     protected $filename = null;
@@ -83,7 +83,7 @@ class pdf extends \FPDI {
     const MIN_ANNOTATION_HEIGHT = 5;
 
     /** Blank PDF file used during error. */
-    const BLANK_PDF = '/mod/assign/feedback/editpdf/fixtures/blank.pdf';
+    const BLANK_PDF = '/mod/assign/feedback/editpdfplus/fixtures/blank.pdf';
 
     /**
      * Combine the given PDF files into a single PDF. Optionally add a coversheet and coversheet fields.
@@ -227,90 +227,21 @@ class pdf extends \FPDI {
     }
 
     /**
-     * Get RGB color from label of color or hexa code
-     * @param string $colour
-     * @return array()
-     */
-    private function get_colour_for_pdf($colour) {
-        if (substr($colour, 0, 1) == '#') {
-            $colourarray = $this->hex2RGB($colour, false);
-        } else {
-            switch ($colour) {
-                case 'orange':
-                    $colourarray = array(255, 207, 53);
-                    break;
-                case 'yellow':
-                    $colourarray = array(255, 207, 53);
-                    break;
-                case 'yellowlemon':
-                    $colourarray = array(255, 255, 0);
-                    break;
-                case 'green':
-                    $colourarray = array(153, 202, 62);
-                    break;
-                case 'blue':
-                    $colourarray = array(125, 159, 211);
-                    break;
-                case 'white':
-                    $colourarray = array(255, 255, 255);
-                    break;
-                case 'black':
-                    $colourarray = array(51, 51, 51);
-                    break;
-                default:
-                    $colourarray = array(239, 69, 64);
-                    break;
-            }
-        }
-        return $colourarray;
-    }
-
-    /**
-     * Convert a hexa decimal color code to its RGB equivalent
-     *
-     * @param string $hexStr (hexadecimal color value)
-     * @param boolean $returnAsString (if set true, returns the value separated by the separator character. Otherwise returns associative array)
-     * @param string $seperator (to separate RGB values. Applicable only if second parameter is true.)
-     * @return array or string (depending on second parameter. Returns False if invalid hex color value)
-     */
-    private function hex2RGB($hexStr, $returnAsString = false, $seperator = ',') {
-        $hexStr = preg_replace("/[^0-9A-Fa-f]/", '', $hexStr); // Gets a proper hex string
-        $rgbArray = array();
-        if (strlen($hexStr) == 6) { //If a proper hex code, convert using bitwise operation. No overhead... faster
-            $colorVal = hexdec($hexStr);
-            $rgbArray['red'] = 0xFF & ($colorVal >> 0x10);
-            $rgbArray['green'] = 0xFF & ($colorVal >> 0x8);
-            $rgbArray['blue'] = 0xFF & $colorVal;
-        } elseif (strlen($hexStr) == 3) { //if shorthand notation, need some string manipulations
-            $rgbArray['red'] = hexdec(str_repeat(substr($hexStr, 0, 1), 2));
-            $rgbArray['green'] = hexdec(str_repeat(substr($hexStr, 1, 1), 2));
-            $rgbArray['blue'] = hexdec(str_repeat(substr($hexStr, 2, 1), 2));
-        } else {
-            return false; //Invalid hex color code
-        }
-        return $returnAsString ? implode($seperator, $rgbArray) : $rgbArray; // returns the rgb string or the associative array
-    }
-
-    /**
      * Add an annotation to the current page
-     * @param int $sx starting x-coordinate (in pixels)
-     * @param int $sy starting y-coordinate (in pixels)
-     * @param int $ex ending x-coordinate (in pixels)
-     * @param int $ey ending y-coordinate (in pixels)
-     * @param string $colour optional the colour of the annotation (red, yellow, green, blue, white, black)
-     * @param string $type optional the type of annotation (line, oval, rectangle, highlight, pen, stamp)
+     * 
+     * @param \assignfeedback_editpdfplus\bdd\annotation $annotation
      * @param int[]|string $path optional for 'pen' annotations this is an array of x and y coordinates for
      *              the line, for 'stamp' annotations it is the name of the stamp file (without the path)
-     * @param string $imagefolder - Folder containing stamp images.
+     * @param type $annotation_index
      * @return bool true if successful (always)
      */
-    public function add_annotation(annotation $annotation, $path, $imagefolder, $annotation_index) {
-        global $CFG;
+    public function add_annotation(bdd\annotation $annotation, $path, $annotation_index) {
         if (!$this->filename) {
             return false;
         }
+
         $colour = $annotation->colour;
-        $colourarray = $this->get_colour_for_pdf($colour);
+        $colourarray = utils_color::getColorRGB($colour); //$this->get_colour_for_pdf($colour);
         $this->SetDrawColorArray($colourarray);
 
         $sx = $this->scale * $annotation->x;
@@ -322,13 +253,13 @@ class pdf extends \FPDI {
         //$type = 'line';
         $toolid = $annotation->toolid;
         $toolObject = page_editor::get_tool($toolid);
-        $typetool = page_editor::get_type_tool($toolObject->type);
+        $typetool = $toolObject->typeObject;
         $type = $typetool->label;
         $colourcartridge = $toolObject->cartridge_color;
         if (!$colourcartridge) {
             $colourcartridge = $typetool->cartridge_color;
         }
-        $colourcartridgearray = $this->get_colour_for_pdf($colourcartridge);
+        $colourcartridgearray = utils_color::getColorRGB($colourcartridge); //$this->get_colour_for_pdf($colourcartridge);
         $this->SetTextColorArray($colourcartridgearray);
         $this->SetFontSize(10);
 
@@ -393,16 +324,6 @@ class pdf extends \FPDI {
                     }
                 }
                 break;
-            case 'stamp':
-                $imgfile = $imagefolder . '/' . clean_filename($path);
-                $w = abs($sx - $ex);
-                $h = abs($sy - $ey);
-                $sx = min($sx, $ex);
-                $sy = min($sy, $ey);
-
-                // Stamp is always more than 40px, so no need to check width/height.
-                $this->Image($imgfile, $sx, $sy, $w, $h);
-                break;
             case 'highlightplus':
                 $w = abs($sx - $ex);
                 $h = 8.0 * $this->scale;
@@ -462,34 +383,40 @@ class pdf extends \FPDI {
                 break;
             case 'stampcomment':
                 if ($annotation->displayrotation == 1) {
-                    $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
-                    $h = 20; //abs($sy - $ey);
-                    $w = $h * 37 / 96;
-                    $sx = min($sx, $ex) + 8;
-                    $sy = min($sy, $ey) + 2;
+                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-v", $colourcartridge);
+                    //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_v_pdf.png';
+                    //$h = 20; //abs($sy - $ey);
+                    //$w = $h * 37 / 96;
+                    $sx = min($sx, $ex) - 6;
                 } else {
-                    $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
-                    $w = 20; //abs($sx - $ex);
-                    $h = $w * 37 / 96;
-                    $sx = min($sx, $ex) + 2;
-                    $sy = min($sy, $ey) + 8;
+                    $imgFileFromFA = utils_stamp::getPngFromFont("arrows-h", $colourcartridge);
+                    //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/twoway_h_pdf.png';
+                    //$w = 20; //abs($sx - $ex);
+                    //$h = $w * 37 / 96;
+                    $sx = min($sx, $ex) - 1;
                 }
-                // Stamp is always more than 40px, so no need to check width/height.
-                $this->Image($imgfile, $sx, $sy, $w, $h);
+                $sy = min($sy, $ey);
+                $w = 30 * $this->scale;
+                $h = 30 * $this->scale;
+                if ($imgFileFromFA) {
+                    $this->Image($imgFileFromFA, $sx, $sy, $w, $h);
+                }
 
                 $scartx = ($annotation->cartridgex + $annotation->x) * $this->scale;
                 $scarty = ($annotation->cartridgey + $annotation->y) * $this->scale;
                 $this->SetXY($scartx, $scarty);
                 break;
             case 'commentplus':
-                $imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
+                $imgFileFromFA = utils_stamp::getPngFromFont("commenting", $colourcartridge);
+                //$imgfile = $CFG->dirroot . '/mod/assign/feedback/editpdfplus/pix/comment.png';
                 $w = 16 * $this->scale;
                 $h = 16 * $this->scale;
                 $sx = min($sx, $ex);
                 $sy = min($sy, $ey);
                 $this->SetXY($sx + $w + 2, $sy);
-                // Stamp is always more than 40px, so no need to check width/height.
-                $this->Image($imgfile, $sx, $sy, $w, $h);
+                if ($imgFileFromFA) {
+                    $this->Image($imgFileFromFA, $sx, $sy, $w, $h);
+                }
                 break;
             case 'stampplus':
                 $w = abs($sx - $ex);
@@ -510,13 +437,13 @@ class pdf extends \FPDI {
                 if (!$colourcartridge) {
                     $colourcartridge = $typetool->color;
                 }
-                $colourcartridgearray = $this->get_colour_for_pdf($colourcartridge);
+                $colourcartridgearray = utils_color::getColorRGB($colourcartridge); //$this->get_colour_for_pdf($colourcartridge);
                 $this->SetTextColorArray($colourcartridgearray);
 
                 $cartouche = $toolObject->label;
                 //$this->Cell($w);
                 //Texte centré dans une cellule 20*10 mm encadrée et retour à la ligne
-                $this->Cell(strlen($cartouche)*6+4, 10, $cartouche, 1, 1, 'C');
+                $this->Cell(strlen($cartouche) * 6 + 4, 10, $cartouche, 1, 1, 'C');
 
                 break;
             default: // Line.
@@ -558,8 +485,8 @@ class pdf extends \FPDI {
     /**
      * Generate an image of the specified page in the PDF
      * @param int $pageno the page to generate the image of
-     * @throws moodle_exception
-     * @throws coding_exception
+     * @throws \moodle_exception
+     * @throws \coding_exception
      * @return string the filename of the generated image
      */
     public function get_image($pageno) {
@@ -621,59 +548,12 @@ class pdf extends \FPDI {
     public static function ensure_pdf_compatible(\stored_file $file) {
         global $CFG;
 
-        //$temparea = make_temp_directory('assignfeedback_editpdfplus');
+        // Copy the stored_file to local disk for checking.
         $temparea = make_request_directory();
-        //$hash = $file->get_contenthash(); // Use the contenthash to make sure the temp files have unique names.
-        //$tempsrc = $temparea . "/src-$hash.pdf";
-        //$tempdst = $temparea . "/dst-$hash.pdf";
         $tempsrc = $temparea . "/source.pdf";
-        $file->copy_content_to($tempsrc); // Copy the file.
+        $file->copy_content_to($tempsrc);
 
         return self::ensure_pdf_file_compatible($tempsrc);
-
-        /* $pdf = new pdf();
-          $pagecount = 0;
-          try {
-          $pagecount = $pdf->load_pdf($tempsrc);
-          } catch (\Exception $e) {
-          // PDF was not valid - try running it through ghostscript to clean it up.
-          $pagecount = 0;
-          }
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-
-          if ($pagecount > 0) {
-          // Page is valid and can be read by tcpdf.
-          return $tempsrc;
-          }
-
-          $gsexec = \escapeshellarg($CFG->pathtogs);
-          $tempdstarg = \escapeshellarg($tempdst);
-          $tempsrcarg = \escapeshellarg($tempsrc);
-          $command = "$gsexec -q -sDEVICE=pdfwrite -dBATCH -dNOPAUSE -sOutputFile=$tempdstarg $tempsrcarg";
-          exec($command);
-          @unlink($tempsrc);
-          if (!file_exists($tempdst)) {
-          // Something has gone wrong in the conversion.
-          return false;
-          }
-
-          $pdf = new pdf();
-          $pagecount = 0;
-          try {
-          $pagecount = $pdf->load_pdf($tempdst);
-          } catch (\Exception $e) {
-          // PDF was not valid - try running it through ghostscript to clean it up.
-          $pagecount = 0;
-          }
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-
-          if ($pagecount <= 0) {
-          @unlink($tempdst);
-          // Could not parse the converted pdf.
-          return false;
-          }
-
-          return $tempdst; */
     }
 
     /**
@@ -771,7 +651,7 @@ class pdf extends \FPDI {
     /**
      * Test that the configured path to ghostscript is correct and working.
      * @param bool $generateimage - If true - a test image will be generated to verify the install.
-     * @return bool
+     * @return \stdClass
      */
     public static function test_gs_path($generateimage = true) {
         global $CFG;

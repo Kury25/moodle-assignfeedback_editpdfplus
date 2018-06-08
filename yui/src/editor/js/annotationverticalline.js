@@ -168,6 +168,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition

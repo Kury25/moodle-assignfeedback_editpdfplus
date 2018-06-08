@@ -183,13 +183,15 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                         var canBeDelete = $("#editpdlplus_axes option:selected").data('delete');
                         if (canBeDelete) {
                             if (parseInt(canBeDelete) > 0) {
-                                $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").addClass("disabled");
+                                //$("#assignfeedback_editpdfplus_widget_admin_button_delaxis").addClass("disabled");
+                                $('#assignfeedback_editpdfplus_widget_admin_button_delaxis').prop('disabled', true);
                             } else {
-                                $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                                //$("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                                $('#assignfeedback_editpdfplus_widget_admin_button_delaxis').removeAttr('disabled');
                             }
                         } else {
                             $("#editpdlplus_axes option[value='" + selectAxis + "']").data('delete', 0);
-                            $("#assignfeedback_editpdfplus_widget_admin_button_delaxis").removeClass("disabled");
+                            $('#assignfeedback_editpdfplus_widget_admin_button_delaxis').removeAttr('disabled');
                         }
                     } else {
                         $("#assignfeedback_editpdfplus_widget_admin_workspace").hide();
@@ -218,7 +220,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
              * Init too UI for select element
              */
             AdminPanel.prototype.initToolUI = function () {
-                $(this.selectTool).removeClass("btn-default");
+                //$(this.selectTool).removeClass("btn-default");
                 $(this.selectTool).addClass("btn-primary");
 
                 initSortableToolBar();
@@ -431,14 +433,14 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     $("#editpdlplus_axes_worspace").hide();
                 }
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
-                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
-                $("#editpdlplus_axes").prop('disabled', 'disabled');
+                $("#editpdlplus_axes").prop('disabled', true);
                 var params = {};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisadd', contextid, params)
                         .done(function (html, js) {
-                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_addaxis > .panel-body',
+                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_addaxis',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
@@ -450,15 +452,15 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 $("#message_edit_tool").hide();
                 $("#axistool").hide();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').show();
-                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body').html("");
+                $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                 $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
-                $("#editpdlplus_axes").prop('disabled', 'disabled');
+                $("#editpdlplus_axes").prop('disabled', true);
                 var axeid = $("#editpdlplus_axes option:selected").val();
                 var params = {axeid: axeid};
                 fragment.loadFragment('assignfeedback_editpdfplus', 'axisedit', contextid, params)
                         .done(function (html, js) {
-                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis > .panel-body',
+                            templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_editaxis',
                                     html, js);
                         }.bind(this)).fail(notification.exception);
             };
@@ -472,15 +474,15 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     $("#message_edit_tool").hide();
                     $("#axistool").hide();
                     $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').show();
-                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body').html("");
+                    $('#assignfeedback_editpdfplus_widget_admin_div_delaxis').html("");
                     $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
                     $('#assignfeedback_editpdfplus_widget_admin_toolworkspace').hide();
-                    $("#editpdlplus_axes").prop('disabled', 'disabled');
+                    $("#editpdlplus_axes").prop('disabled', true);
                     var axeid = $("#editpdlplus_axes option:selected").val();
                     var params = {axeid: axeid};
                     fragment.loadFragment('assignfeedback_editpdfplus', 'axisdel', contextid, params)
                             .done(function (html, js) {
-                                templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis > .panel-body',
+                                templates.appendNodeContents('#assignfeedback_editpdfplus_widget_admin_div_delaxis',
                                         html, js);
                             }.bind(this)).fail(notification.exception);
                 }
@@ -543,7 +545,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                             var axeOption = $("#editpdlplus_axes option[value='" + toolbar[0].axeid + "']");
                             axeOption.data('delete', 1);
                             var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
-                            btr.addClass("disabled");
+                            btr.prop("disabled", true);
                             $('#editpdlplus_tool_item').html("");
                             //maj toolbar
                             if (toolbar[0].toolid && toolbar[0].toolid > 0) {
@@ -558,7 +560,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                 var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
                                 axeOption.data('delete', 0);
                                 var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
-                                btr.removeClass("disabled");
+                                btr.removeAttr("disabled");
                             }
                             $(".editpdlplus_tool").on("click", refreshToolView);
                             //maj visu
@@ -586,13 +588,13 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 var selectid = $(this).val();
                 $(".editpdlplus_tool").each(function () {
                     $(this).removeClass("btn-primary");
-                    $(this).removeClass("btn-default");
+                    //$(this).removeClass("btn-default");
                     $(this).css("background-image", "");
                     $(this).css("background-color", "");
                     var enabled = $(this).data('enable');
-                    if (enabled === 1 && $(this).val() !== selectid) {
-                        $(this).addClass("btn-default");
-                    } else if ($(this).val() !== selectid) {
+                    /*if (enabled === 1 && $(this).val() !== selectid) {
+                     $(this).addClass("btn-default");
+                     } else*/ if (enabled !== 1 && $(this).val() !== selectid) {
                         $(this).css("background-image", "none");
                         $(this).css("background-color", "#CCCCCC");
                     }
@@ -711,7 +713,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                             $("#assignfeedback_editpdfplus_widget_admin_button_addtool").click();
                                         });
                                         $("#toolRemove").on("click", function () {
-                                            if (!$(this).hasClass("disabled")) {
+                                            if (!$(this).prop("disabled")) {
                                                 var form = $('#assignfeedback_editpdfplus_edit_tool');
                                                 var data = form.serialize();
                                                 ajax.call([
@@ -742,7 +744,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                                             var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
                                                             axeOption.data('delete', 0);
                                                             var btr = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
-                                                            btr.removeClass("disabled");
+                                                            btr.removeAttr("disabled");
                                                         }
                                                         $('#toolworkspace').html("");
                                                     } else {
@@ -771,7 +773,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
             AdminPanel.prototype.openDivAddTool = function () {
                 $("#message_edit_tool").hide();
                 $('#editpdlplus_tool_item').html("");
-                $('.btn-primary').addClass("btn-default");
+                //$('.btn-primary').addClass("btn-default");
                 $('.editpdlplus_tool').removeClass("btn-primary");
                 var axeid = $("#editpdlplus_axes option:selected").val();
                 var params = {axisid: axeid};
@@ -857,7 +859,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                                         var axeOption = $("#editpdlplus_axes option[value='" + axeid + "']");
                                                         axeOption.data('delete', 1);
                                                         var delAxBt = $("#assignfeedback_editpdfplus_widget_admin_button_delaxis");
-                                                        delAxBt.addClass("disabled");
+                                                        delAxBt.prop("disabled", true);
                                                     } else {
                                                         $("#message_edit_tool").show();
                                                         $("#message_edit_tool").html(toolbar[0].message);

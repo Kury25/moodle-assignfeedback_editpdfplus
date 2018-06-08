@@ -48,41 +48,42 @@ class assignfeedback_editpdfplus_widget implements renderable {
     /** @var string $downloadfilename */
     public $downloadfilename = null;
 
-    /** @var string[] $stampfiles */
-    public $stampfiles = array();
-
     /** @var bool $readonly */
     public $readonly = true;
 
     /** @var tool[] $toolbars */
-    public $toolbars = array();
-    
+    public $customToolbars = array();
+
+    /** @var tool[] $toolbars */
+    public $genericToolbar = array();
+
     /** @var axis[] $toolbars */
     public $axis = array();
 
     /**
      * Constructor
-     * @param int $assignment - Assignment instance id
-     * @param int $userid - The user id we are grading
-     * @param int $attemptnumber - The attempt number we are grading
-     * @param moodle_url $downloadurl - A url to download the current generated pdf.
-     * @param string $downloadfilename - Name of the generated pdf.
-     * @param string[] $stampfiles - The file names of the stamps.
-     * @param bool $readonly - Show the readonly interface (no tools).
-     * @param integer $pagetotal - The total number of pages.
-     * @param tool[] $toolbars - the different tool to display
-     * @param axis[] $axis - the different axis to display
+     * 
+     * @param array $args Parameters in order to initialize a widget. Should contain : 
+     * int $assignment - Assignment instance id
+     * int $userid - The user id we are grading
+     * int $attemptnumber - The attempt number we are grading
+     * moodle_url $downloadurl - A url to download the current generated pdf.
+     * string $downloadfilename - Name of the generated pdf.
+     * bool $readonly - Show the readonly interface (no tools).
+     * tool[] customToolbars - the different tool to display
+     * tool[] genericToolbar - the generics tools
+     * axis[] $axis - the different axis to display
      */
-    public function __construct($assignment, $userid, $attemptnumber, $downloadurl, $downloadfilename, $stampfiles, $readonly, $toolbars, $axis) {
-        $this->assignment = $assignment;
-        $this->userid = $userid;
-        $this->attemptnumber = $attemptnumber;
-        $this->downloadurl = $downloadurl;
-        $this->downloadfilename = $downloadfilename;
-        $this->stampfiles = $stampfiles;
-        $this->readonly = $readonly;
-        $this->toolbars = $toolbars;
-        $this->axis = $axis;
+    public function __construct($args) {
+        $this->assignment = $args["assignment"];
+        $this->userid = $args["userid"];
+        $this->attemptnumber = $args["attemptnumber"];
+        $this->downloadurl = $args["downloadurl"];
+        $this->downloadfilename = $args["downloadfilename"];
+        $this->readonly = $args["readonly"];
+        $this->customToolbars = $args["customToolbars"];
+        $this->genericToolbar = $args["genericToolbar"];
+        $this->axis = $args["axis"];
     }
 
 }

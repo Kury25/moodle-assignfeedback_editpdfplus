@@ -25,7 +25,11 @@
 
 namespace assignfeedback_editpdfplus;
 
-use assignfeedback_editpdfplus\tool;
+use assignfeedback_editpdfplus\bdd\type_tool;
+use assignfeedback_editpdfplus\bdd\tool;
+use assignfeedback_editpdfplus\bdd\tool_generic;
+use assignfeedback_editpdfplus\bdd\axis;
+use assignfeedback_editpdfplus\bdd\annotation;
 
 /**
  * This class performs crud operations on comments and annotations from a page of a response.
@@ -38,6 +42,14 @@ use assignfeedback_editpdfplus\tool;
  */
 class page_editor {
 
+    const BDDTABLEOOL = "assignfeedback_editpp_tool";
+    const BDDTABLETOOLTYPE = "assignfeedback_editpp_typet";
+    const BDDTABLEANNOTATION = "assignfeedback_editpp_annot";
+    const CONTEXTID = "contextid";
+    const GRADEID = "gradeid";
+    const DRAFLIB = "draft";
+    const AXISGENERIC = 0;
+
     /**
      * Get all tools for a page.
      * @param int $contextid
@@ -46,16 +58,28 @@ class page_editor {
      */
     public static function get_tools($contextidlist) {
         global $DB;
+
+        $typeToolsRaw = self::get_typetools(null);
+        $typeTools = array();
+        foreach ($typeToolsRaw as $typeTool) {
+            $typeTools[$typeTool->id] = $typeTool;
+        }
+
         $tools = array();
         if ($contextidlist) {
-            $records = $DB->get_records_list('assignfeedback_editpp_tool', 'contextid', $contextidlist);
+            $records = $DB->get_records_list(self::BDDTABLEOOL, self::CONTEXTID, $contextidlist);
         } else {
-            $records = $DB->get_records('assignfeedback_editpp_tool');
+            $records = $DB->get_records(self::BDDTABLEOOL);
         }
         foreach ($records as $record) {
-            //if ($record->enabled == 1) {
-            array_push($tools, new tool($record));
-            //}
+            $tooltmp = null;
+            if ($record->axis == self::AXISGENERIC) {
+                $tooltmp = new tool_generic($record);
+            } else {
+                $tooltmp = new tool($record);
+            }
+            $tooltmp->typeObject = $typeTools[$tooltmp->type];
+            array_push($tools, $tooltmp);
         }
         usort($tools, function($a, $b) {
             $al = $a->order_tool;
@@ -75,9 +99,12 @@ class page_editor {
      */
     public static function get_tool($toolid) {
         global $DB;
-        $record = $DB->get_record('assignfeedback_editpp_tool', array('id' => $toolid), '*', IGNORE_MISSING);
+        $record = $DB->get_record(self::BDDTABLEOOL, array('id' => $toolid), '*', IGNORE_MISSING);
         if ($record) {
-            return new tool($record);
+            $tool = new tool($record);
+            $typetool = self::get_type_tool($tool->type);
+            $tool->typeObject = $typetool;
+            return $tool;
         }
         return false;
     }
@@ -89,7 +116,7 @@ class page_editor {
      */
     public static function get_type_tool($tooltypeid) {
         global $DB;
-        $record = $DB->get_record('assignfeedback_editpp_typet', array('id' => $tooltypeid));
+        $record = $DB->get_record(self::BDDTABLETOOLTYPE, array('id' => $tooltypeid));
         if ($record) {
             $newTypeTool = new type_tool($record);
             return page_editor::custom_type_tool($newTypeTool);
@@ -106,9 +133,9 @@ class page_editor {
         global $DB;
         $typetools = array();
         if ($contextidlist) {
-            $records = $DB->get_records_list('assignfeedback_editpp_typet', 'contextid', $contextidlist);
+            $records = $DB->get_records_list(self::BDDTABLETOOLTYPE, self::CONTEXTID, $contextidlist);
         } else {
-            $records = $DB->get_records('assignfeedback_editpp_typet');
+            $records = $DB->get_records(self::BDDTABLETOOLTYPE);
         }
         foreach ($records as $record) {
             $newToolType = new type_tool($record);
@@ -126,7 +153,7 @@ class page_editor {
         global $DB;
         $axis = array();
         if ($contextidlist) {
-            $records = $DB->get_records_list('assignfeedback_editpp_axis', 'contextid', $contextidlist);
+            $records = $DB->get_records_list('assignfeedback_editpp_axis', self::CONTEXTID, $contextidlist);
         } else {
             $records = $DB->get_records('assignfeedback_editpp_axis');
         }
@@ -149,17 +176,17 @@ class page_editor {
      * @param int $gradeid
      * @param int $pageno
      * @param bool $draft
-     * @return annotation[]
+     * @return bdd\annotation[]
      */
     public static function get_annotations($gradeid, $pageno, $draft) {
         global $DB;
 
-        $params = array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1);
+        $params = array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1);
         if (!$draft) {
-            $params['draft'] = 0;
+            $params[self::DRAFLIB] = 0;
         }
         $annotations = array();
-        $records = $DB->get_records('assignfeedback_editpp_annot', $params);
+        $records = $DB->get_records(self::BDDTABLEANNOTATION, $params);
         foreach ($records as $record) {
             array_push($annotations, new annotation($record));
         }
@@ -177,7 +204,7 @@ class page_editor {
     public static function set_annotations($gradeid, $pageno, $annotations) {
         global $DB;
 
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'pageno' => $pageno, 'draft' => 1));
+        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1));
         $added = 0;
         $annotationdiv = array();
         foreach ($annotations as $record) {
@@ -223,7 +250,7 @@ class page_editor {
             $record->studentstatus = $recordtmp->studentstatus;
             $record->studentanswer = $recordtmp->studentanswer;
             //debugging($recordtmp->id . ' - ' . $record->id . ' - ' . $old . ' | ' . $recordtmp->studentstatus . ' - ' . $record->studentstatus . ' | ' . $recordtmp->studentanswer . ' - ' . $record->studentanswer);
-            $DB->update_record('assignfeedback_editpp_annot', $record);
+            $DB->update_record(self::BDDTABLEANNOTATION, $record);
             $added++;
         }
 
@@ -238,7 +265,7 @@ class page_editor {
     public static function get_annotation($annotationid) {
         global $DB;
 
-        $record = $DB->get_record('assignfeedback_editpp_annot', array('id' => $annotationid), '*', IGNORE_MISSING);
+        $record = $DB->get_record(self::BDDTABLEANNOTATION, array('id' => $annotationid), '*', IGNORE_MISSING);
         if ($record) {
             return new annotation($record);
         }
@@ -254,9 +281,7 @@ class page_editor {
         global $DB;
 
         // Delete the non-draft annotations and comments.
-        $result = $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
-        $result = $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0)) && $result;
-        return $result;
+        return $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
     }
 
     /**
@@ -268,12 +293,11 @@ class page_editor {
         global $DB;
 
         // Delete the previous non-draft annotations and comments.
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0));
+        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
 
         // Copy all the draft annotations and comments to non-drafts.
         $parentlink = [];
-        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 1));
+        $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
         foreach ($records as $record) {
             $oldid = $record->id;
             unset($record->id);
@@ -282,15 +306,9 @@ class page_editor {
             if ($record->parent_annot > 0) {
                 $record->parent_annot = $parentlink[$record->parent_annot];
             }
-            $newid = $DB->insert_record('assignfeedback_editpp_annot', $record);
+            $newid = $DB->insert_record(self::BDDTABLEANNOTATION, $record);
             $parentlink[$oldid] = $newid;
         }
-        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
-          foreach ($records as $record) {
-          unset($record->id);
-          $record->draft = 0;
-          $DB->insert_record('assignfeedback_editpp_cmnt', $record);
-          } */
 
         return true;
     }
@@ -302,14 +320,11 @@ class page_editor {
      */
     public static function has_annotations_or_comments($gradeid, $includedraft) {
         global $DB;
-        $params = array('gradeid' => $gradeid);
+        $params = array(self::GRADEID => $gradeid);
         if (!$includedraft) {
-            $params['draft'] = 0;
+            $params[self::DRAFLIB] = 0;
         }
-        if ($DB->count_records('assignfeedback_editpp_cmnt', $params)) {
-            return true;
-        }
-        if ($DB->count_records('assignfeedback_editpp_annot', $params)) {
+        if ($DB->count_records(self::BDDTABLEANNOTATION, $params)) {
             return true;
         }
         return false;
@@ -324,22 +339,15 @@ class page_editor {
         global $DB;
 
         // Delete the previous non-draft annotations and comments.
-        $DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 1));
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 1));
+        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
 
         // Copy all the draft annotations and comments to non-drafts.
-        $records = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $gradeid, 'draft' => 0));
+        $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
         foreach ($records as $record) {
             unset($record->id);
             $record->draft = 0;
-            $DB->insert_record('assignfeedback_editpp_annot', $record);
+            $DB->insert_record(self::BDDTABLEANNOTATION, $record);
         }
-        /* $records = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $gradeid, 'draft' => 0));
-          foreach ($records as $record) {
-          unset($record->id);
-          $record->draft = 0;
-          $DB->insert_record('assignfeedback_editpp_annot', $record);
-          } */
 
         return true;
     }
@@ -356,7 +364,7 @@ class page_editor {
         if ($annotation->parent_annot == 0) {
             $annotation->parent_annot = null;
         }
-        return $DB->insert_record('assignfeedback_editpp_annot', $annotation);
+        return $DB->insert_record(self::BDDTABLEANNOTATION, $annotation);
     }
 
     /**
@@ -367,7 +375,7 @@ class page_editor {
     public static function remove_annotation($annotationid) {
         global $DB;
 
-        return $DB->delete_records('assignfeedback_editpp_annot', array('id' => $annotationid));
+        return $DB->delete_records(self::BDDTABLEANNOTATION, array('id' => $annotationid));
     }
 
     /**
@@ -383,24 +391,18 @@ class page_editor {
         global $DB;
 
         // Delete any existing annotations and comments from current user.
-        $DB->delete_records('assignfeedback_editpp_annot', array('gradeid' => $grade->id));
-        //$DB->delete_records('assignfeedback_editpp_cmnt', array('gradeid' => $grade->id));
+        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $grade->id));
         // Get gradeid, annotations and comments from sourceuserid.
         $sourceusergrade = $assignment->get_user_grade($sourceuserid, true, $grade->attemptnumber);
-        $annotations = $DB->get_records('assignfeedback_editpp_annot', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
-        //$comments = $DB->get_records('assignfeedback_editpp_cmnt', array('gradeid' => $sourceusergrade->id, 'draft' => 1));
+        $annotations = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $sourceusergrade->id, self::DRAFLIB => 1));
         $contextid = $assignment->get_context()->id;
         $sourceitemid = $sourceusergrade->id;
 
         // Add annotations and comments to current user to generate feedback file.
         foreach ($annotations as $annotation) {
             $annotation->gradeid = $grade->id;
-            $DB->insert_record('assignfeedback_editpp_annot', $annotation);
+            $DB->insert_record(self::BDDTABLEANNOTATION, $annotation);
         }
-        /* foreach ($comments as $comment) {
-          $comment->gradeid = $grade->id;
-          $DB->insert_record('assignfeedback_editpp_cmnt', $comment);
-          } */
 
         $fs = get_file_storage();
 
@@ -450,9 +452,8 @@ class page_editor {
      */
     public static function delete_draft_content($gradeid) {
         global $DB;
-        $conditions = array('gradeid' => $gradeid, 'draft' => 1);
-        $result = $DB->delete_records('assignfeedback_editpp_annot', $conditions);
-        $result = $result && $DB->delete_records('assignfeedback_editpp_cmnt', $conditions);
+        $conditions = array(self::GRADEID => $gradeid, self::DRAFLIB => 1);
+        $result = $DB->delete_records(self::BDDTABLEANNOTATION, $conditions);
         return $result;
     }
 
@@ -472,117 +473,38 @@ class page_editor {
         global $CFG;
         switch ($newToolType->label) {
             case 'highlightplus':
-                /*if (isset($CFG->highlightplus_configurable) && (intval($CFG->highlightplus_configurable) == 0 || intval($CFG->highlightplus_configurable) == 1)) {
-                    if (intval($CFG->highlightplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                if (isset($CFG->highlightplus_color) && $CFG->highlightplus_color != null && strlen($CFG->highlightplus_color) > 4) {
-                    $newToolType->color = $CFG->highlightplus_color;
-                }
-                if (isset($CFG->highlightplus_cartridge_color) && $CFG->highlightplus_cartridge_color != null && strlen($CFG->highlightplus_cartridge_color) > 4) {
-                    $newToolType->cartridge_color = $CFG->highlightplus_cartridge_color;
-                }
-                if (isset($CFG->highlightplus_cartridge_x) && (intval($CFG->highlightplus_cartridge_x) || $CFG->highlightplus_cartridge_x == '0')) {
-                    $newToolType->cartridge_x = intval($CFG->highlightplus_cartridge_x);
-                }
-                if (isset($CFG->highlightplus_cartridge_y) && (intval($CFG->highlightplus_cartridge_y) || $CFG->highlightplus_cartridge_y == '0')) {
-                    $newToolType->cartridge_y = intval($CFG->highlightplus_cartridge_y);
-                }
+                $newToolType->setColor($CFG->highlightplus_color);
+                $newToolType->setCartridgeColor($CFG->highlightplus_cartridge_color);
+                $newToolType->setCartridgeX($CFG->highlightplus_cartridge_x);
+                $newToolType->setCartridgeY($CFG->highlightplus_cartridge_y);
                 break;
 
             case 'stampplus':
-                /*if (isset($CFG->stampplus_configurable) && (intval($CFG->stampplus_configurable) == 0 || intval($CFG->stampplus_configurable) == 1)) {
-                    if (intval($CFG->stampplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                if (isset($CFG->stampplus_color) && $CFG->stampplus_color != null && strlen($CFG->stampplus_color) > 4) {
-                    $newToolType->color = $CFG->stampplus_color;
-                }
+                $newToolType->setColor($CFG->stampplus_color);
                 break;
 
             case 'frame':
-                /*if (isset($CFG->frame_configurable) && (intval($CFG->frame_configurable) == 0 || intval($CFG->frame_configurable) == 1)) {
-                    if (intval($CFG->frame_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                if (isset($CFG->frame_cartridge_x) && (intval($CFG->frame_cartridge_x) || $CFG->frame_cartridge_x == '0')) {
-                    $newToolType->cartridge_x = intval($CFG->frame_cartridge_x);
-                }
-                if (isset($CFG->frame_cartridge_y) && (intval($CFG->frame_cartridge_y) || $CFG->frame_cartridge_y == '0')) {
-                    $newToolType->cartridge_y = intval($CFG->frame_cartridge_y);
-                }
+                $newToolType->setCartridgeX($CFG->frame_cartridge_x);
+                $newToolType->setCartridgeY($CFG->frame_cartridge_y);
                 break;
 
             case 'verticalline':
-                /*if (isset($CFG->verticalline_configurable) && (intval($CFG->verticalline_configurable) == 0 || intval($CFG->verticalline_configurable) == 1)) {
-                    if (intval($CFG->verticalline_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                if (isset($CFG->verticalline_color) && $CFG->verticalline_color != null && strlen($CFG->verticalline_color) > 4) {
-                    $newToolType->color = $CFG->verticalline_color;
-                }
-                if (isset($CFG->verticalline_cartridge_color) && $CFG->verticalline_cartridge_color != null && strlen($CFG->verticalline_cartridge_color) > 4) {
-                    $newToolType->cartridge_color = $CFG->verticalline_cartridge_color;
-                }
-                if (isset($CFG->verticalline_cartridge_x) && (intval($CFG->verticalline_cartridge_x) || $CFG->verticalline_cartridge_x == '0')) {
-                    $newToolType->cartridge_x = intval($CFG->verticalline_cartridge_x);
-                }
-                if (isset($CFG->verticalline_cartridge_y) && (intval($CFG->verticalline_cartridge_y) || $CFG->verticalline_cartridge_y == '0')) {
-                    $newToolType->cartridge_y = intval($CFG->verticalline_cartridge_y);
-                }
+                $newToolType->setColor($CFG->verticalline_color);
+                $newToolType->setCartridgeColor($CFG->verticalline_cartridge_color);
+                $newToolType->setCartridgeX($CFG->verticalline_cartridge_x);
+                $newToolType->setCartridgeY($CFG->verticalline_cartridge_y);
                 break;
 
             case 'stampcomment':
-                /*if (isset($CFG->stampcomment_configurable) && (intval($CFG->stampcomment_configurable) == 0 || intval($CFG->stampcomment_configurable) == 1)) {
-                    if (intval($CFG->stampcomment_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                /*if (isset($CFG->stampcomment_color) && $CFG->stampcomment_color != null && strlen($CFG->stampcomment_color) > 4) {
-                    $newToolType->color = $CFG->stampcomment_color;
-                }*/
-                if (isset($CFG->stampcomment_cartridge_color) && $CFG->stampcomment_cartridge_color != null && strlen($CFG->stampcomment_cartridge_color) > 4) {
-                    $newToolType->cartridge_color = $CFG->stampcomment_cartridge_color;
-                }
-                if (isset($CFG->stampcomment_cartridge_x) && (intval($CFG->stampcomment_cartridge_x) || $CFG->stampcomment_cartridge_x == '0')) {
-                    $newToolType->cartridge_x = intval($CFG->stampcomment_cartridge_x);
-                }
-                if (isset($CFG->stampcomment_cartridge_y) && (intval($CFG->stampcomment_cartridge_y) || $CFG->stampcomment_cartridge_y == '0')) {
-                    $newToolType->cartridge_y = intval($CFG->stampcomment_cartridge_y);
-                }
+                $newToolType->setCartridgeColor($CFG->stampcomment_cartridge_color);
+                $newToolType->setCartridgeX($CFG->stampcomment_cartridge_x);
+                $newToolType->setCartridgeY($CFG->stampcomment_cartridge_y);
                 break;
 
             case 'commentplus':
-                /*if (isset($CFG->commentplus_configurable) && (intval($CFG->commentplus_configurable) == 0 || intval($CFG->commentplus_configurable) == 1)) {
-                    if (intval($CFG->commentplus_configurable) == 0) {
-                        $newToolType->configurable = 1;
-                    } else {
-                        $newToolType->configurable = 0;
-                    }
-                }*/
-                if (isset($CFG->commentplus_cartridge_color) && $CFG->commentplus_cartridge_color != null && strlen($CFG->commentplus_cartridge_color) > 4) {
-                    $newToolType->cartridge_color = $CFG->commentplus_cartridge_color;
-                }
-                if (isset($CFG->commentplus_cartridge_x) && (intval($CFG->commentplus_cartridge_x) || $CFG->commentplus_cartridge_x == '0')) {
-                    $newToolType->cartridge_x = intval($CFG->commentplus_cartridge_x);
-                }
-                if (isset($CFG->commentplus_cartridge_y) && (intval($CFG->commentplus_cartridge_y) || $CFG->commentplus_cartridge_y == '0')) {
-                    $newToolType->cartridge_y = intval($CFG->commentplus_cartridge_y);
-                }
+                $newToolType->setCartridgeColor($CFG->commentplus_cartridge_color);
+                $newToolType->setCartridgeX($CFG->commentplus_cartridge_x);
+                $newToolType->setCartridgeY($CFG->commentplus_cartridge_y);
                 break;
 
             default:

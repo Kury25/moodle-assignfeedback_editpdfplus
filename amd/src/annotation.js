@@ -341,16 +341,15 @@ define(['jquery', './global'],
                 var diveditiondisplay = $("#" + this.divcartridge + "_edit");
                 var propositions = this.tooltype.texts;
                 if (propositions && propositions.length > 0) {
-                    var divproposition = "<div id='" + this.divcartridge + "_edit_propositions'></div>";
-                    diveditiondisplay.append(divproposition);
-                    var divpropositiondisplay = $("#" + this.divcartridge + "_edit_propositions");
+                    var divproposition = "<div class='btn-group-vertical aepp-toolbar-vertical'></div>";
+                    var divpropositiondisplay = $(divproposition);
                     var propositionarray = propositions.split('","');
                     for (var i = 0; i < propositionarray.length; i++) {
-                        var buttontmp = "<button class='btn btn-default";
+                        var buttontmp = "<button class='btn btn-outline-dark'";
                         if (this.adminDemo === 1) {
                             buttontmp += ' disabled';
                         }
-                        buttontmp += "' type='button' style='width:100%;font-size: x-small;'>"
+                        buttontmp += " type='button'>"
                                 + propositionarray[i].replace(/"/g, "")
                                 + "</button>";
                         divpropositiondisplay.append(buttontmp);
@@ -359,6 +358,7 @@ define(['jquery', './global'],
                         }
                         divpropositiondisplay.append("<br/>");
                     }
+                    diveditiondisplay.append(divpropositiondisplay);
                 }
                 return diveditiondisplay;
             };
@@ -387,24 +387,35 @@ define(['jquery', './global'],
                 if (canevas) {
                     divconteneurdisplay.append(inputonof);
                 }
-                //var readonly = this.editor.get('readonly');
                 divconteneurdisplay.append(this.get_input_question());
-                //readonly = this.editor.get('readonly');
-                //if (!readonly) {
-                this.get_button_visibility_left(divconteneurdisplay);
-                this.get_button_visibility_right(divconteneurdisplay);
-                this.get_button_save(divconteneurdisplay);
-                this.get_button_cancel(divconteneurdisplay);
-                if (this.tooltype.reply === 1) {
-                    this.get_button_question(divconteneurdisplay);
-                }
-                this.get_button_remove(divconteneurdisplay);
-                //} else {
-                //    divconteneurdisplay.append(this.get_button_student_status());
-                //}
 
                 return divconteneurdisplay;
             };
+
+            /**
+             * get the html node for toolbar on annotation
+             * @return node
+             */
+            Annotation.prototype.get_toolbar = function () {
+                var divtoolbar = $("<div id='"
+                        + this.divcartridge
+                        + "_toolbar' class='btn-group btn-group-sm aepp-toolbar'></div>");
+                //var readonly = this.editor.get('readonly');
+                //if (!readonly) {
+                divtoolbar.append(this.get_button_visibility_left());
+                divtoolbar.append(this.get_button_visibility_right());
+                divtoolbar.append(this.get_button_save());
+                divtoolbar.append(this.get_button_cancel());
+                if (this.tooltype.reply === 1) {
+                    divtoolbar.append(this.get_button_question());
+                }
+                divtoolbar.append(this.get_button_remove());
+                //} else {
+                //    divtoolbar.append(this.get_button_student_status());
+                //}
+                return divtoolbar;
+            }
+            ;
 
             /**
              * get the html node for the hidden input to keep information about question state
@@ -423,20 +434,17 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_visibility_right = function (canevas) {
+            Annotation.prototype.get_button_visibility_right = function () {
                 var buttonvisibility = "<button id='"
                         + this.divcartridge
-                        + "_buttonedit_right' class='btn btn-default";
+                        + "_buttonedit_right' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttonvisibility += ' disabled';
                 }
-                buttonvisibility += "' type='button'>";
+                buttonvisibility += " type='button'>";
                 buttonvisibility += "<i class='fa fa-arrow-right' aria-hidden='true'></i>";
                 buttonvisibility += "</button>";
-                if (canevas) {
-                    canevas.append(buttonvisibility);
-                }
-                var buttonvisibilitydisplay = $('#' + this.divcartridge + "_buttonedit_right");
+                var buttonvisibilitydisplay = $(buttonvisibility);
                 if (this.adminDemo < 1) {
                     //buttonvisibilitydisplay.on('click', this.change_visibility_annot('r'));
                 }
@@ -448,20 +456,17 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_visibility_left = function (canevas) {
+            Annotation.prototype.get_button_visibility_left = function () {
                 var buttonvisibility = "<button id='"
                         + this.divcartridge
-                        + "_buttonedit_left' class='btn btn-default";
+                        + "_buttonedit_left' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttonvisibility += ' disabled';
                 }
-                buttonvisibility += "' type='button'>";
+                buttonvisibility += " type='button'>";
                 buttonvisibility += "<i class='fa fa-arrow-left' aria-hidden='true'></i>";
                 buttonvisibility += "</button>";
-                if (canevas) {
-                    canevas.append(buttonvisibility);
-                }
-                var buttonvisibilitydisplay = $('#' + this.divcartridge + "_buttonedit_left");
+                var buttonvisibilitydisplay = $(buttonvisibility);
                 if (this.adminDemo < 1) {
                     //buttonvisibilitydisplay.on('click', this.change_visibility_annot('l'));
                 }
@@ -473,20 +478,17 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_save = function (canevas) {
+            Annotation.prototype.get_button_save = function () {
                 var buttonsave = "<button id='"
                         + this.divcartridge
-                        + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-default";
+                        + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttonsave += ' disabled';
                 }
-                buttonsave += "' type='button'>"
+                buttonsave += " type='button'>"
                         + "<i class='fa fa-check' aria-hidden='true'></i>"
                         + "</button>";
-                if (canevas) {
-                    canevas.append(buttonsave);
-                }
-                var buttonsavedisplay = $('#' + this.divcartridge + "_buttonsave");
+                var buttonsavedisplay = $(buttonsave);
                 if (this.adminDemo < 1) {
                     buttonsavedisplay.on('click', this.save_annot);
                 }
@@ -497,20 +499,17 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_cancel = function (canevas) {
+            Annotation.prototype.get_button_cancel = function () {
                 var buttoncancel = "<button id='"
                         + this.divcartridge
-                        + "_buttoncancel' style='display:none;' class='btn btn-default";
+                        + "_buttoncancel' style='display:none;' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttoncancel += ' disabled';
                 }
-                buttoncancel += "' type='button'>"
+                buttoncancel += " type='button'>"
                         + "<i class='fa fa-undo' aria-hidden='true'></i>"
                         + "</button>";
-                if (canevas) {
-                    canevas.append(buttoncancel);
-                }
-                var buttoncanceldisplay = $('#' + this.divcartridge + "_buttoncancel");
+                var buttoncanceldisplay = $(buttoncancel);
                 if (this.adminDemo < 1) {
                     //buttoncanceldisplay.on('click', this.cancel_edit, this);
                 }
@@ -522,23 +521,20 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_question = function (canevas) {
+            Annotation.prototype.get_button_question = function () {
                 var buttonquestion = "<button id='"
                         + this.divcartridge
-                        + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default";
+                        + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttonquestion += ' disabled';
                 }
-                buttonquestion += "' type='button'>"
+                buttonquestion += " type='button'>"
                         + '<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
                         + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
                         + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
                         + '</span>'
                         + "</button>";
-                if (canevas) {
-                    canevas.append(buttonquestion);
-                }
-                var buttonquestiondisplay = $('#' + this.divcartridge + "_buttonquestion");
+                var buttonquestiondisplay = $(buttonquestion);
                 if (this.adminDemo < 1) {
                     //buttonquestiondisplay.on('click', this.change_question_status, this);
                 }
@@ -550,20 +546,17 @@ define(['jquery', './global'],
              * @param {JQuery Entity} canevas
              * @return {JQuery Entity} node
              */
-            Annotation.prototype.get_button_remove = function (canevas) {
+            Annotation.prototype.get_button_remove = function () {
                 var buttontrash = "<button id='"
                         + this.divcartridge
-                        + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default";
+                        + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark'";
                 if (this.adminDemo === 1) {
                     buttontrash += ' disabled';
                 }
-                buttontrash += "' type='button'>"
+                buttontrash += " type='button'>"
                         + "<i class='fa fa-trash' aria-hidden='true'></i>"
                         + "</button>";
-                if (canevas) {
-                    canevas.append(buttontrash);
-                }
-                var buttontrashdisplay = $('#' + this.divcartridge + "_buttonremove");
+                var buttontrashdisplay = $(buttontrash);
                 if (this.adminDemo < 1) {
                     //buttontrashdisplay.on('click', this.remove_by_trash, this);
                 }

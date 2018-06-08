@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -21,6 +22,7 @@
  * @copyright  2016 Damyon Wiese
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace assignfeedback_editpdfplus\event;
 
 /**
@@ -30,6 +32,10 @@ namespace assignfeedback_editpdfplus\event;
  */
 class observer {
 
+    const BDDTABLEQUEUE = "assignfeedback_editpp_queue";
+    const SUBMISSIONID = "submissionid";
+    const SUBMISSIONATTEMPT = "submissionattempt";
+
     /**
      * Listen to events and queue the submission for processing.
      * @param \mod_assign\event\submission_created $event
@@ -37,14 +43,14 @@ class observer {
     public static function submission_created(\mod_assign\event\submission_created $event) {
         global $DB;
 
-        $submissionid = $event->other['submissionid'];
-        $submissionattempt = $event->other['submissionattempt'];
-        $fields = array( 'submissionid' => $submissionid, 'submissionattempt' => $submissionattempt);
+        $submissionid = $event->other[self::SUBMISSIONID];
+        $submissionattempt = $event->other[self::SUBMISSIONATTEMPT];
+        $fields = array(self::SUBMISSIONID => $submissionid, self::SUBMISSIONATTEMPT => $submissionattempt);
         $record = (object) $fields;
 
-        $exists = $DB->get_records('assignfeedback_editpp_queue', $fields);
+        $exists = $DB->get_records(self::BDDTABLEQUEUE, $fields);
         if (!$exists) {
-            $DB->insert_record('assignfeedback_editpp_queue', $record);
+            $DB->insert_record(self::BDDTABLEQUEUE, $record);
         }
     }
 
@@ -55,14 +61,15 @@ class observer {
     public static function submission_updated(\mod_assign\event\submission_updated $event) {
         global $DB;
 
-        $submissionid = $event->other['submissionid'];
-        $submissionattempt = $event->other['submissionattempt'];
-        $fields = array( 'submissionid' => $submissionid, 'submissionattempt' => $submissionattempt);
+        $submissionid = $event->other[self::SUBMISSIONID];
+        $submissionattempt = $event->other[self::SUBMISSIONATTEMPT];
+        $fields = array(self::SUBMISSIONID => $submissionid, self::SUBMISSIONATTEMPT => $submissionattempt);
         $record = (object) $fields;
 
-        $exists = $DB->get_records('assignfeedback_editpp_queue', $fields);
+        $exists = $DB->get_records(self::BDDTABLEQUEUE, $fields);
         if (!$exists) {
-            $DB->insert_record('assignfeedback_editpp_queue', $record);
+            $DB->insert_record(self::BDDTABLEQUEUE, $record);
         }
     }
+
 }

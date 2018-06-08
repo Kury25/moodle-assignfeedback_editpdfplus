@@ -37,6 +37,8 @@ use \assignfeedback_editpdfplus\page_editor;
  */
 class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
+    const AXISGENERIC = 0;
+
     /** @var boolean|null $enabledcache Cached lookup of the is_available function */
     private $enabledcache = null;
 
@@ -66,12 +68,9 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
         $feedbackfile = document_services::get_feedback_document($this->assignment->get_instance()->id, $userid, $attempt);
 
-        $stampfiles = array();
-        $fs = get_file_storage();
-        $syscontext = context_system::instance();
-
         // get the costum toolbars
         $toolbars = array();
+        $toolbarGeneric = array();
         $coursecontext = context::instance_by_id($this->assignment->get_context()->id);
         $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
         $axis = array();
@@ -85,38 +84,15 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         foreach ($axis as $ax) {
             $toolbars[$ax->id]['axeid'] = $ax->id;
             $toolbars[$ax->id]['label'] = $ax->label;
-            foreach ($tools as $tool) {
-                if ($tool->axis == $ax->id) {
-                    $toolbars[$ax->id]['tool'][$tool->id] = $tool;
-                }
-            }
         }
-
-        // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($syscontext->id, 'assignfeedback_editpdfplus', 'stamps', 0, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $file->get_filename();
-                if ($filename !== '.') {
-
-                    $existingfile = $fs->get_file($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename());
-                    if (!$existingfile) {
-                        $newrecord = new stdClass();
-                        $newrecord->contextid = $this->assignment->get_context()->id;
-                        $newrecord->itemid = $grade->id;
-                        $fs->create_file_from_storedfile($newrecord, $file);
-                    }
-                }
+        foreach ($tools as $tool) {
+            if (!$tool->enabled) {
+                continue;
             }
-        }
-
-        // Now get the full list of stamp files for this instance.
-        if ($files = $fs->get_area_files($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $file->get_filename();
-                if ($filename !== '.') {
-                    $url = moodle_url::make_pluginfile_url($this->assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, '/', $file->get_filename(), false);
-                    array_push($stampfiles, $url->out());
-                }
+            if ($tool->axis == self::AXISGENERIC) {
+                $toolbarGeneric[$tool->id] = $tool;
+            } else if (isset($toolbars[$tool->axis])) {
+                $toolbars[$tool->axis]['tool'][$tool->id] = $tool;
             }
         }
 
@@ -127,8 +103,17 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $filename = $feedbackfile->get_filename();
         }
 
-        $widget = new assignfeedback_editpdfplus_widget($this->assignment->get_instance()->id, $userid, $attempt, $url, $filename, $stampfiles, $readonly, $toolbars, $axis);
-        return $widget;
+        return new assignfeedback_editpdfplus_widget(array(
+            'assignment' => $this->assignment->get_instance()->id,
+            'userid' => $userid,
+            'attemptnumber' => $attempt,
+            'downloadurl' => $url,
+            'downloadfilename' => $filename,
+            'readonly' => $readonly,
+            'customToolbars' => $toolbars,
+            'genericToolbar' => $toolbarGeneric,
+            'axis' => $axis
+        ));
     }
 
     /**

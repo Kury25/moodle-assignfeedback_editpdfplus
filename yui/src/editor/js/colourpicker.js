@@ -1,3 +1,5 @@
+/* global Y, M */
+
 var COLOURPICKER_NAME = "Colourpicker",
         COLOURPICKER;
 
@@ -38,9 +40,6 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             var button, listitem, title;
 
             title = M.util.get_string(colour, 'assignfeedback_editpdfplus');
-            //iconname = this.get('iconprefix') + colour;
-            //img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
-            //button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
             if (colour === "white" || colour === "yellowlemon") {
                 iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
                         + '<i class="fa fa-square fa-stack-2x" style="color:#E3E3E3;"></i>'
@@ -57,7 +56,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
                         + '</span>');
             }
             iconGoutte.setAttribute('data-colour', colour);
-            button = Y.Node.create('<button class="btn btn-default btn-sm" type="button"></button>');
+            button = Y.Node.create('<button class="btn btn-sm" type="button"></button>');
             button.append(iconGoutte);
             button.setAttribute('data-colour', colour);
             button.setAttribute('data-rgb', rgb);

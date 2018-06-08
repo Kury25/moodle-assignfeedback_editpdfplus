@@ -37,48 +37,123 @@ use \assignfeedback_editpdfplus\admin_editor;
 
 class assignfeedback_editpdfplus_external extends external_api {
 
+    const PLUGINNAME = "assignfeedback_editpdfplus";
+    const DATAJSON = 'jsonformdata';
+    const MESSAGELIB = 'message';
+    const COURSELIB = "course";
+    const COURSEID = "courseid";
+    const AXEID = "axeid";
+    const AXEIDDESC = "Axe ID";
+    const AXELIB = "axelabel";
+    const AXELIBDESC = "Axe label";
+    const TOOLID = "toolid";
+    const TOOLIDDESC = "Tool ID";
+    const TOOLLIBDESC = "Tool label";
+    const TOOLTYPE = "typetool";
+    const TOOLTYPEDESC = "Type of tool";
+    const TOOLSELECTED = "selecttool";
+    const BOUTONLIBTOOL = "button";
+    const ENABLETOOL = "enable";
+    const ENABLETOOLDESC = "Tool is enabled";
+
     /**
-     * Returns description of method parameters
-     * @return external_function_parameters
+     * Returns description of method parameters for general calling
+     * @return \external_function_parameters
      */
-    public static function submit_axis_form_parameters() {
+    public static function submit_generic_form_parameters() {
+        $message = 'The data from the grading form, encoded as a json array';
         return new external_function_parameters(
                 array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
+            self::DATAJSON => new external_value(PARAM_RAW, $message)
                 )
         );
     }
 
     /**
-     * Submit axis form for adding or edditing
-     * @global $USER
-     * @global $PAGE
+     * 
+     * Form return generic structure
+     * @return \external_single_structure
+     */
+    public static function submit_generic_form_returns() {
+        return new external_single_structure(
+                array(
+            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
+                )
+        );
+    }
+
+    /**
+     * Form return tool structure
+     * @return \external_multiple_structure
+     */
+    public static function submit_tool_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                array(
+            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
+            self::TOOLSELECTED => new external_value(PARAM_INT, self::TOOLIDDESC),
+            self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
+            self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC),
+            self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
+            self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL),
+            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
+                )
+                )
+        );
+    }
+
+    /**
+     * Extract and parse json data string into an array
+     * @param external_function_parameters $externalFunctionParameter
+     * @param String $jsonformdata
+     * @return array decoded data
+     */
+    public static function getParseData($externalFunctionParameter, $jsonformdata) {
+        $params = self::validate_parameters($externalFunctionParameter, array(
+                    self::DATAJSON => $jsonformdata
+        ));
+        $serialiseddata = json_decode($params[self::DATAJSON]);
+        $data = array();
+        parse_str($serialiseddata, $data);
+        return $data;
+    }
+
+    /**
+     * Set Page context from the course id given. It returns the context found.
      * @global $DB
+     * @global $PAGE
+     * @param int $courseid Current course id
+     * @return context course's context 
+     */
+    public static function setPageContext($courseid) {
+        global $DB, $PAGE;
+        $course = $DB->get_record(self::COURSELIB, array('id' => $courseid), '*', MUST_EXIST);
+        $context = context_course::instance($course->id, MUST_EXIST);
+        $PAGE->set_context($context);
+        return $context;
+    }
+
+    public static function getMessageError() {
+        return array(self::MESSAGELIB => get_string("admin_messageko", self::PLUGINNAME));
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_axis_form_parameters() {
+        return self::submit_generic_form_parameters();
+    }
+
+    /**
+     * Submit axis form for adding or edditing
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_axis_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
+        $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
+        $context = self::setPageContext($data[self::COURSEID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -91,16 +166,12 @@ class assignfeedback_editpdfplus_external extends external_api {
             if ($validateddata->axeid) {
                 admin_editor::edit_axis($validateddata->axeid, $validateddata->label);
                 $axeid = $validateddata->axeid;
-                return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
             } else {
                 $axeid = admin_editor::add_axis($validateddata->label, $context->id);
-                return array(array('axeid' => $axeid, 'axelabel' => $validateddata->label));
             }
-        } else {
-            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+            return array(array(self::AXEID => $axeid, self::AXELIB => $validateddata->label));
         }
-
-        return $warnings;
+        return array(self::getMessageError());
     }
 
     /**
@@ -111,9 +182,9 @@ class assignfeedback_editpdfplus_external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                 array(
-            'axeid' => new external_value(PARAM_INT, 'axis id'),
-            'axelabel' => new external_value(PARAM_TEXT, 'axis label'),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
+            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
+            self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC),
+            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
                 )
                 )
         );
@@ -124,41 +195,18 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_axis_del_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit axis form for deleting
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_axis_del_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
+        $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-        $serialiseddata = json_decode($params['jsonformdata']);
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
+        self::setPageContext($data[self::COURSEID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -167,17 +215,13 @@ class assignfeedback_editpdfplus_external extends external_api {
         $mform = new axis_del_form(null, $formparams, 'post', '', null, true, $data);
         $validateddata = $mform->get_data();
 
-        if ($validateddata) {
-            if ($validateddata->axeid && admin_editor::del_axis($validateddata->axeid)) {
-                $message = "1";
-                return array(array('message' => $message));
-            }
-        } else {
-            $message = get_string('admindeltool_messageko', 'assignfeedback_editpdfplus');
-            $warnings[] = array('message' => $message);
+        if ($validateddata && $validateddata->axeid && admin_editor::del_axis($validateddata->axeid)) {
+            $message = "1";
+            return array(array(self::MESSAGELIB => $message));
         }
-
-
+        $warnings = array();
+        $message = get_string('admindeltool_messageko', self::PLUGINNAME);
+        $warnings[] = array(self::MESSAGELIB => $message);
         return $warnings;
     }
 
@@ -187,12 +231,41 @@ class assignfeedback_editpdfplus_external extends external_api {
      */
     public static function submit_axis_del_form_returns() {
         return new external_multiple_structure(
-                new external_single_structure(
-                array(
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
-                )
-                )
+                self::submit_generic_form_returns()
         );
+    }
+
+    /**
+     * Submit tool form for adding or edditing
+     * @param String $jsonformdata json tool
+     * @param String $mode add or edit the tool
+     * @return array
+     */
+    public static function submit_tool_form($jsonformdata, $mode) {
+        $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
+
+        $context = self::setPageContext($data[self::COURSEID]);
+
+        $customdata = (object) $data;
+
+        $sessionkey = sesskey();
+        if ($sessionkey == $customdata->sesskey && $mode) {
+            $tool = null;
+            if ($mode == "add") {
+                $tool = admin_editor::add_tool($customdata, $context->id);
+            } elseif ($mode == "edit") {
+                $tool = admin_editor::edit_tool($customdata);
+            }
+            if ($tool) {
+                $tools = admin_editor::get_tools_by_axis($tool->axis);
+                $res = array();
+                foreach ($tools as $toolTmp) {
+                    $res[] = array(self::AXEID => $tool->axis, self::TOOLSELECTED => $tool->id, self::ENABLETOOL => $toolTmp->enabled, self::TOOLID => $toolTmp->id, self::TOOLTYPE => $toolTmp->type, self::BOUTONLIBTOOL => $toolTmp->label, self::MESSAGELIB => '');
+                }
+                return $res;
+            }
+        }
+        return array(self::getMessageError());
     }
 
     /**
@@ -200,65 +273,16 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_tool_edit_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit tool form for edditing
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_tool_edit_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
-
-        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
-
-        $customdata = (object) $data;
-        //$formparams = array($customdata);
-
-        $sessionkey = sesskey();
-        if ($sessionkey == $customdata->sesskey && $customdata->toolid) {
-            $tool = admin_editor::edit_tool($customdata);
-            if ($tool) {
-                $tools = admin_editor::get_tools_by_axis($tool->axis);
-                $res = array();
-                foreach ($tools as $toolTmp) {
-                    $res[] = array('axeid' => $tool->axis, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
-                }
-                return $res;
-            } else {
-                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
-            }
-        } else {
-            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
-        }
-
-        return $warnings;
+        return self::submit_tool_form($jsonformdata, "edit");
     }
 
     /**
@@ -266,19 +290,7 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return \external_multiple_structure
      */
     public static function submit_tool_edit_form_returns() {
-        return new external_multiple_structure(
-                new external_single_structure(
-                array(
-            'axeid' => new external_value(PARAM_INT, 'axe id'),
-            'selecttool' => new external_value(PARAM_INT, 'tool id'),
-            'enable' => new external_value(PARAM_INT, 'tool enable'),
-            'toolid' => new external_value(PARAM_INT, 'tool id'),
-            'typetool' => new external_value(PARAM_INT, 'tool type'),
-            'button' => new external_value(PARAM_TEXT, 'tool label'),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
-                )
-                )
-        );
+        return self::submit_tool_form_returns();
     }
 
     /**
@@ -286,64 +298,16 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_tool_add_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit tool form for adding
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_tool_add_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
-
-        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
-
-        $customdata = (object) $data;
-
-        $sessionkey = sesskey();
-        if ($sessionkey == $customdata->sesskey) {
-            $tool = admin_editor::add_tool($customdata, $context->id);
-            if ($tool) {
-                $tools = admin_editor::get_tools_by_axis($tool->axis);
-                $res = array();
-                foreach ($tools as $toolTmp) {
-                    $res[] = array('axeid' => $tool->axis, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
-                }
-                return $res;
-            } else {
-                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
-            }
-        } else {
-            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
-        }
-
-        return $warnings;
+        return self::submit_tool_form($jsonformdata, "add");
     }
 
     /**
@@ -351,19 +315,7 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return \external_multiple_structure
      */
     public static function submit_tool_add_form_returns() {
-        return new external_multiple_structure(
-                new external_single_structure(
-                array(
-            'axeid' => new external_value(PARAM_INT, 'axe id'),
-            'selecttool' => new external_value(PARAM_INT, 'tool id'),
-            'enable' => new external_value(PARAM_INT, 'tool enable'),
-            'toolid' => new external_value(PARAM_INT, 'tool id'),
-            'typetool' => new external_value(PARAM_INT, 'tool type'),
-            'button' => new external_value(PARAM_TEXT, 'tool label'),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
-                )
-                )
-        );
+        return self::submit_tool_form_returns();
     }
 
     /**
@@ -371,43 +323,18 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_tool_del_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit tool form for deleting
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_tool_del_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
+        $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $params = self::validate_parameters(self::submit_axis_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
+        $context = self::setPageContext($data[self::COURSEID]);
 
         $customdata = (object) $data;
 
@@ -419,20 +346,15 @@ class assignfeedback_editpdfplus_external extends external_api {
                 $tools = admin_editor::get_tools_by_axis($axisid);
                 if (sizeof($tools) > 0) {
                     foreach ($tools as $toolTmp) {
-                        $res[] = array('axeid' => $axisid, 'selecttool' => $tool->id, 'enable' => $toolTmp->enabled, 'toolid' => $toolTmp->id, 'typetool' => $toolTmp->type, 'button' => $toolTmp->label, 'message' => '');
+                        $res[] = array(self::AXEID => $axisid, self::TOOLSELECTED => -1, self::ENABLETOOL => $toolTmp->enabled, self::TOOLID => $toolTmp->id, self::TOOLTYPE => $toolTmp->type, self::BOUTONLIBTOOL => $toolTmp->label, self::MESSAGELIB => '');
                     }
                 } else {
-                    $res[] = array('axeid' => $axisid, 'selecttool' => -1, 'toolid' => -1, 'message' => '1');
+                    $res[] = array(self::AXEID => $axisid, self::TOOLSELECTED => -1, self::TOOLID => -1, self::MESSAGELIB => '1');
                 }
                 return $res;
-            } else {
-                $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
             }
-        } else {
-            $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
         }
-
-        return $warnings;
+        return array(self::getMessageError());
     }
 
     /**
@@ -440,19 +362,7 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return \external_multiple_structure
      */
     public static function submit_tool_del_form_returns() {
-        return new external_multiple_structure(
-                new external_single_structure(
-                array(
-            'axeid' => new external_value(PARAM_INT, 'axe id'),
-            'selecttool' => new external_value(PARAM_INT, 'tool id'),
-            'enable' => new external_value(PARAM_INT, 'tool enable', VALUE_OPTIONAL),
-            'toolid' => new external_value(PARAM_INT, 'tool id'),
-            'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
-            'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL),
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
-                )
-                )
-        );
+        return self::submit_tool_form_returns();
     }
 
     /**
@@ -460,43 +370,19 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_axis_import_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit axis form for importing
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_axis_import_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
 
-        $params = self::validate_parameters(self::submit_axis_import_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
+        $data = self::getParseData(self::submit_axis_import_form_parameters(), $jsonformdata);
 
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
+        $context = self::setPageContext($data[self::COURSEID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -517,18 +403,16 @@ class assignfeedback_editpdfplus_external extends external_api {
                 $toolsNew = admin_editor::get_tools_by_axis($axeNew);
                 if (sizeof($toolsNew) > 0) {
                     foreach ($toolsNew as $tool) {
-                        $res[] = array('axeid' => $axeNew, 'axelabel' => $axeToImport->label, 'message' => "", 'enable' => $tool->enabled, 'toolid' => $tool->id, 'typetool' => $tool->type, 'button' => $tool->label, 'message' => '');
+                        $res[] = array(self::AXEID => $axeNew, self::AXELIB => $axeToImport->label, self::MESSAGELIB => "", self::ENABLETOOL => $tool->enabled, self::TOOLID => $tool->id, self::TOOLTYPE => $tool->type, self::BOUTONLIBTOOL => $tool->label, self::MESSAGELIB => '');
                     }
                 } else {
-                    $res = array(array('axeid' => $axeNew, 'axelabel' => $axeToImport->label, 'message' => ""));
+                    $res = array(array(self::AXEID => $axeNew, self::AXELIB => $axeToImport->label, self::MESSAGELIB => ""));
                 }
 
                 return $res;
             }
         }
-
-        $warnings[] = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
-        return $warnings;
+        return array(self::getMessageError());
     }
 
     /**
@@ -539,13 +423,13 @@ class assignfeedback_editpdfplus_external extends external_api {
         return new external_multiple_structure(
                 new external_single_structure(
                 array(
-            'axeid' => new external_value(PARAM_INT, 'axis id', VALUE_OPTIONAL),
-            'axelabel' => new external_value(PARAM_TEXT, 'axis label', VALUE_OPTIONAL),
-            'message' => new external_value(PARAM_TEXT, 'message'),
-            'enable' => new external_value(PARAM_INT, 'tool enable', VALUE_OPTIONAL),
-            'toolid' => new external_value(PARAM_INT, 'tool id', VALUE_OPTIONAL),
-            'typetool' => new external_value(PARAM_INT, 'tool type', VALUE_OPTIONAL),
-            'button' => new external_value(PARAM_TEXT, 'tool label', VALUE_OPTIONAL)
+            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC, VALUE_OPTIONAL),
+            self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC, VALUE_OPTIONAL),
+            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB),
+            self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
+            self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC, VALUE_OPTIONAL),
+            self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
+            self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL)
                 )
                 )
         );
@@ -556,55 +440,27 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return external_function_parameters
      */
     public static function submit_tool_order_form_parameters() {
-        return new external_function_parameters(
-                array(
-            'jsonformdata' => new external_value(PARAM_RAW, 'The data from the grading form, encoded as a json array')
-                )
-        );
+        return self::submit_generic_form_parameters();
     }
 
     /**
      * Submit tool form for changing order
-     * @global $USER
-     * @global $PAGE
-     * @global $DB
      * @param String $jsonformdata
      * @return array
      */
     public static function submit_tool_order_form($jsonformdata) {
-        global $USER, $PAGE, $DB;
+        $data = self::getParseData(self::submit_tool_order_form_parameters(), $jsonformdata);
 
-        $params = self::validate_parameters(self::submit_tool_order_form_parameters(), array(
-                    'jsonformdata' => $jsonformdata
-        ));
-
-        $serialiseddata = json_decode($params['jsonformdata']);
-
-        $data = array();
-        parse_str($serialiseddata, $data);
-
-        $warnings = array();
-
-        if (WS_SERVER) {
-            // Assume form submission if coming from WS.
-            $USER->ignoresesskey = true;
-        }
-
-        $course = $DB->get_record('course', array('id' => $data['courseid']), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
-        $PAGE->set_context($context);
+        self::setPageContext($data[self::COURSEID]);
 
         $customdata = (object) $data;
 
         $sessionkey = sesskey();
         if ($sessionkey == $customdata->sesskey && $customdata->toolid) {
             admin_editor::edit_tool_order($customdata);
-            $warnings = array('message' => 'ok');
-        } else {
-            $warnings = array('message' => get_string('admin_messageko', 'assignfeedback_editpdfplus'));
+            return array(self::MESSAGELIB => 'ok');
         }
-
-        return $warnings;
+        return self::getMessageError();
     }
 
     /**
@@ -612,11 +468,7 @@ class assignfeedback_editpdfplus_external extends external_api {
      * @return \external_multiple_structure
      */
     public static function submit_tool_order_form_returns() {
-        return new external_single_structure(
-                array(
-            'message' => new external_value(PARAM_TEXT, 'message', VALUE_OPTIONAL)
-                )
-        );
+        return self::submit_generic_form_returns();
     }
 
 }

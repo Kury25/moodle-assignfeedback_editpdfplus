@@ -122,31 +122,33 @@ define(['jquery', './annotation'],
 
                         //creation input
                         var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);
+                        var toolbar = this.get_toolbar();
                         //if (!this.editor.get('readonly')) {
                         var buttonrender = "<button id='"
                                 + this.divcartridge
-                                + "_buttonpencil' class='btn btn-default";
+                                + "_buttonpencil' class='btn btn-sm btn-outline-dark'";
                         if (this.adminDemo) {
                             buttonrender += " disabled";
                         }
-                        buttonrender += "' type='button'>";
+                        buttonrender += " type='button'>";
                         buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                         buttonrender += "</button>";
-                        //var buttonrenderdisplay = Y.Node.create(buttonrender);
+                        var buttonrenderdisplay = $(buttonrender);
                         //buttonrenderdisplay.on('click', this.display_picker, this);
                         var buttonadd = "<button id='"
                                 + this.divcartridge
-                                + "_buttonadd' class='btn btn-default";
+                                + "_buttonadd' class='btn btn-sm btn-outline-dark'";
                         if (this.adminDemo) {
                             buttonadd += " disabled";
                         }
-                        buttonadd += "' type='button'>";
+                        buttonadd += " type='button'>";
                         buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                         buttonadd += "</button>";
-                        //var buttonadddisplay = Y.Node.create(buttonadd);
+                        var buttonadddisplay = $(buttonadd);
                         //buttonadddisplay.on('click', this.add_annot, this);
-                        divconteneurdisplay.append(buttonrender);
-                        divconteneurdisplay.append(buttonadd);
+                        toolbar.append(buttonrenderdisplay);
+                        toolbar.append(buttonadddisplay);
+                        divconteneurdisplay.append(toolbar);
                         //}
 
                         //creation de la div d'edition

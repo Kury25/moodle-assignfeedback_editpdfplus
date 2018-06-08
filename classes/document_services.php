@@ -86,6 +86,8 @@ IFsgPEJDN0REQUQwRDQyOTQ1OTQ2OUU4NzJCMjI1ODUyNkU4Pgo8QkM3RERBRDBENDI5NDU5NDY5
 RTg3MkIyMjU4NTI2RTg+IF0KL0RvY0NoZWNrc3VtIC9BNTYwMEZCMDAzRURCRTg0MTNBNTk3RTZF
 MURDQzJBRgo+PgpzdGFydHhyZWYKNzM2CiUlRU9GCg==
 EOD;
+    const NOPERMISSIONMESSAGE = "nopermission";
+    const PLUGIN_NAME = "assignfeedback_editpdfplus";
 
     /**
      * This function will take an int or an assignment instance and
@@ -99,7 +101,7 @@ EOD;
         require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
         if (!is_object($assignment)) {
-            $cm = \get_coursemodule_from_instance('assign', $assignment, 0, false, MUST_EXIST);
+            $cm = get_coursemodule_from_instance('assign', $assignment, 0, false, MUST_EXIST);
             $context = \context_module::instance($cm->id);
 
             $assignment = new \assign($context, null, null);
@@ -160,13 +162,13 @@ EOD;
      * @return combined_document
      */
     protected static function list_compatible_submission_files_for_attempt($assignment, $userid, $attemptnumber) {
-        global $USER, $DB;
+        global $DB;
 
         $assignment = self::get_assignment_from_param($assignment);
 
         // Capability checks.
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         $files = array();
@@ -183,54 +185,33 @@ EOD;
             return new combined_document();
         }
 
-        $fs = get_file_storage();
         $converter = new \core_files\converter();
         // Ask each plugin for it's list of files.
         foreach ($assignment->get_submission_plugins() as $plugin) {
-            if ($plugin->is_enabled() && $plugin->is_visible()) {
-                $pluginfiles = $plugin->get_files($submission, $user);
-                foreach ($pluginfiles as $filename => $file) {
-                    if ($file instanceof \stored_file) {
-                        if ($file->get_mimetype() === 'application/pdf') {
-                            $files[$filename] = $file;
-                        } else if ($convertedfile = $converter->start_conversion($file, 'pdf')) {
-                            $files[$filename] = $convertedfile;
-                        }
-                    } else {
-                        // Create a tmp stored_file from this html string.
-                        $file = reset($file);
-                        // Strip image tags, because they will not be resolvable.
-                        $file = self::strip_images($file);
-                        $record = new \stdClass();
-                        $record->contextid = $assignment->get_context()->id;
-                        $record->component = 'assignfeedback_editpdfplus';
-                        $record->filearea = self::IMPORT_HTML_FILEAREA;
-                        $record->itemid = $submission->id;
-                        $record->filepath = '/';
-                        $record->filename = $plugin->get_type() . '-' . $filename;
+            if (!$plugin->is_enabled() || !$plugin->is_visible()) {
+                continue;
+            }
+            $pluginfiles = $plugin->get_files($submission, $user);
+            foreach ($pluginfiles as $filename => $file) {
+                if ($file instanceof \stored_file) {
+                    if ($file->get_mimetype() === 'application/pdf') {
+                        $files[$filename] = $file;
+                    } else if ($convertedfile = $converter->start_conversion($file, 'pdf')) {
+                        $files[$filename] = $convertedfile;
+                    }
+                } else if ($converter->can_convert_format_to('html', 'pdf')) {
+                    $record = new \stdClass();
+                    $record->contextid = $assignment->get_context()->id;
+                    $record->component = self::PLUGIN_NAME;
+                    $record->filearea = self::IMPORT_HTML_FILEAREA;
+                    $record->itemid = $submission->id;
+                    $record->filepath = '/';
+                    $record->filename = $plugin->get_type() . '-' . $filename;
 
-                        //$htmlfile = $fs->create_file_from_string($record, $file);
-                        $htmlfile = $fs->get_file($record->contextid, $record->component, $record->filearea, $record->itemid, $record->filepath, $record->filename);
+                    $convertedfile = self::convertDocHtmlToPdf($converter, $file, $record);
 
-                        $newhash = sha1($file);
-
-                        // If the file exists, and the content hash doesn't match, remove it.
-                        if ($htmlfile && $newhash !== $htmlfile->get_contenthash()) {
-                            $htmlfile->delete();
-                            $htmlfile = false;
-                        }
-
-                        // If the file doesn't exist, or if it was removed above, create a new one.
-                        if (!$htmlfile) {
-                            $htmlfile = $fs->create_file_from_string($record, $file);
-                        }
-
-                        //$convertedfile = $fs->get_converted_document($htmlfile, 'pdf');
-                        $convertedfile = $converter->start_conversion($htmlfile, 'pdf');
-
-                        if ($convertedfile) {
-                            $files[$filename] = $convertedfile;
-                        }
+                    if ($convertedfile) {
+                        $files[$filename] = $convertedfile;
                     }
                 }
             }
@@ -242,6 +223,38 @@ EOD;
     }
 
     /**
+     * Create a PDF file from a HTML file
+     * @param \core_files\converter $converter
+     * @param string $file Html file
+     * @param \stdClass $fileProperties
+     * @return conversion PDF file
+     */
+    protected static function convertDocHtmlToPdf(\core_files\converter $converter, $file, \stdClass $fileProperties) {
+        // Create a tmp stored_file from this html string.
+        $file = reset($file);
+        // Strip image tags, because they will not be resolvable.
+        $file = self::strip_images($file);
+
+        $fs = get_file_storage();
+        $htmlfile = $fs->get_file($fileProperties->contextid, $fileProperties->component, $fileProperties->filearea, $fileProperties->itemid, $fileProperties->filepath, $fileProperties->filename);
+
+        $newhash = sha1($file);
+
+        // If the file exists, and the content hash doesn't match, remove it.
+        if ($htmlfile && $newhash !== $htmlfile->get_contenthash()) {
+            $htmlfile->delete();
+            $htmlfile = false;
+        }
+
+        // If the file doesn't exist, or if it was removed above, create a new one.
+        if (!$htmlfile) {
+            $htmlfile = $fs->create_file_from_string($fileProperties, $file);
+        }
+
+        return $converter->start_conversion($htmlfile, 'pdf');
+    }
+
+    /**
      * Fetch the current combined document ready for state checking.
      *
      * @param int|\assign $assignment
@@ -250,13 +263,12 @@ EOD;
      * @return combined_document
      */
     public static function get_combined_document_for_attempt($assignment, $userid, $attemptnumber) {
-        global $USER, $DB;
 
         $assignment = self::get_assignment_from_param($assignment);
 
         // Capability checks.
         if (!$assignment->can_view_submission($userid)) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -267,7 +279,7 @@ EOD;
         }
 
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdfplus';
+        $component = self::PLUGIN_NAME;
         $filearea = self::COMBINED_PDF_FILEAREA;
         $itemid = $grade->id;
         $filepath = '/';
@@ -315,130 +327,7 @@ EOD;
             $document->combine_files($assignment->get_context()->id, $grade->id);
             return $document;
         }
-
-        /* global $USER, $DB;
-
-          $assignment = self::get_assignment_from_param($assignment);
-
-          // Capability checks.
-          if (!$assignment->can_view_submission($userid)) {
-          \print_error('nopermission');
-          }
-
-          $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-          if ($assignment->get_instance()->teamsubmission) {
-          $submission = $assignment->get_group_submission($userid, 0, false);
-          } else {
-          $submission = $assignment->get_user_submission($userid, false);
-          }
-
-          $contextid = $assignment->get_context()->id;
-          $component = 'assignfeedback_editpdfplus';
-          $filearea = self::COMBINED_PDF_FILEAREA;
-          $itemid = $grade->id;
-          $filepath = '/';
-          $filename = self::COMBINED_PDF_FILENAME;
-          $fs = \get_file_storage();
-
-          $combinedpdf = $fs->get_file($contextid, $component, $filearea, $itemid, $filepath, $filename);
-          if (!$combinedpdf ||
-          ($submission && ($combinedpdf->get_timemodified() < $submission->timemodified))) {
-          return self::generate_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          }
-          return $combinedpdf; */
     }
-
-    /**
-     * This function will take all of the compatible files for a submission
-     * and combine them into one PDF.
-     * 
-     * @param int|\assign $assignment
-     * @param int $userid
-     * @param int $attemptnumber (-1 means latest attempt)
-     * @return stored_file
-     * 
-     * @deprecated since version 31
-     */
-    /* public static function generate_combined_pdf_for_attempt($assignment, $userid, $attemptnumber) {
-      global $CFG;
-
-      require_once($CFG->libdir . '/pdflib.php');
-
-      $assignment = self::get_assignment_from_param($assignment);
-
-      if (!$assignment->can_view_submission($userid)) {
-      \print_error('nopermission');
-      }
-
-      $files = self::list_compatible_submission_files_for_attempt($assignment, $userid, $attemptnumber);
-
-      $pdf = new pdf();
-      if ($files) {
-      // Create a mega joined PDF.
-      $compatiblepdfs = array();
-      foreach ($files as $file) {
-      $compatiblepdf = pdf::ensure_pdf_compatible($file);
-      if ($compatiblepdf) {
-      array_push($compatiblepdfs, $compatiblepdf);
-      }
-      }
-
-      $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/combined/' . self::hash($assignment, $userid, $attemptnumber));
-      $tmpfile = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
-
-      @unlink($tmpfile);
-      try {
-      $pagecount = $pdf->combine_pdfs($compatiblepdfs, $tmpfile);
-      } catch (\Exception $e) {
-      debugging('TCPDF could not process the pdf files:' . $e->getMessage(), DEBUG_DEVELOPER);
-      // TCPDF does not recover from errors so we need to re-initialise the class.
-      $pagecount = 0;
-      }
-      if ($pagecount == 0) {
-      // We at least want a single blank page.
-      debugging('TCPDF did not produce a valid pdf:' . $tmpfile . '. Replacing with a blank pdf.', DEBUG_DEVELOPER);
-      @unlink($tmpfile);
-      $files = false;
-      }
-      }
-      $pdf->Close(); // No real need to close this pdf, because it has been saved by combine_pdfs(), but for clarity.
-
-      $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-      $record = new \stdClass();
-
-      $record->contextid = $assignment->get_context()->id;
-      $record->component = 'assignfeedback_editpdfplus';
-      $record->filearea = self::COMBINED_PDF_FILEAREA;
-      $record->itemid = $grade->id;
-      $record->filepath = '/';
-      $record->filename = self::COMBINED_PDF_FILENAME;
-      $fs = \get_file_storage();
-
-      $fs->delete_area_files($record->contextid, $record->component, $record->filearea, $record->itemid);
-
-      // Detect corrupt generated pdfs and replace with a blank one.
-      if ($files) {
-      $verifypdf = new pdf();
-      $pagecount = $verifypdf->load_pdf($tmpfile);
-      if ($pagecount <= 0) {
-      $files = false;
-      }
-      $verifypdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-      }
-
-      if (!$files) {
-      $file = $fs->create_file_from_string($record, base64_decode(self::BLANK_PDF_BASE64));
-      } else {
-      // This was a combined pdf.
-      $file = $fs->create_file_from_pathname($record, $tmpfile);
-      @unlink($tmpfile);
-
-      // Test the generated file for correctness.
-      $compatiblepdf = pdf::ensure_pdf_compatible($file);
-      }
-
-      return $file;
-      } */
 
     /**
      * This function will return the number of pages of a pdf.
@@ -457,7 +346,7 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         // When in readonly we can return the number of images in the DB because they should already exist,
@@ -465,7 +354,7 @@ EOD;
         if ($readonly) {
             $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
             $fs = get_file_storage();
-            $files = $fs->get_directory_files($assignment->get_context()->id, 'assignfeedback_editpdfplus', self::PAGE_IMAGE_READONLY_FILEAREA, $grade->id, '/');
+            $files = $fs->get_directory_files($assignment->get_context()->id, self::PLUGIN_NAME, self::PAGE_IMAGE_READONLY_FILEAREA, $grade->id, '/');
             $pagecount = count($files);
             if ($pagecount > 0) {
                 return $pagecount;
@@ -475,26 +364,6 @@ EOD;
         // Get a combined pdf file from all submitted pdf files.
         $document = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
         return $document->get_page_count();
-
-        /* $file = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          if (!$file) {
-          \print_error('Could not generate combined pdf.');
-          }
-
-          // Store the combined pdf file somewhere to be opened by tcpdf.
-          $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/pagetotal/'
-          . self::hash($assignment, $userid, $attemptnumber));
-          $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
-          $file->copy_content_to($combined); // Copy the file.
-          // Get the total number of pages.
-          $pdf = new pdf();
-          $pagecount = $pdf->set_pdf($combined);
-          $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-          // Delete temporary folders and files.
-          @unlink($combined);
-          @rmdir($tmpdir);
-
-          return $pagecount; */
     }
 
     /**
@@ -512,15 +381,11 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         // Need to generate the page images - first get a combined pdf.
         $document = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-        /* $file = self::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-          if (!$file) {
-          throw new \moodle_exception('Could not generate combined pdf.');
-          } */
 
         $status = $document->get_status();
         if ($status === combined_document::STATUS_FAILED) {
@@ -533,7 +398,6 @@ EOD;
         $tmpdir = \make_temp_directory('assignfeedback_editpdfplus/pageimages/' . self::hash($assignment, $userid, $attemptnumber));
         $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
         $document->get_combined_file()->copy_content_to($combined); // Copy the file.
-        //$file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
 
@@ -544,7 +408,7 @@ EOD;
 
         $record = new \stdClass();
         $record->contextid = $assignment->get_context()->id;
-        $record->component = 'assignfeedback_editpdfplus';
+        $record->component = self::PLUGIN_NAME;
         $record->filearea = self::PAGE_IMAGE_FILEAREA;
         $record->itemid = $grade->id;
         $record->filepath = '/';
@@ -561,7 +425,6 @@ EOD;
                 // We catch only moodle_exception here as other exceptions indicate issue with setup not the pdf.
                 $image = pdf::get_error_image($tmpdir, $i);
             }
-            //$image = $pdf->get_image($i);
             $record->filename = basename($image);
             $files[$i] = $fs->create_file_from_pathname($record, $tmpdir . '/' . $image);
             @unlink($tmpdir . '/' . $image);
@@ -595,12 +458,11 @@ EOD;
      * @return array(stored_file)
      */
     public static function get_page_images_for_attempt($assignment, $userid, $attemptnumber, $readonly = false) {
-        global $DB;
 
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            \print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         if ($assignment->get_instance()->teamsubmission) {
@@ -611,7 +473,7 @@ EOD;
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdfplus';
+        $component = self::PLUGIN_NAME;
         $itemid = $grade->id;
         $filepath = '/';
         $filearea = self::PAGE_IMAGE_FILEAREA;
@@ -641,15 +503,11 @@ EOD;
             if (!$readonly && count($files) == 1) {
                 $pdfarea = self::COMBINED_PDF_FILEAREA;
                 $pdfname = self::COMBINED_PDF_FILENAME;
-                if ($pdf = $fs->get_file($contextid, $component, $pdfarea, $itemid, $filepath, $pdfname)) {
-                    // The combined pdf may have a different hash if it has been regenerated since the page
-                    // image was created. However if this is the case the page image will be stale anyway.
-                    if ($pdf->get_contenthash() == self::BLANK_PDF_HASH || $pagemodified < $pdf->get_timemodified()) {
-                        $blankpage = true;
-                    }
-                }
+                $pdf = $fs->get_file($contextid, $component, $pdfarea, $itemid, $filepath, $pdfname);
+                // The combined pdf may have a different hash if it has been regenerated since the page
+                // image was created. However if this is the case the page image will be stale anyway.
+                $blankpage = $pdf && ($pdf->get_contenthash() == self::BLANK_PDF_HASH || $pagemodified < $pdf->get_timemodified());
             }
-            //if (!$readonly && $first->get_timemodified() < $submission->timemodified) {
             if (!$readonly && ($pagemodified < $submission->timemodified || $blankpage)) {
                 // Image files are stale, we need to regenerate them, except in readonly mode.
                 // We also need to remove the draft annotations and comments associated with this attempt.
@@ -743,10 +601,10 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$refresh && !$assignment->can_view_submission($userid)) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
         if (!$refresh && !$assignment->can_grade()) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         // Need to generate the page images - first get a combined pdf.
@@ -761,23 +619,11 @@ EOD;
         }
 
         $file = $document->get_combined_file();
-
         $tmpdir = make_temp_directory('assignfeedback_editpdfplus/final/' . self::hash($assignment, $userid, $attemptnumber));
         $combined = $tmpdir . '/' . self::COMBINED_PDF_FILENAME;
         $file->copy_content_to($combined); // Copy the file.
 
         $pdf = new pdf();
-
-        $fs = get_file_storage();
-        $stamptmpdir = make_temp_directory('assignfeedback_editpdfplus/stamps/' . self::hash($assignment, $userid, $attemptnumber));
-        $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
-        // Copy any new stamps to this instance.
-        if ($files = $fs->get_area_files($assignment->get_context()->id, 'assignfeedback_editpdfplus', 'stamps', $grade->id, "filename", false)) {
-            foreach ($files as $file) {
-                $filename = $stamptmpdir . '/' . $file->get_filename();
-                $file->copy_content_to($filename); // Copy the file.
-            }
-        }
 
         $pagecount = $pdf->set_pdf($combined);
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
@@ -785,19 +631,61 @@ EOD;
             page_editor::release_drafts($grade->id);
         }
 
+        $pdf = self::addAnnotationstoPDF($pdf, $pagecount, $grade->id);
+
+        $filenameRaw = self::get_downloadable_feedback_filename($assignment, $userid, $attemptnumber);
+        $filename = clean_param($filenameRaw, PARAM_FILE);
+
+        $generatedpdf = $tmpdir . '/' . $filename;
+        $pdf->save_pdf($generatedpdf);
+
+        $record = new \stdClass();
+
+        $record->contextid = $assignment->get_context()->id;
+        $record->component = self::PLUGIN_NAME;
+        $record->filearea = self::FINAL_PDF_FILEAREA;
+        $record->itemid = $grade->id;
+        $record->filepath = '/';
+        $record->filename = $filename;
+
+        // Only keep one current version of the generated pdf.
+        $fs = get_file_storage();
+        $fs->delete_area_files($record->contextid, $record->component, $record->filearea, $record->itemid);
+
+        $file = $fs->create_file_from_pathname($record, $generatedpdf);
+
+        // Cleanup.
+        @unlink($generatedpdf);
+        @unlink($combined);
+        @rmdir($tmpdir);
+
+        self::copy_pages_to_readonly_area($assignment, $grade);
+
+        return $file;
+    }
+
+    /**
+     * Write annotations and feedback into the combined pdf file.
+     * @param pdf $pdf init pdf
+     * @param int $pagecount number of pages of the pdf
+     * @param int $gradeid grade id
+     * @return pdf init pdf with annotations and feedback
+     */
+    protected static function addAnnotationstoPDF($pdf, $pagecount, $gradeid) {
         $annotation_index = [];
         $compteur = 1;
 
         for ($i = 0; $i < $pagecount; $i++) {
             $pdf->copy_page();
-            $annotations = page_editor::get_annotations($grade->id, $i, false);
+            $annotations = page_editor::get_annotations($gradeid, $i, false);
 
             foreach ($annotations as $annotation) {
-                $pdf->add_annotation($annotation, $annotation->path, $stamptmpdir, $compteur);
-                if ($annotation->textannot && !$annotation->parent_annot) {
-                    $annotation_index[$annotation->id] = $compteur;
-                    $compteur++;
+                $pdf->add_annotation($annotation, $annotation->path, $compteur);
+                if (!$annotation->hasReadableComment()) {
+                    continue;
                 }
+                $annotation_index[$annotation->id] = $compteur;
+                $compteur++;
             }
         }
 
@@ -820,28 +708,29 @@ EOD;
         $pdf->Write(10, "", '', false, 'L', true);
         foreach ($annotation_index as $id => $index) {
             $annot = page_editor::get_annotation($id);
-            if ($annot->textannot && !$annot->parent_annot) {
-                $pdf->Write(5, $index, '', false, 'L', false);
-                if ($annot->studentstatus === "2") {
-                    $pdf->SetTextColor(255, 0, 0);
-                    $pdf->Write(5, '*', '', false, 'L', false);
-                    $pdf->SetTextColor(0, 0, 0);
-                }
-                $pdf->Write(5, " : ", '', false, 'L', false);
-                if ($annot->answerrequested) {
-                    $pdf->SetTextColor(255, 0, 0);
-                    $pdf->Write(5, "[question] ", '', false, 'L', true);
-                    $pdf->SetTextColor(0, 0, 0);
-                }
-                $pdf->Write(5, $annot->textannot, '', false, 'L', true);
-                if ($annot->studentanswer) {
-                    $pdf->SetTextColor(0, 0, 255);
-                    $pdf->Write(5, "[réponse]", '', false, 'L', true);
-                    $pdf->Write(5, $annot->studentanswer, '', false, 'L', true);
-                    $pdf->SetTextColor(0, 0, 0);
-                }
-                $pdf->Write(0, "", '', false, 'L', true);
+            if (!$annot->hasReadableComment()) {
+                continue;
             }
+            $pdf->Write(5, $index, '', false, 'L', false);
+            if ($annot->studentstatus === "2") {
+                $pdf->SetTextColor(255, 0, 0);
+                $pdf->Write(5, '*', '', false, 'L', false);
+                $pdf->SetTextColor(0, 0, 0);
+            }
+            $pdf->Write(5, " : ", '', false, 'L', false);
+            if ($annot->answerrequested) {
+                $pdf->SetTextColor(255, 0, 0);
+                $pdf->Write(5, "[question] ", '', false, 'L', true);
+                $pdf->SetTextColor(0, 0, 0);
+            }
+            $pdf->Write(5, $annot->textannot, '', false, 'L', true);
+            if ($annot->studentanswer) {
+                $pdf->SetTextColor(0, 0, 255);
+                $pdf->Write(5, "[réponse]", '', false, 'L', true);
+                $pdf->Write(5, $annot->studentanswer, '', false, 'L', true);
+                $pdf->SetTextColor(0, 0, 0);
+            }
+            $pdf->Write(0, "", '', false, 'L', true);
         }
         //add general feedback in last page
         $pdf->AddPage();
@@ -853,41 +742,10 @@ EOD;
         $pdf->Write(5, "Feedback global", '', false, 'L', true);
         $pdf->Write(10, "", '', false, 'L', true);
         $pdf->SetFontSize(10);
-        $finalcomment = page_editor::get_feedback_comments($grade->id);
+        $finalcomment = page_editor::get_feedback_comments($gradeid);
         $pdf->writeHTMLCell(0, 0, 40, 70, $finalcomment->commenttext);
 
-        fulldelete($stamptmpdir);
-
-        $filename = self::get_downloadable_feedback_filename($assignment, $userid, $attemptnumber);
-        $filename = clean_param($filename, PARAM_FILE);
-
-        $generatedpdf = $tmpdir . '/' . $filename;
-        $pdf->save_pdf($generatedpdf);
-
-
-        $record = new \stdClass();
-
-        $record->contextid = $assignment->get_context()->id;
-        $record->component = 'assignfeedback_editpdfplus';
-        $record->filearea = self::FINAL_PDF_FILEAREA;
-        $record->itemid = $grade->id;
-        $record->filepath = '/';
-        $record->filename = $filename;
-
-
-        // Only keep one current version of the generated pdf.
-        $fs->delete_area_files($record->contextid, $record->component, $record->filearea, $record->itemid);
-
-        $file = $fs->create_file_from_pathname($record, $generatedpdf);
-
-        // Cleanup.
-        @unlink($generatedpdf);
-        @unlink($combined);
-        @rmdir($tmpdir);
-
-        self::copy_pages_to_readonly_area($assignment, $grade);
-
-        return $file;
+        return $pdf;
     }
 
     /**
@@ -901,7 +759,7 @@ EOD;
         $fs = get_file_storage();
         $assignment = self::get_assignment_from_param($assignment);
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdfplus';
+        $component = self::PLUGIN_NAME;
         $itemid = $grade->id;
 
         // Get all the pages.
@@ -932,13 +790,13 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdfplus';
+        $component = self::PLUGIN_NAME;
         $filearea = self::FINAL_PDF_FILEAREA;
         $itemid = $grade->id;
         $filepath = '/';
@@ -963,16 +821,16 @@ EOD;
         $assignment = self::get_assignment_from_param($assignment);
 
         if (!$assignment->can_view_submission($userid)) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
         if (!$assignment->can_grade()) {
-            print_error('nopermission');
+            print_error(self::NOPERMISSIONMESSAGE);
         }
 
         $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
 
         $contextid = $assignment->get_context()->id;
-        $component = 'assignfeedback_editpdfplus';
+        $component = self::PLUGIN_NAME;
         $filearea = self::FINAL_PDF_FILEAREA;
         $itemid = $grade->id;
 

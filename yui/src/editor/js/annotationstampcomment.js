@@ -50,13 +50,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
+        var colorcartridge = this.get_color_cartridge();
         var fleche = '<i id="'
                 + this.shape_id
                 + '_img" '
-                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>';
+                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true" style="color:'
+                + colorcartridge
+                + ';"></i>';
         if (this.displayrotation > 0) {
             fleche = '<i id="' + this.shape_id + '_img" '
-                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>';
+                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true" style="color:'
+                    + colorcartridge
+                    + ';"></i>';
         }
         node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
@@ -92,7 +97,11 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([edit.start, edit.end]);
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
 
-        node = Y.Node.create('<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>></div>');
+        var colorcartridge = this.get_color_cartridge();
+        var nodeContent = '<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"  style="color:'
+                + colorcartridge
+                + '"></i></div>';
+        node = Y.Node.create(nodeContent);
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block'
@@ -157,7 +166,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
-            divdisplay.append(divconteneurdisplay);
+            var toolbar = this.get_toolbar();
             if (!this.editor.get('readonly')) {
                 var rotationvalue = 0;
                 if (this.displayrotation > 0) {
@@ -168,16 +177,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                         + "_rotation' value="
                         + rotationvalue
                         + " />");
-                divconteneurdisplay.append(inputrotationdisplay);
+                toolbar.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        + "_buttonrotation' class='btn btn-sm btn-outline-dark' type='button'>"
                         + '<i class="fa fa-refresh" aria-hidden="true"></i>'
                         + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
-                divconteneurdisplay.append(buttonrotationdisplay);
+                toolbar.append(buttonrotationdisplay);
             }
+            divconteneurdisplay.append(toolbar);
+            divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {

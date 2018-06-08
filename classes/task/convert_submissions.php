@@ -96,18 +96,9 @@ class convert_submissions extends scheduled_task {
             mtrace('Convert ' . count($users) . ' submission attempt(s) for assignment ' . $assignmentid);
             $keepinqueue = false;
             foreach ($users as $userid) {
-                /* document_services::get_page_images_for_attempt($assignment,
-                  $userid,
-                  $attemptnumber,
-                  true);
-                  document_services::get_page_images_for_attempt($assignment,
-                  $userid,
-                  $attemptnumber,
-                  false); */
                 $combineddocument = document_services::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
-                $status = $combineddocument->get_status();
 
-                switch ($status) {
+                switch ($combineddocument->get_status()) {
                     case combined_document::STATUS_READY:
                     case combined_document::STATUS_PENDING_INPUT:
                         // The document has not been converted yet or is somehow still ready.

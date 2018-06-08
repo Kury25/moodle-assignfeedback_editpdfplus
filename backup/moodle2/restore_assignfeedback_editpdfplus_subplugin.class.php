@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -35,6 +36,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
 
+    const GRADE = 'grade';
+
     /**
      * Returns the paths to be handled by the subplugin at assignment level
      * @return array
@@ -51,7 +54,7 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
 
         // Now we have the list of comments and annotations per grade.
         $elename = $this->get_namefor('feedback_editpdfplus_annotation');
-          $elepath = $this->get_pathfor('/feedback_editpdfplus_annotations/feedback_editpdfplus_annotation');
+        $elepath = $this->get_pathfor('/feedback_editpdfplus_annotations/feedback_editpdfplus_annotation');
         $paths[] = new restore_path_element($elename, $elepath);
 
         return $paths;
@@ -62,14 +65,11 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
      * @param mixed $data
      */
     public function process_assignfeedback_editpdfplus_files($data) {
-        $data = (object)$data;
+        $data = (object) $data;
 
-          // In this case the id is the old gradeid which will be mapped.
-          $this->add_related_files('assignfeedback_editpdfplus',
-          \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, 'grade', null, $data->gradeid);
-          $this->add_related_files('assignfeedback_editpdfplus',
-          \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, 'grade', null, $data->gradeid);
-        $this->add_related_files('assignfeedback_editpdfplus', 'stamps', 'grade', null, $data->gradeid);
+        // In this case the id is the old gradeid which will be mapped.
+        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, self::GRADE, null, $data->gradeid);
+        $this->add_related_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, self::GRADE, null, $data->gradeid);
     }
 
     /**
@@ -79,14 +79,13 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
     public function process_assignfeedback_editpdfplus_feedback_editpdfplus_annotation($data) {
         global $DB;
 
-          $data = (object)$data;
-          $oldgradeid = $data->gradeid;
-          // The mapping is set in the restore for the core assign activity
-          // when a grade node is processed.
-          $data->gradeid = $this->get_mappingid('grade', $data->gradeid);
+        $data = (object) $data;
+        $oldgradeid = $data->gradeid;
+        // The mapping is set in the restore for the core assign activity
+        // when a grade node is processed.
+        $data->gradeid = $this->get_mappingid(self::GRADE, $data->gradeid);
 
-          $DB->insert_record('assignfeedback_editpp_annot', $data);
-
+        $DB->insert_record('assignfeedback_editpp_annot', $data);
     }
 
 }

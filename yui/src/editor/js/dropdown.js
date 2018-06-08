@@ -1,5 +1,5 @@
 var DROPDOWN_NAME = "Dropdown menu",
-    DROPDOWN;
+        DROPDOWN;
 
 /**
  * Provides an in browser PDF editor.
@@ -15,7 +15,7 @@ var DROPDOWN_NAME = "Dropdown menu",
  * @constructor
  * @extends M.core.dialogue
  */
-DROPDOWN = function(config) {
+DROPDOWN = function (config) {
     config.draggable = false;
     config.centered = false;
     config.width = 'auto';
@@ -31,7 +31,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         var button, body, headertext, bb;
         DROPDOWN.superclass.initializer.call(this, config);
 
@@ -49,7 +49,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
         headertext.setHTML(this.get('headerText'));
         body.prepend(headertext);
 
-        body.on('clickoutside', function(e) {
+        body.on('clickoutside', function (e) {
             if (this.get('visible')) {
                 // Note: we need to compare ids because for some reason - sometimes button is an Object, not a Y.Node.
                 if (e.target.get('id') !== button.get('id') && e.target.ancestor().get('id') !== button.get('id')) {
@@ -59,7 +59,10 @@ Y.extend(DROPDOWN, M.core.dialogue, {
             }
         }, this);
 
-        button.on('click', function(e) {e.preventDefault(); this.show();}, this);
+        button.on('click', function (e) {
+            e.preventDefault();
+            this.show();
+        }, this);
         button.on('key', this.show, 'enter,space', this);
     },
 
@@ -69,16 +72,16 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method show
      * @return void
      */
-    show : function() {
+    show: function () {
         var button = this.get('buttonNode'),
-            result = DROPDOWN.superclass.show.call(this);
+                result = DROPDOWN.superclass.show.call(this);
         this.align(button, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.BL]);
 
         return result;
     }
 }, {
-    NAME : DROPDOWN_NAME,
-    ATTRS : {
+    NAME: DROPDOWN_NAME,
+    ATTRS: {
         /**
          * The header for the drop down (only accessible to screen readers).
          *
@@ -86,8 +89,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type String
          * @default ''
          */
-        headerText : {
-            value : ''
+        headerText: {
+            value: ''
         },
 
         /**
@@ -97,8 +100,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type Y.Node
          * @default null
          */
-        buttonNode : {
-            value : null
+        buttonNode: {
+            value: null
         }
     }
 });
@@ -114,7 +117,7 @@ Y.Base.modifyAttrs(DROPDOWN, {
      * @default false
      */
     modal: {
-        getter: function() {
+        getter: function () {
             return false;
         }
     }

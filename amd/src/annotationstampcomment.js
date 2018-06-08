@@ -61,15 +61,18 @@ define(['jquery', './annotation'],
              */
             AnnotationStampcomment.prototype.draw = function (canevas) {
                 if (canevas) {
+                    var color = this.get_color_cartridge();
+                    var flecheIco = "fa-arrows-h";
+                    if (this.displayrotation > 0) {
+                        flecheIco = "fa-arrows-v";
+                    }
                     this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
                     var fleche = '<i id="'
                             + this.shape_id
                             + '_img" '
-                            + 'class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>';
-                    if (this.displayrotation > 0) {
-                        fleche = '<i id="' + this.shape_id + '_img" '
-                                + 'class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>';
-                    }
+                            + 'class="fa ' + flecheIco + ' fa-2x" aria-hidden="true" style="color:'
+                            + color
+                            + ';"></i>';
                     var divStampComment = "<div id='" + this.id + "'>" + fleche + "</div>";
                     canevas.append(divStampComment);
                     $("#" + this.id).css('position', 'relative');
@@ -101,6 +104,7 @@ define(['jquery', './annotation'],
 
                     //creation input
                     var divconteneurdisplay = this.get_div_container(colorcartridge, divdisplay);
+                    var toolbar = this.get_toolbar();
                     //if (!this.editor.get('readonly')) {
                     var rotationvalue = 0;
                     if (this.displayrotation > 0) {
@@ -114,15 +118,17 @@ define(['jquery', './annotation'],
                     divconteneurdisplay.append(inputrotationdisplay);
                     var buttonrotation = "<button id='"
                             + this.divcartridge
-                            + "_buttonrotation' class='btn btn-default";
+                            + "_buttonrotation' class='btn btn-sm btn-outline-dark'";
                     if (this.adminDemo) {
                         buttonrotation += " disabled";
                     }
-                    buttonrotation += "' type='button'>"
+                    buttonrotation += " type='button'>"
                             + '<i class="fa fa-refresh" aria-hidden="true"></i>'
                             + "</button>";
+                    var buttonrotationdisplay = $(buttonrotation);
                     //buttonrotationdisplay.on('click', this.change_stamp, this);
-                    divconteneurdisplay.append(buttonrotation);
+                    toolbar.append(buttonrotationdisplay);
+                    divconteneurdisplay.append(toolbar);
                     //}
 
                     //creation de la div d'edition

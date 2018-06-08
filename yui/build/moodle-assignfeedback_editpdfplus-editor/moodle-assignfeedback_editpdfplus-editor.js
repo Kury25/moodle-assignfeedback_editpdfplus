@@ -34,19 +34,17 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
             DRAWINGREGION: '.drawingregion',
             DRAWINGCANVAS: '.drawingcanvas',
             SAVE: '.savebutton',
-            COMMENTCOLOURBUTTON: '.commentcolourbutton',
-            COMMENTMENU: '.commentdrawable a',
             ANNOTATIONCOLOURBUTTON: '.annotationcolourbutton',
             DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
             UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
             UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
             UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
-            STAMPSBUTTON: '.currentstampbutton',
             DIALOGUE: '.' + CSS.DIALOGUE,
             CUSTOMTOOLBARID: '#toolbaraxis',
             CUSTOMTOOLBARS: '.customtoolbar',
             AXISCUSTOMTOOLBAR: '.menuaxisselection',
             CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton',
+            GENERICTOOLBARBUTTONS: '.generictoolbarbutton',
             STATUTSELECTOR: '#menustatutselection',
             QUESTIONSELECTOR: '#menuquestionselection',
             STUDENTVALIDATION: '#student_valide_button'
@@ -403,14 +401,6 @@ var EDIT = function() {
     this.annotationcolour = 'red';
 
     /**
-     * The current stamp image.
-     * @property stamp
-     * @type String
-     * @public
-     */
-    this.stamp = '';
-
-    /**
      * List of points the the current drawing path.
      * @property path
      * @type M.assignfeedback_editpdfplus.point[]
@@ -435,6 +425,7 @@ M.assignfeedback_editpdfplus.edit = EDIT;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, SELECTOR */
 
 /**
  * Provides an in browser PDF editor.
@@ -533,8 +524,6 @@ var DRAWABLE = function(editor) {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.drawable = DRAWABLE;
-/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -549,6 +538,7 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, SELECTOR, TOOLTYPE, STROKEWEIGHT, SELECTEDBORDERCOLOUR, SELECTEDFILLCOLOUR, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -1061,11 +1051,11 @@ Y.extend(ANNOTATION, Y.Base, {
         var diveditiondisplay = Y.Node.create(divedition);
         var propositions = this.tooltype.texts;
         if (propositions && propositions.length > 0) {
-            var divproposition = "<div></div>";
+            var divproposition = "<div class='btn-group-vertical aepp-toolbar-vertical'></div>";
             var divpropositiondisplay = Y.Node.create(divproposition);
             var propositionarray = propositions.split('","');
             for (var i = 0; i < propositionarray.length; i++) {
-                var buttontmp = "<button class='btn btn-default' type='button' style='width:100%;font-size: x-small;'>"
+                var buttontmp = "<button class='btn btn-outline-dark' type='button'>"
                         + propositionarray[i].replace('"', '')
                         + "</button>";
                 var buttontmpdisplay = Y.Node.create(buttontmp);
@@ -1090,7 +1080,6 @@ Y.extend(ANNOTATION, Y.Base, {
         divvisu += this.get_valref().replace(/\n/g, "<br/>");
         divvisu += "</div>";
         var divvisudisplay = Y.Node.create(divvisu);
-
         if (this.answerrequested === 1) {
             var divinput = Y.Node.create("<div></div>");
             var hr = Y.Node.create("<hr style='margin-bottom:0px;'/>");
@@ -1110,13 +1099,12 @@ Y.extend(ANNOTATION, Y.Base, {
             rep = this.studentanswer;
             var buttonsave = "<button id='"
                     + this.divcartridge
-                    + "_buttonsavestudentanswer' style='margin-left:110px;' class='btn btn-default' type='button'>"
+                    + "_buttonsavestudentanswer' style='margin-left:110px;' class='btn' type='button'>"
                     //+ M.util.image_url('e/save', 'core')
                     + "<i class='fa fa-floppy-o' aria-hidden='true'></i>"
                     + "</button>";
             var buttonsavedisplay = Y.Node.create(buttonsave);
             buttonsavedisplay.on('click', this.save_studentanswer, this, null);
-
             divinput.append(hr);
             divinput.append(label);
             divinput.append(buttonsavedisplay);
@@ -1150,22 +1138,33 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(divinputdisplay);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
-        readonly = this.editor.get('readonly');
-        if (!readonly) {
-            divconteneurdisplay.append(this.get_button_visibility_left());
-            divconteneurdisplay.append(this.get_button_visibility_right());
-            divconteneurdisplay.append(this.get_button_save());
-            divconteneurdisplay.append(this.get_button_cancel());
-            if (this.tooltype.reply === 1) {
-                divconteneurdisplay.append(this.get_button_question());
-            }
-            divconteneurdisplay.append(this.get_button_remove());
-        } else {
-            divconteneurdisplay.append(this.get_button_student_status());
-        }
 
         return divconteneurdisplay;
     },
+
+    /**
+     * get the html node for toolbar on annotation
+     * @return node
+     */
+    get_toolbar: function () {
+        var divtoolbar = "<div id='" + this.divcartridge + "_toolbar' class='btn-group btn-group-sm aepp-toolbar'></div>";
+        var divtoolbardisplay = Y.Node.create(divtoolbar);
+        var readonly = this.editor.get('readonly');
+        if (!readonly) {
+            divtoolbardisplay.append(this.get_button_visibility_left());
+            divtoolbardisplay.append(this.get_button_visibility_right());
+            divtoolbardisplay.append(this.get_button_save());
+            divtoolbardisplay.append(this.get_button_cancel());
+            if (this.tooltype.reply === 1) {
+                divtoolbardisplay.append(this.get_button_question());
+            }
+            divtoolbardisplay.append(this.get_button_remove());
+        } else {
+            divtoolbardisplay.append(this.get_button_student_status());
+        }
+        return divtoolbardisplay;
+    },
+
     /**
      * get the html node for student button to set status
      * @return node
@@ -1189,11 +1188,9 @@ Y.extend(ANNOTATION, Y.Base, {
         var buttonstatus1display = Y.Node.create(buttonstatus1);
         var buttonstatus2display = Y.Node.create(buttonstatus2);
         var buttonstatus3display = Y.Node.create(buttonstatus3);
-
         buttonstatus1display.on('click', this.change_status, this, 0);
         buttonstatus2display.on('click', this.change_status, this, 1);
         buttonstatus3display.on('click', this.change_status, this, 2);
-
         var buttonstatusdisplay = Y.Node.create("<div id='"
                 + this.divcartridge
                 + "_radioContainer' style='display:inline;'></div>");
@@ -1207,7 +1204,8 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_right: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_right' class='btn btn-default' type='button'>";
+        var buttonvisibility = "<button id='" + this.divcartridge
+                + "_buttonedit_right' class='btn btn-sm btn-outline-dark' type='button'>";
         buttonvisibility += "<i class='fa fa-arrow-right' aria-hidden='true'></i>";
         buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
@@ -1219,7 +1217,8 @@ Y.extend(ANNOTATION, Y.Base, {
      * @return node
      */
     get_button_visibility_left: function () {
-        var buttonvisibility = "<button id='" + this.divcartridge + "_buttonedit_left' class='btn btn-default' type='button'>";
+        var buttonvisibility = "<button id='" + this.divcartridge
+                + "_buttonedit_left' class='btn btn-sm btn-outline-dark' type='button'>";
         buttonvisibility += "<i class='fa fa-arrow-left' aria-hidden='true'></i>";
         buttonvisibility += "</button>";
         var buttonvisibilitydisplay = Y.Node.create(buttonvisibility);
@@ -1233,7 +1232,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_save: function () {
         var buttonsave = "<button id='"
                 + this.divcartridge
-                + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-default' type='button'>"
+                + "_buttonsave' style='display:none;margin-left:110px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-check' aria-hidden='true'></i>"
                 + "</button>";
         var buttonsavedisplay = Y.Node.create(buttonsave);
@@ -1247,7 +1246,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_cancel: function () {
         var buttoncancel = "<button id='"
                 + this.divcartridge
-                + "_buttoncancel' style='display:none;' class='btn btn-default' type='button'>"
+                + "_buttoncancel' style='display:none;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-undo' aria-hidden='true'></i>"
                 + "</button>";
         var buttoncanceldisplay = Y.Node.create(buttoncancel);
@@ -1261,7 +1260,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_question: function () {
         var buttonquestion = "<button id='"
                 + this.divcartridge
-                + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                + "_buttonquestion' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + '<span class="fa-stack fa-lg" style="line-height: 1em;width: 1em;">'
                 + '<i class="fa fa-question-circle-o fa-stack-1x"></i>'
                 + '<i class="fa fa-ban fa-stack-1x text-danger"></i>'
@@ -1278,7 +1277,7 @@ Y.extend(ANNOTATION, Y.Base, {
     get_button_remove: function () {
         var buttontrash = "<button id='"
                 + this.divcartridge
-                + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-default' type='button'>"
+                + "_buttonremove' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
                 + "<i class='fa fa-trash' aria-hidden='true'></i>"
                 + "</button>";
         var buttontrashdisplay = Y.Node.create(buttontrash);
@@ -1482,16 +1481,13 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     move_cartridge_continue: function (e) {
         e.preventDefault();
-
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
                 clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                         e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex + diffx);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey + diffy);
@@ -1502,26 +1498,20 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     move_cartridge_stop: function (e) {
         e.preventDefault();
-
         var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         canvas.detach('mousemove', this.move_cartridge_continue, this);
         canvas.detach('mouseup', this.move_cartridge_stop, this);
-
         var clientpoint = new M.assignfeedback_editpdfplus.point(e.clientX + canvas.get('docScrollX'),
                 e.clientY + canvas.get('docScrollY')),
                 point = this.editor.get_canvas_coordinates(clientpoint);
         var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
-
         var diffx = point.x - this.oldx;
         var diffy = point.y - this.oldy;
-
         this.cartridgex += diffx;
         this.cartridgey += diffy;
-
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-
         this.editor.save_current_page();
     },
     /**
@@ -1747,7 +1737,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * Delete an annotation
      * @protected
      * @method remove
-     * @param {event} e
+     * @param event
      */
     remove: function (e) {
         var annotations,
@@ -1769,8 +1759,8 @@ Y.extend(ANNOTATION, Y.Base, {
     /**
      * Move an annotation to a new location.
      * @public
-     * @param {int} newx
-     * @param {int} newy
+     * @param int newx
+     * @param int newy
      * @method move_annotation
      */
     move: function (newx, newy) {
@@ -1803,7 +1793,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method draw_current_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      */
     draw_current_edit: function (edit) {
         var noop = edit && false;
@@ -1815,7 +1805,7 @@ Y.extend(ANNOTATION, Y.Base, {
      *
      * @public
      * @method init_from_edit
-     * @param {M.assignfeedback_editpdfplus.edit} edit
+     * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool if width/height is more than min. required.
      */
     init_from_edit: function (edit) {
@@ -1865,6 +1855,7 @@ M.assignfeedback_editpdfplus.annotation = ANNOTATION;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -1985,6 +1976,7 @@ M.assignfeedback_editpdfplus.annotationline = ANNOTATIONLINE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2099,6 +2091,7 @@ M.assignfeedback_editpdfplus.annotationrectangle = ANNOTATIONRECTANGLE;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2213,6 +2206,7 @@ M.assignfeedback_editpdfplus.annotationoval = ANNOTATIONOVAL;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, STROKEWEIGHT, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2373,6 +2367,7 @@ M.assignfeedback_editpdfplus.annotationpen = ANNOTATIONPEN;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global Y, M, ANNOTATIONCOLOUR */
 
 /**
  * Provides an in browser PDF editor.
@@ -2676,6 +2671,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -2754,6 +2751,7 @@ M.assignfeedback_editpdfplus.annotationhighlightplus = ANNOTATIONHIGHLIGHTPLUS;
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/* global SELECTOR */
 
 /**
  * Provides an in browser PDF editor.
@@ -3122,13 +3120,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
         this.shape_id = 'ct_stampcomment_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
+        var colorcartridge = this.get_color_cartridge();
         var fleche = '<i id="'
                 + this.shape_id
                 + '_img" '
-                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true"></i>';
+                + 'class="fa fa-arrows-h fa-2x" aria-hidden="true" style="color:'
+                + colorcartridge
+                + ';"></i>';
         if (this.displayrotation > 0) {
             fleche = '<i id="' + this.shape_id + '_img" '
-                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>';
+                    + 'class="fa fa-arrows-v fa-2x" aria-hidden="true" style="color:'
+                    + colorcartridge
+                    + ';"></i>';
         }
         node = Y.Node.create('<div id="' + this.shape_id + '">' + fleche + '</div>');
         node.setStyles({
@@ -3164,7 +3167,11 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
         bounds.bound([edit.start, edit.end]);
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
 
-        node = Y.Node.create('<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"></i>></div>');
+        var colorcartridge = this.get_color_cartridge();
+        var nodeContent = '<div><i class="fa fa-arrows-v fa-2x" aria-hidden="true"  style="color:'
+                + colorcartridge
+                + '"></i></div>';
+        node = Y.Node.create(nodeContent);
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block'
@@ -3229,7 +3236,7 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
-            divdisplay.append(divconteneurdisplay);
+            var toolbar = this.get_toolbar();
             if (!this.editor.get('readonly')) {
                 var rotationvalue = 0;
                 if (this.displayrotation > 0) {
@@ -3240,16 +3247,18 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
                         + "_rotation' value="
                         + rotationvalue
                         + " />");
-                divconteneurdisplay.append(inputrotationdisplay);
+                toolbar.append(inputrotationdisplay);
                 var buttonrotation = "<button id='"
                         + this.divcartridge
-                        + "_buttonrotation' class='btn btn-default' type='button'>"
+                        + "_buttonrotation' class='btn btn-sm btn-outline-dark' type='button'>"
                         + '<i class="fa fa-refresh" aria-hidden="true"></i>'
                         + "</button>";
                 var buttonrotationdisplay = Y.Node.create(buttonrotation);
                 buttonrotationdisplay.on('click', this.change_stamp, this);
-                divconteneurdisplay.append(buttonrotationdisplay);
+                toolbar.append(buttonrotationdisplay);
             }
+            divconteneurdisplay.append(toolbar);
+            divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
             if (!this.editor.get('readonly')) {
@@ -3579,20 +3588,26 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
 
                 //creation input
                 var divconteneurdisplay = this.get_div_container(colorcartridge);
+                var toolbar = this.get_toolbar();
                 if (!this.editor.get('readonly')) {
-                    var buttonrender = "<button id='" + this.divcartridge + "_buttonpencil' class='btn btn-default' type='button'>";
+                    var buttonrender = "<button id='"
+                            + this.divcartridge
+                            + "_buttonpencil' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonrender += '<i class="fa fa-eyedropper" aria-hidden="true"></i>';
                     buttonrender += "</button>";
                     var buttonrenderdisplay = Y.Node.create(buttonrender);
                     buttonrenderdisplay.on('click', this.display_picker, this);
-                    var buttonadd = "<button id='" + this.divcartridge + "_buttonadd' class='btn btn-default' type='button'>";
+                    var buttonadd = "<button id='"
+                            + this.divcartridge
+                            + "_buttonadd' class='btn btn-sm btn-outline-dark' type='button'>";
                     buttonadd += '<i class="fa fa-plus" aria-hidden="true"></i>';
                     buttonadd += "</button>";
                     var buttonadddisplay = Y.Node.create(buttonadd);
                     buttonadddisplay.on('click', this.add_annot, this);
-                    divconteneurdisplay.append(buttonrenderdisplay);
-                    divconteneurdisplay.append(buttonadddisplay);
+                    toolbar.append(buttonrenderdisplay);
+                    toolbar.append(buttonadddisplay);
                 }
+                divconteneurdisplay.append(toolbar);
                 divdisplay.append(divconteneurdisplay);
 
                 //creation de la div d'edition
@@ -4155,6 +4170,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -4271,7 +4288,10 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 position;
 
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:black;"></i></div>');
+        var colorcartridge = this.get_color_cartridge();
+        node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:'
+                + colorcartridge
+                + ';"></i></div>');
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
@@ -4377,6 +4397,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
@@ -4481,7 +4503,7 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationcommentplus = ANNOTATIONCOMMENTPLUS;
 var DROPDOWN_NAME = "Dropdown menu",
-    DROPDOWN;
+        DROPDOWN;
 
 /**
  * Provides an in browser PDF editor.
@@ -4497,7 +4519,7 @@ var DROPDOWN_NAME = "Dropdown menu",
  * @constructor
  * @extends M.core.dialogue
  */
-DROPDOWN = function(config) {
+DROPDOWN = function (config) {
     config.draggable = false;
     config.centered = false;
     config.width = 'auto';
@@ -4513,7 +4535,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method initializer
      * @return void
      */
-    initializer : function(config) {
+    initializer: function (config) {
         var button, body, headertext, bb;
         DROPDOWN.superclass.initializer.call(this, config);
 
@@ -4531,7 +4553,7 @@ Y.extend(DROPDOWN, M.core.dialogue, {
         headertext.setHTML(this.get('headerText'));
         body.prepend(headertext);
 
-        body.on('clickoutside', function(e) {
+        body.on('clickoutside', function (e) {
             if (this.get('visible')) {
                 // Note: we need to compare ids because for some reason - sometimes button is an Object, not a Y.Node.
                 if (e.target.get('id') !== button.get('id') && e.target.ancestor().get('id') !== button.get('id')) {
@@ -4541,7 +4563,10 @@ Y.extend(DROPDOWN, M.core.dialogue, {
             }
         }, this);
 
-        button.on('click', function(e) {e.preventDefault(); this.show();}, this);
+        button.on('click', function (e) {
+            e.preventDefault();
+            this.show();
+        }, this);
         button.on('key', this.show, 'enter,space', this);
     },
 
@@ -4551,16 +4576,16 @@ Y.extend(DROPDOWN, M.core.dialogue, {
      * @method show
      * @return void
      */
-    show : function() {
+    show: function () {
         var button = this.get('buttonNode'),
-            result = DROPDOWN.superclass.show.call(this);
+                result = DROPDOWN.superclass.show.call(this);
         this.align(button, [Y.WidgetPositionAlign.TL, Y.WidgetPositionAlign.BL]);
 
         return result;
     }
 }, {
-    NAME : DROPDOWN_NAME,
-    ATTRS : {
+    NAME: DROPDOWN_NAME,
+    ATTRS: {
         /**
          * The header for the drop down (only accessible to screen readers).
          *
@@ -4568,8 +4593,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type String
          * @default ''
          */
-        headerText : {
-            value : ''
+        headerText: {
+            value: ''
         },
 
         /**
@@ -4579,8 +4604,8 @@ Y.extend(DROPDOWN, M.core.dialogue, {
          * @type Y.Node
          * @default null
          */
-        buttonNode : {
-            value : null
+        buttonNode: {
+            value: null
         }
     }
 });
@@ -4596,7 +4621,7 @@ Y.Base.modifyAttrs(DROPDOWN, {
      * @default false
      */
     modal: {
-        getter: function() {
+        getter: function () {
             return false;
         }
     }
@@ -4604,6 +4629,8 @@ Y.Base.modifyAttrs(DROPDOWN, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.dropdown = DROPDOWN;
+/* global Y, M */
+
 var COLOURPICKER_NAME = "Colourpicker",
         COLOURPICKER;
 
@@ -4644,9 +4671,6 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             var button, listitem, title;
 
             title = M.util.get_string(colour, 'assignfeedback_editpdfplus');
-            //iconname = this.get('iconprefix') + colour;
-            //img = M.util.image_url(iconname, 'assignfeedback_editpdfplus');
-            //button = Y.Node.create('<button><img alt="' + title + '" src="' + img + '"/></button>');
             if (colour === "white" || colour === "yellowlemon") {
                 iconGoutte = Y.Node.create('<span class="fa-stack fa-lg">'
                         + '<i class="fa fa-square fa-stack-2x" style="color:#E3E3E3;"></i>'
@@ -4663,7 +4687,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
                         + '</span>');
             }
             iconGoutte.setAttribute('data-colour', colour);
-            button = Y.Node.create('<button class="btn btn-default btn-sm" type="button"></button>');
+            button = Y.Node.create('<button class="btn btn-sm" type="button"></button>');
             button.append(iconGoutte);
             button.setAttribute('data-colour', colour);
             button.setAttribute('data-rgb', rgb);
@@ -4789,6 +4813,7 @@ var EDITOR = function () {
     EDITOR.superclass.constructor.apply(this, arguments);
 };
 EDITOR.prototype = {
+
     /**
      * The dialogue used for all action menu displays.
      *
@@ -4797,6 +4822,7 @@ EDITOR.prototype = {
      * @protected
      */
     dialogue: null,
+
     /**
      * The panel used for all action menu displays.
      *
@@ -4805,6 +4831,7 @@ EDITOR.prototype = {
      * @protected
      */
     panel: null,
+
     /**
      * The number of pages in the pdf.
      *
@@ -4813,6 +4840,7 @@ EDITOR.prototype = {
      * @protected
      */
     pagecount: 0,
+
     /**
      * The active page in the editor.
      *
@@ -4821,6 +4849,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentpage: 0,
+
     /**
      * A list of page objects. Each page has a list of comments and annotations.
      *
@@ -4847,6 +4876,7 @@ EDITOR.prototype = {
      * @protected
      */
     loadingicon: null,
+
     /**
      * Image object of the current page image.
      *
@@ -4855,6 +4885,7 @@ EDITOR.prototype = {
      * @protected
      */
     pageimage: null,
+
     /**
      * YUI Graphic class for drawing shapes.
      *
@@ -4863,6 +4894,7 @@ EDITOR.prototype = {
      * @protected
      */
     graphic: null,
+
     /**
      * Info about the current edit operation.
      *
@@ -4871,6 +4903,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentedit: new M.assignfeedback_editpdfplus.edit(),
+
     /**
      * Current drawable.
      *
@@ -4879,6 +4912,7 @@ EDITOR.prototype = {
      * @protected
      */
     currentdrawable: false,
+
     /**
      * Current drawables.
      *
@@ -4887,6 +4921,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawables: [],
+
     /**
      * Current annotations.
      *
@@ -4895,6 +4930,7 @@ EDITOR.prototype = {
      * @protected
      */
     drawablesannotations: [],
+
     /**
      * Current annotation when the select tool is used.
      * @property currentannotation
@@ -4902,27 +4938,23 @@ EDITOR.prototype = {
      * @protected
      */
     currentannotation: null,
+
+    /**
+     * Track the previous annotation so we can remove selection highlights.
+     * @property lastannotation
+     * @type M.assignfeedback_editpdfplus.annotation
+     * @protected
+     */
+    lastannotation: null,
+
     /**
      * Last selected annotation tool
      * @property lastannotationtool
      * @type String
      * @protected
      */
-    lastanntationtool: "pen",
-    /**
-     * The selected stamp picture.
-     * @property currentstamp
-     * @type String
-     * @protected
-     */
-    currentstamp: null,
-    /**
-     * The stamps.
-     * @property stamps
-     * @type Array
-     * @protected
-     */
-    stamps: [],
+    lastannotationtool: null,
+
     /**
      * The parents annotations
      * @type Array
@@ -4977,12 +5009,13 @@ EDITOR.prototype = {
 
         }
     },
+
     /**
-     * Called to show/hide buttons and set the current colours/stamps.
+     * Called to show/hide buttons and set the current colours.
      * @method refresh_button_state
      */
     refresh_button_state: function () {
-        var currenttoolnode, drawingregion;
+        var currenttoolnode, drawingregion, drawingcanvas;
 
         this.refresh_button_color_state();
 
@@ -4992,12 +5025,28 @@ EDITOR.prototype = {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
         if (currenttoolnode) {
-            currenttoolnode.addClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.addClass('active');
             currenttoolnode.setAttribute('aria-pressed', 'true');
         }
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
+
+        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        switch (this.currentedit.tool) {
+            case 'drag':
+                drawingcanvas.setStyle('cursor', 'move');
+                break;
+            case 'highlight':
+                drawingcanvas.setStyle('cursor', 'text');
+                break;
+            case 'select':
+                drawingcanvas.setStyle('cursor', 'default');
+                break;
+            default:
+                drawingcanvas.setStyle('cursor', 'crosshair');
+        }
     },
+
     /**
      * Called to set the current colours
      * @method refresh_button_color_state
@@ -5020,9 +5069,10 @@ EDITOR.prototype = {
                     button.one('i').setStyle('color', this.currentedit.annotationcolour);
                     break;
             }
-            button.setStyle('background-color', 'transparent');
+            button.setStyle('background-color', '');
         }
     },
+
     /**
      * Called to get the bounds of the drawing region.
      * @method get_canvas_bounds
@@ -5037,6 +5087,7 @@ EDITOR.prototype = {
 
         return new M.assignfeedback_editpdfplus.rect(offsetleft, offsettop, width, height);
     },
+
     /**
      * Called to translate from window coordinates to canvas coordinates.
      * @method get_canvas_coordinates
@@ -5051,6 +5102,7 @@ EDITOR.prototype = {
         newpoint.clip(bounds);
         return newpoint;
     },
+
     /**
      * Called to translate from canvas coordinates to window coordinates.
      * @method get_window_coordinates
@@ -5062,6 +5114,7 @@ EDITOR.prototype = {
 
         return newpoint;
     },
+
     /**
      * Open the edit-pdf editor in the panel in the page instead of a popup.
      * @method open_in_panel
@@ -5091,6 +5144,7 @@ EDITOR.prototype = {
 
         this.start_generation();
     },
+
     /**
      * Called to open the pdf editing dialogue.
      * @method link_handler
@@ -5220,6 +5274,7 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * Spwan the PDF to Image conversion on the server.
      *
@@ -5258,14 +5313,15 @@ EDITOR.prototype = {
             }
         });
     },
+
     /**
      * The info about all pages in the pdf has been returned.
+     *
      * @param string The ajax response as text.
      * @protected
      * @method prepare_pages_for_display
      */
     prepare_pages_for_display: function (data) {
-        //all_pages_loaded: function (responsetext) {
         var i, j, error;
         if (!data.pagecount) {
             if (this.dialogue) {
@@ -5451,25 +5507,6 @@ EDITOR.prototype = {
     },
 
     /**
-     * Get the full pluginfile url for an image file - just given the filename.
-     *
-     * @public
-     * @method get_stamp_image_url
-     * @param string filename
-     */
-    get_stamp_image_url: function (filename) {
-        var urls = this.get('stampfiles'),
-                fullurl = '';
-
-        Y.Array.each(urls, function (url) {
-            if (url.indexOf(filename) > 0) {
-                fullurl = url;
-            }
-        }, this);
-
-        return fullurl;
-    },
-    /**
      * Show only annotations from selected axis
      * @public
      * @param {type} edit
@@ -5480,6 +5517,7 @@ EDITOR.prototype = {
         axis.visibility = axe.get('checked');
         this.redraw();
     },
+
     /**
      * Attach listeners and enable the color picker buttons.
      * @protected
@@ -5567,6 +5605,7 @@ EDITOR.prototype = {
     update_student_feedback: function () {
         this.refresh_pdf();
     },
+
     /**
      * Refresh view with option on question shown or not
      * @protected
@@ -5600,6 +5639,7 @@ EDITOR.prototype = {
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '' + axisid);
         customtoolbar.show();
     },
+
     /**
      * Change the current tool from a button's call.
      * @protected
@@ -5617,6 +5657,8 @@ EDITOR.prototype = {
      * @protected
      */
     handle_tool_button_action: function (tool, toolid, has_parent) {
+        var drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+
         var currenttoolnode;
         // Change style of the pressed button.
         if (this.currentedit.id) {
@@ -5625,14 +5667,15 @@ EDITOR.prototype = {
             currenttoolnode = this.get_dialogue_element(TOOLSELECTOR[this.currentedit.tool]);
         }
         if (currenttoolnode) {
-            currenttoolnode.removeClass('assignfeedback_editpdfplus_selectedbutton');
+            currenttoolnode.removeClass('active');
             currenttoolnode.setAttribute('aria-pressed', 'false');
+            drawingregion.setStyle('cursor', 'auto');
         }
-        //update le currentedit object with the new tool
+        //update the currentedit object with the new tool
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "comment" && tool !== "select" && tool !== "drag" && tool !== "stamp") {
+        if (tool !== "select" && tool !== "drag") {
             this.lastannotationtool = tool;
         }
 
@@ -5645,6 +5688,7 @@ EDITOR.prototype = {
 
         this.refresh_button_state();
     },
+
     /**
      * Refresh the display of each annotation
      * @protected
@@ -5679,6 +5723,7 @@ EDITOR.prototype = {
 
         return Y.JSON.stringify(page);
     },
+
     /**
      * JSON encode the current page data - stripping out drawable references
      * which cannot be encoded (light, only for student information).
@@ -5696,6 +5741,7 @@ EDITOR.prototype = {
         page = {annotations: annotations};
         return Y.JSON.stringify(page);
     },
+
     /**
      * Generate a drawable from the current in progress edit.
      * @protected
@@ -5722,6 +5768,7 @@ EDITOR.prototype = {
 
         return drawable;
     },
+
     /**
      * Find an element within the dialogue.
      * @protected
@@ -5734,6 +5781,7 @@ EDITOR.prototype = {
             return this.dialogue.get('boundingBox').one(selector);
         }
     },
+
     /**
      * Redraw the active edit.
      * @protected
@@ -5745,6 +5793,7 @@ EDITOR.prototype = {
         }
         this.currentdrawable = this.get_current_drawable();
     },
+
     /**
      * Event handler for mousedown or touchstart.
      * @protected
@@ -5758,8 +5807,7 @@ EDITOR.prototype = {
                 scrollleft = canvas.get('docScrollX'),
                 point = {x: e.clientX - offset[0] + scrollleft,
                     y: e.clientY - offset[1] + scrolltop},
-                selected = false,
-                lastannotation;
+                selected = false;
 
         // Ignore right mouse click.
         if (e.button === 3) {
@@ -5787,14 +5835,14 @@ EDITOR.prototype = {
             });
 
             if (selected) {
-                lastannotation = this.currentannotation;
+                this.lastannotation = this.currentannotation;
                 this.currentannotation = selected;
-                if (lastannotation && lastannotation !== selected) {
+                if (this.lastannotation && this.lastannotation !== selected) {
                     // Redraw the last selected annotation to remove the highlight.
-                    if (lastannotation.drawable) {
-                        lastannotation.drawable.erase();
-                        this.drawables.push(lastannotation.draw());
-                        this.drawablesannotations.push(lastannotation);
+                    if (this.lastannotation.drawable) {
+                        this.lastannotation.drawable.erase();
+                        this.drawables.push(this.lastannotation.draw());
+                        this.drawablesannotations.push(this.lastannotation);
                     }
                 }
                 // Redraw the newly selected annotation to show the highlight.
@@ -5803,6 +5851,16 @@ EDITOR.prototype = {
                 }
                 this.drawables.push(this.currentannotation.draw());
                 this.drawablesannotations.push(this.currentannotation);
+            } else {
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = null;
+
+                // Redraw the last selected annotation to remove the highlight.
+                if (this.lastannotation && this.lastannotation.drawable) {
+                    this.lastannotation.drawable.erase();
+                    this.drawables.push(this.lastannotation.draw());
+                    this.drawablesannotations.push(this.lastannotation);
+                }
             }
         }
         if (this.currentannotation) {
@@ -5811,6 +5869,7 @@ EDITOR.prototype = {
                 y: this.currentannotation.y};
         }
     },
+
     /**
      * Event handler for mousemove.
      * @protected
@@ -5856,6 +5915,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Event handler for mouseup or touchend.
      * @protected
@@ -5872,38 +5932,36 @@ EDITOR.prototype = {
             return;
         }
 
-        if (this.currentedit.tool !== 'comment') {
-            var toolid = this.currentedit.id;
-            if (this.currentedit.id && this.currentedit.id[0] === 'c') {
-                toolid = this.currentedit.id.substr(8);
+        var toolid = this.currentedit.id;
+        if (this.currentedit.id && this.currentedit.id[0] === 'c') {
+            toolid = this.currentedit.id.substr(8);
+        }
+        annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
+        if (annotation) {
+            if (this.currentdrawable) {
+                this.currentdrawable.erase();
             }
-            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
-            if (annotation) {
-                if (this.currentdrawable) {
-                    this.currentdrawable.erase();
-                }
-                this.currentdrawable = false;
-                if (annotation.init_from_edit(this.currentedit)) {
-                    this.currentannotation = annotation;
-                    annotation.draw_catridge(this.currentedit);
-                    annotation.edit_annot();
-                    if (annotation.parent_annot_element) {
-                        var index = 0;
-                        if (annotation.parent_annot_element.id) {
-                            index = annotation.parent_annot_element.id;
-                        } else {
-                            index = annotation.parent_annot_element.divcartridge;
-                        }
-                        if (this.annotationsparent[index]) {
-                            this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
-                        } else {
-                            this.annotationsparent[index] = [annotation];
-                        }
+            this.currentdrawable = false;
+            if (annotation.init_from_edit(this.currentedit)) {
+                this.currentannotation = annotation;
+                annotation.draw_catridge(this.currentedit);
+                annotation.edit_annot();
+                if (annotation.parent_annot_element) {
+                    var index = 0;
+                    if (annotation.parent_annot_element.id) {
+                        index = annotation.parent_annot_element.id;
+                    } else {
+                        index = annotation.parent_annot_element.divcartridge;
                     }
-                    this.pages[this.currentpage].annotations.push(annotation);
-                    this.drawables.push(annotation.draw());
-                    this.drawablesannotations.push(annotation);
+                    if (this.annotationsparent[index]) {
+                        this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
+                    } else {
+                        this.annotationsparent[index] = [annotation];
+                    }
                 }
+                this.pages[this.currentpage].annotations.push(annotation);
+                this.drawables.push(annotation.draw());
+                this.drawablesannotations.push(annotation);
             }
         }
 
@@ -5919,6 +5977,7 @@ EDITOR.prototype = {
             this.handle_tool_button_action("select");
         }
     },
+
     /**
      * Resize the dialogue window when the browser is resized.
      * @public
@@ -5946,6 +6005,7 @@ EDITOR.prototype = {
         this.redraw();
         return true;
     },
+
     /**
      * Factory method for creating annotations of the correct subclass.
      * @public
@@ -6037,6 +6097,7 @@ EDITOR.prototype = {
         }
         return false;
     },
+
     /**
      * AJAX call for refresh PDF with last annotations and comments/status
      * @returns {undefined}
@@ -6088,6 +6149,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page.
      * @protected
@@ -6144,6 +6206,7 @@ EDITOR.prototype = {
         Y.io(ajaxurl, config);
 
     },
+
     /**
      * Save all the annotations and comments for the current page fot student view.
      * @protected
@@ -6197,6 +6260,7 @@ EDITOR.prototype = {
         };
         Y.io(ajaxurl, config);
     },
+
     /**
      * Redraw all the comments and annotations.
      * @protected
@@ -6242,6 +6306,7 @@ EDITOR.prototype = {
             }
         }
     },
+
     /**
      * Load the image for this pdf page and remove the loading icon (if there).
      * @protected
@@ -6278,6 +6343,7 @@ EDITOR.prototype = {
 
         this.resize(); // Internally will call 'redraw', after checking the dialogue size.
     },
+
     /**
      * Now we know how many pages there are,
      * we can enable the navigation controls.
@@ -6318,6 +6384,7 @@ EDITOR.prototype = {
         nextbutton.on('click', this.next_page, this);
         nextbutton.on('key', this.next_page, 'down:13', this);
     },
+
     /**
      * Navigate to the previous page.
      * @protected
@@ -6331,6 +6398,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Navigate to the next page.
      * @protected
@@ -6344,6 +6412,7 @@ EDITOR.prototype = {
         }
         this.change_page();
     },
+
     /**
      * Update any absolutely positioned nodes, within each drawable, when the drawing canvas is scrolled
      * @protected
@@ -6401,10 +6470,6 @@ Y.extend(EDITOR, Y.Base, EDITOR.prototype, {
         readonly: {
             validator: Y.Lang.isBoolean,
             value: true
-        },
-        stampfiles: {
-            validator: Y.Lang.isArray,
-            value: ''
         }
     }
 });

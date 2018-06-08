@@ -37,13 +37,15 @@ use moodleform;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class axis_del_form extends moodleform {
+    
+    const HIDDENSTATE = "hidden";
 
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement('hidden', 'label', ''); // Add elements to your form
-        $mform->setType('hidden', PARAM_TEXT);     //Set type of element
-        $mform->addElement('hidden', 'axeid', ''); // Add elements to your form
-        $mform->setType('hidden', PARAM_INT);      //Set type of element
+        $mform->addElement(self::HIDDENSTATE, 'label', ''); // Add elements to your form
+        $mform->setType(self::HIDDENSTATE, PARAM_TEXT);     //Set type of element
+        $mform->addElement(self::HIDDENSTATE, 'axeid', ''); // Add elements to your form
+        $mform->setType(self::HIDDENSTATE, PARAM_INT);      //Set type of element
     }
 
     //Custom validation should be added here

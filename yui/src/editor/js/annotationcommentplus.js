@@ -49,7 +49,10 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 position;
 
         position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:black;"></i></div>');
+        var colorcartridge = this.get_color_cartridge();
+        node = Y.Node.create('<div><i class="fa fa-commenting" aria-hidden="true" style="color:'
+                + colorcartridge
+                + ';"></i></div>');
         node.setStyles({
             'position': 'absolute',
             'display': 'inline-block',
@@ -155,6 +158,8 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             //creation input
             var divconteneurdisplay = this.get_div_container(colorcartridge);
+            var toolbar = this.get_toolbar();
+            divconteneurdisplay.append(toolbar);
             divdisplay.append(divconteneurdisplay);
 
             //creation de la div d'edition
