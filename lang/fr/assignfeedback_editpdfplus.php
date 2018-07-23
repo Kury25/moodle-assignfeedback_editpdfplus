@@ -176,5 +176,10 @@ $string['adminplugin_cartridge_x'] = 'Décalage relatif horizontal';
 $string['adminplugin_cartridge_x_desc'] = 'Décalage relatif horizontal du cartouche par rapport à l\'annotation en px';
 $string['adminplugin_cartridge_y'] = 'Décalage relatif vertical';
 $string['adminplugin_cartridge_y_desc'] = 'Décalage relatif vertical du cartouche par rapport à l\'annotation en px';
-
-
+$string['help_title'] = 'Aide';
+$string['help_table_titlevisu'] = 'Visuel';
+$string['help_table_titletype'] = 'Type';
+$string['help_table_titleuse'] = 'Utilisation';
+$string['help_highlight'] = 'Surligner un élément dans le document';
+$string['help_verticalline'] = 'Cliquer glisser une ligne verticale dans le document';
+$string['help_stamp'] = 'Cliquer à l\'endroit où placer le tampon';

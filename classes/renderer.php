@@ -127,12 +127,6 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $body = '';
 
-        /* $tooglenavigation = html_writer::tag("button", '<span class="navbar-toggler-icon"></span>', array(self::HTMLCLASS => 'navbar-toggler',
-          'type' => self::HTMLTYPEBUTTON,
-          'data-toggle' => "collapse",
-          'data-target' => "#navbarSupportedContent",
-          'aria-expanded' => "Toggle navigation")); */
-
         // Create the page navigation.
         $navigation = '';
         // Pick the correct arrow icons for right to left mode.
@@ -196,12 +190,13 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $statuschoice = $this->render_toolbar(html_writer::select($axis, 'axisselection', 0, FALSE), "mr-0");
             $toolbarAxis = $statuschoice;
 
-            // Toolbar pour lien creation palette
+            // Toolbar pour lien creation palette et aide
             $courseid = $this->page->course->id;
             $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $courseid));
             $toolbarAdmin = $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-wrench"), array(
-                self::HTMLCLASS => 'btn btn-info',
+                self::HTMLCLASS => 'btn btn-outline-info',
                 'onclick' => "document.location='" . $lienAdmin->out() . "';"));
+            $toolbarAdmin .= $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-question-circle"), array(self::HTMLCLASS => 'btn btn-outline-info helpmessage'));
             $toolbarAdminBlock = $this->render_toolbar($toolbarAdmin, "mr-3");
         } else {
             //readonly view
@@ -238,8 +233,8 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                     'aria-valuemax' => 100));
         $progressbarlabel = html_writer::div(get_string('generatingpdf', self::PLUGIN_NAME), 'progressbarlabel');
         $loading = html_writer::div($progressbar . $progressbarlabel, 'loading');
-
         $canvas = html_writer::div(html_writer::div($loading, 'drawingcanvas'), 'drawingregion');
+
         $changesmessage = html_writer::tag('div', get_string('draftchangessaved', self::PLUGIN_NAME), array(
                     self::HTMLCLASS => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
         ));
@@ -251,6 +246,13 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         ));
         $changesmessage2Div = html_writer::div($changesmessage2, 'unsaved-changes');
         $canvas .= $changesmessage2Div;
+
+        //help message
+        $helpmessageTitle = html_writer::div(get_string('help_title', self::PLUGIN_NAME), null, array('id' => 'afppHelpmessageTitle'));
+        $helpmessagecontent=$this->render_from_template('assignfeedback_editpdfplus/help_workspace', array());
+        $helpmessageBody = html_writer::div($helpmessagecontent, null, array('id' => 'afppHelpmessageBody'));
+        $helpmessageDiv = html_writer::div($helpmessageTitle . $helpmessageBody, 'helpmessage');
+        $canvas .= $helpmessageDiv;
 
         $body .= $canvas;
 

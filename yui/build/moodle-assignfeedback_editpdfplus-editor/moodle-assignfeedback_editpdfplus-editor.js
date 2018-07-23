@@ -39,12 +39,15 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
             UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
             UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
             UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
+            HELPMESSAGETITLE: '#afppHelpmessageTitle',
+            HELPMESSAGE: '#afppHelpmessageBody',
             DIALOGUE: '.' + CSS.DIALOGUE,
             CUSTOMTOOLBARID: '#toolbaraxis',
             CUSTOMTOOLBARS: '.customtoolbar',
             AXISCUSTOMTOOLBAR: '.menuaxisselection',
             CUSTOMTOOLBARBUTTONS: '.costumtoolbarbutton',
             GENERICTOOLBARBUTTONS: '.generictoolbarbutton',
+            HELPBTNCLASS: '.helpmessage',
             STATUTSELECTOR: '#menustatutselection',
             QUESTIONSELECTOR: '#menuquestionselection',
             STUDENTVALIDATION: '#student_valide_button'
@@ -5597,6 +5600,12 @@ EDITOR.prototype = {
             },
             context: this
         });
+
+        //help part
+        var helpbutton = this.get_dialogue_element(SELECTOR.HELPBTNCLASS);
+        if (helpbutton) {
+            helpbutton.on('click', this.display_help_message, this);
+        }
     },
     /**
      * Re-create new PDF from all fresh data
@@ -6428,6 +6437,26 @@ EDITOR.prototype = {
         for (i = 0; i < this.drawables.length; i++) {
             this.drawables[i].scroll_update(x, y);
         }
+    },
+
+    /**
+     * Display a help popup in order to explain tools usability
+     * @protected
+     * @method display_help_message
+     */
+    display_help_message: function (event) {
+        event.preventDefault();
+        var helptitle = this.get_dialogue_element(SELECTOR.HELPMESSAGETITLE);
+        var helpbody = this.get_dialogue_element(SELECTOR.HELPMESSAGE);
+        var helpopup = new M.core.dialogue({
+            headerContent: helptitle.get('innerHTML'),
+            bodyContent: helpbody.get('innerHTML'),
+            modal: true,
+            width: '840px',
+            visible: false,
+            draggable: true});
+        helpopup.centerDialogue();
+        helpopup.show();
     }
 
 };
