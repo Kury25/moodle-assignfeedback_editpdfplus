@@ -229,8 +229,8 @@
 .moodle-dialogue-base .moodle-dialogue.assignfeedback_editpdfplus_dropdown .moodle-dialogue-bd {
     padding: 0;
 }
-.assignfeedback_editpdfplus_dropdown .moodle-dialogue-hd,
-.assignfeedback_editpdfplus_dropdown .moodle-dialogue-ft {
+.moodle-dialogue-base .assignfeedback_editpdfplus_dropdown .moodle-dialogue-wrap .moodle-dialogue-hd,
+.moodle-dialogue-base .assignfeedback_editpdfplus_dropdown .moodle-dialogue-wrap .moodle-dialogue-ft {
     display: none;
 }
 .assignfeedback_editpdfplus_menu li hr {

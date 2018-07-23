@@ -40,6 +40,7 @@ define(['jquery', './global'],
                 // next value instance ID.
                 return(++instanceCount);
             };
+
             // I return an initialized object.
             /**
              * Annotation class.

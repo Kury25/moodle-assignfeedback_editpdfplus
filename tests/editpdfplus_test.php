@@ -31,7 +31,7 @@ use \assignfeedback_editpdfplus\pdf;
 use \assignfeedback_editpdfplus\bdd\annotation;
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/assign/tests/generator.php');
 
 /**
  * Unit tests for assignfeedback_editpdfplus\comments_quick_list
