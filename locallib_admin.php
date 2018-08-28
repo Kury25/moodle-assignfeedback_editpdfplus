@@ -74,7 +74,7 @@ class assign_feedback_editpdfplus_admin {
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin($widget);
         return $html;
     }
-
+    
     /**
      * Buid axis moodleform
      * @global $PAGE

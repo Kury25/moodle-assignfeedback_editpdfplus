@@ -183,3 +183,4 @@ $string['help_table_titleuse'] = 'Utilisation';
 $string['help_highlight'] = 'Surligner un élément dans le document';
 $string['help_verticalline'] = 'Cliquer glisser une ligne verticale dans le document';
 $string['help_stamp'] = 'Cliquer à l\'endroit où placer le tampon';
+$string['admin_access_error'] = 'Vous n\'avez pas les droits suffisants pour accéder à cette page, contactez votre enseignant ou un responsable de Moodle.';

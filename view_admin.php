@@ -96,6 +96,8 @@ echo $OUTPUT->header();
 if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
     $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
     echo $editpdfplus->view();
+} else {
+    print_error('admin_access_error', 'assignfeedback_editpdfplus', $CFG->wwwroot . '/course/view.php?id=' . $course->id);
 }
 
 echo $OUTPUT->footer();
