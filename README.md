@@ -4,7 +4,7 @@ This plugin is a fork of assignfeedback_editpdf, and is developed and maintained
 
 Author: Marion Chardon, <marion.chardon@unil.ch>
 
-Compatible with Moodle versions: 3.3
+Compatible with Moodle versions: 3.3, 3.5
 
 ## Description
 
