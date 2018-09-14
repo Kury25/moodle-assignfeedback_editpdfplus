@@ -17,9 +17,12 @@
 
 /**
  * This file contains the combined document class for the assignfeedback_editpdfplus plugin.
+ * 
+ * The combined_document class for the assignfeedback_editpdfplus plugin.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2017 Andrew Nicols <andrew@nicols.co.uk>
+ * @copyright  2017 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/combined_document.php by Andrew Nicols <andrew@nicols.co.uk>.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,12 +30,6 @@ namespace assignfeedback_editpdfplus;
 
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * The combined_document class for the assignfeedback_editpdfplus plugin.
- *
- * @copyright 2017 Andrew Nicols <andrew@nicols.co.uk>
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class combined_document {
 
     /**

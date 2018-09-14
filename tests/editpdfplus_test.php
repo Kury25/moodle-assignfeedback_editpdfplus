@@ -19,7 +19,8 @@
  *
  * @package    assignfeedback_editpdfplus
  * @category   phpunit
- * @copyright  2013 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/tests/editpdfplus_test.php by Damyon Wiese.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,12 +34,6 @@ use \assignfeedback_editpdfplus\bdd\annotation;
 global $CFG;
 require_once($CFG->dirroot . '/mod/assign/tests/generator.php');
 
-/**
- * Unit tests for assignfeedback_editpdfplus\comments_quick_list
- *
- * @copyright  2013 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
     protected function setUp() {
@@ -260,7 +255,7 @@ class assignfeedback_editpdfplus_testcase extends mod_assign_base_testcase {
 
         $plugin = $assign->get_feedback_plugin_by_type('editpdf');
         $data = new stdClass();
-        $data->editpdf_source_userid = $this->students[0]->id;
+        $data->editpdfplus_source_userid = $this->students[0]->id;
         $this->assertTrue($plugin->is_feedback_modified($grade, $data));
         $plugin->save($grade, $data);
 

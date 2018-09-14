@@ -54,6 +54,13 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tytool1->color = "#FFFF40";
     $tytool1->contextid = 1;
     $tytool1->label = "highlightplus";
+    $tytool1b = new assignfeedback_editpdfplus\bdd\type_tool();
+    $tytool1b->cartridge_color = null;
+    $tytool1b->cartridge_x = null;
+    $tytool1b->cartridge_y = null;
+    $tytool1b->color = "red";
+    $tytool1b->contextid = 1;
+    $tytool1b->label = "lineplus";
     $tytool2 = new assignfeedback_editpdfplus\bdd\type_tool();
     $tytool2->cartridge_color = null;
     $tytool2->cartridge_x = null;
@@ -124,7 +131,7 @@ function xmldb_assignfeedback_editpdfplus_install() {
     $tytool11->color = null;
     $tytool11->contextid = 1;
     $tytool11->label = "highlight";
-    $tytools = array($tytool1, $tytool2, $tytool3, $tytool4, $tytool5, $tytool6, $tytool7, $tytool8, $tytool9, $tytool10, $tytool11);
+    $tytools = array($tytool1,$tytool1b, $tytool2, $tytool3, $tytool4, $tytool5, $tytool6, $tytool7, $tytool8, $tytool9, $tytool10, $tytool11);
     $DB->insert_records('assignfeedback_editpp_typet', $tytools);
     //tools
     $tool1 = new assignfeedback_editpdfplus\bdd\tool();

@@ -19,16 +19,16 @@
  * Upgrade code for the feedback_editpdfplus module.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Jerome Mouneyrac
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/db/upgrade.php by Jerome Mouneyrac.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 use assignfeedback_editpdfplus\bdd\type_tool;
 
 /**
- * EditPDF upgrade code
+ * EditPDFplus upgrade code
  * @param int $oldversion
  * @return bool
  */
@@ -56,7 +56,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
             $dbman->create_table($table);
         }
 
-        // Editpdf savepoint reached.
+        // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2016021600, 'assignfeedback', 'editpdfplus');
     }
 
@@ -73,7 +73,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
             $file->delete();
         }
 
-        // Editpdf savepoint reached.
+        // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2017022700, 'assignfeedback', 'editpdfplus');
     }
 
@@ -106,7 +106,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         $typeTool5->configurable = 0;
         $DB->update_record('assignfeedback_editpp_typet', $typeTool5);
 
-        // Editpdf savepoint reached.
+        // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2017071202, 'assignfeedback', 'editpdfplus');
     }
 
@@ -152,7 +152,7 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         // Execute DB update for assign instances.
         $DB->execute($sql, $params);
 
-        // Editpdf savepoint reached.
+        // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2017081306, 'assignfeedback', 'editpdfplus');
     }
 
@@ -210,8 +210,72 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         // Execute DB update for assign instances.
         $DB->execute($sql, []);
 
-        // Editpdf savepoint reached.
+        // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2017081601, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2018091203) {
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 12
+                 WHERE id = 11 and label = 'highlight'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 11
+                 WHERE id = 10 and label = 'oval'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 10
+                 WHERE id = 9 and label = 'rectangle'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 9
+                 WHERE id = 8 and label = 'line'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 8
+                 WHERE id = 7 and label = 'pen'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 7
+                 WHERE id = 6 and label = 'commentplus'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 6
+                 WHERE id = 5 and label = 'stampcomment'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 5
+                 WHERE id = 4 and label = 'verticalline'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 4
+                 WHERE id = 3 and label = 'frame'";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_typet}
+                   SET id = 3
+                 WHERE id = 2 and label = 'stampplus'";
+        $DB->execute($sql, []);
+        $DB->get_manager()->reset_sequence('assignfeedback_editpp_typet');
+        
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET type = 6
+                 WHERE id > 13 and type = 5";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET type = 5
+                 WHERE id > 13 and type = 4";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET type = 4
+                 WHERE id > 13 and type = 3";
+        $DB->execute($sql, []);
+        $sql = "UPDATE {assignfeedback_editpp_tool}
+                   SET type = 3
+                 WHERE id > 14 and type = 2";
+        $DB->execute($sql, []);
+
+        // Editpdfplus savepoint reached.
+        upgrade_plugin_savepoint(true, 2018091203, 'assignfeedback', 'editpdfplus');
     }
 
     return true;

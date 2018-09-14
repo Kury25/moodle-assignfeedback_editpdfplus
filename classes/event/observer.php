@@ -19,17 +19,13 @@
  * An event observer.
  *
  * @package    assignfeedback_editpdfplus
- * @copyright  2016 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/event/observer.php by Damyon Wiese.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace assignfeedback_editpdfplus\event;
 
-/**
- * An event observer.
- * @copyright  2016 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class observer {
 
     const BDDTABLEQUEUE = "assignfeedback_editpp_queue";

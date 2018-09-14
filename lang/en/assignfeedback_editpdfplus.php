@@ -19,6 +19,7 @@
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/lang/en/assignfeedback_editpdf.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -29,7 +30,6 @@ $string['annotationcolour'] = 'Annotation colour';
 $string['black'] = 'Black';
 $string['blue'] = 'Blue';
 $string['cannotopenpdf'] = 'Cannot open the PDF. The file may be corrupt, or in an unsupported format.';
-$string['clear'] = 'Clear';
 $string['colourpicker'] = 'Colour picker';
 $string['commentcolour'] = 'Comment colour';
 $string['comment'] = 'Comments';
@@ -47,11 +47,10 @@ $string['downloadfeedback'] = 'Download feedback PDF';
 $string['drag'] = 'Drag';
 $string['errorgenerateimage'] = 'Error generating image with ghostscript, debugging info: {$a}';
 $string['errorpdfpage'] = 'There was an error while generating this page.';
-$string['editpdf'] = 'Annotate PDF advanced';
-$string['editpdf_help'] = 'Annotate students submissions directly in the browser and produce an edited downloadable PDF.';
+$string['editpdfplus'] = 'Annotate PDF advanced';
+$string['editpdfplus_help'] = 'Annotate students submissions directly in the browser and produce an edited downloadable PDF.';
 $string['enabled'] = 'Annotate PDF advanced';
 $string['enabled_help'] = 'If enabled, the teacher will be able to create annotated PDF files when marking the assignments. This allows the teacher to add comments, drawing and stamps directly on top of the students work. The annotating is done in the browser and no extra software is required.';
-$string['filter'] = 'Filter comments...';
 $string['generatefeedback'] = 'Generate feedback PDF';
 $string['gotopage'] = 'Go to page';
 $string['green'] = 'Green';
@@ -92,7 +91,7 @@ $string['test_empty'] = 'The ghostscript path is empty - please enter the correc
 $string['testgs'] = 'Test ghostscript path';
 $string['test_isdir'] = 'The ghostscript path points to a folder, please include the ghostscript program in the path you specify';
 $string['test_notestfile'] = 'The test PDF is missing';
-$string['test_notexecutable'] = 'The ghostscript path points to a file that is not executable';
+$string['test_notexecutable'] = 'The ghostscript path to a file that is not executable';
 $string['test_ok'] = 'The ghostscript path appears to be OK - please check you can see the message in the image below';
 $string['test_doesnotexist'] = 'The ghostscript path points to a non-existent file';
 $string['test_empty'] = 'The ghostscript path is empty - please enter the correct path';

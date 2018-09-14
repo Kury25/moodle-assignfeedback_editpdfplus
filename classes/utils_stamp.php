@@ -17,6 +17,12 @@
 
 /**
  * This file contains the editor class for the assignfeedback_editpdfplus plugin
+ * 
+ * This class performs crud operations on stamp using font FontAwesome.
+ *
+ * No capability checks are done - they should be done by the calling class.
+ * 
+ * Inspired by https://github.com/exiang/php-font-awesome-to-png
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2018 Université de Lausanne
@@ -27,17 +33,6 @@ namespace assignfeedback_editpdfplus;
 
 use \assignfeedback_editpdfplus\utils_color;
 
-/**
- * This class performs crud operations on stamp using font FontAwesome.
- *
- * No capability checks are done - they should be done by the calling class.
- * 
- * Inspired by https://github.com/exiang/php-font-awesome-to-png
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2018 Marion Chardon
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class utils_stamp {
 
     /** Path of fontawesome font scss */

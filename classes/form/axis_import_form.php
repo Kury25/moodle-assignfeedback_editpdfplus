@@ -18,6 +18,8 @@
 /**
  * This file contains the axis_import_form class for the assignfeedback_editpdfplus plugin
  *
+ * Form to import an axis
+ *
  * @package    assignfeedback_editpdfplus
  * @copyright  2017 Université de Lausanne
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,15 +31,6 @@ require_once("$CFG->libdir/formslib.php");
 
 use moodleform;
 
-/**
- * Description of formslib
- *
- * Form to import an axis
- *
- * @package   assignfeedback_editpdfplus
- * @copyright  2017 Université de Lausanne
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class axis_import_form extends moodleform {
 
     protected function definition() {

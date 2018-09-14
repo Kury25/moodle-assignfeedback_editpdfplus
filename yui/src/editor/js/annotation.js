@@ -21,7 +21,7 @@
  */
 
 /**
- * Class representing a highlight.
+ * Class representing an annotation.
  *
  * @namespace M.assignfeedback_editpdfplus
  * @class annotation
@@ -1042,6 +1042,10 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+            if (!divdisplay){
+                //for basic tools (pen, rectangle,...)
+                return;
+            }
             var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
             var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
             var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");

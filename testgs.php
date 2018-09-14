@@ -18,7 +18,8 @@
  * Test that ghostscript is configured correctly
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Davo Smith
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/testgs.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

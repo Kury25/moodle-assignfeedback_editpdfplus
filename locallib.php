@@ -18,9 +18,11 @@
 /**
  * This file contains the definition for the library class for PDF feedback plugin
  *
+ * library class for editpdfplus feedback plugin extending feedback plugin base class
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/locallib.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -28,13 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 use \assignfeedback_editpdfplus\document_services;
 use \assignfeedback_editpdfplus\page_editor;
 
-/**
- * library class for editpdf feedback plugin extending feedback plugin base class
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2012 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class assign_feedback_editpdfplus extends assign_feedback_plugin {
 
     const AXISGENERIC = 0;
@@ -161,11 +156,11 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
             $html .= '<style>.assignfeedback_editpdfplus_widget { display: none; }</style>';
         }
 
-        $mform->addElement('static', 'editpdf', get_string('editpdf', 'assignfeedback_editpdfplus'), $html);
-        $mform->addHelpButton('editpdf', 'editpdf', 'assignfeedback_editpdfplus');
-        $mform->addElement('hidden', 'editpdf_source_userid', $userid);
-        $mform->setType('editpdf_source_userid', PARAM_INT);
-        $mform->setConstant('editpdf_source_userid', $userid);
+        $mform->addElement('static', 'editpdfplus', get_string('editpdfplus', 'assignfeedback_editpdfplus'), $html);
+        $mform->addHelpButton('editpdfplus', 'editpdfplus', 'assignfeedback_editpdfplus');
+        $mform->addElement('hidden', 'editpdfplus_source_userid', $userid);
+        $mform->setType('editpdfplus_source_userid', PARAM_INT);
+        $mform->setConstant('editpdfplus_source_userid', $userid);
     }
 
     /**
@@ -180,8 +175,8 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
         // following users will have the same status. If it's only an individual annotation
         // then only one user will come through this method.
         // Source user id is only added to the form if there was a pdf.
-        if (!empty($data->editpdf_source_userid)) {
-            $sourceuserid = $data->editpdf_source_userid;
+        if (!empty($data->editpdfplus_source_userid)) {
+            $sourceuserid = $data->editpdfplus_source_userid;
             // Retrieve the grade information for the source user.
             $sourcegrade = $this->assignment->get_user_grade($sourceuserid, true, $grade->attemptnumber);
             $pagenumbercount = document_services::page_number_for_attempt($this->assignment, $sourceuserid, $sourcegrade->attemptnumber);
@@ -224,8 +219,8 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      */
     public function save(stdClass $grade, stdClass $data) {
         // Source user id is only added to the form if there was a pdf.
-        if (!empty($data->editpdf_source_userid)) {
-            $sourceuserid = $data->editpdf_source_userid;
+        if (!empty($data->editpdfplus_source_userid)) {
+            $sourceuserid = $data->editpdfplus_source_userid;
             // Copy drafts annotations and comments if current user is different to sourceuserid.
             if ($sourceuserid != $grade->userid) {
                 page_editor::copy_drafts_from_to($this->assignment, $grade, $sourceuserid);
@@ -418,6 +413,28 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     }
 
     public function is_enabled() {
+        $editpdf = null;
+        $editpdfenable = false;
+        $editpdfconfenable = false;
+        $listPlugins = $this->assignment->get_feedback_plugins();
+        foreach ($listPlugins as $plug) {
+            if ($plug->get_name() == get_string('pluginname', 'assignfeedback_editpdf')) {
+                $editpdf = $plug;
+                $editpdfenable = $plug->is_enabled();
+                $tmpconf = $plug->get_config();
+                if ($tmpconf && isset($tmpconf->enabled)) {
+                    $editpdfconfenable = $plug->get_config()->enabled;
+                }
+                break;
+            }
+        }
+        if ($editpdf && $editpdfenable && $editpdfconfenable) {
+            return false;
+        }
+        $editpdfplusconf = $this->get_config();
+        if ($editpdfplusconf && isset($editpdfplusconf->enabled)) {
+            return $editpdfplusconf->enabled;
+        }
         return $this->is_available();
     }
 
@@ -429,18 +446,13 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     public function is_available() {
         if ($this->enabledcache === null) {
             $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
-            //if ($this->assignment->get_context()) {
-            //    $this->enabledcache = ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
-            //} else {
-            //    $this->enabledcache = false;
-            //}
-            $this->enabledcache = $this->assignment->get_context() && ($testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK) && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false);
+            $this->enabledcache = $testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK/* && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false) */;
         }
         return $this->enabledcache;
     }
 
     /**
-     * Automatically hide the setting for the editpdf feedback plugin.
+     * Automatically hide the setting for the editpdfplus feedback plugin.
      *
      * @return bool false
      */

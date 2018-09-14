@@ -20,6 +20,7 @@
  *
  * @package assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/pdf.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,13 +35,6 @@ global $CFG;
 require_once($CFG->libdir . '/pdflib.php');
 require_once($CFG->dirroot . '/mod/assign/feedback/editpdf/fpdi/fpdi.php');
 
-/**
- * Library code for manipulating PDFs
- *
- * @package assignfeedback_editpdfplus
- * @copyright 2012 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class pdf extends \FPDI {
 
     /** @var int the number of the current page in the PDF being processed */
@@ -633,7 +627,7 @@ class pdf extends \FPDI {
         $pdf = new pdf();
         $pdf->set_pdf($errorfile);
         $pdf->copy_page();
-        $pdf->add_comment(get_string('errorpdfpage', 'assignfeedback_editpdf'), 250, 300, 200, "red");
+        $pdf->add_comment(get_string('errorpdfpage', 'assignfeedback_editpdfplus'), 250, 300, 200, "red");
         $generatedpdf = $tmperrorimagefolder . '/' . 'error.pdf';
         $pdf->save_pdf($generatedpdf);
 

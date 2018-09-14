@@ -17,6 +17,10 @@
 
 /**
  * This file contains the editor class for the assignfeedback_editpdfplus plugin
+ * 
+ * This class performs crud operations on comments and annotations from a page of a response.
+ *
+ * No capability checks are done - they should be done by the calling class.
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2017 Université de Lausanne
@@ -29,15 +33,6 @@ use assignfeedback_editpdfplus\bdd\axis;
 use assignfeedback_editpdfplus\bdd\type_tool;
 use assignfeedback_editpdfplus\bdd\tool;
 
-/**
- * This class performs crud operations on comments and annotations from a page of a response.
- *
- * No capability checks are done - they should be done by the calling class.
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2017 Université de Lausanne
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class admin_editor {
 
     const BDDTABLETOOL = "assignfeedback_editpp_tool";

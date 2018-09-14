@@ -17,23 +17,19 @@
 
 /**
  * This file contains the restore code for the feedback_editpdfplus plugin.
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2013 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-defined('MOODLE_INTERNAL') || die();
-
-/**
+ * 
  * Restore subplugin class.
  *
  * Provides the necessary information needed
  * to restore one assign_feedback subplugin.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/backup/moodle2/restore_assignfeedback_editpdfplus_subplugin.class.php by Damyon Wiese.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
 
     const GRADE = 'grade';

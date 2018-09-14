@@ -18,6 +18,8 @@
 /**
  * This file contains the tool_form class for the assignfeedback_editpdfplus plugin
  *
+ * Form to add and edit a tool
+ *
  * @package    assignfeedback_editpdfplus
  * @copyright  2017 Université de Lausanne
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,13 +31,6 @@ require_once("$CFG->libdir/formslib.php");
 
 use moodleform;
 
-/**
- * Form to add and edit a tool
- *
- * @package   assignfeedback_editpdfplus
- * @copyright  2017 Université de Lausanne
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class tool_order_form extends moodleform {
 
     const HIDDENSTATE = "hidden";

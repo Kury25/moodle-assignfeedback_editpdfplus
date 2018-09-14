@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of editpdf scheduled tasks.
+ * Definition of editpdfplus scheduled tasks.
  *
  * @package   assignfeedback_editpdfplus
  * @category  task
- * @copyright 2016 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/db/tasks.php by Damyon Wiese.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
