@@ -63,6 +63,7 @@ Note: by default, only teacher profile has the right to access to the palettes c
 
 Upcoming developments include:
  - improve the interface allowing teachers to customize their own annotation tool sets
+ - build an interface for manager and administrator to allow them to manage toolbars and type's tool.
 
 
 ## Contributors and Licenses
