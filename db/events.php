@@ -15,11 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * EditPDF event handler definition.
+ * EditPDFplus event handler definition.
  *
  * @package assignfeedback_editpdfplus
  * @category event
- * @copyright 2016 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/db/events.php by Damyon Wiese.
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

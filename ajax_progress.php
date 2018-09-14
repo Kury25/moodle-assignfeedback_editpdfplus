@@ -19,7 +19,8 @@
  * ALL RETURNED INFO IS PUBLIC.
  *
  * @package assignfeedback_editpdfplus
- * @copyright  2013 Jerome Mouneyrac
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/ajax_progress.php by Jerome Mouneyrac.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

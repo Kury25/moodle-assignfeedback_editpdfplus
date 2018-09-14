@@ -66,13 +66,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         },
         CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
-            'pen': '.penbutton',
-            'line': '.linebutton',
-            'rectangle': '.rectanglebutton',
-            'oval': '.ovalbutton',
             'select': '.selectbutton',
-            'drag': '.dragbutton',
-            'highlight': '.highlightbutton'
+            'drag': '.dragbutton'
         },
         TOOLTYPE = {
             'HIGHLIGHTPLUS': 1,
@@ -550,7 +545,7 @@ M.assignfeedback_editpdfplus.drawable = DRAWABLE;
  */
 
 /**
- * Class representing a highlight.
+ * Class representing an annotation.
  *
  * @namespace M.assignfeedback_editpdfplus
  * @class annotation
@@ -1571,6 +1566,10 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
+            if (!divdisplay){
+                //for basic tools (pen, rectangle,...)
+                return;
+            }
             var divedit = this.editor.get_dialogue_element('#' + this.divcartridge + "_edit");
             var buttonplusr = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_right");
             var buttonplusl = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonedit_left");
@@ -4795,7 +4794,7 @@ M.assignfeedback_editpdfplus.colourpicker = COLOURPICKER;
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /* eslint-disable no-unused-vars */
-/* global SELECTOR, TOOLSELECTOR, AJAXBASE, ANNOTATIONCOLOUR, AJAXBASEPROGRESS, CLICKTIMEOUT, Y, M */
+/* global SELECTOR, TOOLSELECTOR, TOOLTYPE, TOOLTYPELIB, AJAXBASE, ANNOTATIONCOLOUR, AJAXBASEPROGRESS, CLICKTIMEOUT, Y, M */
 
 /**
  * Provides an in browser PDF editor.
@@ -5383,7 +5382,7 @@ EDITOR.prototype = {
 
         // Update the ui.
         this.setup_navigation();
-        this.setup_toolbar();
+        this.setup_toolbar_advanced();
         this.change_page();
     },
 
@@ -5526,9 +5525,8 @@ EDITOR.prototype = {
      * @protected
      * @method setup_toolbar
      */
-    setup_toolbar: function () {
-        var toolnode,
-                annotationcolourbutton,
+    setup_toolbar_advanced: function () {
+        var annotationcolourbutton,
                 picker;
 
         if (this.get('readonly')) {
@@ -5578,10 +5576,11 @@ EDITOR.prototype = {
         }, this);
 
         // Setup the tool buttons.
-        Y.each(TOOLSELECTOR, function (selector, tool) {
-            toolnode = this.get_dialogue_element(selector);
-            toolnode.on('click', this.handle_tool_button, this, tool);
-            toolnode.on('key', this.handle_tool_button, 'down:13', this, tool);
+        Y.all(SELECTOR.GENERICTOOLBARBUTTONS).each(function (toolnode) {
+            var toolid = toolnode.get('id');
+            var toollib = toolnode.getAttribute('data-tool');
+            toolnode.on('click', this.handle_tool_button, this, toollib, toolid);
+            toolnode.on('key', this.handle_tool_button, 'down:13', this, toollib, toolid);
             toolnode.setAttribute('aria-pressed', 'false');
         }, this);
 
@@ -5945,32 +5944,34 @@ EDITOR.prototype = {
         if (this.currentedit.id && this.currentedit.id[0] === 'c') {
             toolid = this.currentedit.id.substr(8);
         }
-        annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
-        if (annotation) {
-            if (this.currentdrawable) {
-                this.currentdrawable.erase();
-            }
-            this.currentdrawable = false;
-            if (annotation.init_from_edit(this.currentedit)) {
-                this.currentannotation = annotation;
-                annotation.draw_catridge(this.currentedit);
-                annotation.edit_annot();
-                if (annotation.parent_annot_element) {
-                    var index = 0;
-                    if (annotation.parent_annot_element.id) {
-                        index = annotation.parent_annot_element.id;
-                    } else {
-                        index = annotation.parent_annot_element.divcartridge;
-                    }
-                    if (this.annotationsparent[index]) {
-                        this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
-                    } else {
-                        this.annotationsparent[index] = [annotation];
-                    }
+        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag') {
+            annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
+            if (annotation) {
+                if (this.currentdrawable) {
+                    this.currentdrawable.erase();
                 }
-                this.pages[this.currentpage].annotations.push(annotation);
-                this.drawables.push(annotation.draw());
-                this.drawablesannotations.push(annotation);
+                this.currentdrawable = false;
+                if (annotation.init_from_edit(this.currentedit)) {
+                    this.currentannotation = annotation;
+                    annotation.draw_catridge(this.currentedit);
+                    annotation.edit_annot();
+                    if (annotation.parent_annot_element) {
+                        var index = 0;
+                        if (annotation.parent_annot_element.id) {
+                            index = annotation.parent_annot_element.id;
+                        } else {
+                            index = annotation.parent_annot_element.divcartridge;
+                        }
+                        if (this.annotationsparent[index]) {
+                            this.annotationsparent[index][this.annotationsparent[index].length] = annotation;
+                        } else {
+                            this.annotationsparent[index] = [annotation];
+                        }
+                    }
+                    this.pages[this.currentpage].annotations.push(annotation);
+                    this.drawables.push(annotation.draw());
+                    this.drawablesannotations.push(annotation);
+                }
             }
         }
 
@@ -6032,7 +6033,8 @@ EDITOR.prototype = {
     create_annotation: function (type, toolid, data, toolobjet) {
 
         /*pour fonctionnement des anciens outils*/
-        if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
+        /*if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
+            window.console.log("create_annotation deprecated");
             if (type === "line") {
                 data.toolid = TOOLTYPE.LINE;
             } else if (type === "rectangle") {
@@ -6045,7 +6047,8 @@ EDITOR.prototype = {
                 data.toolid = TOOLTYPE.HIGHLIGHT;
             }
             data.tooltype = this.tools[data.toolid];
-        } else if (toolid !== null && toolid[0] === 'c') {
+        } else */
+        if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
         }
         if (!data.tooltype || data.tooltype === '') {

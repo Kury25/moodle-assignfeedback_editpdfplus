@@ -19,15 +19,16 @@
  *
  * @package assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/version.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018072300;
+$plugin->version   = 2018091203;
 $plugin->requires  = 2018050800; // Requires this Moodle version.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = "2.0 (Build: 2017100400)";
+$plugin->release = "2.1 (Build: 2018091203)";
 $plugin->dependencies = array(
     'assignfeedback_editpdf' => 2018051400
 );

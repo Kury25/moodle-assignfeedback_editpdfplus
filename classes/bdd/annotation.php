@@ -18,20 +18,16 @@
 /**
  * This file contains the annotation class for the assignfeedback_editpdfplus plugin
  *
+ * This class adds and removes annotations from a page of a response.
+ *
  * @package   assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/annotation.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace assignfeedback_editpdfplus\bdd;
 
-/**
- * This class adds and removes annotations from a page of a response.
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2012 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class annotation {
 
     /** @var int unique id for this annotation */

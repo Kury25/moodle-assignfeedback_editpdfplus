@@ -18,8 +18,11 @@
 /**
  * This file contains the definition for the library class for edit PDF renderer.
  *
+ * A custom renderer class that extends the plugin_renderer_base and is used by the editpdfplus feedback plugin.
+ * 
  * @package   assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/renderer.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -27,13 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 use \assignfeedback_editpdfplus\bdd\tool_generic;
 use \assignfeedback_editpdfplus\bdd\axis;
 
-/**
- * A custom renderer class that extends the plugin_renderer_base and is used by the editpdf feedback plugin.
- *
- * @package assignfeedback_editpdfplus
- * @copyright 2013 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
     const PLUGIN_NAME = "assignfeedback_editpdfplus";
@@ -104,7 +100,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Render the editpdf widget in the grading form.
+     * Render the editpdfplus widget in the grading form.
      *
      * @param assignfeedback_editpdfplus_widget $widget - Renderable widget containing assignment, user and attempt number.
      * @return string

@@ -17,9 +17,17 @@
 
 /**
  * This file contains the annotation class for the assignfeedback_editpdfplus plugin
+ * 
+ * Functions for generating the annotated pdf.
+ *
+ * This class controls the ingest of student submission files to a normalised
+ * PDF 1.4 document with all submission files concatinated together. It also
+ * provides the functions to generate a downloadable pdf with all comments and
+ * annotations embedded.
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/document_services.php by Davo Smith
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,16 +35,6 @@ namespace assignfeedback_editpdfplus;
 
 use DOMDocument;
 
-/**
- * Functions for generating the annotated pdf.
- *
- * This class controls the ingest of student submission files to a normalised
- * PDF 1.4 document with all submission files concatinated together. It also
- * provides the functions to generate a downloadable pdf with all comments and
- * annotations embedded.
- * @copyright 2012 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class document_services {
 
     /** File area for generated pdf */

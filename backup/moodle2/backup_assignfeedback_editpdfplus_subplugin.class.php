@@ -17,22 +17,18 @@
 
 /**
  * This file contains the backup code for the feedback_editpdfplus plugin.
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2013 Damyon Wiese
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-defined('MOODLE_INTERNAL') || die();
-
-/**
+ * 
  * Provides the information to backup feedback pdf annotations.
  *
  * This just adds its fileareas to the annotations and the comments and annotation data.
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Damyon Wiese
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/backup/moodle2/backup_assignfeedback_editpdf_subplugin.class.php by Damyon Wiese.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+defined('MOODLE_INTERNAL') || die();
+
 class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
 
     const GRADEID = 'gradeid';

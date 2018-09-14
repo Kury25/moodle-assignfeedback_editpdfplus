@@ -16,25 +16,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Behat editpdf-related steps definitions.
+ * Behat editpdfplus-related steps definitions.
+ *
+ * Steps definitions related with the editpdfplus.
  *
  * @package    assignfeedback_editpdfplus
  * @category   test
- * @copyright  2013 Jerome Mouneyrac
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/tests/behat/behat_assignfeedback_editpdf.php by Jerome Mouneyrac.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // NOTE: no MOODLE_INTERNAL test here, this file may be required by behat before including /config.php.
 
 require_once(__DIR__ . '/../../../../../../lib/behat/behat_base.php');
 
-/**
- * Steps definitions related with the editpdf.
- *
- * @package    assignfeedback_editpdfplus
- * @category   test
- * @copyright  2013 Jerome Mouneyrac
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class behat_assignfeedback_editpdfplus extends behat_base {
 
     /**

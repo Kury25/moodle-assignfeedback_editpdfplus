@@ -18,7 +18,8 @@
  * Privacy class for requesting user data.
  *
  * @package    assignfeedback_editpdfplus
- * @copyright  2018 Adrian Greeve <adrian@moodle.com>
+ * @copyright  2018 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/privacy/provider.php by Adrian Greeve <adrian@moodle.com>.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,13 +37,6 @@ use \core_privacy\local\request\contextlist;
 use \mod_assign\privacy\assign_plugin_request_data;
 use \mod_assign\privacy\useridlist;
 
-/**
- * Privacy class for requesting user data.
- *
- * @package    assignfeedback_editpdfplus
- * @copyright  2018 Adrian Greeve <adrian@moodle.com>
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class provider implements metadataprovider, assignfeedback_provider {
 
     /**

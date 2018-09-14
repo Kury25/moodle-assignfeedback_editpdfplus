@@ -17,6 +17,10 @@
 
 /**
  * This file contains the editor class for the assignfeedback_editpdfplus plugin
+ * 
+ * This class performs crud operations on colors.
+ *
+ * No capability checks are done - they should be done by the calling class.
  *
  * @package   assignfeedback_editpdfplus
  * @copyright  2018 Université de Lausanne
@@ -25,15 +29,6 @@
 
 namespace assignfeedback_editpdfplus;
 
-/**
- * This class performs crud operations on colors.
- *
- * No capability checks are done - they should be done by the calling class.
- *
- * @package   assignfeedback_editpdfplus
- * @copyright 2018 Marion Chardon
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class utils_color {
 
     const DEFAULTCOLOR = "default";

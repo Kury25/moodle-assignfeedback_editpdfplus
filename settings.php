@@ -18,7 +18,8 @@
  * Settings for assignfeedback PDF plugin
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2013 Davo Smith
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/settings.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 // Enabled by default.
 $settings->add(new admin_setting_configcheckbox('assignfeedback_editpdfplus/default',
                    new lang_string('default', 'assignfeedback_editpdfplus'),
-                   new lang_string('default_help', 'assignfeedback_editpdfplus'), 1));
+                   new lang_string('default_help', 'assignfeedback_editpdfplus'), 0));
 
 // Ghostscript setting.
 $systempathslink = new moodle_url('/admin/settings.php', array('section' => 'systempaths'));

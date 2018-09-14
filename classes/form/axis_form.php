@@ -17,6 +17,8 @@
 
 /**
  * This file contains the axis_form class for the assignfeedback_editpdfplus plugin
+ * 
+ * Form to add or edit an axis
  *
  * @package    assignfeedback_editpdfplus
  * @copyright  2017 Université de Lausanne
@@ -29,13 +31,6 @@ require_once("$CFG->libdir/formslib.php");
 
 use moodleform;
 
-/**
- * Form to add or edit an axis
- *
- * @package   assignfeedback_editpdfplus
- * @copyright  2017 Université de Lausanne
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 class axis_form extends moodleform {
 
     protected function definition() {
