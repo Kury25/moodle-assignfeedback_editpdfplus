@@ -32,9 +32,6 @@ See this <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/h
  2. Extract the ZIP file
  3. Rename the extracted root directory to 'editpdfplus'
  4. Copy the 'editpdfplus' directory to your Moodle server into <your-moodle-root-directory>/mod/assign/feedback/
- 5. Apply patch file 'editpdfplus.patch' :
-    a. `cd <your-moodle-root-directory>`
-    b. `patch -p1 < mod/assign/feedback/editpdfplus/editpdfplus.patch`
 
 By default, the standard 'Edit PDF' annotation tool will stay active over all your Moodle site. See below for instructions about activating this plugin in select places (courses, course categories), or on your whole Moodle site.
 
@@ -52,20 +49,20 @@ See this <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/c
 
 An administrator profile will be able to give to a course the right to use this plugin or not.
 
- 1. Go to the course (or course category) permissions settings
- 2. Look for the ***assignfeedback/editpdfplus:use*** capability
- 3. Add the manager, teacher and student roles to it
+ 1. Create an assignement activity
+ 2. Uncheck "standard PDF annotations" feedback type and check "advanced PDF annotations"
 
-The 'Annotate PDF advanced' plugin will then be used in place of the standard 'Annotate PDF' plugin in the corresponding course (or course category), or wherever you give users this capability.
+The 'Annotate PDF advanced' plugin will then be used in place of the standard 'Annotate PDF' plugin in the corresponding course (or course category).
 
 For usage application, please follow <a href="https://gitlabriset.unil.ch/Marion.Chardon/editpdfplus/wikis/user-guide">this documentation</a>.
+
+Note: by default, only teacher profile has the right to access to the palettes creation view.
 
 
 ## What's next?
 
 Upcoming developments include:
  - improve the interface allowing teachers to customize their own annotation tool sets
- - build an interface for manager and administrator to allow them to manage toolbars and type's tool.
 
 
 ## Contributors and Licenses
