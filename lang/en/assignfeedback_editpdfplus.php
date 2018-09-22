@@ -183,3 +183,10 @@ $string['help_highlight'] = 'Highlight an item in the document';
 $string['help_verticalline'] = 'Click drag a vertical line in the document';
 $string['help_stamp'] = 'Click where to place the stamp';
 $string['admin_access_error'] = 'You are not allow to access this page, please contact your teacher or your manager';
+$string['assignmentgradedsubject'] = '[Moodle] Assignment updated';
+$string['assignmentgradedbody'] = '{$a->coursename} → {$a->modulename} → {$a->assignmentname}
+
+The assignment correction has been updated.
+
+You can access the document following this link: {$a->url}';
+

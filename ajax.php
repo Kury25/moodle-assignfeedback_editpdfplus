@@ -172,38 +172,16 @@ if ($action === 'pollconversions') {
 
     if ($refresh) {
         $teachers = get_users_by_capability($context, 'assignfeedback/editpdfplus:notify');
-        $contextb = $assignment->get_context();
         $course = $assignment->get_course();
         $coursemodule = $assignment->get_course_module();
-        $modulename = get_string('modulename', 'assign');
-        $assignmentname = $assignment->get_instance()->name;
-        $formatparams = array('context' => $contextb->get_course_context());
-        $flecheHtml = ' → ';
-        $retourChariot = "\n";
-        $body = format_string($course->shortname, true, $formatparams)
-                . $flecheHtml
-                . $modulename
-                . $flecheHtml
-                . format_string($assignmentname, true, $formatparams) . $retourChariot
-                . $retourChariot . "---------------------------------------------------------------------" . $retourChariot
-                . "La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce lien : "
-                . $response->url
-                . $retourChariot . $retourChariot . "Ceci est un mail automatique.";
-        $bodyhtml = '<p><font face="sans-serif">'
-                . getHtmlLink($CFG->wwwroot . '/course/view.php?id=' . $course->id, format_string($course->shortname, true, $formatparams))
-                . $flecheHtml
-                . getHtmlLink($CFG->wwwroot . '/mod/assign/index.php?id=' . $course->id, $modulename)
-                . $flecheHtml
-                . getHtmlLink($CFG->wwwroot . '/mod/assign/view.php?id=' . $coursemodule->id, format_string($assignmentname, true, $formatparams))
-                . '</font></p>'
-                . '<hr/><font face="sans-serif">'
-                . "<b>Information Moodle</b><br/>"
-                . "<p>La correction du devoir a été mise à jour. Vous pouvez accéder au document en suivant ce "
-                . getHtmlLink($response->url, "lien")
-                . "</p>"
-                . "<i>Ceci est un mail automatique, merci de ne pas y répondre.</i>";
+        $a = (object)[
+                'coursename'     => format_string($course->shortname, true),
+                'modulename'     => get_string('modulename', 'assign'),
+                'assignmentname' => format_string($assignment->get_instance()->name, true),
+                'url'            => $response->url
+        ];
         foreach ($teachers as $teacher) {
-            $res = email_to_user($teacher, $USER, "[Moodle] Mise à jour devoir", $body, $bodyhtml);
+            $res = email_to_user($teacher, $USER, get_string('assignmentgradedsubject', 'assignfeedback_editpdfplus'), get_string('assignmentgradedbody', 'assignfeedback_editpdfplus', $a));
         }
     }
 
