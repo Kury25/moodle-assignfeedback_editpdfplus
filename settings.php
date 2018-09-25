@@ -30,6 +30,10 @@ $settings->add(new admin_setting_configcheckbox('assignfeedback_editpdfplus/defa
                    new lang_string('default', 'assignfeedback_editpdfplus'),
                    new lang_string('default_help', 'assignfeedback_editpdfplus'), 0));
 
+// Base palette (contextid = 1) link.
+$basepaletteurl = $CFG->wwwroot . '/mod/assign/feedback/editpdfplus/view_admin.php?id=' . \context_system::instance()->id;
+$settings->add(new admin_setting_heading('basepalette', get_string('basepalette', 'assignfeedback_editpdfplus'), get_string('basepalette_desc', 'assignfeedback_editpdfplus', $basepaletteurl)));
+
 // Ghostscript setting.
 $systempathslink = new moodle_url('/admin/settings.php', array('section' => 'systempaths'));
 $systempathlink = html_writer::link($systempathslink, get_string('systempaths', 'admin'));

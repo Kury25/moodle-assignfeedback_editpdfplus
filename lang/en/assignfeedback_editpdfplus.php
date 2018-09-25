@@ -183,6 +183,8 @@ $string['help_highlight'] = 'Highlight an item in the document';
 $string['help_verticalline'] = 'Click drag a vertical line in the document';
 $string['help_stamp'] = 'Click where to place the stamp';
 $string['admin_access_error'] = 'You are not allow to access this page, please contact your teacher or your manager';
+$string['basepalette'] = 'Base annotation tools';
+$string['basepalette_desc'] = 'The base annotation tool palette is defined <a href="{$a}">here</a> for the whole Moodle site. Teachers can then define their own tool palettes in their courses via the course administration menu.';
 $string['assignmentgradedsubject'] = '[Moodle] Assignment updated';
 $string['assignmentgradedbody'] = '{$a->coursename} → {$a->modulename} → {$a->assignmentname}
 
