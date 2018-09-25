@@ -186,6 +186,10 @@
     width: 0%;
 }
 
+.assignfeedback_editpdfplus_widget .helpmessage {
+    display: none;
+}
+
 .assignfeedback_editpdfplus_widget .btn-toolbar {
     min-height:50px;
 }
