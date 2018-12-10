@@ -6,6 +6,8 @@ Author: Marion Chardon, <marion.chardon@unil.ch>
 
 Compatible with Moodle versions: 3.3, 3.5
 
+Note: for 3.3, please check tag "3.3", not master version.
+
 ## Description
 
 This tool is a Moodle plugin wich allows:
