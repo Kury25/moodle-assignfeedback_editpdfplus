@@ -41,7 +41,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     const DATAJSON = 'jsonformdata';
     const MESSAGELIB = 'message';
     const COURSELIB = "course";
-    const COURSEID = "courseid";
+    const CONTEXTID = "contextid";
     const AXEID = "axeid";
     const AXEIDDESC = "Axe ID";
     const AXELIB = "axelabel";
@@ -122,13 +122,12 @@ class assignfeedback_editpdfplus_external extends external_api {
      * Set Page context from the course id given. It returns the context found.
      * @global $DB
      * @global $PAGE
-     * @param int $courseid Current course id
+     * @param int $contextid Current context id
      * @return context course's context 
      */
-    public static function setPageContext($courseid) {
-        global $DB, $PAGE;
-        $course = $DB->get_record(self::COURSELIB, array('id' => $courseid), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
+    public static function setPageContext($contextid) {
+        global $PAGE;
+        $context = context::instance_by_id($contextid, MUST_EXIST);
         $PAGE->set_context($context);
         return $context;
     }
@@ -153,7 +152,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -206,7 +205,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_del_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        self::setPageContext($data[self::COURSEID]);
+        self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -244,7 +243,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_form($jsonformdata, $mode) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 
@@ -334,7 +333,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_del_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 
@@ -382,7 +381,7 @@ class assignfeedback_editpdfplus_external extends external_api {
 
         $data = self::getParseData(self::submit_axis_import_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -451,7 +450,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_order_form($jsonformdata) {
         $data = self::getParseData(self::submit_tool_order_form_parameters(), $jsonformdata);
 
-        self::setPageContext($data[self::COURSEID]);
+        self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 

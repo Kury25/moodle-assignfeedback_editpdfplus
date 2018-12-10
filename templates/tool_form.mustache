@@ -20,7 +20,7 @@
     Admin template to manage a tool.
 
     Context variables required for this template:
-    * courseid - Course id
+    * contextid - Context id
     * tool - current tool object to edit
     * formid - id of moodleform
     * actionurl - moodle service url to send form
@@ -187,7 +187,7 @@
                     <div style='display:none;'>
                         <input type="hidden" name="toolid" value="{{tool.id}}" />
                         <input type="hidden" name="axisid" id="axisid" value="{{tool.axis}}" />
-                        <input type="hidden" name="courseid" value="{{courseid}}" />
+                        <input type="hidden" name="contextid" value="{{contextid}}" />
                         <input type="hidden" name="sesskey" value="{{sesskey}}" />
                         <input type="hidden" name="enabled" id="toolenabled" value="{{tool.enabled}}" />
                     </div>

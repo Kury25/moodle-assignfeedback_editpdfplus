@@ -187,11 +187,13 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $toolbarAxis = $statuschoice;
 
             // Toolbar pour lien creation palette et aide
-            $courseid = $this->page->course->id;
-            $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $courseid));
-            $toolbarAdmin = $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-wrench"), array(
-                self::HTMLCLASS => 'btn btn-outline-info',
-                'onclick' => "document.location='" . $lienAdmin->out() . "';"));
+            $parentContext = $this->page->context->get_parent_context();
+            if ($parentContext->contextlevel == CONTEXT_COURSE) {
+                $lienAdmin = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $parentContext->id));
+                $toolbarAdmin = $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-wrench"), array(
+                    self::HTMLCLASS => 'btn btn-outline-info',
+                    'onclick' => "document.location='" . $lienAdmin->out() . "';"));
+            }
             $toolbarAdmin .= $this->render_toolbar_button_html($this->render_toolbar_button_icon("fa-question-circle"), array(self::HTMLCLASS => 'btn btn-outline-info helpmessage'));
             $toolbarAdminBlock = $this->render_toolbar($toolbarAdmin, "mr-3");
         } else {
@@ -245,7 +247,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         //help message
         $helpmessageTitle = html_writer::div(get_string('help_title', self::PLUGIN_NAME), null, array('id' => 'afppHelpmessageTitle'));
-        $helpmessagecontent=$this->render_from_template('assignfeedback_editpdfplus/help_workspace', array());
+        $helpmessagecontent = $this->render_from_template('assignfeedback_editpdfplus/help_workspace', array());
         $helpmessageBody = html_writer::div($helpmessagecontent, null, array('id' => 'afppHelpmessageBody'));
         $helpmessageDiv = html_writer::div($helpmessageTitle . $helpmessageBody, 'helpmessage');
         $canvas .= $helpmessageDiv;

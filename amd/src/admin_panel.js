@@ -242,7 +242,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                         $("input[name^='toolid']").val(currentButtonId);
                         $("input[name^='nexttoolid']").val(nextButtonId);
                         var form = $('#assignfeedback_editpdfplus_order_tool');
-                        var data = form.serialize() + "&courseid=" + $("#courseid").val();
+                        var data = form.serialize() + "&contextid=" + contextid;
                         ajax.call([
                             {
                                 methodname: 'assignfeedback_editpdfplus_submit_tool_order_form',
@@ -517,7 +517,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                 if (axisimportid && parseInt(axisimportid) > 0) {
                     $("#assignfeedback_editpdfplus_import_axis > div > input[name^='axeid']").val(axisimportid);
                     var form = $('#assignfeedback_editpdfplus_import_axis');
-                    var data = form.serialize() + "&courseid=" + $("#courseid").val();
+                    var data = form.serialize() + "&contextid=" + contextid;
                     ajax.call([
                         {
                             methodname: 'assignfeedback_editpdfplus_submit_axis_import_form',

@@ -19,7 +19,8 @@
  * This file contains the comment class for the assignfeedback_editpdfplus plugin
  *
  * @package   assignfeedback_editpdfplus
- * @copyright 2012 Davo Smith
+ * @copyright  2016 Université de Lausanne
+ * The code is based on mod/assign/feedback/editpdf/classes/comment.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @deprecated since version 2017051600
  */
@@ -27,9 +28,6 @@
 namespace assignfeedback_editpdfplus\bdd;
 
 /**
- * This class represents a comment box on a page of feedback.
- * @copyright 2012 Davo Smith
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @deprecated since version 2016101700
  */
 class comment {

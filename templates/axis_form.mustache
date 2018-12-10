@@ -20,7 +20,7 @@
     Admin template for add or edit one axis.
 
     Context variables required for this template:
-    * courseid - Course id
+    * contextid - Context id
     * title - Title of the page (add or edit)
     * render - form render for adding or editing axis
     * id - form id
@@ -39,7 +39,7 @@ require(['jquery','core/ajax','core/notification'], function($,ajax,notification
     var formid='{{id}}';
     $("#axisFormSubmit").on("click", function () {
         var form = $('#'+formid);
-        var data = form.serialize()+"&courseid="+{{courseid}};
+        var data = form.serialize()+"&contextid="+{{contextid}};
         ajax.call([
             {
                 methodname: 'assignfeedback_editpdfplus_submit_axis_form',

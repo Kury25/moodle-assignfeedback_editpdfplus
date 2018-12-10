@@ -37,15 +37,11 @@ class assign_feedback_editpdfplus_admin {
 
     const PLUGIN_NAME = "assignfeedback_editpdfplus";
 
-    /** @var stdClass $course current course */
-    private $course = null;
-
     /** @var stdClass $context current context */
     private $context = null;
 
-    function __construct(stdClass $context, stdClass $course) {
+    function __construct(stdClass $context) {
         $this->context = $context;
-        $this->course = $course;
     }
 
     /**
@@ -59,22 +55,21 @@ class assign_feedback_editpdfplus_admin {
 
         $html = '';
         $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
-        $axisimportform = new axis_import_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_import_axis"));
+        $axisimportform = new axis_import_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_import_axis"));
         $axisimportform->id = "assignfeedback_editpdfplus_import_axis";
         $axisimportform->title = "";
         $axisimportform->action = "import";
-        $toolorderform = new tool_order_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_order_tool"));
+        $toolorderform = new tool_order_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_order_tool"));
         $toolorderform->id = "assignfeedback_editpdfplus_order_tool";
         $toolorderform->title = "";
         $toolorderform->action = "order";
         $widget = $this->get_widget();
         $widget->axisimportform = $axisimportform;
         $widget->toolorderform = $toolorderform;
-        $widget->courseid = $this->course->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin($widget);
         return $html;
     }
-    
+
     /**
      * Buid axis moodleform
      * @global $PAGE
@@ -93,20 +88,20 @@ class assign_feedback_editpdfplus_admin {
             $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
         }
         if ($axis != null) {
-            $formAxis = new axis_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_edit_axis")); //Form processing and displaying is done here
+            $formAxis = new axis_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_edit_axis")); //Form processing and displaying is done here
             $formAxis->set_data(array('axeid' => $axeid, 'label' => $axis->label));
             $formAxis->id = "assignfeedback_editpdfplus_edit_axis";
             $formAxis->title = "Renommer l'axe";
             $formAxis->action = "edit";
         } else {
-            $formAxis = new axis_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_add_axis")); //Form processing and displaying is done here
+            $formAxis = new axis_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_add_axis")); //Form processing and displaying is done here
             $formAxis->set_data($toform);
             $formAxis->id = "assignfeedback_editpdfplus_add_axis";
             $formAxis->title = "Ajouter un nouvel axe";
             $formAxis->action = "add";
         }
         $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
-        $formAxis->courseid = $this->course->id;
+        $formAxis->contextid = $this->context->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_axisform($formAxis);
         return $html;
     }
@@ -128,14 +123,14 @@ class assign_feedback_editpdfplus_admin {
             $axis = $DB->get_record('assignfeedback_editpp_axis', array('id' => $axeid), '*', MUST_EXIST);
         }
         if ($axis != null) {
-            $formAxis = new axis_del_form(null, array('id' => $this->course->id), null, null, array('id' => "assignfeedback_editpdfplus_del_axis")); //Form processing and displaying is done here
+            $formAxis = new axis_del_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_del_axis")); //Form processing and displaying is done here
             $formAxis->set_data(array('axeid' => $axeid, 'label' => $axis->label));
         }
         $formAxis->id = "assignfeedback_editpdfplus_del_axis";
         $formAxis->title = "Supprimer l'axe";
         $formAxis->action = "del";
         $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);
-        $formAxis->courseid = $this->course->id;
+        $formAxis->contextid = $this->context->id;
         $html .= $renderer->render_assignfeedback_editpdfplus_widget_admin_axisdelform($formAxis);
         return $html;
     }
@@ -153,7 +148,7 @@ class assign_feedback_editpdfplus_admin {
 
         $html = '';
         $data = new stdClass;
-        $data->courseid = $this->course->id;
+        $data->contextid = $this->context->id;
         $data->sesskey = sesskey();
         $data->actionurl = "/moodle/lib/ajax/service.php";
         $data->formid = "assignfeedback_editpdfplus_edit_tool";
@@ -188,45 +183,37 @@ class assign_feedback_editpdfplus_admin {
         global $USER;
 
         // get the costum toolbars
-        $coursecontext = context::instance_by_id($this->context->id);
-        $coursecontexts = array_filter(explode('/', $coursecontext->path), 'strlen');
+        $coursecontexts = array_filter(explode('/', $this->context->path), 'strlen');
         $tools = page_editor::get_tools($coursecontexts);
         $typetools = page_editor::get_typetools(null);
         $axis = page_editor::get_axis(array($this->context->id));
         $toolbars = $this->prepareToolbar($axis, $tools);
 
         // get all accessibled toolbars
-        $contextListToCheck = array();
-        $contextListToCheck[] = 1;
-        $contextsIdAxes = admin_editor::get_all_different_contexts();
-        foreach ($contextsIdAxes as $contextTmp) {
-            $contextObj = context::instance_by_id($contextTmp->contextid);
-            //$contextObj = context_system::instance_by_id($contextTmp->contextid, IGNORE_MISSING);
-            if ($contextObj /* && has_capability('assignfeedback/editpdfplus:use', $contextObj) */ && has_capability('assignfeedback/editpdfplus:managetools', $contextObj, null, false) && $contextTmp->contextid != $this->context->id) {
-                $contextListToCheck[] = $contextTmp->contextid;
+        if ($this->context->id != SITEID) {
+            $contextListToCheck = array();
+            $contextListToCheck[] = 1;
+            $contextsIdAxes = admin_editor::get_all_different_contexts();
+            foreach ($contextsIdAxes as $contextTmp) {
+                $contextObj = context::instance_by_id($contextTmp->contextid);
+                if ($contextObj && has_capability('assignfeedback/editpdfplus:managetools', $contextObj, null, false) && $contextTmp->contextid != $this->context->id) {
+                    $contextListToCheck[] = $contextTmp->contextid;
+                }
             }
-        }
-        /* $courses = get_courses();
-          $contextListToCheck = array();
-          foreach ($courses as $course) {
-          $contextid = context_course::instance($course->id);
-          $coursecontextsTmp = array_filter(explode('/', $contextid->path), 'strlen');
-          foreach ($coursecontextsTmp as $value) {
-          if ($value != $this->context->id && !in_array($value, $contextListToCheck)) {
-          $contextListToCheck[] = $value;
-          }
-          }
-          } */
-        $axisDispo = array();
-        $toolDispo = page_editor::get_tools($contextListToCheck);
-        foreach ($contextListToCheck as $value) {
-            $axistmp = page_editor::get_axis(array($value));
-            if ($axistmp && sizeof($axistmp) > 0) {
-                $axisDispo = array_merge($axisDispo, $axistmp);
+
+            $axisDispo = array();
+            $toolDispo = page_editor::get_tools($contextListToCheck);
+            foreach ($contextListToCheck as $value) {
+                $axistmp = page_editor::get_axis(array($value));
+                if ($axistmp && sizeof($axistmp) > 0) {
+                    $axisDispo = array_merge($axisDispo, $axistmp);
+                }
             }
+            $toolbarsDispo = $this->prepareToolbar($axisDispo, $toolDispo);
+        } else {
+            $toolbarsDispo = null;
         }
-        $toolbarsDispo = $this->prepareToolbar($axisDispo, $toolDispo);
-        $widget = new widget_admin($this->context, $this->course, $USER, $toolbars, $axis, $typetools, $toolbarsDispo);
+        $widget = new widget_admin($this->context, $USER, $toolbars, $axis, $typetools, $toolbarsDispo);
         return $widget;
     }
 
