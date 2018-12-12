@@ -80,7 +80,7 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
  * @param context_course $context
  */
 function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    if (has_capability('assignfeedback/editpdfplus:use', $context, null, false) && has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
+    if (has_capability('assignfeedback/editpdfplus:use', $context, null, false) && has_capability('assignfeedback/editpdfplus:managetools', $context)) {
         $url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $context->id));
         $feedbackadminnode = navigation_node::create('Feedback : configuration', $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
         $navigation->add_node($feedbackadminnode);
