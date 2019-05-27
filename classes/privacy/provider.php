@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,12 +33,14 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 use \core_privacy\local\metadata\collection;
 use \core_privacy\local\metadata\provider as metadataprovider;
 use \mod_assign\privacy\assignfeedback_provider;
+use \mod_assign\privacy\assignfeedback_user_provider;
 use \core_privacy\local\request\writer;
 use \core_privacy\local\request\contextlist;
+use \core_privacy\local\request\userlist;
 use \mod_assign\privacy\assign_plugin_request_data;
 use \mod_assign\privacy\useridlist;
 
-class provider implements metadataprovider, assignfeedback_provider {
+class provider implements metadataprovider, assignfeedback_provider, assignfeedback_user_provider {
 
     /**
      * Return meta data about this plugin.
@@ -45,7 +48,7 @@ class provider implements metadataprovider, assignfeedback_provider {
      * @param  collection $collection A list of information to add to.
      * @return collection Return the collection after adding to it.
      */
-    public static function get_metadata(collection $collection) : collection {
+    public static function get_metadata(collection $collection): collection {
         $quickdata = [
             'userid' => 'privacy:metadata:userid',
             'rawtext' => 'privacy:metadata:rawtextpurpose',
@@ -74,6 +77,16 @@ class provider implements metadataprovider, assignfeedback_provider {
      * @param  useridlist $useridlist A list of user IDs
      */
     public static function get_student_user_ids(useridlist $useridlist) {
+        // Not required.
+    }
+
+    /**
+     * If you have tables that contain userids and you can generate entries in your tables without creating an
+     * entry in the assign_grades table then please fill in this method.
+     *
+     * @param  \core_privacy\local\request\userlist $userlist The userlist object
+     */
+    public static function get_userids_from_context(userlist $userlist) {
         // Not required.
     }
 
@@ -121,20 +134,41 @@ class provider implements metadataprovider, assignfeedback_provider {
      * @param  assign_plugin_request_data $requestdata Data useful for deleting user data.
      */
     public static function delete_feedback_for_grade(assign_plugin_request_data $requestdata) {
+        $requestdata->set_userids([$requestdata->get_user()->id]);
+        $requestdata->populate_submissions_and_grades();
+        self::delete_feedback_for_grades($requestdata);
+    }
+
+    /**
+     * Deletes all feedback for the grade ids / userids provided in a context.
+     * assign_plugin_request_data contains:
+     * - context
+     * - assign object
+     * - grade ids (pluginids)
+     * - user ids
+     * @param  assign_plugin_request_data $deletedata A class that contains the relevant information required for deletion.
+     */
+    public static function delete_feedback_for_grades(assign_plugin_request_data $deletedata) {
         global $DB;
 
-        $assign = $requestdata->get_assign();
+        if (empty($deletedata->get_gradeids())) {
+            return;
+        }
+
+        $assign = $deletedata->get_assign();
         $plugin = $assign->get_plugin_by_type('assignfeedback', 'editpdfplus');
         $fileareas = $plugin->get_file_areas();
         $fs = get_file_storage();
+        list($sql, $params) = $DB->get_in_or_equal($deletedata->get_gradeids(), SQL_PARAMS_NAMED);
         foreach ($fileareas as $filearea => $notused) {
             // Delete pdf files.
-            $fs->delete_area_files($requestdata->get_context()->id, 'assignfeedback_editpdfplus',
-                    $filearea, $requestdata->get_pluginobject()->id);
+            $fs->delete_area_files_select($deletedata->get_context()->id, 'assignfeedback_editpdfplus', $filearea, $sql, $params);
         }
 
         // Remove table entries.
-        $DB->delete_records('assignfeedback_editpp_annot', ['gradeid' => $requestdata->get_pluginobject()->id]);
+        $DB->delete_records_select('assignfeedback_editpp_annot', "gradeid $sql", $params);
+        $DB->delete_records_select('assignfeedback_editpp_rot', "gradeid $sql", $params);
         // Submission records in assignfeedback_editpp_queue will be cleaned up in a scheduled task
     }
+
 }

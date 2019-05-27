@@ -986,6 +986,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
+        window.console.log('move_cartridge_stop');
         this.editor.save_current_page();
     },
     /**
@@ -1042,7 +1043,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-            if (!divdisplay){
+            if (!divdisplay) {
                 //for basic tools (pen, rectangle,...)
                 return;
             }
@@ -1110,6 +1111,7 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
         this.textannot = result;
+        window.console.log('save_annot');
         this.editor.save_current_page();
         if (result.length === 0) {
             result = "&nbsp;&nbsp;";

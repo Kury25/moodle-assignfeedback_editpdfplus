@@ -40,7 +40,9 @@ class tool_generic extends tool {
         "rectangle" => "fa fa-square-o",
         "drag" => "fa fa-hand-paper-o",
         "select" => "fa fa-mouse-pointer",
-        "annotationcolour" => "fa fa-tint"
+        "annotationcolour" => "fa fa-tint",
+        "rotateleft" => "fa fa-undo",
+        "rotateright" => "fa fa-undo fa-flip-horizontal"
     );
 
     /**

@@ -29,6 +29,17 @@
     cursor: default;
 }
 
+.assignfeedback_editpdf_widget .infoicon {
+    display: none;
+}
+
+.assignfeedback_editpdf_widget .warningmessages {
+    position: absolute;
+    margin-left: 20px;
+    margin-right: 20px;
+    bottom: 20px;
+}
+
 .assignfeedback_editpdfplus_widget .drawingregion {
     border: 1px solid #ccc;
     left: 0.1em;
@@ -38,6 +49,7 @@
     position: absolute;
     overflow: auto;
     background-color: #ccc;
+    touch-action: none;
 }
 
 .assignfeedback_editpdfplus_widget[data-region="review-panel-content"] .drawingregion {
@@ -65,11 +77,9 @@
     padding: 0;
 }
 
-.assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges.haschanges,
 .assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges_edit.haschanges {
     display: inline-block;
 }
-.assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges,
 .assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges_edit {
     display: none;
     position: absolute;
@@ -198,19 +208,6 @@
     margin: 0;
 }
 
-.assignfeedback_editpdfplus_commentmenu li.quicklist_comment {
-    width: 150px;
-}
-.assignfeedback_editpdfplus_commentmenu li.quicklist_comment a {
-    white-space: nowrap;
-    display: inline-block;
-    max-width: 130px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.assignfeedback_editpdfplus_commentmenu a.delete_quicklist_comment {
-    float: right;
-}
 .assignfeedback_editpdfplus_dropdown button {
     border: 0;
     background: none;
@@ -245,14 +242,15 @@
     color: #555;
     margin: 10px;
 }
-.assignfeedback_editpdfplus_menu li:hover,
-.assignfeedback_editpdfplus_menu li:hover a,
-.assignfeedback_editpdfplus_menu li a:hover {
+.assignfeedback_editpdfplus_menu li:hover {
     background-color: #ebebeb;
-    background-image: radial-gradient(ellipse at center, #fff 60%, #dfdfdf 100%);
 }
 ul.assignfeedback_editpdfplus_menu {
     margin: 0;
+    min-width: 200px;
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-left: 0;
 }
 .assignfeedback_editpdfplus_menu li {
@@ -330,6 +328,7 @@ ul.assignfeedback_editpdfplus_menu {
         position: relative;
         margin-bottom: 1em;
         top: 0;
+        max-height: 312px;
     }
 
     .assignfeedback_editpdfplus_widget .pageheader {

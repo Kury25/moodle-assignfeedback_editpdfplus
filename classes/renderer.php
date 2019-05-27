@@ -145,6 +145,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $navigationBlock = $this->render_toolbar($navigation, "mr-auto");
 
+        $toolbarRotationBlock = '';
         $toolbarBaseBlock = '';
         $toolbarDrawBlock = '';
         $toolbarAdminBlock = '';
@@ -153,6 +154,15 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         if (!$widget->readonly) {
             /** Toolbar n°0 : basic tools * */
+            // Rotate Tool.
+            $rotateToolLeft = new tool_generic();
+            $rotateToolLeft->init(array(self::TOOL_OBJ_LABEL => "rotateleft"));
+            $toolbarRotation = $this->render_toolbar_button_tool($rotateToolLeft);
+            $rotateToolRight = new tool_generic();
+            $rotateToolRight->init(array(self::TOOL_OBJ_LABEL => 'rotateright'));
+            $toolbarRotation .= $this->render_toolbar_button_tool($rotateToolRight);
+            $toolbarRotationBlock = $this->render_toolbar($toolbarRotation, "mr-3");
+
             // Select Tool.
             $dragTool = new tool_generic();
             $dragTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_DRAG));
@@ -217,6 +227,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
 
         $pageheadercontent = $navigationBlock
                 . $toolbarAdminBlock
+                . $toolbarRotationBlock
                 . $toolbarBaseBlock
                 . $toolbarAxis
                 . $toolbarCostumdiv
@@ -233,17 +244,19 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $loading = html_writer::div($progressbar . $progressbarlabel, 'loading');
         $canvas = html_writer::div(html_writer::div($loading, 'drawingcanvas'), 'drawingregion');
 
-        $changesmessage = html_writer::tag('div', get_string('draftchangessaved', self::PLUGIN_NAME), array(
-                    self::HTMLCLASS => 'assignfeedback_editpdfplus_unsavedchanges warning label label-info'
-        ));
-        $changesmessageDiv = html_writer::div($changesmessage, 'unsaved-changes');
-        $canvas .= $changesmessageDiv;
+        // Place for messages, but no warnings displayed yet.
+        $changesmessage = html_writer::div('', 'warningmessages');
+        $canvas .= $changesmessage;
 
         $changesmessage2 = html_writer::tag('div', get_string('nodraftchangessaved', self::PLUGIN_NAME), array(
                     self::HTMLCLASS => 'assignfeedback_editpdfplus_unsavedchanges_edit warning label label-info'
         ));
         $changesmessage2Div = html_writer::div($changesmessage2, 'unsaved-changes');
         $canvas .= $changesmessage2Div;
+
+        $infoicon = "<i class='fa fa-info-circle p-1'></i>";
+        $infomessage = html_writer::div($infoicon, 'infoicon');
+        $canvas .= $infomessage;
 
         //help message
         $helpmessageTitle = html_writer::div(get_string('help_title', self::PLUGIN_NAME), null, array('id' => 'afppHelpmessageTitle'));
@@ -284,6 +297,8 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             'deleteannotation',
             'cannotopenpdf',
             'pagenumber',
+            'partialwarning',
+            'draftchangessaved',
             'student_statut_nc',
             'student_answer_lib'
                 ), self::PLUGIN_NAME);
