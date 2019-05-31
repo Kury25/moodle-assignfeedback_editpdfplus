@@ -752,6 +752,13 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     studentanswer: "",
     /**
+     * pdf display for this annotation
+     * @property pdfdisplay
+     * @type String
+     * @public
+     */
+    pdfdisplay: "footnote",
+    /**
      * Initialise the annotation.
      *
      * @method initializer
@@ -799,6 +806,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = config.path || '';
         this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
         this.drawable = false;
+        this.pdfdisplay = config.pdfdisplay;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
     /**
@@ -827,7 +835,8 @@ Y.extend(ANNOTATION, Y.Base, {
                 borderstyle: this.borderstyle,
                 parent_annot: parseInt(this.parent_annot, 10),
                 divcartridge: this.divcartridge,
-                parent_annot_div: this.parent_annot_element.divcartridge
+                parent_annot_div: this.parent_annot_element.divcartridge,
+                pdfdisplay: this.pdfdisplay
             };
         }
         return {
@@ -850,7 +859,8 @@ Y.extend(ANNOTATION, Y.Base, {
             divcartridge: this.divcartridge,
             parent_annot_div: '',
             answerrequested: parseInt(this.answerrequested, 10),
-            studentstatus: parseInt(this.studentstatus, 10)
+            studentstatus: parseInt(this.studentstatus, 10),
+            pdfdisplay: this.pdfdisplay
         };
     },
     /**
@@ -1141,6 +1151,7 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(divinputdisplay);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
+        divconteneurdisplay.append(this.get_input_pdfdisplay());
 
         return divconteneurdisplay;
     },
@@ -1161,6 +1172,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (this.tooltype.reply === 1) {
                 divtoolbardisplay.append(this.get_button_question());
             }
+            divtoolbardisplay.append(this.get_button_pdfdisplay());
             divtoolbardisplay.append(this.get_button_remove());
         } else {
             divtoolbardisplay.append(this.get_button_student_status());
@@ -1288,6 +1300,21 @@ Y.extend(ANNOTATION, Y.Base, {
         return buttontrashdisplay;
     },
     /**
+     * get the html node for the button to change display on pdf for the annotation
+     * @return node
+     */
+    get_button_pdfdisplay: function () {
+        var buttontrash = "<button id='"
+                + this.divcartridge
+                + "_buttonpdfdisplay' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
+                + "<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                + "<i class='fa fa-arrow-circle-o-down' aria-hidden='true'></i>"
+                + "</button>";
+        var buttontrashdisplay = Y.Node.create(buttontrash);
+        buttontrashdisplay.on('click', this.change_pdf_display, this);
+        return buttontrashdisplay;
+    },
+    /**
      * get the html node for the hidden input to keep information about question state
      * @return node
      */
@@ -1297,6 +1324,13 @@ Y.extend(ANNOTATION, Y.Base, {
             qst = 1;
         }
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>");
+    },
+    /**
+     * get the html node for the hidden input to keep information about question state
+     * @return node
+     */
+    get_input_pdfdisplay: function () {
+        return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_pdfdisplay' value='" + this.pdfdisplay + "'/>");
     },
     /**
      * get the final reference text value
@@ -1361,6 +1395,7 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonstatus.hide();
         }
         this.apply_question_status();
+        this.apply_pdfdisplay();
     },
     /**
      * get the html node for the text to display for the annotation, according to parameters
@@ -1401,6 +1436,22 @@ Y.extend(ANNOTATION, Y.Base, {
         interrupt.set('value', finalvalue);
         this.displaylock = finalvalue;
         this.apply_visibility_annot();
+        this.editor.save_current_page();
+    },
+    /**
+     * change question status of the annotation (with or not)
+     */
+    change_pdf_display: function () {
+        var pdfdisplayvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_pdfdisplay");
+        var value = pdfdisplayvalue.get('value');
+        if (value === "footnote") {
+            pdfdisplayvalue.set('value', "inline");
+            this.pdfdisplay = "inline";
+        } else {
+            pdfdisplayvalue.set('value', "footnote");
+            this.pdfdisplay = "footnote";
+        }
+        this.apply_pdfdisplay();
         this.editor.save_current_page();
     },
     /**
@@ -1464,6 +1515,25 @@ Y.extend(ANNOTATION, Y.Base, {
         return;
     },
     /**
+     * change pdf display mode set of the annotation
+     * @return null
+     */
+    apply_pdfdisplay: function () {
+        var buttonpdf = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
+        var pdfdisplayvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_pdfdisplay");
+        var value = pdfdisplayvalue.get('value');
+        if (buttonpdf) {
+            if (value === 'footnote') {
+                buttonpdf.setHTML("<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                        + "<i class='fa fa-arrow-circle-o-down' aria-hidden='true'></i>");
+            } else {
+                buttonpdf.setHTML("<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                        + "<i class='fa fa-arrow-circle-o-right' aria-hidden='true'></i>");
+            }
+        }
+        return;
+    },
+    /**
      * drag-and-drop start
      * @param {type} e
      */
@@ -1515,7 +1585,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
-        window.console.log('move_cartridge_stop');
+        //window.console.log('move_cartridge_stop');
         this.editor.save_current_page();
     },
     /**
@@ -1583,6 +1653,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
             var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
             var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonpdfdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
             var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
@@ -1601,6 +1672,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (buttonquestion) {
                 buttonquestion.show();
             }
+            buttonpdfdisplay.show();
             buttonremove.show();
             divprincipale.setStyle('z-index', 1000);
             if (input) {
@@ -1640,7 +1712,6 @@ Y.extend(ANNOTATION, Y.Base, {
             }
         }
         this.textannot = result;
-        window.console.log('save_annot');
         this.editor.save_current_page();
         if (result.length === 0) {
             result = "&nbsp;&nbsp;";
@@ -1696,6 +1767,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
             var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
             var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonpdfdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
             var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
             var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
             if (divdisplay) {
@@ -1715,6 +1787,9 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             if (buttonquestion) {
                 buttonquestion.hide();
+            }
+            if (buttonpdfdisplay) {
+                buttonpdfdisplay.hide();
             }
             if (buttonremove) {
                 buttonremove.hide();

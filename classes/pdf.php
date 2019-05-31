@@ -33,9 +33,11 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->libdir . '/pdflib.php');
-require_once($CFG->dirroot . '/mod/assign/feedback/editpdf/fpdi/fpdi.php');
+require_once($CFG->dirroot . '/mod/assign/feedback/editpdfplus/fpdi/autoload.php');
 
-class pdf extends \FPDI {
+use \setasign\Fpdi\Tcpdf\Fpdi;
+
+class pdf extends Fpdi {
 
     /** @var int the number of the current page in the PDF being processed */
     protected $currentpage = 0;
@@ -48,6 +50,8 @@ class pdf extends \FPDI {
 
     /** @var string the path to the PDF currently being processed */
     protected $filename = null;
+    public $arrayLinks = array();
+    public $arrayLinksOrigi = array();
 
     /** No errors */
     const GSPATH_OK = 'ok';
@@ -255,6 +259,12 @@ class pdf extends \FPDI {
             return false;
         }
 
+        //check tcpdf cache directory, needed for image transformation
+        if (!file_exists(K_PATH_CACHE)) {
+            //try to create the directory
+            mkdir(K_PATH_CACHE, 0777, true);
+        }
+
         $colour = $annotation->colour;
         $colourarray = utils_color::getColorRGB($colour); //$this->get_colour_for_pdf($colour);
         $this->SetDrawColorArray($colourarray);
@@ -456,9 +466,11 @@ class pdf extends \FPDI {
                 $this->SetTextColorArray($colourcartridgearray);
 
                 $cartouche = $toolObject->label;
-                //$this->Cell($w);
+
                 //Texte centré dans une cellule 20*10 mm encadrée et retour à la ligne
+                $this->SetFont('freeserif', '', 10);
                 $this->Cell(strlen($cartouche) * 6 + 4, 10, $cartouche, 1, 1, 'C');
+                $this->SetFont($this->get_export_font_name());
 
                 break;
             default: // Line.
@@ -468,9 +480,32 @@ class pdf extends \FPDI {
         if ($type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
             $cartouche = $toolObject->cartridge;
             if ($annotation->textannot) {
-                $cartouche .= ' [' . $annotation_index . ']';
+                if ($annotation->pdfdisplay === "inline") {
+                    $cartouche .= ' | ' . $annotation->textannot;
+                }
+                $this->Write(5, $cartouche . ' [');
+
+                //create link source for annotation's text
+                $link = $this->addLink();
+                $this->SetTextColor(0, 0, 255);
+                $this->SetFont('', 'U');
+                $this->Write(5, $annotation_index, $link);
+                $this->SetTextColorArray($colourcartridgearray);
+                $this->SetFont('', '');
+                $this->arrayLinks[$annotation_index] = $link;
+
+                $this->Write(5, ']');
+
+                //create link target to go back to the annotation display
+                $linkorigi = $this->addLink();
+                $this->setLink($linkorigi, -1);
+                $this->arrayLinksOrigi[$annotation_index] = $linkorigi;
+
+                //$this->Annotation($sx + 50, $sy, 30, 30, $annotation->textannot, array('Subtype' => 'Text', 'Name' => 'Comment', 'T' => $toolObject->label, 'Subj' => 'example', 'C' => $colourarray));
             }
-            $this->Write(5, $cartouche);
+
+            //$html = '&nbsp;<a href="#annot' . $annotation_index . '" style="color:red;">' . '[#annot' . $annotation_index . ']' . '</a>';
+            //$this->writeHTML($html);
         }
 
         $this->SetDrawColor(0, 0, 0);

@@ -730,7 +730,7 @@ EOD;
 
         //add feedback by annotation
         $pdf->SetAutoPageBreak(true);
-        $pdf->AddPage();
+        $pdf->AddPage('P', 'A4');
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Write(10, "", '', false, 'L', true);
         $pdf->SetFontSize(14);
@@ -750,7 +750,16 @@ EOD;
             if (!$annot->hasReadableComment()) {
                 continue;
             }
-            $pdf->Write(5, $index, '', false, 'L', false);
+
+            //set link target to annotation's text
+            $pdf->SetLink($pdf->arrayLinks[$index], -1);
+            //create link source for annotation's display
+            $pdf->SetTextColor(0, 0, 255);
+            $pdf->SetFont('', 'U');
+            $pdf->Write(5, $index, $pdf->arrayLinksOrigi[$index], false, 'L', false);
+            $pdf->SetFont('', '');
+            $pdf->SetTextColor(0, 0, 0);
+
             if ($annot->studentstatus === "2") {
                 $pdf->SetTextColor(255, 0, 0);
                 $pdf->Write(5, '*', '', false, 'L', false);
