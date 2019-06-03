@@ -201,7 +201,7 @@ class tool {
         }
         $datatool = $this->typeObject->label;
         $iconparams = array('data-tool' => $datatool,
-            'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-secondary',
+            'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-light',
             'id' => 'ctbutton' . $this->id,
             'type' => 'button',
             'style' => $this->getStyleButton());

@@ -114,7 +114,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         //Random id for plugin identification
         $linkid = html_writer::random_id();
         $labelLaunchedEditor = ($widget->readonly) ? get_string('viewfeedbackonline', self::PLUGIN_NAME) : get_string('launcheditor', self::PLUGIN_NAME);
-        $links = html_writer::tag('a', $labelLaunchedEditor, array('id' => $linkid, self::HTMLCLASS => 'btn btn-secondary', 'href' => '#'));
+        $links = html_writer::tag('a', $labelLaunchedEditor, array('id' => $linkid, self::HTMLCLASS => 'btn btn-light', 'href' => '#'));
         $html .= '<input type="hidden" name="assignfeedback_editpdfplus_haschanges" value="false"/>';
         $html .= html_writer::div($links, 'visibleifjs');
 
@@ -133,7 +133,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $nav_prev = 'nav_prev';
             $nav_next = 'nav_next';
         }
-        $classNav = "btn btn-secondary ";
+        $classNav = "btn btn-light ";
         $iconhtmlP = $this->render_toolbar_button_icon("fa-caret-left fa-2x");
         $navigation .= $this->render_toolbar_button_html($iconhtmlP, array(self::HTMLDISABLED => 'true',
             self::HTMLCLASS => $classNav . 'navigate-previous-button'));
@@ -143,7 +143,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $navigation .= $this->render_toolbar_button_html($iconhtmlN, array(self::HTMLDISABLED => 'true',
             self::HTMLCLASS => $classNav . "navigate-next-button"));
 
-        $navigationBlock = $this->render_toolbar($navigation, "mr-auto");
+        $navigationBlock = $this->render_toolbar($navigation, "mr-3");
 
         $toolbarRotationBlock = '';
         $toolbarBaseBlock = '';
@@ -219,20 +219,26 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
                             [get_string('question_select', self::PLUGIN_NAME), get_string('question_select_without', self::PLUGIN_NAME), get_string('question_select_with', self::PLUGIN_NAME)], 'questionselection', 0, FALSE, array(self::HTMLCLASS => 'form-control'));
             $statuschoice = html_writer::select(
                             [get_string('statut_select', self::PLUGIN_NAME), get_string('statut_select_nc', self::PLUGIN_NAME), get_string('statut_select_ok', self::PLUGIN_NAME), get_string('statut_select_ko', self::PLUGIN_NAME)], 'statutselection', 0, FALSE, array(self::HTMLCLASS => 'form-control'));
-            $validatebutton = $this->render_toolbar_button_html(get_string('send_pdf_update', self::PLUGIN_NAME), array(self::HTMLCLASS => 'btn btn-secondary', 'id' => 'student_valide_button'));
+            $validatebutton = $this->render_toolbar_button_html(get_string('send_pdf_update', self::PLUGIN_NAME), array(self::HTMLCLASS => 'btn btn-light', 'id' => 'student_valide_button'));
             $toolbarAxis .= $this->render_toolbar($statuschoice);
             $toolbarAxis .= $this->render_toolbar($questionchoice, 'mr-3');
             $toolbarAxis .= $this->render_toolbar($validatebutton, 'mr-0');
         }
 
-        $pageheadercontent = $navigationBlock
+        $pageheadercontent = "<div class='d-flex align-content-center flex-nowrap align-items-center'>"
+                . $navigationBlock
                 . $toolbarAdminBlock
+                . "<div class='d-fex flex-wrap align-content-center align-items-center'>"
                 . $toolbarRotationBlock
                 . $toolbarBaseBlock
+                . "<div class='btn-group btn-group-sm p-1'>"
                 . $toolbarAxis
                 . $toolbarCostumdiv
-                . $toolbarDrawBlock;
-        $mainnavigation = html_writer::div($pageheadercontent, "btn-toolbar btn-group-sm bg-light p-1", array('role' => 'toolbar'));
+                . '</div>'
+                . $toolbarDrawBlock
+                . '</div>'
+                . '</div>';
+        $mainnavigation = html_writer::div($pageheadercontent, "drawingtoolbar btn-toolbar btn-group-sm bg-light p-1", array('role' => 'toolbar'));
 
         $body .= $mainnavigation;
 

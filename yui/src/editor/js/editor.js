@@ -367,6 +367,11 @@ EDITOR.prototype = {
             drawingcanvas.on('gesturemoveend', this.edit_end, null, this);
 
             this.refresh_button_state();
+
+            //trigger when window is resized
+            drawingcanvas.on('windowresize', this.resize, this);
+            var buttonChooseView = Y.one('.collapse-buttons');
+            buttonChooseView.on('click', this.temporise, this, this.resize, 500);
         }
 
         this.start_generation();
@@ -1275,13 +1280,22 @@ EDITOR.prototype = {
     },
 
     /**
+     * Temporise a function.
+     * @public
+     * @method resize
+     */
+    temporise: function (e, fct, timeout) {
+        e.preventDefault();
+        setTimeout(fct, timeout);
+    },
+
+    /**
      * Resize the dialogue window when the browser is resized.
      * @public
      * @method resize
      */
     resize: function () {
-        var drawingregion, drawregionheight;
-
+        var drawingregion, drawregionheight, drawregiontop;
         if (this.dialogue) {
             if (!this.dialogue.get('visible')) {
                 return;
@@ -1289,16 +1303,35 @@ EDITOR.prototype = {
             this.dialogue.centerDialogue();
         }
 
+        //calculate top div
+        var drawingregionheaderSelector = document.getElementsByClassName(SELECTOR.DRAWINGTOOLBAR);
+        if (drawingregionheaderSelector.length > 0) {
+            var drawingregionheader = drawingregionheaderSelector[0];
+            drawregiontop = drawingregionheader.getBoundingClientRect().height;
+        } else {
+            drawregiontop = '52';
+        }
         // Make sure the dialogue box is not bigger than the max height of the viewport.
         drawregionheight = Y.one('body').get('winHeight') - 120; // Space for toolbar + titlebar.
         if (drawregionheight < 100) {
             drawregionheight = 100;
         }
-        drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
-        if (this.dialogue) {
-            drawingregion.setStyle('maxHeight', drawregionheight + 'px');
+        var drawingregionSelector = document.getElementsByClassName(SELECTOR.DRAWINGREGIONCLASS);
+        if (drawingregionSelector.length > 0) {
+            drawingregion = drawingregionSelector[0];
+            drawingregion.style.top = drawregiontop + 'px';
+            drawingregion.style.maxHeight = drawregionheight + 'px';
+        } else {
+            drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            if (this.dialogue) {
+                drawingregion.setStyle('maxHeight', drawregionheight + 'px');
+            }
         }
-        this.redraw();
+        try {
+            this.redraw();
+        } catch (exception) {
+        }
+
         return true;
     },
 

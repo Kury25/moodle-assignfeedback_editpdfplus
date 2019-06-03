@@ -54,7 +54,7 @@ class tool_generic extends tool {
         $iconhtml = \html_writer::tag("i", "", array('class' => self::DISPLAY_CLASS_BUTTON[$this->label], 'aria-hidden' => 'true'));
         $iconparams = array(
             'data-tool' => $this->label,
-            'class' => $this->label . 'button generictoolbarbutton btn btn-secondary',
+            'class' => $this->label . 'button generictoolbarbutton btn btn-light',
             'type' => 'button'
         );
         if ($this->id) {

@@ -42,18 +42,10 @@
 
 .assignfeedback_editpdfplus_widget .drawingregion {
     border: 1px solid #ccc;
-    left: 0.1em;
-    right: 1em;
-    /*top: 52px;*/
-    bottom: 0;
-    position: absolute;
-    overflow: auto;
+    overflow: scroll;
     background-color: #ccc;
     touch-action: none;
-}
-
-.assignfeedback_editpdfplus_widget[data-region="review-panel-content"] .drawingregion {
-    top: 52px;
+    max-height: 600px;
 }
 
 .assignfeedback_editpdfplus_widget {
@@ -87,9 +79,7 @@
     top: 60px;
 }
 
-.yui3-colourpicker-hidden,
-.yui3-commentsearch-hidden,
-.yui3-commentmenu-hidden {
+.yui3-colourpicker-hidden {
     display: none;
 }
 
@@ -247,7 +237,6 @@
 }
 ul.assignfeedback_editpdfplus_menu {
     margin: 0;
-    min-width: 200px;
     max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
