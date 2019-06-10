@@ -540,3 +540,16 @@ ul.assignfeedback_editpdfplus_menu {
     height: 330px;
     box-sizing: border-box;
 }
+.assignfeedback_editpdfplus_resize{
+    position: absolute;
+}
+.assignfeedback_editpdfplus_resize_active {
+    background-color:#e3e3ff;
+    border: solid #ccccff;
+}
+.assignfeedback_editpdfplus_resize_horizontal.assignfeedback_editpdfplus_resize_active:hover {
+    cursor:col-resize;
+}
+.assignfeedback_editpdfplus_resize_vertical.assignfeedback_editpdfplus_resize_active:hover {
+    cursor:row-resize;
+}

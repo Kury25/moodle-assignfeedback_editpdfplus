@@ -205,6 +205,11 @@ EDITOR.prototype = {
      * @protected
      */
     currentannotationreview: null,
+    /**
+     * id of the current selected resize area
+     * @type String
+     */
+    resizeareaselected: null,
 
     /**
      * Called during the initialisation process of the object.
@@ -244,7 +249,15 @@ EDITOR.prototype = {
     refresh_button_state: function () {
         var currenttoolnode, drawingregion, drawingcanvas;
 
+        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+
         this.refresh_button_color_state();
+
+        //remove active class for resize areas
+        var resizezones = Y.all('.assignfeedback_editpdfplus_resize');
+        if (resizezones) {
+            resizezones.removeClass('assignfeedback_editpdfplus_resize_active');
+        }
 
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
@@ -258,7 +271,6 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
 
-        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         switch (this.currentedit.tool) {
             case 'drag':
                 drawingcanvas.setStyle('cursor', 'move');
@@ -268,6 +280,10 @@ EDITOR.prototype = {
                 break;
             case 'select':
                 drawingcanvas.setStyle('cursor', 'default');
+                break;
+            case 'resize':
+                drawingcanvas.setStyle('cursor', 'default');
+                resizezones.addClass('assignfeedback_editpdfplus_resize_active');
                 break;
             default:
                 drawingcanvas.setStyle('cursor', 'crosshair');
@@ -973,7 +989,7 @@ EDITOR.prototype = {
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "select" && tool !== "drag") {
+        if (tool !== "select" && tool !== "drag" && tool !== "resize") {
             this.lastannotationtool = tool;
         }
 
@@ -1161,6 +1177,30 @@ EDITOR.prototype = {
                 }
             }
         }
+
+        if (this.currentedit.tool === 'resize') {
+            var annotations2 = this.pages[this.currentpage].annotations;
+            var selectedAnnot = null;
+            // Find the first annotation whose bounds encompass the click.
+            Y.each(annotations2, function (annotation) {
+                Y.each(annotation.resizeAreas, function (area) {
+                    if (e.target == area) {
+                        selectedAnnot = annotation;
+                    }
+                });
+            });
+            if (selectedAnnot) {
+                this.resizeareaselected = e.target.get('id');
+                if (e.target.getData('direction') === 'left' || e.target.getData('direction') === 'right') {
+                    canvas.setStyle('cursor', 'col-resize');
+                } else {
+                    canvas.setStyle('cursor', 'row-resize');
+                }
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = selectedAnnot;
+            }
+        }
+
         if (this.currentannotation) {
             // Used to calculate drag offset.
             this.currentedit.annotationstart = {x: this.currentannotation.x,
@@ -1206,6 +1246,10 @@ EDITOR.prototype = {
             drawingregion.getDOMNode().scrollLeft -= diffX;
             drawingregion.getDOMNode().scrollTop -= diffY;
 
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mousemoveResize(e, point, resizearea);
+
         } else {
             if (this.currentedit.start) {
                 this.currentedit.end = point;
@@ -1220,7 +1264,7 @@ EDITOR.prototype = {
      * @param Event
      * @method edit_end
      */
-    edit_end: function () {
+    edit_end: function (e) {
         var duration,
                 annotation;
 
@@ -1234,7 +1278,7 @@ EDITOR.prototype = {
         if (this.currentedit.id && this.currentedit.id[0] === 'c') {
             toolid = this.currentedit.id.substr(8);
         }
-        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
             if (annotation) {
                 if (this.currentdrawable) {
@@ -1263,8 +1307,13 @@ EDITOR.prototype = {
                     this.drawablesannotations.push(annotation);
                 }
             }
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mouseupResize(e, resizearea);
+            var canvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+            canvas.setStyle('cursor', 'default');
+            this.resizeareaselected = null;
         }
-        window.console.log('edit_end');
 
         // Save the changes.
         this.save_current_page();
@@ -1274,7 +1323,7 @@ EDITOR.prototype = {
         this.currentedit.start = false;
         this.currentedit.end = false;
         this.currentedit.path = [];
-        if (this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             this.handle_tool_button_action("select");
         }
     },
@@ -1282,7 +1331,7 @@ EDITOR.prototype = {
     /**
      * Temporise a function.
      * @public
-     * @method resize
+     * @method temporise
      */
     temporise: function (e, fct, timeout) {
         e.preventDefault();
@@ -1295,7 +1344,7 @@ EDITOR.prototype = {
      * @method resize
      */
     resize: function () {
-        var drawingregion, drawregionheight, drawregiontop;
+        var drawingregion, drawregionheight, drawregiontop, drawheaderheight, drawfooterheight;
         if (this.dialogue) {
             if (!this.dialogue.get('visible')) {
                 return;
@@ -1308,11 +1357,21 @@ EDITOR.prototype = {
         if (drawingregionheaderSelector.length > 0) {
             var drawingregionheader = drawingregionheaderSelector[0];
             drawregiontop = drawingregionheader.getBoundingClientRect().height;
+            drawheaderheight = drawingregionheader.getBoundingClientRect().bottom;
         } else {
-            drawregiontop = '52';
+            drawregiontop = 52;
+            drawheaderheight = 170;
+        }
+        //get footer's height
+        var footer = document.querySelector("div[data-region='grade-actions-panel']");
+        if (footer) {
+            drawfooterheight = footer.getBoundingClientRect().height;
+        } else {
+            drawfooterheight = 60;
         }
         // Make sure the dialogue box is not bigger than the max height of the viewport.
-        drawregionheight = Y.one('body').get('winHeight') - 120; // Space for toolbar + titlebar.
+        // be careful to remove space for toolbar + titlebar.
+        drawregionheight = Y.one('body').get('winHeight') - (drawfooterheight + drawheaderheight);
         if (drawregionheight < 100) {
             drawregionheight = 100;
         }

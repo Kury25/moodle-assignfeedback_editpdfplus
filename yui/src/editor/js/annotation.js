@@ -111,6 +111,12 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     drawable: false,
     /**
+     * List of all resize areas (div id) for this annotation
+     * @type array
+     * @public
+     */
+    resizeAreas: [],
+    /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
      * @type M.assignfeedback_editpdfplus.tool
@@ -230,6 +236,12 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     pdfdisplay: "footnote",
     /**
+     * minimum size for resize area
+     * @type Int
+     * @public
+     */
+    minresizewidth: 20,
+    /**
      * Initialise the annotation.
      *
      * @method initializer
@@ -277,6 +289,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = config.path || '';
         this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
         this.drawable = false;
+        this.resizeAreas = [];
         this.pdfdisplay = config.pdfdisplay;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
@@ -455,6 +468,21 @@ Y.extend(ANNOTATION, Y.Base, {
     init_div_cartridge_id: function () {
         var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+    },
+    /**
+     * Init the HTML id for the shape
+     * @protected
+     * @param {String} toolname
+     * @returns {String} the shape id
+     */
+    init_shape_id: function (toolname) {
+        if (!this.shape_id) {
+            //create only one time the shape_id
+            var d = new Date();
+            var n = d.getTime();
+            this.shape_id = "ct_" + toolname + "_" + n;
+        }
+        return this.shape_id;
     },
     /**
      * get the html node for the cartridge
@@ -1066,6 +1094,99 @@ Y.extend(ANNOTATION, Y.Base, {
         return true;
     },
     /**
+     * global method, replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        return true;
+    },
+    /**
+     * global method, draw empty resize area
+     */
+    draw_resizeAreas: function () {
+        return true;
+    },
+    /**
+     * get the html node for the cartridge
+     * @param {string} colorcartridge
+     * @return node
+     */
+    get_div_resizearea: function (direction) {
+        var plane = "horizontal";
+        if (direction === "up" || direction === "down") {
+            plane = "vertical";
+        }
+        var div = "<div "
+                + "id='" + this.divcartridge + "_resize_" + direction + "' "
+                + "class='assignfeedback_editpdfplus_resize assignfeedback_editpdfplus_resize_" + plane + "' ";
+        if (plane === "horizontal") {
+            var intery = Math.max(this.endy - this.y, 7);
+            div += "style='min-width:7px;min-height:" + intery + "px;' ";
+        } else {
+            var interx = Math.max(this.endx - this.x, 7);
+            div += "style='min-height:7px;min-width:" + interx + "px;' ";
+        }
+        div += "data-direction='" + direction + "' "
+                + "> "
+                + "</div>";
+        return Y.Node.create(div);
+    },
+    /**
+     * Remove all resize areas
+     */
+    remove_resizearea: function () {
+        var divAreaResize = Y.all('.assignfeedback_editpdfplus_resize');
+        divAreaResize.remove();
+    },
+    /**
+     * Insert new resize area in the DOM
+     * @param {String} direction direction for the resizing {left, up down, right}
+     * @param {int} x left position of the resize area
+     * @param {int} y top position of the resize area
+     */
+    push_div_resizearea: function (direction, x, y) {
+        var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var div = this.editor.get_dialogue_element('#' + this.divcartridge + "_resize_" + direction);
+        if (div) {
+            return;
+        }
+        var divresize = this.get_div_resizearea(direction);
+        if (!divresize) {
+            return;
+        }
+        divresize.setX(x);
+        divresize.setY(y);
+        drawingregion.append(divresize);
+        this.resizeAreas.push(divresize);
+    },
+    /**
+     * global method, actions when resizing a shape
+     */
+    mousemoveResize: function () {
+        return true;
+    },
+    /**
+     * Actions after resizing a shape
+     * - save new positions
+     * - redraw cartridge
+     * @param {Event} e click event
+     * @param {Div node} divresize resize area div
+     */
+    mouseupResize: function (e, divresize) {
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var offset = canvas.getXY();
+        var direction = divresize.getData('direction');
+        if (direction === 'right') {
+            this.endx = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'left') {
+            this.x = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'up') {
+            this.y = e.clientY + canvas.get('docScrollY') - offset[1];
+        } else if (direction === 'down') {
+            this.endy = e.clientY + canvas.get('docScrollY') - offset[1];
+        }
+        this.replacement_cartridge();
+    },
+    /**
      * display annotation view
      * @param {type} e
      * @param {string} clickType
@@ -1342,6 +1463,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+
+        //init resize area
+        this.remove_resizearea();
+        this.draw_resizeAreas();
     },
     /**
      * Draw the in progress edit.

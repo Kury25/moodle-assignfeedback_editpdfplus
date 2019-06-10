@@ -74,7 +74,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
             'select': '.selectbutton',
-            'drag': '.dragbutton'
+            'drag': '.dragbutton',
+            'resize': '.resizebutton'
         },
         TOOLTYPE = {
             'HIGHLIGHTPLUS': 1,
@@ -642,6 +643,12 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     drawable: false,
     /**
+     * List of all resize areas (div id) for this annotation
+     * @type array
+     * @public
+     */
+    resizeAreas: [],
+    /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
      * @type M.assignfeedback_editpdfplus.tool
@@ -761,6 +768,12 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     pdfdisplay: "footnote",
     /**
+     * minimum size for resize area
+     * @type Int
+     * @public
+     */
+    minresizewidth: 20,
+    /**
      * Initialise the annotation.
      *
      * @method initializer
@@ -808,6 +821,7 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = config.path || '';
         this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
         this.drawable = false;
+        this.resizeAreas = [];
         this.pdfdisplay = config.pdfdisplay;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
@@ -986,6 +1000,21 @@ Y.extend(ANNOTATION, Y.Base, {
     init_div_cartridge_id: function () {
         var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+    },
+    /**
+     * Init the HTML id for the shape
+     * @protected
+     * @param {String} toolname
+     * @returns {String} the shape id
+     */
+    init_shape_id: function (toolname) {
+        if (!this.shape_id) {
+            //create only one time the shape_id
+            var d = new Date();
+            var n = d.getTime();
+            this.shape_id = "ct_" + toolname + "_" + n;
+        }
+        return this.shape_id;
     },
     /**
      * get the html node for the cartridge
@@ -1597,6 +1626,99 @@ Y.extend(ANNOTATION, Y.Base, {
         return true;
     },
     /**
+     * global method, replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        return true;
+    },
+    /**
+     * global method, draw empty resize area
+     */
+    draw_resizeAreas: function () {
+        return true;
+    },
+    /**
+     * get the html node for the cartridge
+     * @param {string} colorcartridge
+     * @return node
+     */
+    get_div_resizearea: function (direction) {
+        var plane = "horizontal";
+        if (direction === "up" || direction === "down") {
+            plane = "vertical";
+        }
+        var div = "<div "
+                + "id='" + this.divcartridge + "_resize_" + direction + "' "
+                + "class='assignfeedback_editpdfplus_resize assignfeedback_editpdfplus_resize_" + plane + "' ";
+        if (plane === "horizontal") {
+            var intery = Math.max(this.endy - this.y, 7);
+            div += "style='min-width:7px;min-height:" + intery + "px;' ";
+        } else {
+            var interx = Math.max(this.endx - this.x, 7);
+            div += "style='min-height:7px;min-width:" + interx + "px;' ";
+        }
+        div += "data-direction='" + direction + "' "
+                + "> "
+                + "</div>";
+        return Y.Node.create(div);
+    },
+    /**
+     * Remove all resize areas
+     */
+    remove_resizearea: function () {
+        var divAreaResize = Y.all('.assignfeedback_editpdfplus_resize');
+        divAreaResize.remove();
+    },
+    /**
+     * Insert new resize area in the DOM
+     * @param {String} direction direction for the resizing {left, up down, right}
+     * @param {int} x left position of the resize area
+     * @param {int} y top position of the resize area
+     */
+    push_div_resizearea: function (direction, x, y) {
+        var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var div = this.editor.get_dialogue_element('#' + this.divcartridge + "_resize_" + direction);
+        if (div) {
+            return;
+        }
+        var divresize = this.get_div_resizearea(direction);
+        if (!divresize) {
+            return;
+        }
+        divresize.setX(x);
+        divresize.setY(y);
+        drawingregion.append(divresize);
+        this.resizeAreas.push(divresize);
+    },
+    /**
+     * global method, actions when resizing a shape
+     */
+    mousemoveResize: function () {
+        return true;
+    },
+    /**
+     * Actions after resizing a shape
+     * - save new positions
+     * - redraw cartridge
+     * @param {Event} e click event
+     * @param {Div node} divresize resize area div
+     */
+    mouseupResize: function (e, divresize) {
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var offset = canvas.getXY();
+        var direction = divresize.getData('direction');
+        if (direction === 'right') {
+            this.endx = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'left') {
+            this.x = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'up') {
+            this.y = e.clientY + canvas.get('docScrollY') - offset[1];
+        } else if (direction === 'down') {
+            this.endy = e.clientY + canvas.get('docScrollY') - offset[1];
+        }
+        this.replacement_cartridge();
+    },
+    /**
      * display annotation view
      * @param {type} e
      * @param {string} clickType
@@ -1873,6 +1995,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+
+        //init resize area
+        this.remove_resizearea();
+        this.draw_resizeAreas();
     },
     /**
      * Draw the in progress edit.
@@ -2632,6 +2758,13 @@ ANNOTATIONHIGHLIGHTPLUS.NAME = "annotationhighlightplus";
 ANNOTATIONHIGHLIGHTPLUS.ATTRS = {};
 
 Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
+
+    /**
+     * Margin to let for resize area
+     * @type Number
+     * @protected
+     */
+    marginDivResize: 4,
     /**
      * Draw a highlight annotation
      * @protected
@@ -2644,14 +2777,16 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 bounds,
                 highlightcolour;
 
+        highlightcolour = this.get_color();
+        this.init_shape_id('hightlightplus');
+
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
             new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
-        highlightcolour = this.get_color();
-
         shape = this.editor.graphic.addShape({
+            id: this.shape_id,
             type: Y.Rect,
             width: bounds.width,
             height: bounds.height,
@@ -2668,6 +2803,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONHIGHLIGHTPLUS.superclass.draw.apply(this);
     },
@@ -2741,7 +2878,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -2783,11 +2919,66 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
+    },
+    /**
+     * Draw empty resize area on left and right
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('left', this.x - this.marginDivResize, this.y);
+        this.push_div_resizearea('right', this.endx - this.marginDivResize, this.y);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on left, new x and width
+     * - on right, new width
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var direction = divresize.getData('direction');
+        var width = this.minresizewidth;
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointx = point.x;
+        //sortie de cadre
+        if (newpointx < 0) {
+            newpointx = 0;
+        } else if (canvasDim.width < newpointx) {
+            newpointx = canvasDim.width;
+        }
+        var decalage = canvasDim.x;
+        if (direction === 'right') {
+            width = Math.max(newpointx - this.x, this.minresizewidth);
+            shape.set('width', width);
+            divresize.setX(this.x + width + decalage - this.marginDivResize);
+        } else if (direction === 'left') {
+            width = Math.max(this.endx - newpointx, this.minresizewidth);
+            shape.set('x', Math.min(newpointx, this.endx - this.minresizewidth));
+            shape.set('width', width);
+            divresize.setX(this.endx - width + decalage - this.marginDivResize);
+        }
     },
     /**
      * Delete an annotation
@@ -2808,6 +2999,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -3140,7 +3332,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -3202,11 +3393,20 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
     },
     change_stamp: function () {
         var rotationstate = this.editor.get_dialogue_element('#' + this.divcartridge + "_rotation");
@@ -3323,6 +3523,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     oldx: 0,
     oldy: 0,
     /**
+     * Margin to let for resize area
+     * @type Number
+     * @protected
+     */
+    marginDivResize: 4,
+    /**
      * Draw a highlight annotation
      * @protected
      * @method draw
@@ -3340,8 +3546,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
         highlightcolour = this.get_color();
+        this.init_shape_id('frame');
 
-        this.shape_id = 'ct_frame_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         shape = this.editor.graphic.addShape({
             id: this.shape_id,
             type: Y.Rect,
@@ -3371,6 +3577,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONFRAME.superclass.draw.apply(this);
     },
@@ -3469,6 +3677,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+
+        //init resize area
+        this.remove_resizearea();
+        this.draw_resizeAreas();
     },
     /**
      * Get the color of the element, depend of data on DB
@@ -3484,7 +3696,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     draw_catridge: function () {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var divdisplay;
-            var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
             if (this.divcartridge === '') {
                 this.init_div_cartridge_id();
                 var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -3641,13 +3852,68 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 }
 
             } else {
-                var divid = '#' + this.divcartridge;
-                divdisplay = this.editor.get_dialogue_element(divid);
-                divdisplay.setX(offsetcanvas[0] + this.cartridgex);
-                divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
+                this.replacement_cartridge();
             }
         }
         return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divid = '#' + this.divcartridge;
+        var divdisplay = this.editor.get_dialogue_element(divid);
+        if (divdisplay) {
+            divdisplay.setX(offsetcanvas[0] + this.cartridgex);
+            divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
+        }
+    },
+    /**
+     * Draw empty resize area on left and right
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('left', this.x - 2, this.y);
+        this.push_div_resizearea('right', this.endx - 2, this.y);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on left, new x and width
+     * - on right, new width
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var direction = divresize.getData('direction');
+        var width = this.minresizewidth;
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointx = point.x;
+        //sortie de cadre
+        if (newpointx < 0) {
+            newpointx = 0;
+        } else if (canvasDim.width < newpointx) {
+            newpointx = canvasDim.width;
+        }
+        var decalage = canvasDim.x;
+        if (direction === 'right') {
+            width = Math.max(newpointx - this.x, this.minresizewidth);
+            shape.set('width', width);
+            divresize.setX(this.x + width + decalage - this.marginDivResize);
+        } else if (direction === 'left') {
+            width = Math.max(this.endx - point.x, this.minresizewidth);
+            shape.set('x', Math.min(newpointx, this.endx - this.minresizewidth));
+            shape.set('width', width);
+            divresize.setX(this.endx - width + decalage - this.marginDivResize);
+        }
     },
     /**
      * drag-and-drop process
@@ -3887,6 +4153,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(k, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -3959,6 +4226,13 @@ ANNOTATIONVERTICALLINE.NAME = "annotationverticalline";
 ANNOTATIONVERTICALLINE.ATTRS = {};
 
 Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
+
+    /**
+     * Margin to let for resize area
+     * @type Number
+     * @protected
+     */
+    marginDivResize: 2,
     /**
      * Draw a verticalline annotation
      * @protected
@@ -3973,8 +4247,10 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
 
         verticallinecolour = this.get_color();
+        this.init_shape_id('verticalline');
 
         shape = this.editor.graphic.addShape({
+            id: this.shape_id,
             type: Y.Path,
             fill: false,
             stroke: {
@@ -3994,6 +4270,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONVERTICALLINE.superclass.draw.apply(this);
     },
@@ -4074,7 +4352,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -4116,11 +4393,71 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
+    },
+    /**
+     * Draw empty resize area on top and down
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('up', this.x - 7, this.y - this.marginDivResize);
+        this.push_div_resizearea('down', this.x - 7, this.endy - this.marginDivResize);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on top, new height
+     * - on down, new y and nw height
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var height = this.minresizewidth;
+        var direction = divresize.getData('direction');
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointy = point.y;
+        //sortie de cadre
+        if (newpointy < 0) {
+            newpointy = 0;
+        } else if (canvasDim.height < newpointy) {
+            newpointy = canvasDim.height;
+        }
+        var decalage = canvasDim.y;
+        if (direction === 'up') {
+            height = Math.max(this.endy - newpointy, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, Math.min(newpointy, this.endy - this.minresizewidth));
+            shape.lineTo(this.x, this.endy);
+            shape.end();
+            divresize.setY(this.endy - height + decalage - this.marginDivResize);
+        } else if (direction === 'down') {
+            height = Math.max(newpointy - this.y, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, this.y);
+            shape.lineTo(this.x, this.y + height);
+            shape.end();
+            divresize.setY(this.y + height + decalage - this.marginDivResize);
+        }
     },
     /**
      * Delete an annotation
@@ -4142,6 +4479,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -4301,7 +4639,6 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -4336,11 +4673,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
-        return true;
     },
     /**
      * Display the annotation according to current parameters
@@ -4904,6 +5250,11 @@ EDITOR.prototype = {
      * @protected
      */
     currentannotationreview: null,
+    /**
+     * id of the current selected resize area
+     * @type String
+     */
+    resizeareaselected: null,
 
     /**
      * Called during the initialisation process of the object.
@@ -4943,7 +5294,15 @@ EDITOR.prototype = {
     refresh_button_state: function () {
         var currenttoolnode, drawingregion, drawingcanvas;
 
+        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+
         this.refresh_button_color_state();
+
+        //remove active class for resize areas
+        var resizezones = Y.all('.assignfeedback_editpdfplus_resize');
+        if (resizezones) {
+            resizezones.removeClass('assignfeedback_editpdfplus_resize_active');
+        }
 
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
@@ -4957,7 +5316,6 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
 
-        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         switch (this.currentedit.tool) {
             case 'drag':
                 drawingcanvas.setStyle('cursor', 'move');
@@ -4967,6 +5325,10 @@ EDITOR.prototype = {
                 break;
             case 'select':
                 drawingcanvas.setStyle('cursor', 'default');
+                break;
+            case 'resize':
+                drawingcanvas.setStyle('cursor', 'default');
+                resizezones.addClass('assignfeedback_editpdfplus_resize_active');
                 break;
             default:
                 drawingcanvas.setStyle('cursor', 'crosshair');
@@ -5672,7 +6034,7 @@ EDITOR.prototype = {
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "select" && tool !== "drag") {
+        if (tool !== "select" && tool !== "drag" && tool !== "resize") {
             this.lastannotationtool = tool;
         }
 
@@ -5860,6 +6222,30 @@ EDITOR.prototype = {
                 }
             }
         }
+
+        if (this.currentedit.tool === 'resize') {
+            var annotations2 = this.pages[this.currentpage].annotations;
+            var selectedAnnot = null;
+            // Find the first annotation whose bounds encompass the click.
+            Y.each(annotations2, function (annotation) {
+                Y.each(annotation.resizeAreas, function (area) {
+                    if (e.target == area) {
+                        selectedAnnot = annotation;
+                    }
+                });
+            });
+            if (selectedAnnot) {
+                this.resizeareaselected = e.target.get('id');
+                if (e.target.getData('direction') === 'left' || e.target.getData('direction') === 'right') {
+                    canvas.setStyle('cursor', 'col-resize');
+                } else {
+                    canvas.setStyle('cursor', 'row-resize');
+                }
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = selectedAnnot;
+            }
+        }
+
         if (this.currentannotation) {
             // Used to calculate drag offset.
             this.currentedit.annotationstart = {x: this.currentannotation.x,
@@ -5905,6 +6291,10 @@ EDITOR.prototype = {
             drawingregion.getDOMNode().scrollLeft -= diffX;
             drawingregion.getDOMNode().scrollTop -= diffY;
 
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mousemoveResize(e, point, resizearea);
+
         } else {
             if (this.currentedit.start) {
                 this.currentedit.end = point;
@@ -5919,7 +6309,7 @@ EDITOR.prototype = {
      * @param Event
      * @method edit_end
      */
-    edit_end: function () {
+    edit_end: function (e) {
         var duration,
                 annotation;
 
@@ -5933,7 +6323,7 @@ EDITOR.prototype = {
         if (this.currentedit.id && this.currentedit.id[0] === 'c') {
             toolid = this.currentedit.id.substr(8);
         }
-        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
             if (annotation) {
                 if (this.currentdrawable) {
@@ -5962,8 +6352,13 @@ EDITOR.prototype = {
                     this.drawablesannotations.push(annotation);
                 }
             }
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mouseupResize(e, resizearea);
+            var canvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+            canvas.setStyle('cursor', 'default');
+            this.resizeareaselected = null;
         }
-        window.console.log('edit_end');
 
         // Save the changes.
         this.save_current_page();
@@ -5973,7 +6368,7 @@ EDITOR.prototype = {
         this.currentedit.start = false;
         this.currentedit.end = false;
         this.currentedit.path = [];
-        if (this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             this.handle_tool_button_action("select");
         }
     },
@@ -5981,7 +6376,7 @@ EDITOR.prototype = {
     /**
      * Temporise a function.
      * @public
-     * @method resize
+     * @method temporise
      */
     temporise: function (e, fct, timeout) {
         e.preventDefault();
@@ -5994,7 +6389,7 @@ EDITOR.prototype = {
      * @method resize
      */
     resize: function () {
-        var drawingregion, drawregionheight, drawregiontop;
+        var drawingregion, drawregionheight, drawregiontop, drawheaderheight, drawfooterheight;
         if (this.dialogue) {
             if (!this.dialogue.get('visible')) {
                 return;
@@ -6007,11 +6402,21 @@ EDITOR.prototype = {
         if (drawingregionheaderSelector.length > 0) {
             var drawingregionheader = drawingregionheaderSelector[0];
             drawregiontop = drawingregionheader.getBoundingClientRect().height;
+            drawheaderheight = drawingregionheader.getBoundingClientRect().bottom;
         } else {
-            drawregiontop = '52';
+            drawregiontop = 52;
+            drawheaderheight = 170;
+        }
+        //get footer's height
+        var footer = document.querySelector("div[data-region='grade-actions-panel']");
+        if (footer) {
+            drawfooterheight = footer.getBoundingClientRect().height;
+        } else {
+            drawfooterheight = 60;
         }
         // Make sure the dialogue box is not bigger than the max height of the viewport.
-        drawregionheight = Y.one('body').get('winHeight') - 120; // Space for toolbar + titlebar.
+        // be careful to remove space for toolbar + titlebar.
+        drawregionheight = Y.one('body').get('winHeight') - (drawfooterheight + drawheaderheight);
         if (drawregionheight < 100) {
             drawregionheight = 100;
         }

@@ -72,7 +72,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
             'select': '.selectbutton',
-            'drag': '.dragbutton'
+            'drag': '.dragbutton',
+            'resize': '.resizebutton'
         },
         TOOLTYPE = {
             'HIGHLIGHTPLUS': 1,

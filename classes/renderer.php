@@ -35,6 +35,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     const PLUGIN_NAME = "assignfeedback_editpdfplus";
     const TOOL_SELECT = "select";
     const TOOL_DRAG = "drag";
+    const TOOL_RESIZE = "resize";
     const TOOL_ANNOTATIONCOLOR = "annotationcolour";
     const HTMLCLASS = "class";
     const HTMLDISABLED = "disabled";
@@ -170,6 +171,9 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
             $selectTool = new tool_generic();
             $selectTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_SELECT));
             $toolbarBase .= $this->render_toolbar_button_tool($selectTool);
+            $resizeTool = new tool_generic();
+            $resizeTool->init(array(self::TOOL_OBJ_LABEL => self::TOOL_RESIZE));
+            $toolbarBase .= $this->render_toolbar_button_tool($resizeTool);
             $toolbarBaseBlock = $this->render_toolbar($toolbarBase, "mr-3");
 
             // Generic Tools.
