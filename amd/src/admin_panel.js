@@ -781,7 +781,6 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                         .done(function (html, js) {
                             fillResultAjax($('#editpdlplus_tool_item'), html, js)
                                     .done(function () {
-                                        $("#canevas").hide();
                                         $("#toolaxis").val(axeid);
                                         if (action === "clone") {
                                             $("#toolaxis").val(currentTool.axis);
@@ -808,7 +807,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                                                 currentTool.cartridgeColor = typetoolEntity.get_color_cartridge();
                                                 $("#color").val(currentTool.colors);
                                                 $("#cartridgecolor").val(currentTool.cartridgeColor);
-                                                initToolDisplay();
+                                                AdminPanel.prototype.refreshPrevisu();
                                             });
                                             $("#typetool").change();
                                         }
