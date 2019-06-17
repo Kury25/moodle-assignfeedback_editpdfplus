@@ -38,6 +38,8 @@ class admin_editor {
     const BDDTABLETOOL = "assignfeedback_editpp_tool";
     const BDDTABLEAXE = "assignfeedback_editpp_axis";
     const BDDTABLETOOLTYPE = "assignfeedback_editpp_typet";
+    const BDDTABLEMODELAXIS = "assignfeedback_editpp_modax";
+    const BDDTABLEANNOT = "assignfeedback_editpp_annot";
     const CONTEXTIDLIB = "contextid";
 
     /**
@@ -190,7 +192,6 @@ class admin_editor {
                         $DB->update_record(self::BDDTABLETOOL, $tool);
                         $lastTool = $tool;
                     }
-                    //$decalage++;
                 } else {
                     $lastTool = $tool;
                 }
@@ -223,6 +224,15 @@ class admin_editor {
      */
     public static function del_axis($axeid) {
         global $DB;
+        $res = true;
+        //delete all related tools if possible
+        $tools = self::get_tools_by_axis($axeid);
+        foreach ($tools as $tool) {
+            $res &= self::del_tool($tool);
+        }
+        if (!$res) {
+            return false;
+        }
         return $DB->delete_records(self::BDDTABLEAXE, array('id' => $axeid));
     }
 
@@ -234,6 +244,11 @@ class admin_editor {
      */
     public static function del_tool($tool) {
         global $DB;
+        //check if this tool is used
+        $nbAnnotations = self::getNbAnnotationsForTool($tool->toolid);
+        if ($nbAnnotations > 0) {
+            return false;
+        }
         return $DB->delete_records(self::BDDTABLETOOL, array('id' => $tool->toolid));
     }
 
@@ -307,6 +322,17 @@ class admin_editor {
             return $tool;
         }
         return null;
+    }
+
+    /**
+     * Get number of annotations related to this tool
+     * @global $DB
+     * @param int $toolid
+     * @return int number of annotations 
+     */
+    public static function getNbAnnotationsForTool($toolid) {
+        global $DB;
+        return $DB->count_records(self::BDDTABLEANNOT, array('toolid' => $toolid));
     }
 
     /**
@@ -391,6 +417,67 @@ class admin_editor {
             $tool->order_tool = $record->order_max + 1;
         }
         return $DB->insert_record(self::BDDTABLETOOL, $tool);
+    }
+
+    /**
+     * get model axis for a given user
+     * @global $DB
+     * @param $user moodle user
+     * @return array set of model axis
+     */
+    public static function getCategoryModel($user) {
+        global $DB;
+        return $DB->get_records(self::BDDTABLEMODELAXIS, array('user' => $user));
+    }
+
+    /**
+     * Add a new model on database
+     * @global $DB
+     * @param int $axeid axe's id
+     * @param string $label label for the new model
+     * @param USER $user moodle user
+     * @return int id of the new model
+     */
+    public static function addModel($axeid, $label, $user) {
+        global $DB;
+        $model = new \stdClass();
+        $model->axis = $axeid;
+        $model->label = $label;
+        $model->user = $user->id;
+        return $DB->insert_record(self::BDDTABLEMODELAXIS, $model);
+    }
+
+    /**
+     * get a model with from its id
+     * @global $DB
+     * @param int $modelid model's id
+     * @return record model record
+     */
+    public static function gelModel($modelid) {
+        global $DB;
+        return $DB->get_record(self::BDDTABLEMODELAXIS, array('id' => $modelid), '*', MUST_EXIST);
+    }
+
+    /**
+     * delete a given model
+     * @global $DB
+     * @param int $modelid id of the model to delete
+     * @return boolean true if the delete is success
+     */
+    public static function delModel($modelid) {
+        global $DB;
+        $model = self::gelModel($modelid);
+        if (!$model) {
+            return false;
+        }
+        $axe = self::getAxisById($model->axis);
+        if (!$axe) {
+            return false;
+        }
+        if (!self::del_axis($axe->id)) {
+            return false;
+        }
+        return $DB->delete_records(self::BDDTABLEMODELAXIS, array('id' => $modelid));
     }
 
 }

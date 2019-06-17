@@ -66,7 +66,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             colourlist.append(listitem);
         }, this);
 
-        body = Y.Node.create('<div/>');
+        body = Y.Node.create('<div style="max-width:50px;"></div>');
 
         // Set the call back.
         colourlist.delegate('click', this.callback_handler, 'button', this);

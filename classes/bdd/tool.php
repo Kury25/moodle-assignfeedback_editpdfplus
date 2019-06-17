@@ -193,6 +193,8 @@ class tool {
      */
     public function getRendererBoutonHTMLDisplay($disabled = false) {
         $iconhtml = $this->getButtonLabel();
+        $tooltiptext = get_string('typetool_' . $this->typeObject->label, 'assignfeedback_editpdfplus');
+        $iconhtml .= "<span class='assignfeedback_editpdfplus_tooltiptext'>" . $tooltiptext . "</span>";
         if (!$this->typeObject) {
             return array(
                 'content' => $iconhtml,
@@ -201,7 +203,7 @@ class tool {
         }
         $datatool = $this->typeObject->label;
         $iconparams = array('data-tool' => $datatool,
-            'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-secondary',
+            'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-light',
             'id' => 'ctbutton' . $this->id,
             'type' => 'button',
             'style' => $this->getStyleButton());

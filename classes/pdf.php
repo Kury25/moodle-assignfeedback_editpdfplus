@@ -33,9 +33,11 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->libdir . '/pdflib.php');
-require_once($CFG->dirroot . '/mod/assign/feedback/editpdf/fpdi/fpdi.php');
+require_once($CFG->dirroot . '/mod/assign/feedback/editpdfplus/fpdi/autoload.php');
 
-class pdf extends \FPDI {
+use \setasign\Fpdi\Tcpdf\Fpdi;
+
+class pdf extends Fpdi {
 
     /** @var int the number of the current page in the PDF being processed */
     protected $currentpage = 0;
@@ -48,6 +50,8 @@ class pdf extends \FPDI {
 
     /** @var string the path to the PDF currently being processed */
     protected $filename = null;
+    public $arrayLinks = array();
+    public $arrayLinksOrigi = array();
 
     /** No errors */
     const GSPATH_OK = 'ok';
@@ -79,6 +83,26 @@ class pdf extends \FPDI {
     /** Blank PDF file used during error. */
     const BLANK_PDF = '/mod/assign/feedback/editpdfplus/fixtures/blank.pdf';
 
+    /** Page image file name prefix */
+    const IMAGE_PAGE = 'image_page';
+
+    /**
+     * Get the name of the font to use in generated PDF files.
+     * If $CFG->pdfexportfont is set - use it, otherwise use "freesans" as this
+     * open licensed font has wide support for different language charsets.
+     *
+     * @return string
+     */
+    private function get_export_font_name() {
+        global $CFG;
+
+        $fontname = 'freesans';
+        if (!empty($CFG->pdfexportfont)) {
+            $fontname = $CFG->pdfexportfont;
+        }
+        return $fontname;
+    }
+
     /**
      * Combine the given PDF files into a single PDF. Optionally add a coversheet and coversheet fields.
      * @param string[] $pdflist  the filenames of the files to combine
@@ -94,7 +118,8 @@ class pdf extends \FPDI {
         $this->setPrintHeader(false);
         $this->setPrintFooter(false);
         $this->scale = 72.0 / 100.0;
-        $this->SetFont('helvetica', '', 16.0 * $this->scale);
+        // Use font supporting the widest range of characters.
+        $this->SetFont($this->get_export_font_name(), '', 16.0 * $this->scale, '', true);
         $this->SetTextColor(0, 0, 0);
 
         $totalpagecount = 0;
@@ -141,7 +166,7 @@ class pdf extends \FPDI {
 
         $this->setPageUnit('pt');
         $this->scale = 72.0 / 100.0;
-        $this->SetFont('helvetica', '', 16.0 * $this->scale);
+        $this->SetFont($this->get_export_font_name(), '', 16.0 * $this->scale, '', true);
         $this->SetFillColor(255, 255, 176);
         $this->SetDrawColor(0, 0, 0);
         $this->SetLineWidth(1.0 * $this->scale);
@@ -232,6 +257,12 @@ class pdf extends \FPDI {
     public function add_annotation(bdd\annotation $annotation, $path, $annotation_index) {
         if (!$this->filename) {
             return false;
+        }
+
+        //check tcpdf cache directory, needed for image transformation
+        if (!file_exists(K_PATH_CACHE)) {
+            //try to create the directory
+            mkdir(K_PATH_CACHE, 0777, true);
         }
 
         $colour = $annotation->colour;
@@ -435,9 +466,11 @@ class pdf extends \FPDI {
                 $this->SetTextColorArray($colourcartridgearray);
 
                 $cartouche = $toolObject->label;
-                //$this->Cell($w);
+
                 //Texte centré dans une cellule 20*10 mm encadrée et retour à la ligne
+                $this->SetFont('freeserif', '', 10);
                 $this->Cell(strlen($cartouche) * 6 + 4, 10, $cartouche, 1, 1, 'C');
+                $this->SetFont($this->get_export_font_name());
 
                 break;
             default: // Line.
@@ -447,9 +480,32 @@ class pdf extends \FPDI {
         if ($type == 'commentplus' || $type == 'stampcomment' || ($type == 'frame' && !$annotation->parent_annot) || $type == 'verticalline' || $type == 'highlightplus') {
             $cartouche = $toolObject->cartridge;
             if ($annotation->textannot) {
-                $cartouche .= ' [' . $annotation_index . ']';
+                if ($annotation->pdfdisplay === "inline") {
+                    $cartouche .= ' | ' . $annotation->textannot;
+                }
+                $this->Write(5, $cartouche . ' [');
+
+                //create link source for annotation's text
+                $link = $this->addLink();
+                $this->SetTextColor(0, 0, 255);
+                $this->SetFont('', 'U');
+                $this->Write(5, $annotation_index, $link);
+                $this->SetTextColorArray($colourcartridgearray);
+                $this->SetFont('', '');
+                $this->arrayLinks[$annotation_index] = $link;
+
+                $this->Write(5, ']');
+
+                //create link target to go back to the annotation display
+                $linkorigi = $this->addLink();
+                $this->setLink($linkorigi, -1);
+                $this->arrayLinksOrigi[$annotation_index] = $linkorigi;
+
+                //$this->Annotation($sx + 50, $sy, 30, 30, $annotation->textannot, array('Subtype' => 'Text', 'Name' => 'Comment', 'T' => $toolObject->label, 'Subj' => 'example', 'C' => $colourarray));
             }
-            $this->Write(5, $cartouche);
+
+            //$html = '&nbsp;<a href="#annot' . $annotation_index . '" style="color:red;">' . '[#annot' . $annotation_index . ']' . '</a>';
+            //$this->writeHTML($html);
         }
 
         $this->SetDrawColor(0, 0, 0);
@@ -498,7 +554,7 @@ class pdf extends \FPDI {
             throw new \coding_exception('The specified image output folder is not a valid folder');
         }
 
-        $imagefile = $this->imagefolder . '/image_page' . $pageno . '.png';
+        $imagefile = $this->imagefolder . '/' . self::IMAGE_PAGE . $pageno . '.png';
         $generate = true;
         if (file_exists($imagefile)) {
             if (filemtime($imagefile) > filemtime($this->filename)) {
@@ -530,7 +586,7 @@ class pdf extends \FPDI {
             }
         }
 
-        return 'image_page' . $pageno . '.png';
+        return self::IMAGE_PAGE . $pageno . '.png';
     }
 
     /**
@@ -636,7 +692,7 @@ class pdf extends \FPDI {
         $pdf->set_image_folder($tmperrorimagefolder);
         $image = $pdf->get_image(0);
         $pdf->Close(); // PDF loaded and never saved/outputted needs to be closed.
-        $newimg = 'image_page' . $pageno . '.png';
+        $newimg = self::IMAGE_PAGE . $pageno . '.png';
 
         copy($tmperrorimagefolder . '/' . $image, $errorimagefolder . '/' . $newimg);
         return $newimg;
@@ -683,7 +739,11 @@ class pdf extends \FPDI {
         }
 
         $testimagefolder = \make_temp_directory('assignfeedback_editpdfplus_test');
-        @unlink($testimagefolder . '/image_page0.png'); // Delete any previous test images.
+        $filepath = $testimagefolder . '/' . self::IMAGE_PAGE . '0.png';
+        // Delete any previous test images, if they exist.
+        if (file_exists($filepath)) {
+            unlink($filepath);
+        }
 
         $pdf = new pdf();
         $pdf->set_pdf($testfile);
@@ -708,9 +768,49 @@ class pdf extends \FPDI {
         require_once($CFG->libdir . '/filelib.php');
 
         $testimagefolder = \make_temp_directory('assignfeedback_editpdfplus_test');
-        $testimage = $testimagefolder . '/image_page0.png';
+        $testimage = $testimagefolder . '/' . self::IMAGE_PAGE . '0.png';
         send_file($testimage, basename($testimage), 0);
         die();
+    }
+
+    /**
+     * This function add an image file to PDF page.
+     * @param \stored_file $imagestoredfile Image file to be added
+     */
+    public function add_image_page($imagestoredfile) {
+        $imageinfo = $imagestoredfile->get_imageinfo();
+        $imagecontent = $imagestoredfile->get_content();
+        $this->currentpage++;
+        $template = $this->importPage($this->currentpage);
+        $size = $this->getTemplateSize($template);
+
+        if ($imageinfo["width"] > $imageinfo["height"]) {
+            if ($size['w'] < $size['h']) {
+                $temp = $size['w'];
+                $size['w'] = $size['h'];
+                $size['h'] = $temp;
+            }
+            $orientation = 'L';
+        } else if ($imageinfo["width"] < $imageinfo["height"]) {
+            if ($size['w'] > $size['h']) {
+                $temp = $size['w'];
+                $size['w'] = $size['h'];
+                $size['h'] = $temp;
+            }
+            $orientation = 'P';
+        } else {
+            $orientation = 'P';
+        }
+        $this->SetHeaderMargin(0);
+        $this->SetFooterMargin(0);
+        $this->SetMargins(0, 0, 0, true);
+        $this->setPrintFooter(false);
+        $this->setPrintHeader(false);
+
+        $this->AddPage($orientation, $size);
+        $this->SetAutoPageBreak(false, 0);
+        $this->Image('@' . $imagecontent, 0, 0, $size['w'], $size['h'],
+                '', '', '', false, null, '', false, false, 0);
     }
 
 }

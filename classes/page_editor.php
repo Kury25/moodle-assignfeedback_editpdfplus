@@ -41,6 +41,7 @@ class page_editor {
     const BDDTABLEOOL = "assignfeedback_editpp_tool";
     const BDDTABLETOOLTYPE = "assignfeedback_editpp_typet";
     const BDDTABLEANNOTATION = "assignfeedback_editpp_annot";
+    const BDDTABLEAXIS = "assignfeedback_editpp_axis";
     const CONTEXTID = "contextid";
     const GRADEID = "gradeid";
     const DRAFLIB = "draft";
@@ -67,6 +68,43 @@ class page_editor {
         } else {
             $records = $DB->get_records(self::BDDTABLEOOL);
         }
+        foreach ($records as $record) {
+            $tooltmp = null;
+            if ($record->axis == self::AXISGENERIC) {
+                $tooltmp = new tool_generic($record);
+            } else {
+                $tooltmp = new tool($record);
+            }
+            $tooltmp->typeObject = $typeTools[$tooltmp->type];
+            array_push($tools, $tooltmp);
+        }
+        usort($tools, function($a, $b) {
+            $al = $a->order_tool;
+            $bl = $b->order_tool;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+        return $tools;
+    }
+
+    /**
+     * Get all tools for a given axis.
+     * @param int $axisid
+     * @return tool[]
+     */
+    public static function get_tools_by_axis($axisid) {
+        global $DB;
+
+        $typeToolsRaw = self::get_typetools(null);
+        $typeTools = array();
+        foreach ($typeToolsRaw as $typeTool) {
+            $typeTools[$typeTool->id] = $typeTool;
+        }
+
+        $tools = array();
+        $records = $DB->get_records(self::BDDTABLEOOL, array('axis' => $axisid));
         foreach ($records as $record) {
             $tooltmp = null;
             if ($record->axis == self::AXISGENERIC) {
@@ -165,6 +203,20 @@ class page_editor {
             return ($al > $bl) ? +1 : -1;
         });
         return $axis;
+    }
+
+    /**
+     * Get an axis given by its id.
+     * @param int $axisid
+     * @return axis
+     */
+    public static function get_axis_by_id($axisid) {
+        global $DB;
+        $record = $DB->get_record(self::BDDTABLEAXIS, array('id' => $axisid), '*', IGNORE_MISSING);
+        if ($record) {
+            return new axis($record);
+        }
+        return null;
     }
 
     /**
@@ -507,6 +559,47 @@ class page_editor {
                 break;
         }
         return $newToolType;
+    }
+
+    /**
+     * Set page rotation value.
+     * @param int $gradeid grade id.
+     * @param int $pageno page number.
+     * @param bool $isrotated whether the page is rotated or not.
+     * @param string $pathnamehash path name hash
+     * @param int $degree rotation degree.
+     * @throws \dml_exception
+     */
+    public static function set_page_rotation($gradeid, $pageno, $isrotated, $pathnamehash, $degree = 0) {
+        global $DB;
+        $oldrecord = self::get_page_rotation($gradeid, $pageno);
+        if ($oldrecord == null) {
+            $record = new \stdClass();
+            $record->gradeid = $gradeid;
+            $record->pageno = $pageno;
+            $record->isrotated = $isrotated;
+            $record->pathnamehash = $pathnamehash;
+            $record->degree = $degree;
+            $DB->insert_record('assignfeedback_editpp_rot', $record, false);
+        } else {
+            $oldrecord->isrotated = $isrotated;
+            $oldrecord->pathnamehash = $pathnamehash;
+            $oldrecord->degree = $degree;
+            $DB->update_record('assignfeedback_editpp_rot', $oldrecord, false);
+        }
+    }
+
+    /**
+     * Get Page Rotation Value.
+     * @param int $gradeid grade id.
+     * @param int $pageno page number.
+     * @return mixed
+     * @throws \dml_exception
+     */
+    public static function get_page_rotation($gradeid, $pageno) {
+        global $DB;
+        $result = $DB->get_record('assignfeedback_editpp_rot', array('gradeid' => $gradeid, 'pageno' => $pageno));
+        return $result;
     }
 
 }

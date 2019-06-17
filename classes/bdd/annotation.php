@@ -90,6 +90,9 @@ class annotation {
     /** @var string studentanswer */
     public $studentanswer = "";
 
+    /** @var string pdfdisplay */
+    public $pdfdisplay = "footnote";
+
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record

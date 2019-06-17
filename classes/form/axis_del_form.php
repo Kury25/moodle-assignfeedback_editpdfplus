@@ -37,15 +37,8 @@ class axis_del_form extends moodleform {
 
     protected function definition() {
         $mform = $this->_form;
-        $mform->addElement(self::HIDDENSTATE, 'label', ''); // Add elements to your form
-        $mform->setType(self::HIDDENSTATE, PARAM_TEXT);     //Set type of element
-        $mform->addElement(self::HIDDENSTATE, 'axeid', ''); // Add elements to your form
-        $mform->setType(self::HIDDENSTATE, PARAM_INT);      //Set type of element
-    }
-
-    //Custom validation should be added here
-    function validation($data, $files) {
-        return array();
+        $mform->addElement(self::HIDDENSTATE, 'axeid'); // Add elements to your form
+        $mform->setType('axeid', PARAM_INT);      //Set type of element
     }
 
 }

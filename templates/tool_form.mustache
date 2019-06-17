@@ -44,7 +44,7 @@
                     {{#tool.id}}
                     <button type="button" class="btn" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
                     <button type="button" class="btn" id="toolEnabled"><i class="fa fa-eye{{^tool.enabled}}-slash{{/tool.enabled}}" aria-hidden="true"></i></button>
-                    <button type="button" class="btn" {{^tool.removable}}disabled{{/tool.removable}} id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-danger" {{^tool.removable}}disabled{{/tool.removable}} id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
                     {{/tool.id}}
                 </div>
             </td>

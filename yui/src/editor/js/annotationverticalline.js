@@ -37,6 +37,25 @@ ANNOTATIONVERTICALLINE.NAME = "annotationverticalline";
 ANNOTATIONVERTICALLINE.ATTRS = {};
 
 Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
+
+    /**
+     * Margin to let for resize area on top and down
+     * @type Number
+     * @protected
+     */
+    marginyDivResize: 2,
+    /**
+     * Margin to let for resize area on left and right
+     * @type Number
+     * @protected
+     */
+    marginxDivResize: 7,
+    /**
+     * Min width for resize area
+     * @type Number
+     * @protected
+     */
+    minWidthDivResize: 15,
     /**
      * Draw a verticalline annotation
      * @protected
@@ -51,8 +70,10 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
 
         verticallinecolour = this.get_color();
+        this.init_shape_id('verticalline');
 
         shape = this.editor.graphic.addShape({
+            id: this.shape_id,
             type: Y.Path,
             fill: false,
             stroke: {
@@ -72,6 +93,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONVERTICALLINE.superclass.draw.apply(this);
     },
@@ -152,7 +175,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -194,11 +216,71 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
+    },
+    /**
+     * Draw empty resize area on top and down
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('up', this.x - this.marginxDivResize, this.y - this.marginyDivResize, this.minWidthDivResize);
+        this.push_div_resizearea('down', this.x - this.marginxDivResize, this.endy - this.marginyDivResize, this.minWidthDivResize);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on top, new height
+     * - on down, new y and nw height
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var height = this.minresizewidth;
+        var direction = divresize.getData('direction');
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointy = point.y;
+        //sortie de cadre
+        if (newpointy < 0) {
+            newpointy = 0;
+        } else if (canvasDim.height < newpointy) {
+            newpointy = canvasDim.height;
+        }
+        var decalage = canvasDim.y;
+        if (direction === 'up') {
+            height = Math.max(this.endy - newpointy, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, Math.min(newpointy, this.endy - this.minresizewidth));
+            shape.lineTo(this.x, this.endy);
+            shape.end();
+            divresize.setY(this.endy - height + decalage - this.marginyDivResize);
+        } else if (direction === 'down') {
+            height = Math.max(newpointy - this.y, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, this.y);
+            shape.lineTo(this.x, this.y + height);
+            shape.end();
+            divresize.setY(this.y + height + decalage - this.marginyDivResize);
+        }
     },
     /**
      * Delete an annotation
@@ -220,6 +302,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();

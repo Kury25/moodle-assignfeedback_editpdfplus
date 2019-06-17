@@ -80,7 +80,7 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
  * @param context_course $context
  */
 function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    if (has_capability('assignfeedback/editpdfplus:use', $context, null, false) && has_capability('assignfeedback/editpdfplus:managetools', $context)) {
+    if (has_capability('assignfeedback/editpdfplus:managetools', $context)) {
         $url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $context->id));
         $feedbackadminnode = navigation_node::create('Feedback : configuration', $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
         $navigation->add_node($feedbackadminnode);
@@ -119,10 +119,10 @@ function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
 }
 
 /**
- * Get axis form (delete)
+ * Get axis form (export)
  * @param type $args
  */
-function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
+function assignfeedback_editpdfplus_output_fragment_axisexport($args) {
     $context = $args['context'];
     $axisid = $args['axeid'];
 
@@ -131,7 +131,7 @@ function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
     require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
     $editpdfplus = new assign_feedback_editpdfplus_admin($context);
-    return $editpdfplus->getAxisDelForm($axisid);
+    return $editpdfplus->getAxisExportForm($axisid);
 }
 
 /**
