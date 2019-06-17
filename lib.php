@@ -119,10 +119,10 @@ function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
 }
 
 /**
- * Get axis form (delete)
+ * Get axis form (export)
  * @param type $args
  */
-function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
+function assignfeedback_editpdfplus_output_fragment_axisexport($args) {
     $context = $args['context'];
     $axisid = $args['axeid'];
 
@@ -131,7 +131,7 @@ function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
     require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
     $editpdfplus = new assign_feedback_editpdfplus_admin($context);
-    return $editpdfplus->getAxisDelForm($axisid);
+    return $editpdfplus->getAxisExportForm($axisid);
 }
 
 /**

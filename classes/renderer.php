@@ -335,12 +335,12 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
     }
 
     /**
-     * Display axis form (delete)
-     * @param moodleform $form
+     * Display axis form (export)
+     * @param stdClass $widget
      * @return String
      */
-    public function render_assignfeedback_editpdfplus_widget_admin_axisdelform(moodleform $form) {
-        return $this->render_from_template('assignfeedback_editpdfplus/axis_del_form', $form);
+    public function render_assignfeedback_editpdfplus_widget_admin_axisexportform($widget) {
+        return $this->render_from_template('assignfeedback_editpdfplus/axis_export_form', $widget);
     }
 
     /**

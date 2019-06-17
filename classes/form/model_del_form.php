@@ -16,12 +16,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains the axis_del_form class for the assignfeedback_editpdfplus plugin
+ * This file contains the model_del_form class for the assignfeedback_editpdfplus plugin
  *
- * Form to delete an axis
+ * Form to delete a model
  *
  * @package    assignfeedback_editpdfplus
- * @copyright  2017 Université de Lausanne
+ * @copyright  2019 Université de Lausanne
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,14 +31,27 @@ require_once("$CFG->libdir/formslib.php");
 
 use moodleform;
 
-class axis_del_form extends moodleform {
-    
-    const HIDDENSTATE = "hidden";
+/**
+ * Form to delete a model
+ *
+ * @package   assignfeedback_editpdfplus
+ * @copyright  2019 Université de Lausanne
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class model_del_form extends moodleform {
 
     protected function definition() {
+
         $mform = $this->_form;
-        $mform->addElement(self::HIDDENSTATE, 'axeid'); // Add elements to your form
-        $mform->setType('axeid', PARAM_INT);      //Set type of element
+        $mform->_formName = "model_del_form";
+
+        // Hidden params.
+        $mform->addElement('hidden', 'contextid');
+        $mform->setType('contextid', PARAM_INT);
+        $mform->addElement('hidden', 'modelid');
+        $mform->setType('modelid', PARAM_INT);
+        $mform->addElement('hidden', 'action', 'delmodel');
+        $mform->setType('action', PARAM_ALPHA);
     }
 
 }

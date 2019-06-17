@@ -193,6 +193,8 @@ class tool {
      */
     public function getRendererBoutonHTMLDisplay($disabled = false) {
         $iconhtml = $this->getButtonLabel();
+        $tooltiptext = get_string('typetool_' . $this->typeObject->label, 'assignfeedback_editpdfplus');
+        $iconhtml .= "<span class='assignfeedback_editpdfplus_tooltiptext'>" . $tooltiptext . "</span>";
         if (!$this->typeObject) {
             return array(
                 'content' => $iconhtml,

@@ -131,11 +131,14 @@ $string['adminaxisimport'] = 'Available axis to import';
 $string['adminaxisimport_name'] = 'Name';
 $string['adminaxisimport_tool'] = 'Tools';
 $string['adminaxisimport_action'] = 'Import';
+$string['adminaxisimport_delete'] = 'Delete';
 $string['adminaxis_save'] = 'Save';
 $string['adminaxis_cancel'] = 'Cancel';
 $string['adminaxisdelete_question'] = 'Are you sure to delete the selected axis?';
 $string['adminaxisdelete_ok'] = 'Yes';
 $string['adminaxisdelete_ko'] = 'No';
+$string['adminaxisexport_ok'] = 'Export as model';
+$string['adminaxisexport_ko'] = 'Cancel';
 $string['admintools'] = 'Tools';
 $string['adminaddtool'] = 'Add a new tool';
 $string['admintoolboxaction'] = 'Action';
@@ -156,6 +159,8 @@ $string['admindeltool_messageok'] = 'Tool deleted';
 $string['admindeltool_messageko'] = 'Error on delete';
 $string['adminaddtool_messageok'] = 'Tool added';
 $string['adminedittool_messageok'] = 'Tool saved';
+$string['adminimport_messageok'] = 'Axis imported succesfully';
+$string['adminexport_messageok'] = 'Axis exported as model succesfully';
 $string['admin_messageko'] = 'Error on registration';
 $string['adminaddtool_messagelibelleko'] = '<strong>Warning!</strong> The button\'s label is not completed.';
 $string['typetool_highlightplus'] = 'Highlight with comment';
@@ -196,4 +201,5 @@ $string['assignmentgradedbody'] = '{$a->coursename} → {$a->modulename} → {$a
 The assignment correction has been updated.
 
 You can access the document following this link: {$a->url}';
+$string['delete_model_question'] = 'Do you want to delete this model?';
 

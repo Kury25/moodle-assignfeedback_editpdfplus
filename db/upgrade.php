@@ -341,9 +341,33 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-        
+
         // Editpdfplus savepoint reached.
         upgrade_plugin_savepoint(true, 2019053100, 'assignfeedback', 'editpdfplus');
+    }
+
+    if ($oldversion < 2019061201) {
+        /* model annotation table */
+        $table = new xmldb_table('assignfeedback_editpp_modax');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('user', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('axis', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('label', XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table assignfeedback_editpp_modax.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('axis', XMLDB_KEY_FOREIGN, ['axis'], 'editpdfpp_axis', ['id']);
+
+        // Adding indexes to table assignfeedback_editpp_modax.
+        $table->add_index('useraxis', XMLDB_INDEX_UNIQUE, ['user', 'axis']);
+
+        // Conditionally launch create table for assignfeedback_editpp_modax.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Editpdfplus savepoint reached.
+        upgrade_plugin_savepoint(true, 2019061201, 'assignfeedback', 'editpdfplus');
     }
 
     return true;

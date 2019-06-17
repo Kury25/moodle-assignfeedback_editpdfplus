@@ -186,7 +186,7 @@
     width: 0%;
 }
 
-.assignfeedback_editpdfplus_widget .helpmessage {
+.assignfeedback_editpdfplus_widget div.helpmessage {
     display: none;
 }
 
@@ -552,4 +552,32 @@ ul.assignfeedback_editpdfplus_menu {
 }
 .assignfeedback_editpdfplus_resize_vertical.assignfeedback_editpdfplus_resize_active:hover {
     cursor:row-resize;
+}
+
+/* Tooltip text */
+.costumtoolbarbutton .assignfeedback_editpdfplus_tooltiptext {
+    visibility: hidden;
+    min-width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+    margin-top: 5px;
+
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.costumtoolbarbutton:hover .assignfeedback_editpdfplus_tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

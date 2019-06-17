@@ -1642,7 +1642,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param {string} colorcartridge
      * @return node
      */
-    get_div_resizearea: function (direction) {
+    get_div_resizearea: function (direction, minwidth, minheight) {
         var plane = "horizontal";
         if (direction === "up" || direction === "down") {
             plane = "vertical";
@@ -1652,9 +1652,15 @@ Y.extend(ANNOTATION, Y.Base, {
                 + "class='assignfeedback_editpdfplus_resize assignfeedback_editpdfplus_resize_" + plane + "' ";
         if (plane === "horizontal") {
             var intery = Math.max(this.endy - this.y, 7);
+            if (minheight) {
+                intery = minheight;
+            }
             div += "style='min-width:7px;min-height:" + intery + "px;' ";
         } else {
             var interx = Math.max(this.endx - this.x, 7);
+            if (minwidth) {
+                interx = minwidth;
+            }
             div += "style='min-height:7px;min-width:" + interx + "px;' ";
         }
         div += "data-direction='" + direction + "' "
@@ -1675,13 +1681,13 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param {int} x left position of the resize area
      * @param {int} y top position of the resize area
      */
-    push_div_resizearea: function (direction, x, y) {
+    push_div_resizearea: function (direction, x, y, minwidth, minheight) {
         var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         var div = this.editor.get_dialogue_element('#' + this.divcartridge + "_resize_" + direction);
         if (div) {
             return;
         }
-        var divresize = this.get_div_resizearea(direction);
+        var divresize = this.get_div_resizearea(direction, minwidth, minheight);
         if (!divresize) {
             return;
         }
@@ -3873,8 +3879,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
      * Draw empty resize area on left and right
      */
     draw_resizeAreas: function () {
-        this.push_div_resizearea('left', this.x - 2, this.y);
-        this.push_div_resizearea('right', this.endx - 2, this.y);
+        this.push_div_resizearea('left', this.x - this.marginDivResize, this.y);
+        this.push_div_resizearea('right', this.endx - this.marginDivResize, this.y);
     },
     /**
      * Actions when resizing a shape:
@@ -4228,11 +4234,23 @@ ANNOTATIONVERTICALLINE.ATTRS = {};
 Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
     /**
-     * Margin to let for resize area
+     * Margin to let for resize area on top and down
      * @type Number
      * @protected
      */
-    marginDivResize: 2,
+    marginyDivResize: 2,
+    /**
+     * Margin to let for resize area on left and right
+     * @type Number
+     * @protected
+     */
+    marginxDivResize: 7,
+    /**
+     * Min width for resize area
+     * @type Number
+     * @protected
+     */
+    minWidthDivResize: 15,
     /**
      * Draw a verticalline annotation
      * @protected
@@ -4412,8 +4430,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
      * Draw empty resize area on top and down
      */
     draw_resizeAreas: function () {
-        this.push_div_resizearea('up', this.x - 7, this.y - this.marginDivResize);
-        this.push_div_resizearea('down', this.x - 7, this.endy - this.marginDivResize);
+        this.push_div_resizearea('up', this.x - this.marginxDivResize, this.y - this.marginyDivResize, this.minWidthDivResize);
+        this.push_div_resizearea('down', this.x - this.marginxDivResize, this.endy - this.marginyDivResize, this.minWidthDivResize);
     },
     /**
      * Actions when resizing a shape:
@@ -4449,14 +4467,14 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             shape.moveTo(this.x, Math.min(newpointy, this.endy - this.minresizewidth));
             shape.lineTo(this.x, this.endy);
             shape.end();
-            divresize.setY(this.endy - height + decalage - this.marginDivResize);
+            divresize.setY(this.endy - height + decalage - this.marginyDivResize);
         } else if (direction === 'down') {
             height = Math.max(newpointy - this.y, this.minresizewidth);
             shape.clear();
             shape.moveTo(this.x, this.y);
             shape.lineTo(this.x, this.y + height);
             shape.end();
-            divresize.setY(this.y + height + decalage - this.marginDivResize);
+            divresize.setY(this.y + height + decalage - this.marginyDivResize);
         }
     },
     /**

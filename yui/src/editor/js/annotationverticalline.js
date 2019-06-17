@@ -39,11 +39,23 @@ ANNOTATIONVERTICALLINE.ATTRS = {};
 Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
     /**
-     * Margin to let for resize area
+     * Margin to let for resize area on top and down
      * @type Number
      * @protected
      */
-    marginDivResize: 2,
+    marginyDivResize: 2,
+    /**
+     * Margin to let for resize area on left and right
+     * @type Number
+     * @protected
+     */
+    marginxDivResize: 7,
+    /**
+     * Min width for resize area
+     * @type Number
+     * @protected
+     */
+    minWidthDivResize: 15,
     /**
      * Draw a verticalline annotation
      * @protected
@@ -223,8 +235,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
      * Draw empty resize area on top and down
      */
     draw_resizeAreas: function () {
-        this.push_div_resizearea('up', this.x - 7, this.y - this.marginDivResize);
-        this.push_div_resizearea('down', this.x - 7, this.endy - this.marginDivResize);
+        this.push_div_resizearea('up', this.x - this.marginxDivResize, this.y - this.marginyDivResize, this.minWidthDivResize);
+        this.push_div_resizearea('down', this.x - this.marginxDivResize, this.endy - this.marginyDivResize, this.minWidthDivResize);
     },
     /**
      * Actions when resizing a shape:
@@ -260,14 +272,14 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
             shape.moveTo(this.x, Math.min(newpointy, this.endy - this.minresizewidth));
             shape.lineTo(this.x, this.endy);
             shape.end();
-            divresize.setY(this.endy - height + decalage - this.marginDivResize);
+            divresize.setY(this.endy - height + decalage - this.marginyDivResize);
         } else if (direction === 'down') {
             height = Math.max(newpointy - this.y, this.minresizewidth);
             shape.clear();
             shape.moveTo(this.x, this.y);
             shape.lineTo(this.x, this.y + height);
             shape.end();
-            divresize.setY(this.y + height + decalage - this.marginDivResize);
+            divresize.setY(this.y + height + decalage - this.marginyDivResize);
         }
     },
     /**

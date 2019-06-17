@@ -391,8 +391,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
      * Draw empty resize area on left and right
      */
     draw_resizeAreas: function () {
-        this.push_div_resizearea('left', this.x - 2, this.y);
-        this.push_div_resizearea('right', this.endx - 2, this.y);
+        this.push_div_resizearea('left', this.x - this.marginDivResize, this.y);
+        this.push_div_resizearea('right', this.endx - this.marginDivResize, this.y);
     },
     /**
      * Actions when resizing a shape:

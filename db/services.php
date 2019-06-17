@@ -89,6 +89,28 @@ $functions = array(
         'enabled' => 1,
         'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
     ),
+    'assignfeedback_editpdfplus_submit_axis_export_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_axis_export_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Export an axis with its tools',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
+    'assignfeedback_editpdfplus_submit_model_del_form' => array(
+        'classname' => 'assignfeedback_editpdfplus_external',
+        'methodname' => 'submit_model_del_form',
+        'classpath' => 'mod/assign/feedback/editpdfplus/externallib.php',
+        'description' => 'Remove a model',
+        'type' => 'write',
+        'ajax' => true,
+        'requiredcapability' => 'assignfeedback/editpdfplus:managetools',
+        'enabled' => 1,
+        'services' => array(MOODLE_OFFICIAL_MOBILE_SERVICE)
+    ),
     'assignfeedback_editpdfplus_submit_axis_import_form' => array(
         'classname' => 'assignfeedback_editpdfplus_external',
         'methodname' => 'submit_axis_import_form',

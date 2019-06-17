@@ -109,6 +109,21 @@
                 <KEY NAME="contextid" TYPE="foreign" FIELDS="contextid" REFTABLE="context" REFFIELDS="id"/>
             </KEYS>
         </TABLE>
+        <TABLE NAME="assignfeedback_editpp_modax" COMMENT="Model of axis">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true"/>
+                <FIELD NAME="user" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Model s user"/>
+                <FIELD NAME="axis" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+                <FIELD NAME="label" TYPE="text" LENGTH="100" NOTNULL="false" COMMENT=""/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="axis" TYPE="foreign" FIELDS="axis" REFTABLE="editpdfpp_axis" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="useraxis" UNIQUE="false" FIELDS="user, axis"/>
+            </INDEXES>
+        </TABLE>
         <TABLE NAME="assignfeedback_editpp_rot" COMMENT="Stores rotation information of a page.">
             <FIELDS>
                 <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

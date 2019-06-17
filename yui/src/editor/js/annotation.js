@@ -1110,7 +1110,7 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param {string} colorcartridge
      * @return node
      */
-    get_div_resizearea: function (direction) {
+    get_div_resizearea: function (direction, minwidth, minheight) {
         var plane = "horizontal";
         if (direction === "up" || direction === "down") {
             plane = "vertical";
@@ -1120,9 +1120,15 @@ Y.extend(ANNOTATION, Y.Base, {
                 + "class='assignfeedback_editpdfplus_resize assignfeedback_editpdfplus_resize_" + plane + "' ";
         if (plane === "horizontal") {
             var intery = Math.max(this.endy - this.y, 7);
+            if (minheight) {
+                intery = minheight;
+            }
             div += "style='min-width:7px;min-height:" + intery + "px;' ";
         } else {
             var interx = Math.max(this.endx - this.x, 7);
+            if (minwidth) {
+                interx = minwidth;
+            }
             div += "style='min-height:7px;min-width:" + interx + "px;' ";
         }
         div += "data-direction='" + direction + "' "
@@ -1143,13 +1149,13 @@ Y.extend(ANNOTATION, Y.Base, {
      * @param {int} x left position of the resize area
      * @param {int} y top position of the resize area
      */
-    push_div_resizearea: function (direction, x, y) {
+    push_div_resizearea: function (direction, x, y, minwidth, minheight) {
         var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         var div = this.editor.get_dialogue_element('#' + this.divcartridge + "_resize_" + direction);
         if (div) {
             return;
         }
-        var divresize = this.get_div_resizearea(direction);
+        var divresize = this.get_div_resizearea(direction, minwidth, minheight);
         if (!divresize) {
             return;
         }
