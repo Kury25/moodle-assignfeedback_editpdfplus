@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 /**
  * This file contains the editor class for the assignfeedback_editpdfplus plugin
- * 
+ *
  * This class performs crud operations on comments and annotations from a page of a response.
  *
  * No capability checks are done - they should be done by the calling class.
@@ -49,7 +48,7 @@ class admin_editor {
      * @param string $where the where part
      * @return string the string request
      */
-    public static function makeSqlRequestSelect($select, $table, $where = null) {
+    public static function make_sql_request_select($select, $table, $where = null) {
         $request = 'SELECT ' . $select . ' FROM {' . $table . '} ';
         if ($where) {
             $request .= " WHERE " . $where;
@@ -60,19 +59,19 @@ class admin_editor {
     /**
      * Add an axis
      * @global type $DB
-     * @param String $axisLabel axis' name
+     * @param String $axis_label axis' name
      * @param Integer $context context's id
      * @return Integer id of the created axis
      */
-    public static function add_axis($axisLabel, $context) {
+    public static function add_axis($axis_label, $context) {
         global $DB;
 
-        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+        $record = $DB->get_record_sql(self::make_sql_request_select("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
                 , array(self::CONTEXTIDLIB => $context));
 
         $axis = new axis();
         $axis->contextid = $context;
-        $axis->label = $axisLabel;
+        $axis->label = $axis_label;
         if ($record->order_max == null) {
             $axis->order_axis = 1;
         } else {
@@ -92,7 +91,7 @@ class admin_editor {
     public static function add_tool($data, $contextid) {
         global $DB;
 
-        $maxindice = admin_editor::reorder_tool($data->toolaxis);
+        $maxindice = self::reorder_tool($data->toolaxis);
 
         $tool = new tool();
         $tool->axis = $data->toolaxis;
@@ -110,7 +109,7 @@ class admin_editor {
         $reorder = false;
         if ($maxindice == null) {
             $tool->order_tool = 1;
-        } elseif ($data->order && intval($data->order) < 1000) {
+        } else if ($data->order && intval($data->order) < 1000) {
             $tool->order_tool = $data->order;
             $reorder = true;
         } else {
@@ -121,7 +120,7 @@ class admin_editor {
 
         if ($toolid > 0) {
             if ($reorder) {
-                admin_editor::reorder_tool($data->axisid, $toolid);
+                self::reorder_tool($data->axisid, $toolid);
             }
             return $tool;
         }
@@ -131,27 +130,27 @@ class admin_editor {
     public static function edit_tool_order($data) {
         global $DB;
         $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->toolid), '*', MUST_EXIST);
-        $toolCurrent = new tool($record);
+        $tool_current = new tool($record);
         $previousorder = -1;
-        $toolPrevious = null;
-        $toolNext = null;
+        $tool_previous = null;
+        $tool_next = null;
         if ($data->previoustoolid) {
             $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->previoustoolid), '*', MUST_EXIST);
-            $toolPrevious = new tool($record);
-            $previousorder = $toolPrevious->order_tool + 1;
+            $tool_previous = new tool($record);
+            $previousorder = $tool_previous->order_tool + 1;
         } elseif ($data->nexttoolid) {
             $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $data->nexttoolid), '*', MUST_EXIST);
-            $toolNext = new tool($record);
-            $previousorder = $toolNext->order_tool - 1;
+            $tool_next = new tool($record);
+            $previousorder = $tool_next->order_tool - 1;
         }
-        if ($previousorder > -1 && ($toolPrevious || $toolNext )) {
+        if ($previousorder > -1 && ($tool_previous || $tool_next )) {
             if ($previousorder == 0) {
                 $previousorder = 1;
             }
-            $toolCurrent->order_tool = $previousorder;
+            $tool_current->order_tool = $previousorder;
             debugging($previousorder);
-            if ($DB->update_record(self::BDDTABLETOOL, $toolCurrent)) {
-                admin_editor::reorder_tool($toolCurrent->axis, $data->toolid);
+            if ($DB->update_record(self::BDDTABLETOOL, $tool_current)) {
+                self::reorder_tool($tool_current->axis, $data->toolid);
             }
         }
     }
@@ -167,52 +166,52 @@ class admin_editor {
         global $DB;
 
         $tools = array();
-        $records = $DB->get_records_sql(self::makeSqlRequestSelect("*", self::BDDTABLETOOL, "axis = :axisid ORDER BY order_tool ASC")
+        $records = $DB->get_records_sql(self::make_sql_request_select("*", self::BDDTABLETOOL, "axis = :axisid ORDER BY order_tool ASC")
                 , array('axisid' => $axisid));
         foreach ($records as $record) {
             array_push($tools, new tool($record));
         }
-        $compteurPrecedent = null;
+        $compteur_precedent = null;
         $decalage = 1;
-        $lastTool = null;
+        $last_tool = null;
         foreach ($tools as $tool) {
-            if ($compteurPrecedent == null) {
-                $compteurPrecedent = $tool->order_tool;
-                $lastTool = $tool;
+            if ($compteur_precedent == null) {
+                $compteur_precedent = $tool->order_tool;
+                $last_tool = $tool;
             } else {
-                $compteurCourant = $tool->order_tool;
-                if ($compteurCourant != $compteurPrecedent + $decalage) {
+                $compteur_courant = $tool->order_tool;
+                if ($compteur_courant != $compteur_precedent + $decalage) {
                     if ($toolid && $tool->id == $toolid) {
-                        $tool->order_tool = $lastTool->order_tool;
-                        $lastTool->order_tool = $compteurPrecedent + 1;
+                        $tool->order_tool = $last_tool->order_tool;
+                        $last_tool->order_tool = $compteur_precedent + 1;
                         $DB->update_record(self::BDDTABLETOOL, $tool);
-                        $DB->update_record(self::BDDTABLETOOL, $lastTool);
+                        $DB->update_record(self::BDDTABLETOOL, $last_tool);
                     } else {
-                        $tool->order_tool = $compteurPrecedent + $decalage;
+                        $tool->order_tool = $compteur_precedent + $decalage;
                         $DB->update_record(self::BDDTABLETOOL, $tool);
-                        $lastTool = $tool;
+                        $last_tool = $tool;
                     }
                 } else {
-                    $lastTool = $tool;
+                    $last_tool = $tool;
                 }
-                $compteurPrecedent++;
+                $compteur_precedent++;
             }
         }
-        return $compteurPrecedent;
+        return $compteur_precedent;
     }
 
     /**
      * Edit an axis
      * @global type $DB
      * @param Integer $axeid axis' id
-     * @param String $axisLabel new axis' label
+     * @param String $axis_label new axis' label
      * @return Boolean true if the update is ok
      */
-    public static function edit_axis($axeid, $axisLabel) {
+    public static function edit_axis($axeid, $axis_label) {
         global $DB;
 
         $axis = $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
-        $axis->label = $axisLabel;
+        $axis->label = $axis_label;
         return $DB->update_record(self::BDDTABLEAXE, $axis);
     }
 
@@ -283,41 +282,41 @@ class admin_editor {
      */
     public static function get_all_different_contexts() {
         global $DB;
-        return $DB->get_records_sql(self::makeSqlRequestSelect("DISTINCT(" . self::CONTEXTIDLIB . ")", self::BDDTABLEAXE));
+        return $DB->get_records_sql(self::make_sql_request_select("DISTINCT(" . self::CONTEXTIDLIB . ")", self::BDDTABLEAXE));
     }
 
     /**
      * Update a tool
      * @global type $DB
-     * @param object $toolJson object contains tool's values to update
+     * @param object $tool_json object contains tool's values to update
      * @return \assignfeedback_editpdfplus\bdd\tool
      */
-    public static function edit_tool($toolJson) {
+    public static function edit_tool($tool_json) {
         global $DB;
 
-        $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $toolJson->toolid), '*', MUST_EXIST);
+        $record = $DB->get_record(self::BDDTABLETOOL, array('id' => $tool_json->toolid), '*', MUST_EXIST);
         $tool = new tool($record);
-        $tool->axis = $toolJson->toolaxis;
-        $tool->type = $toolJson->typetool;
-        $tool->colors = $toolJson->color;
-        $tool->cartridge = $toolJson->libelle;
-        $tool->cartridge_color = $toolJson->catridgecolor;
-        $tool->texts = $toolJson->texts;
-        $tool->label = $toolJson->button;
-        $tool->enabled = $toolJson->enabled;
-        if ($toolJson->reply == "on") {
+        $tool->axis = $tool_json->toolaxis;
+        $tool->type = $tool_json->typetool;
+        $tool->colors = $tool_json->color;
+        $tool->cartridge = $tool_json->libelle;
+        $tool->cartridge_color = $tool_json->catridgecolor;
+        $tool->texts = $tool_json->texts;
+        $tool->label = $tool_json->button;
+        $tool->enabled = $tool_json->enabled;
+        if ($tool_json->reply == "on") {
             $tool->reply = 1;
         } else {
             $tool->reply = 0;
         }
         $reorder = false;
-        if ($tool->order_tool != $toolJson->order) {
-            $tool->order_tool = $toolJson->order;
+        if ($tool->order_tool != $tool_json->order) {
+            $tool->order_tool = $tool_json->order;
             $reorder = true;
         }
         if ($DB->update_record(self::BDDTABLETOOL, $tool)) {
             if ($reorder) {
-                admin_editor::reorder_tool($tool->axis, $tool->id);
+                self::reorder_tool($tool->axis, $tool->id);
             }
             return $tool;
         }
@@ -344,9 +343,9 @@ class admin_editor {
         $typetools = array();
         $records = $DB->get_records(self::BDDTABLETOOLTYPE, array('configurable' => 1));
         foreach ($records as $record) {
-            $newTypeTool = page_editor::custom_type_tool(new type_tool($record));
-            if ($newTypeTool->configurable > 0) {
-                array_push($typetools, $newTypeTool);
+            $new_type_tool = page_editor::custom_type_tool(new type_tool($record));
+            if ($new_type_tool->configurable > 0) {
+                array_push($typetools, $new_type_tool);
             }
         }
         return $typetools;
@@ -358,7 +357,7 @@ class admin_editor {
      * @param Integer $axeid axis' id
      * @return \assignfeedback_editpdfplus\bdd\axis the axis
      */
-    public static function getAxisById($axeid) {
+    public static function get_axis_by_id($axeid) {
         global $DB;
         return $DB->get_record(self::BDDTABLEAXE, array('id' => $axeid), '*', MUST_EXIST);
     }
@@ -366,18 +365,18 @@ class admin_editor {
     /**
      * Clone an axis to the context given in parameter
      * @global type $DB
-     * @param \assignfeedback_editpdfplus\bdd\axis $axisOrigin
+     * @param \assignfeedback_editpdfplus\bdd\axis $axis_origin
      * @param Integer $context context's id
      * @return Integer id of the imported axis
      */
-    public static function import_axis($axisOrigin, $context) {
+    public static function import_axis($axis_origin, $context) {
         global $DB;
-        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+        $record = $DB->get_record_sql(self::make_sql_request_select("max(order_axis) as order_max", self::BDDTABLEAXE, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
                 , array(self::CONTEXTIDLIB => $context));
 
         $axis = new axis();
         $axis->contextid = $context;
-        $axis->label = $axisOrigin->label;
+        $axis->label = $axis_origin->label;
         if ($record->order_max == null) {
             $axis->order_axis = 1;
         } else {
@@ -390,27 +389,27 @@ class admin_editor {
     /**
      * Clone a tool to a new axis
      * @global type $DB
-     * @param \assignfeedback_editpdfplus\bdd\tool $toolToImport tool to duplicate
+     * @param \assignfeedback_editpdfplus\bdd\tool $tool_to_import tool to duplicate
      * @param \assignfeedback_editpdfplus\bdd\axis $axeNew axis to attached new tool
      * @param Integer $context context's id
      * @return Integer id of tool's created
      */
-    public static function import_tool($toolToImport, $axeNew, $context) {
+    public static function import_tool($tool_to_import, $axeNew, $context) {
         global $DB;
-        $record = $DB->get_record_sql(self::makeSqlRequestSelect("max(order_tool) as order_max", self::BDDTABLETOOL, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
+        $record = $DB->get_record_sql(self::make_sql_request_select("max(order_tool) as order_max", self::BDDTABLETOOL, self::CONTEXTIDLIB . ' = :' . self::CONTEXTIDLIB)
                 , array('axis' => $axeNew->id, self::CONTEXTIDLIB => $context));
 
         $tool = new tool();
         $tool->axis = $axeNew;
-        $tool->cartridge = $toolToImport->cartridge;
-        $tool->cartridge_color = $toolToImport->cartridge_color;
-        $tool->colors = $toolToImport->colors;
+        $tool->cartridge = $tool_to_import->cartridge;
+        $tool->cartridge_color = $tool_to_import->cartridge_color;
+        $tool->colors = $tool_to_import->colors;
         $tool->contextid = $context;
-        $tool->enabled = $toolToImport->enabled;
-        $tool->label = $toolToImport->label;
-        $tool->reply = $toolToImport->reply;
-        $tool->texts = $toolToImport->texts;
-        $tool->type = $toolToImport->type;
+        $tool->enabled = $tool_to_import->enabled;
+        $tool->label = $tool_to_import->label;
+        $tool->reply = $tool_to_import->reply;
+        $tool->texts = $tool_to_import->texts;
+        $tool->type = $tool_to_import->type;
         if ($record->order_max == null) {
             $tool->order_tool = 1;
         } else {
@@ -470,7 +469,7 @@ class admin_editor {
         if (!$model) {
             return false;
         }
-        $axe = self::getAxisById($model->axis);
+        $axe = self::get_axis_by_id($model->axis);
         if (!$axe) {
             return false;
         }

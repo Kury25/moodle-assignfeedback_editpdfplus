@@ -718,7 +718,7 @@ EOD;
 
             foreach ($annotations as $annotation) {
                 $pdf->add_annotation($annotation, $annotation->path, $compteur);
-                if (!$annotation->hasReadableComment()) {
+                if (!$annotation->has_readable_comment()) {
                     continue;
                 }
                 $annotation_index[$annotation->id] = $compteur;
@@ -747,7 +747,7 @@ EOD;
         $pdf->Write(10, "", '', false, 'L', true);
         foreach ($annotation_index as $id => $index) {
             $annot = page_editor::get_annotation($id);
-            if (!$annot->hasReadableComment()) {
+            if (!$annot->has_readable_comment()) {
                 continue;
             }
 

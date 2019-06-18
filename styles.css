@@ -191,7 +191,7 @@
 }
 
 .assignfeedback_editpdfplus_widget .btn-toolbar {
-    min-height:50px;
+    min-height: 50px;
 }
 
 .assignfeedback_editpdfplus_colourpicker ul {
@@ -401,7 +401,7 @@ ul.assignfeedback_editpdfplus_menu {
 }
 .assignfeedback_editpdfplus_widget .aepp-toolbar-vertical,
 .assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical {
-    width:100%;
+    width: 100%;
 }
 .assignfeedback_editpdfplus_widget .aepp-toolbar-vertical .btn,
 .assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical .btn {

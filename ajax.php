@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -105,9 +104,7 @@ if ($action === 'pollconversions') {
         foreach ($pages as $id => $pagefile) {
             $index = count($response->pages);
             $page = new stdClass();
-            //$comments = page_editor::get_comments($grade->id, $index, $draft);
             $page->url = moodle_url::make_pluginfile_url($context->id, PLUGIN_NAME, $filearea, $grade->id, '/', $pagefile->get_filename())->out();
-            //$page->comments = $comments;
             if ($imageinfo = $pagefile->get_imageinfo()) {
                 $page->width = $imageinfo['width'];
                 $page->height = $imageinfo['height'];
@@ -170,7 +167,14 @@ if ($action === 'pollconversions') {
 
     $response->url = '';
     if ($file) {
-        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, PLUGIN_NAME, document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
+        $url = moodle_url::make_pluginfile_url(
+                        $assignment->get_context()->id,
+                        PLUGIN_NAME, document_services::FINAL_PDF_FILEAREA,
+                        $grade->id,
+                        '/',
+                        $file->get_filename(),
+                        false
+        );
         $response->url = $url->out(true);
         $response->filename = $file->get_filename();
     }
@@ -251,6 +255,6 @@ if ($action === 'pollconversions') {
     die();
 }
 
-function getHtmlLink($url, $text) {
+/*function getHtmlLink($url, $text) {
     return '<a href="' . $url . '">' . $text . '</a>';
-}
+}*/

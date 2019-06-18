@@ -393,7 +393,7 @@ class assignfeedback_editpdfplus_external extends external_api {
         $validateddata = $mform->get_data();
 
         if ($validateddata && $validateddata->axeid) {
-            $axeToImport = admin_editor::getAxisById($validateddata->axeid);
+            $axeToImport = admin_editor::get_axis_by_id($validateddata->axeid);
             $axeNew = admin_editor::import_axis($axeToImport, $context->id);
             if ($axeNew) {
                 $tools = admin_editor::get_tools_by_axis($axeToImport->id);
@@ -464,7 +464,7 @@ class assignfeedback_editpdfplus_external extends external_api {
         $validateddata = $mform->get_data();
 
         if ($validateddata && $validateddata->axeid) {
-            $axeToExport = admin_editor::getAxisById($validateddata->axeid);
+            $axeToExport = admin_editor::get_axis_by_id($validateddata->axeid);
             $axeToExport->label = $validateddata->label;
             $axeNew = admin_editor::import_axis($axeToExport, -1);
             if ($axeNew) {

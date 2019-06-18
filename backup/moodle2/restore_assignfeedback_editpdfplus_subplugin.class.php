@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 /**
  * This file contains the restore code for the feedback_editpdfplus plugin.
- * 
+ *
  * Restore subplugin class.
  *
  * Provides the necessary information needed

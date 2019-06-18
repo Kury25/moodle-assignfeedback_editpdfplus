@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 /**
  * This file contains the backup code for the feedback_editpdfplus plugin.
- * 
+ *
  * Provides the information to backup feedback pdf annotations.
  *
  * This just adds its fileareas to the annotations and the comments and annotation data.
@@ -45,7 +44,28 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         $subpluginelementfiles = new backup_nested_element('feedback_editpdfplus_files', null, array(self::GRADEID));
         $subpluginelementannotations = new backup_nested_element('feedback_editpdfplus_annotations');
         $subpluginelementannotation = new backup_nested_element(
-                'feedback_editpdfplus_annotation', null, array(self::GRADEID, 'pageno', 'x', 'y', 'endx', 'endy', 'cartridgex', 'cartridgey', 'path', 'toolid', 'textannot', 'colour', 'draft', 'answerrequested', 'studentanswer', 'studentstatus', 'displaylock', 'displayrotation', 'borderstyle', 'parent_annot')
+                'feedback_editpdfplus_annotation', null, array(
+            self::GRADEID,
+            'pageno',
+            'x',
+            'y',
+            'endx',
+            'endy',
+            'cartridgex',
+            'cartridgey',
+            'path',
+            'toolid',
+            'textannot',
+            'colour',
+            'draft',
+            'answerrequested',
+            'studentanswer',
+            'studentstatus',
+            'displaylock',
+            'displayrotation',
+            'borderstyle',
+            'parent_annot'
+                )
         );
         $subpluginelementrotation = new backup_nested_element('feedback_editpdfplus_rotation');
         $subpluginelementpagerotation = new backup_nested_element('pagerotation', null,

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -117,7 +116,7 @@ class annotation {
      * If the annotation has a parent, it will be always no : the parent will give the text for all of its children
      * @return boolean
      */
-    public function hasReadableComment() {
+    public function has_readable_comment() {
         return $this->textannot && !$this->parent_annot;
     }
 
