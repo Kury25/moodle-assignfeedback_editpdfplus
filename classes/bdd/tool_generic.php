@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -51,7 +50,7 @@ class tool_generic extends tool {
      * @param bool $disabled if the button must be disabled
      * @return array
      */
-    public function getRendererBoutonHTMLDisplay($disabled = false) {
+    public function get_renderer_bouton_html_display($disabled = false) {
         $iconhtml = \html_writer::tag("i", "", array('class' => self::DISPLAY_CLASS_BUTTON[$this->label], 'aria-hidden' => 'true'));
         $iconparams = array(
             'data-tool' => $this->label,

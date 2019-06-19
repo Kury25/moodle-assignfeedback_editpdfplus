@@ -185,7 +185,7 @@ class assign_feedback_editpdfplus_admin {
         } else {
             $tool->init(array("contextid" => $this->context->id, "axisid" => $axisid));
         }
-        $tool->initToolTextsArray();
+        $tool->init_tool_texts_array();
         $data->tool = $tool;
         $data->tools = admin_editor::get_typetools();
         foreach ($data->tools as $toolRef) {
@@ -224,7 +224,7 @@ class assign_feedback_editpdfplus_admin {
             }
             $tooltmp = page_editor::get_tools_by_axis($model->axis);
             foreach ($tooltmp as $tool) {
-                $tool->setDesign();
+                $tool->set_design();
             }
             $tmp = new stdClass();
             $tmp->model = $model;
@@ -260,7 +260,7 @@ class assign_feedback_editpdfplus_admin {
                     $nbannotation = admin_editor::getNbAnnotationsForTool($tool->id);
                     $ax->canbedelete &= $nbannotation == 0;
                 }
-                $tool->setDesign();
+                $tool->set_design();
                 $toolbar->tools[] = $tool;
                 $ax->children++;
             }

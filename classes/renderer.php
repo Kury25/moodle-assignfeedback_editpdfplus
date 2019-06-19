@@ -49,7 +49,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
      * @return string
      */
     private function render_toolbar_button_tool(assignfeedback_editpdfplus\bdd\tool $fulltool, $disabled = false) {
-        $displayArray = $fulltool->getRendererBoutonHTMLDisplay($disabled);
+        $displayArray = $fulltool->get_renderer_bouton_html_display($disabled);
         return $this->render_toolbar_button_html($displayArray["content"], $displayArray["parameters"]);
     }
 

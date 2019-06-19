@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -31,7 +30,7 @@ namespace assignfeedback_editpdfplus\bdd;
  * @author kury
  */
 class axis {
-    
+
     /** @var int unique id for this annotation */
     public $id = 0;
 
@@ -41,7 +40,7 @@ class axis {
     /** @var int axis for this annotation */
     public $label = '';
 
-    /** @var int order in toolbar */    
+    /** @var int order in toolbar */
     public $order_axis = 1000;
 
     /**
@@ -62,5 +61,5 @@ class axis {
             }
         }
     }
-    
+
 }

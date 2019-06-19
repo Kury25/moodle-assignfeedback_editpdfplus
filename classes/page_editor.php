@@ -521,38 +521,38 @@ class page_editor {
         global $CFG;
         switch ($newToolType->label) {
             case 'highlightplus':
-                $newToolType->setColor($CFG->highlightplus_color);
-                $newToolType->setCartridgeColor($CFG->highlightplus_cartridge_color);
-                $newToolType->setCartridgeX($CFG->highlightplus_cartridge_x);
-                $newToolType->setCartridgeY($CFG->highlightplus_cartridge_y);
+                $newToolType->set_color($CFG->highlightplus_color);
+                $newToolType->set_cartridge_color($CFG->highlightplus_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->highlightplus_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->highlightplus_cartridge_y);
                 break;
 
             case 'stampplus':
-                $newToolType->setColor($CFG->stampplus_color);
+                $newToolType->set_color($CFG->stampplus_color);
                 break;
 
             case 'frame':
-                $newToolType->setCartridgeX($CFG->frame_cartridge_x);
-                $newToolType->setCartridgeY($CFG->frame_cartridge_y);
+                $newToolType->set_cartridge_x($CFG->frame_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->frame_cartridge_y);
                 break;
 
             case 'verticalline':
-                $newToolType->setColor($CFG->verticalline_color);
-                $newToolType->setCartridgeColor($CFG->verticalline_cartridge_color);
-                $newToolType->setCartridgeX($CFG->verticalline_cartridge_x);
-                $newToolType->setCartridgeY($CFG->verticalline_cartridge_y);
+                $newToolType->set_color($CFG->verticalline_color);
+                $newToolType->set_cartridge_color($CFG->verticalline_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->verticalline_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->verticalline_cartridge_y);
                 break;
 
             case 'stampcomment':
-                $newToolType->setCartridgeColor($CFG->stampcomment_cartridge_color);
-                $newToolType->setCartridgeX($CFG->stampcomment_cartridge_x);
-                $newToolType->setCartridgeY($CFG->stampcomment_cartridge_y);
+                $newToolType->set_cartridge_color($CFG->stampcomment_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->stampcomment_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->stampcomment_cartridge_y);
                 break;
 
             case 'commentplus':
-                $newToolType->setCartridgeColor($CFG->commentplus_cartridge_color);
-                $newToolType->setCartridgeX($CFG->commentplus_cartridge_x);
-                $newToolType->setCartridgeY($CFG->commentplus_cartridge_y);
+                $newToolType->set_cartridge_color($CFG->commentplus_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->commentplus_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->commentplus_cartridge_y);
                 break;
 
             default:

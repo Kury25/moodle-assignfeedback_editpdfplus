@@ -478,7 +478,7 @@ class assignfeedback_editpdfplus_external extends external_api {
                     $toolsNew = admin_editor::get_tools_by_axis($axeNew);
                     if (sizeof($toolsNew) > 0) {
                         foreach ($toolsNew as $tool) {
-                            $tool->setDesign();
+                            $tool->set_design();
                             $res[] = array('modelid' => $model, self::AXEID => $axeNew, self::AXELIB => $validateddata->label, self::MESSAGELIB => "", self::ENABLETOOL => $tool->enabled, self::TOOLID => $tool->id, self::TOOLTYPE => $tool->type, self::BOUTONLIBTOOL => $tool->label, 'style' => $tool->style);
                         }
                     } else {

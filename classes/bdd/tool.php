@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -121,7 +120,7 @@ class tool {
      * Get text proposals and transform it into an array
      * @return \assignfeedback_editpdfplus\stdClass
      */
-    public function initToolTextsArray() {
+    public function init_tool_texts_array() {
         if (!$this->texts) {
             $this->textsarray = null;
         } else {
@@ -152,16 +151,16 @@ class tool {
     /**
      * Set Style and replace label with format symbol for display purpose
      */
-    public function setDesign() {
-        $this->label = $this->getButtonLabel();
-        $this->style = $this->getStyleButton();
+    public function set_design() {
+        $this->label = $this->get_button_label();
+        $this->style = $this->get_style_button();
     }
 
     /**
      * Calculate a label with format symbol, according to its type
      * @return string
      */
-    private function getButtonLabel() {
+    private function get_button_label() {
         if ($this->type == "4") {
             return '| ' . $this->label . ' |';
         }
@@ -175,15 +174,15 @@ class tool {
      * Calculate a sytle for a display in a button, according to its type
      * @return string
      */
-    private function getStyleButton() {
-        $styleTmp = "";
+    private function get_style_button() {
+        $style_tmp = "";
         if ($this->enabled == "0") {
-            $styleTmp .= "background-image:none;background-color:#CCCCCC;";
+            $style_tmp .= "background-image:none;background-color:#CCCCCC;";
         }
         if ($this->type == "4" || $this->type == "1") {
-            $styleTmp .= "text-decoration: underline;";
+            $style_tmp .= "text-decoration: underline;";
         }
-        return $styleTmp;
+        return $style_tmp;
     }
 
     /**
@@ -191,8 +190,8 @@ class tool {
      * @param bool $disabled if the button must be disabled
      * @return array
      */
-    public function getRendererBoutonHTMLDisplay($disabled = false) {
-        $iconhtml = $this->getButtonLabel();
+    public function get_renderer_bouton_html_display($disabled = false) {
+        $iconhtml = $this->get_button_label();
         $tooltiptext = get_string('typetool_' . $this->typeObject->label, 'assignfeedback_editpdfplus');
         $iconhtml .= "<span class='assignfeedback_editpdfplus_tooltiptext'>" . $tooltiptext . "</span>";
         if (!$this->typeObject) {
@@ -206,7 +205,7 @@ class tool {
             'class' => $this->typeObject->label . ' costumtoolbarbutton btn btn-light',
             'id' => 'ctbutton' . $this->id,
             'type' => 'button',
-            'style' => $this->getStyleButton());
+            'style' => $this->get_style_button());
         if ($disabled) {
             $iconparams['disabled'] = 'true';
         }
