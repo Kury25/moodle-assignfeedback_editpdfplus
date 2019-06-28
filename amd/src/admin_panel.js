@@ -426,6 +426,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
                     $("#assignfeedback_editpdfplus_widget_admin_workspace").show();
                     $("#editpdlplus_axes_worspace").hide();
                 }
+                $('#assignfeedback_editpdfplus_widget_admin_div_axis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_addaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
@@ -445,6 +446,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
             AdminPanel.prototype.openDivEditAxis = function () {
                 $("#message_edit_tool").hide();
                 $("#axistool").hide();
+                $('#assignfeedback_editpdfplus_widget_admin_div_axis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_editaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();
@@ -465,6 +467,7 @@ define(['jquery', 'jqueryui', 'core/notification', 'core/templates', 'core/fragm
             AdminPanel.prototype.openDivExportAxis = function () {
                 $("#message_edit_tool").hide();
                 $("#axistool").hide();
+                $('#assignfeedback_editpdfplus_widget_admin_div_axis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_exportaxis').show();
                 $('#assignfeedback_editpdfplus_widget_admin_div_exportaxis').html("");
                 $('#assignfeedback_editpdfplus_widget_admin_toolheader').hide();

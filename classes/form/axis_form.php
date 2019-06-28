@@ -36,7 +36,7 @@ class axis_form extends moodleform {
     protected function definition() {
         $mform = $this->_form;
         $mform->_formName = "tutu";
-        $mform->addElement('text', 'label', 'Nom'); // Add elements to your form
+        $mform->addElement('text', 'label', get_string('axis_label', "assignfeedback_editpdfplus")); // Add elements to your form
         $mform->setType('label', PARAM_TEXT);       //Set type of element
         $mform->addElement('hidden', 'axeid', '');  // Add elements to your form
         $mform->setType('hidden', PARAM_INT);       //Set type of element

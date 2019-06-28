@@ -141,7 +141,7 @@ $string['adminaxisexport_ok'] = 'Export as model';
 $string['adminaxisexport_ko'] = 'Cancel';
 $string['admintools'] = 'Tools';
 $string['adminaddtool'] = 'Add a new tool';
-$string['admintoolboxaction'] = 'Action';
+$string['admintoolboxaction'] = 'Actions';
 $string['admintoolboxtypetool'] = 'Tool type';
 $string['admintoolboxtypetool_type'] = 'Type';
 $string['admintoolboxtoolbardisplay'] = 'Toolbar display';
@@ -202,4 +202,6 @@ The assignment correction has been updated.
 
 You can access the document following this link: {$a->url}';
 $string['delete_model_question'] = 'Do you want to delete this model?';
-
+$string['feedback_configuration'] = 'Feedback: configuration';
+$string['axis_label'] = 'Name';
+$string['axis_add'] = 'Add a new axis';

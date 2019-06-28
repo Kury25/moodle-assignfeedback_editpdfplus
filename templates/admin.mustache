@@ -129,36 +129,40 @@
                             </div>
                         </div>
                     </td>
-                    <td id='assignfeedback_editpdfplus_widget_admin_toolworkspace' class='assignfeedback_editpdfplus_widget_admin_col2'>
-                        <div id='editpdlplus_toolbars'>
-                            {{# toolbars }}
-                            <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar sortable" style="display: none;width: 100%;">
-                                <ul class="sortable" style="list-style-type: none;margin: 0;padding: 0;width: 100%;">
-                                    {{# tools }}
-                                    <li style="float: left;display: block;">
-                                        <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
-                                            {{label}}
-                                        </button>
-                                    </li>
-                                    {{/ tools }}
-                                </ul>
-                            </div>
-                            {{/ toolbars }}
-                        </div>
-                        {{{ toolorderform.render }}}
-
-                        <div class="alert" id="message_edit_tool"></div>
-
-                        <div id="editpdlplus_tool_item"></div>
-                    </td>
                     <td>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;" class="card w-50 ml-2 border-primary">
-                        </div>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis" style="display:none;" class="card w-50 ml-2 border-primary">
-                        </div>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis" style="display:none;" class="card w-50 ml-2 border-primary">
-                        </div>
-                        <div id="assignfeedback_editpdfplus_widget_admin_div_exportaxis" style="display:none;" class="card w-50 ml-2 border-primary">
+                        <div class="d-flex">
+                            <div id='assignfeedback_editpdfplus_widget_admin_toolworkspace' class='assignfeedback_editpdfplus_widget_admin_col2 w-100'>
+                                <div id='editpdlplus_toolbars'>
+                                    {{# toolbars }}
+                                    <div id="editpdlplus_toolbar_{{axis.id}}" class="btn-group toolbar sortable" style="display: none;width: 100%;">
+                                        <ul class="sortable" style="list-style-type: none;margin: 0;padding: 0;width: 100%;">
+                                            {{# tools }}
+                                            <li style="float: left;display: block;">
+                                                <button class="btn {{button}} editpdlplus_tool" id="editpdlplus_tool_{{id}}" value="{{id}}" style="{{style}}" data-enable="{{enabled}}">
+                                                    {{label}}
+                                                </button>
+                                            </li>
+                                            {{/ tools }}
+                                        </ul>
+                                    </div>
+                                    {{/ toolbars }}
+                                </div>
+                                {{{ toolorderform.render }}}
+
+                                <div class="alert" id="message_edit_tool"></div>
+
+                                <div id="editpdlplus_tool_item"></div>
+                            </div>
+                            <div id="assignfeedback_editpdfplus_widget_admin_div_axis" style="display:none;" class="w-100">
+                                <div id="assignfeedback_editpdfplus_widget_admin_div_addaxis" style="display:none;" class="card w-50 ml-2 border-primary">
+                                </div>
+                                <div id="assignfeedback_editpdfplus_widget_admin_div_editaxis" style="display:none;" class="card w-50 ml-2 border-primary">
+                                </div>
+                                <div id="assignfeedback_editpdfplus_widget_admin_div_delaxis" style="display:none;" class="card w-50 ml-2 border-primary">
+                                </div>
+                                <div id="assignfeedback_editpdfplus_widget_admin_div_exportaxis" style="display:none;" class="card w-50 ml-2 border-primary">
+                                </div>
+                            </div>   
                         </div>
                     </td>
                 </tr>

@@ -121,7 +121,7 @@ class assign_feedback_editpdfplus_admin {
             $formAxis = new axis_form(null, array('id' => $this->context->id), null, null, array('id' => "assignfeedback_editpdfplus_add_axis")); //Form processing and displaying is done here
             $formAxis->set_data($toform);
             $formAxis->id = "assignfeedback_editpdfplus_add_axis";
-            $formAxis->title = "Ajouter un nouvel axe";
+            $formAxis->title = get_string('axis_add', 'assignfeedback_editpdfplus');
             $formAxis->action = "add";
         }
         $renderer = $PAGE->get_renderer(self::PLUGIN_NAME);

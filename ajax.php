@@ -254,7 +254,3 @@ if ($action === 'pollconversions') {
     echo json_encode($response);
     die();
 }
-
-/*function getHtmlLink($url, $text) {
-    return '<a href="' . $url . '">' . $text . '</a>';
-}*/
