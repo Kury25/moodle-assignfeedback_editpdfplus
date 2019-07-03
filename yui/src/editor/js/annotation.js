@@ -321,6 +321,7 @@ Y.extend(ANNOTATION, Y.Base, {
                 parent_annot: parseInt(this.parent_annot, 10),
                 divcartridge: this.divcartridge,
                 parent_annot_div: this.parent_annot_element.divcartridge,
+                answerrequested: parseInt(this.answerrequested, 10),
                 pdfdisplay: this.pdfdisplay
             };
         }
