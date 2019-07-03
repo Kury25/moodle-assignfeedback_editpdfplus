@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -92,13 +93,19 @@ class annotation {
     /** @var string pdfdisplay */
     public $pdfdisplay = "footnote";
 
+    /** @var int draft */
+    public $draft = 1;
+
+    /** @var int draft_id */
+    public $draft_id = null;
+
     /**
      * Convert a compatible stdClass into an instance of this class.
      * @param stdClass $record
      */
     public function __construct(\stdClass $record = null) {
         if ($record) {
-            $intcols = array('endx', 'endy', 'x', 'y');
+            $intcols = array('endx', 'endy', 'x', 'y', 'draft_id');
             foreach ($this as $key => $value) {
                 if (isset($record->$key)) {
                     if (in_array($key, $intcols)) {
@@ -118,6 +125,25 @@ class annotation {
      */
     public function has_readable_comment() {
         return $this->textannot && !$this->parent_annot;
+    }
+
+    public function clone_teacher_annotation($annotationRef) {
+        $this->x = $annotationRef->x;
+        $this->endx = $annotationRef->endx;
+        $this->y = $annotationRef->y;
+        $this->endy = $annotationRef->endy;
+        $this->cartridgex = $annotationRef->cartridgex;
+        $this->cartridgey = $annotationRef->cartridgey;
+        $this->path = $annotationRef->path;
+        $this->toolid = $annotationRef->toolid;
+        $this->textannot = $annotationRef->textannot;
+        $this->colour = $annotationRef->colour;
+        $this->displaylock = $annotationRef->displaylock;
+        $this->displayrotation = $annotationRef->displayrotation;
+        $this->borderstyle = $annotationRef->borderstyle;
+        $this->parent_annot = $annotationRef->parent_annot;
+        $this->answerrequested = $annotationRef->answerrequested;
+        $this->pdfdisplay = $annotationRef->pdfdisplay;
     }
 
 }

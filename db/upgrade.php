@@ -370,5 +370,17 @@ function xmldb_assignfeedback_editpdfplus_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019061201, 'assignfeedback', 'editpdfplus');
     }
 
+    if ($oldversion < 2019070100) {
+        /* annotation table */
+        $table = new xmldb_table('assignfeedback_editpp_annot');
+        $field = new xmldb_field('draft_id', XMLDB_TYPE_INTEGER, '10', null, false);
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Editpdfplus savepoint reached.
+        upgrade_plugin_savepoint(true, 2019070100, 'assignfeedback', 'editpdfplus');
+    }
+
     return true;
 }

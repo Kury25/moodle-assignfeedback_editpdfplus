@@ -28,6 +28,7 @@
                 <FIELD NAME="borderstyle" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="parent_annot" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
                 <FIELD NAME="pdfdisplay" TYPE="char" LENGTH="20" NOTNULL="false"/>
+                <FIELD NAME="draft_id" TYPE="int" LENGTH="10" NOTNULL="false"/>
             </FIELDS>
             <KEYS>
                 <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

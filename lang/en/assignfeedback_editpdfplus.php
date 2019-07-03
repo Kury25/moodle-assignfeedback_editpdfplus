@@ -205,3 +205,7 @@ $string['delete_model_question'] = 'Do you want to delete this model?';
 $string['feedback_configuration'] = 'Feedback: configuration';
 $string['axis_label'] = 'Name';
 $string['axis_add'] = 'Add a new axis';
+$string['erase_student_annotation'] = 'Student\'s modifications';
+$string['erase_student_annotation_desc'] = 'Student\'s modifications on annotations update';
+$string['erase_student_on_update'] = 'Preserve student\'s modifications on annotations update';
+$string['erase_student_on_update_desc'] = 'Preserve student\'s modifications on annotations update, default false';

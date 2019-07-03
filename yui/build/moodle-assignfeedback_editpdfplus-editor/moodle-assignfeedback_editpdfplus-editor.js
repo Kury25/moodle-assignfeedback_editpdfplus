@@ -834,6 +834,7 @@ Y.extend(ANNOTATION, Y.Base, {
     clean: function () {
         if (this.parent_annot_element) {
             return {
+                id: this.id,
                 gradeid: this.gradeid,
                 x: parseInt(this.x, 10),
                 y: parseInt(this.y, 10),
@@ -856,6 +857,7 @@ Y.extend(ANNOTATION, Y.Base, {
             };
         }
         return {
+            id: this.id,
             gradeid: this.gradeid,
             x: parseInt(this.x, 10),
             y: parseInt(this.y, 10),
