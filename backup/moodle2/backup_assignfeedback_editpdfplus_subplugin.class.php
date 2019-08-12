@@ -68,7 +68,7 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
                 )
         );
         $subpluginelementrotation = new backup_nested_element('feedback_editpdfplus_rotation');
-        $subpluginelementpagerotation = new backup_nested_element('pagerotation', null,
+        $subpluginelementpagerotation = new backup_nested_element('feedback_editpdfplus_pagerotation', null,
                 array('gradeid', 'pageno', 'pathnamehash', 'isrotated', 'degree'));
 
         // Connect XML elements into the tree.
@@ -82,7 +82,7 @@ class backup_assignfeedback_editpdfplus_subplugin extends backup_subplugin {
         // Set source to populate the data.
         $subpluginelementfiles->set_source_sql('SELECT id AS gradeid from {assign_grades} where id = :' . self::GRADEID, array(self::GRADEID => backup::VAR_PARENTID));
         $subpluginelementannotation->set_source_table('assignfeedback_editpp_annot', array(self::GRADEID => backup::VAR_PARENTID));
-        $subpluginelementpagerotation->set_source_table('assignfeedback_editpp_rot', array('gradeid' => backup::VAR_PARENTID));
+        $subpluginelementpagerotation->set_source_table('assignfeedback_editpp_rot', array(self::GRADEID => backup::VAR_PARENTID));
         // We only need to backup the files in the final pdf area, and the readonly page images - the others can be regenerated.
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::FINAL_PDF_FILEAREA, self::GRADEID);
         $subpluginelementfiles->annotate_files('assignfeedback_editpdfplus', \assignfeedback_editpdfplus\document_services::PAGE_IMAGE_READONLY_FILEAREA, self::GRADEID);
