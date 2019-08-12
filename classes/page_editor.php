@@ -396,7 +396,7 @@ class page_editor {
             // Copy all the draft annotations to non-drafts.
             $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
             foreach ($records as $record) {
-                $newid = $this->create_annotation_for_release($record, $parentlink);
+                $newid = self::create_annotation_for_release($record, $parentlink);
                 $parentlink[$oldid] = $newid;
             }
         } else {
