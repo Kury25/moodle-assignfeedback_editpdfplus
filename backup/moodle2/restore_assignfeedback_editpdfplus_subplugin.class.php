@@ -53,8 +53,8 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $paths[] = new restore_path_element($elename, $elepath);
         
         // Rotation details.
-        $elename = $this->get_namefor('pagerotation');
-        $elepath = $this->get_pathfor('/feedback_editpdfplus_rotation/pagerotation');
+        $elename = $this->get_namefor('feedback_editpdfplus_pagerotation');
+        $elepath = $this->get_pathfor('/feedback_editpdfplus_rotation/feedback_editpdfplus_pagerotation');
         $paths[] = new restore_path_element($elename, $elepath);
 
 
