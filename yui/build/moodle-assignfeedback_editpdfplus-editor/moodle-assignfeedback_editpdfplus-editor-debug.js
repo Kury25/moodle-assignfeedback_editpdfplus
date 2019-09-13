@@ -39,7 +39,7 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
             ANNOTATIONCOLOURBUTTON: '.annotationcolourbutton',
             DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
             WARNINGMESSAGECONTAINER: '.warningmessages',
-            ICONMESSAGECONTAINER: '.infoicon',
+            ICONMESSAGECONTAINER: '.assignfeedback_editpdfplus_infoicon',
             UNSAVEDCHANGESDIV: '.assignfeedback_editpdf_warningmessages',
             UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
             UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
@@ -1666,7 +1666,8 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             div += "style='min-height:7px;min-width:" + interx + "px;' ";
         }
-        div += "data-direction='" + direction + "' "
+        div += "data-direction='" + direction + "' ";
+        div += "data-page='" + this.pageno + "' "
                 + "> "
                 + "</div>";
         return Y.Node.create(div);
@@ -5349,7 +5350,8 @@ EDITOR.prototype = {
                 break;
             case 'resize':
                 drawingcanvas.setStyle('cursor', 'default');
-                resizezones.addClass('assignfeedback_editpdfplus_resize_active');
+                var resizezonespage = Y.all('.assignfeedback_editpdfplus_resize[data-page=' + this.currentpage + ']');
+                resizezonespage.addClass('assignfeedback_editpdfplus_resize_active');
                 break;
             default:
                 drawingcanvas.setStyle('cursor', 'crosshair');
@@ -6476,22 +6478,6 @@ EDITOR.prototype = {
      */
     create_annotation: function (type, toolid, data, toolobjet) {
 
-        /*pour fonctionnement des anciens outils*/
-        /*if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
-         window.console.log("create_annotation deprecated");
-         if (type === "line") {
-         data.toolid = TOOLTYPE.LINE;
-         } else if (type === "rectangle") {
-         data.toolid = TOOLTYPE.RECTANGLE;
-         } else if (type === "oval") {
-         data.toolid = TOOLTYPE.OVAL;
-         } else if (type === "pen") {
-         data.toolid = TOOLTYPE.PEN;
-         } else if (type === "highlight") {
-         data.toolid = TOOLTYPE.HIGHLIGHT;
-         }
-         data.tooltype = this.tools[data.toolid];
-         } else */
         if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
         }
@@ -6736,6 +6722,17 @@ EDITOR.prototype = {
             if (annot.drawable) {
                 annot.drawable.erase();
             }
+        }
+
+        //remove active class for resize areas
+        var resizezones = Y.all('.assignfeedback_editpdfplus_resize');
+        if (resizezones) {
+            resizezones.removeClass('assignfeedback_editpdfplus_resize_active');
+        }
+
+        //refresh selected tool
+        if (!this.get('readonly')) {
+            this.refresh_button_state();
         }
 
         for (i = 0; i < page.annotations.length; i++) {

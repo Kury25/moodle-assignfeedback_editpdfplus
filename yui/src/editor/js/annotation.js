@@ -1134,7 +1134,8 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             div += "style='min-height:7px;min-width:" + interx + "px;' ";
         }
-        div += "data-direction='" + direction + "' "
+        div += "data-direction='" + direction + "' ";
+        div += "data-page='" + this.pageno + "' "
                 + "> "
                 + "</div>";
         return Y.Node.create(div);

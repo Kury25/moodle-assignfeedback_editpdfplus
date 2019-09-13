@@ -141,7 +141,7 @@ class annotation {
         $this->displaylock = $annotationRef->displaylock;
         $this->displayrotation = $annotationRef->displayrotation;
         $this->borderstyle = $annotationRef->borderstyle;
-        $this->parent_annot = $annotationRef->parent_annot;
+        //$this->parent_annot = $annotationRef->parent_annot;
         $this->answerrequested = $annotationRef->answerrequested;
         $this->pdfdisplay = $annotationRef->pdfdisplay;
     }

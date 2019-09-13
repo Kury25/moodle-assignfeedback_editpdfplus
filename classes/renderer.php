@@ -265,7 +265,7 @@ class assignfeedback_editpdfplus_renderer extends plugin_renderer_base {
         $canvas .= $changesmessage2Div;
 
         $infoicon = "<i class='fa fa-info-circle p-1'></i>";
-        $infomessage = html_writer::div($infoicon, 'infoicon');
+        $infomessage = html_writer::div($infoicon, 'assignfeedback_editpdfplus_infoicon');
         $canvas .= $infomessage;
 
         //help message

@@ -29,7 +29,7 @@
     cursor: default;
 }
 
-.assignfeedback_editpdf_widget .infoicon {
+.assignfeedback_editpdfplus_infoicon {
     display: none;
 }
 
@@ -407,6 +407,11 @@ ul.assignfeedback_editpdfplus_menu {
 .assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical .btn {
     font-size: small;
 }
+
+.assignfeedback_editpdfplus_widget_admin_div_axis {
+    min-width: 350px;
+}
+
 .assignfeedback_editpdfplus_highlightplus_input,
 .assignfeedback_editpdfplus_frame_input,
 .assignfeedback_editpdfplus_verticalline_input,

@@ -252,7 +252,7 @@ class page_editor {
     public static function set_annotations($gradeid, $pageno, $annotations) {
         global $CFG, $DB;
 
-        $annotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
+        $annotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1));
 
         $added = 0;
         if (!$annotationsRelease || sizeof($annotationsRelease) == 0 || $CFG->preserve_student_on_update == 0) {
@@ -301,7 +301,6 @@ class page_editor {
 
         return $added;
     }
-
 
     /**
      * create an annotation for a draft
@@ -396,8 +395,16 @@ class page_editor {
             // Copy all the draft annotations to non-drafts.
             $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
             foreach ($records as $record) {
-                $newid = self::create_annotation_for_release($record, $parentlink);
+                $oldid = $record->id;
+                $newid = self::create_annotation_for_release($record);
                 $parentlink[$oldid] = $newid;
+            }
+            $newAnnotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
+            foreach ($newAnnotationsRelease as $annotation) {
+                if ($annotation->parent_annot > 0 && $parentlink[$annotation->parent_annot]) {
+                    $annotation->parent_annot = $parentlink[$annotation->parent_annot];
+                    $DB->update_record(self::BDDTABLEANNOTATION, $annotation);
+                }
             }
         } else {
             $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
@@ -426,8 +433,18 @@ class page_editor {
                     continue;
                 }
                 //need to be created
+                $oldid = $record->id;
                 $newid = self::create_annotation_for_release($record, $parentlink);
                 $parentlink[$oldid] = $newid;
+            }
+            //maj parent ling
+            $newAnnotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
+            foreach ($newAnnotationsRelease as $annotation) {
+                if (!$annotation->parent_annot || $annotation->parent_annot < 0 || in_array($annotation->draft_id, $draftid) || !$parentlink[$annotation->parent_annot]) {
+                    continue;
+                }
+                $annotation->parent_annot = $parentlink[$annotation->parent_annot];
+                $DB->update_record(self::BDDTABLEANNOTATION, $annotation);
             }
         }
 
@@ -440,14 +457,14 @@ class page_editor {
      * @param array $parentlink array with parent's annotation's id
      * @return int new annotation id
      */
-    private static function create_annotation_for_release($annotationRecord, $parentlink) {
+    private static function create_annotation_for_release($annotationRecord) {
         $oldid = $annotationRecord->id;
         unset($annotationRecord->id);
         $annotationRecord->draft = 0;
         $annotationRecord->draft_id = $oldid;
-        if ($annotationRecord->parent_annot > 0) {
-            $annotationRecord->parent_annot = $parentlink[$annotationRecord->parent_annot];
-        }
+        /* if ($annotationRecord->parent_annot > 0) {
+          $annotationRecord->parent_annot = $parentlink[$annotationRecord->parent_annot];
+          } */
         // Force these.
         if (!($annotationRecord instanceof annotation)) {
             $annotation = new annotation($annotationRecord);
