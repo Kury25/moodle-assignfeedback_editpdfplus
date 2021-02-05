@@ -142,7 +142,6 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -177,11 +176,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
-        return true;
     },
     /**
      * Display the annotation according to current parameters

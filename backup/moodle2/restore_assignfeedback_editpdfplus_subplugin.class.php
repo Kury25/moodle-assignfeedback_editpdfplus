@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -17,7 +16,7 @@
 
 /**
  * This file contains the restore code for the feedback_editpdfplus plugin.
- * 
+ *
  * Restore subplugin class.
  *
  * Provides the necessary information needed
@@ -49,9 +48,15 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $paths[] = new restore_path_element($elename, $elepath);
 
         // Now we have the list of comments and annotations per grade.
-        $elename = $this->get_namefor('feedback_editpdfplus_annotation');
+        $elename = $this->get_namefor('annotation');
         $elepath = $this->get_pathfor('/feedback_editpdfplus_annotations/feedback_editpdfplus_annotation');
         $paths[] = new restore_path_element($elename, $elepath);
+        
+        // Rotation details.
+        $elename = $this->get_namefor('pagerotation');
+        $elepath = $this->get_pathfor('/feedback_editpdfplus_rotation/pagerotation');
+        $paths[] = new restore_path_element($elename, $elepath);
+
 
         return $paths;
     }
@@ -72,7 +77,7 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
      * Processes one feedback_editpdfplus_annotations/annotation element
      * @param mixed $data
      */
-    public function process_assignfeedback_editpdfplus_feedback_editpdfplus_annotation($data) {
+    public function process_assignfeedback_editpdfplus_annotation($data) {
         global $DB;
 
         $data = (object) $data;
@@ -84,4 +89,15 @@ class restore_assignfeedback_editpdfplus_subplugin extends restore_subplugin {
         $DB->insert_record('assignfeedback_editpp_annot', $data);
     }
 
+    /**
+     * Processes one /feedback_editpdfplus_rotation/pagerotation element
+     * @param mixed $data
+     */
+    public function process_assignfeedback_editpdfplus_pagerotation($data) {
+        global $DB;
+        $data = (object)$data;
+        $oldgradeid = $data->gradeid;
+        $data->gradeid = $this->get_mappingid('grade', $oldgradeid);
+        $DB->insert_record('assignfeedback_editpp_rot', $data);
+    }
 }

@@ -446,7 +446,7 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     public function is_available() {
         if ($this->enabledcache === null) {
             $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
-            $this->enabledcache = $testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK/* && has_capability('assignfeedback/editpdfplus:use', $this->assignment->get_context(), null, false) */;
+            $this->enabledcache = $testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK;
         }
         return $this->enabledcache;
     }

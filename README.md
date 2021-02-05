@@ -4,22 +4,22 @@ This plugin is a fork of assignfeedback_editpdf, and is developed and maintained
 
 Author: Marion Chardon, <marion.chardon@unil.ch>
 
-Compatible with Moodle versions: 3.3, 3.5
+Compatible with Moodle versions: 3.7-3.9
 
 ## Description
 
 This tool is a Moodle plugin wich allows:
 
  - a work part:
-  - to use different correction axes (i.e. groups of tools)
-  - to use several types of customizable tools: simple annotation, comment, stamp, highlighting, margin annotation, chained annotations
-  - to have different tool palettes depending on the Moodle context (course, course category, site default)
-  - to create question / answer interactions with the student
-  - the student to consult and manage annotations
-  - to generate a PDF including annotations and questions / answers
+ - to use different correction axes (i.e. groups of tools)
+ - to use several types of customizable tools: simple annotation, comment, stamp, highlighting, margin annotation, chained annotations
+ - to have different tool palettes depending on the Moodle context (course, course category, site default)
+ - to create question / answer interactions with the student
+ - the student to consult and manage annotations
+ - to generate a PDF including annotations and questions / answers
  - a configuration part:
-  - to allow configuration of toolbars for a course
-  - to import existing toolbars into a course
+ - to allow configuration of toolbars for a course
+ - to import existing toolbars into a course
 
 At the moment, sample tools are installed with the plugin and type's tool can be added/modified directly as database records only. Current development will provide an UI for managers and administrators to custom tool's family.
 

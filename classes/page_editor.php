@@ -41,6 +41,7 @@ class page_editor {
     const BDDTABLEOOL = "assignfeedback_editpp_tool";
     const BDDTABLETOOLTYPE = "assignfeedback_editpp_typet";
     const BDDTABLEANNOTATION = "assignfeedback_editpp_annot";
+    const BDDTABLEAXIS = "assignfeedback_editpp_axis";
     const CONTEXTID = "contextid";
     const GRADEID = "gradeid";
     const DRAFLIB = "draft";
@@ -67,6 +68,43 @@ class page_editor {
         } else {
             $records = $DB->get_records(self::BDDTABLEOOL);
         }
+        foreach ($records as $record) {
+            $tooltmp = null;
+            if ($record->axis == self::AXISGENERIC) {
+                $tooltmp = new tool_generic($record);
+            } else {
+                $tooltmp = new tool($record);
+            }
+            $tooltmp->typeObject = $typeTools[$tooltmp->type];
+            array_push($tools, $tooltmp);
+        }
+        usort($tools, function($a, $b) {
+            $al = $a->order_tool;
+            $bl = $b->order_tool;
+            if ($al == $bl) {
+                return 0;
+            }
+            return ($al > $bl) ? +1 : -1;
+        });
+        return $tools;
+    }
+
+    /**
+     * Get all tools for a given axis.
+     * @param int $axisid
+     * @return tool[]
+     */
+    public static function get_tools_by_axis($axisid) {
+        global $DB;
+
+        $typeToolsRaw = self::get_typetools(null);
+        $typeTools = array();
+        foreach ($typeToolsRaw as $typeTool) {
+            $typeTools[$typeTool->id] = $typeTool;
+        }
+
+        $tools = array();
+        $records = $DB->get_records(self::BDDTABLEOOL, array('axis' => $axisid));
         foreach ($records as $record) {
             $tooltmp = null;
             if ($record->axis == self::AXISGENERIC) {
@@ -168,6 +206,20 @@ class page_editor {
     }
 
     /**
+     * Get an axis given by its id.
+     * @param int $axisid
+     * @return axis
+     */
+    public static function get_axis_by_id($axisid) {
+        global $DB;
+        $record = $DB->get_record(self::BDDTABLEAXIS, array('id' => $axisid), '*', IGNORE_MISSING);
+        if ($record) {
+            return new axis($record);
+        }
+        return null;
+    }
+
+    /**
      * Get all annotations for a page.
      * @param int $gradeid
      * @param int $pageno
@@ -198,37 +250,82 @@ class page_editor {
      * @return int - the number of annotations.
      */
     public static function set_annotations($gradeid, $pageno, $annotations) {
-        global $DB;
+        global $CFG, $DB;
 
-        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1));
+        $annotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1));
+
         $added = 0;
-        $annotationdiv = array();
-        foreach ($annotations as $record) {
-            $currentdiv = $record->divcartridge;
-            if ($record->parent_annot_div != '') {
-                //on est dans le cas d'une annotation liee
-                $idparent = $annotationdiv[$record->parent_annot_div];
-                $record->parent_annot = intval($idparent);
-            }
-            // Force these.
-            if (!($record instanceof annotation)) {
-                $annotation = new annotation($record);
-            } else {
-                $annotation = $record;
-            }
-            $annotation->gradeid = $gradeid;
-            $annotation->pageno = $pageno;
-            $annotation->draft = 1;
-            $newid = self::add_annotation($annotation);
-            if ($newid) {
-                if ($currentdiv != '') {
-                    $annotationdiv[$currentdiv] = $newid;
+        if (!$annotationsRelease || sizeof($annotationsRelease) == 0 || $CFG->preserve_student_on_update == 0) {
+            $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, 'pageno' => $pageno, self::DRAFLIB => 1));
+            $annotationdiv = array();
+            foreach ($annotations as $record) {
+                $currentdiv = $record->divcartridge;
+                $newid = self::create_annotation_for_draft($record, $annotationdiv, $gradeid, $pageno);
+                if ($newid) {
+                    if ($currentdiv != '') {
+                        $annotationdiv[$currentdiv] = $newid;
+                    }
+                    $added++;
                 }
+            }
+        } else {
+            $draftid = [];
+            foreach ($annotations as $record) {
+                if (!$record->id) {
+                    $currentdiv = $record->divcartridge;
+                    $newid = self::create_annotation_for_draft($record, $annotationdiv, $gradeid, $pageno);
+                    if ($newid) {
+                        if ($currentdiv != '') {
+                            $annotationdiv[$currentdiv] = $newid;
+                        }
+                        $added++;
+                    }
+                    continue;
+                }
+                $annotationDraft = self::get_annotation($record->id);
+
+                //maj annotation
+                $annotationDraft->clone_teacher_annotation($record);
+                $DB->update_record(self::BDDTABLEANNOTATION, $annotationDraft);
                 $added++;
+                $draftid[] = $annotationDraft->id;
+            }
+            foreach ($annotationsRelease as $annotation) {
+                if (in_array($annotation->id, $draftid)) {
+                    continue;
+                }
+                //need to be deleted
+                self::remove_annotation($annotation->id);
             }
         }
 
         return $added;
+    }
+
+    /**
+     * create an annotation for a draft
+     * @param annotation|record $annotationRecord annotation to create
+     * @param array $annotationdiv array with parent's annotation's id
+     * @param type $gradeid grade id
+     * @param type $pageno page no
+     * @return int new annotation id
+     */
+    private static function create_annotation_for_draft($annotationRecord, $annotationdiv, $gradeid, $pageno) {
+        if ($annotationRecord->parent_annot_div != '') {
+            //on est dans le cas d'une annotation liee
+            $idparent = $annotationdiv[$annotationRecord->parent_annot_div];
+            $annotationRecord->parent_annot = intval($idparent);
+        }
+        // Force these.
+        if (!($annotationRecord instanceof annotation)) {
+            $annotation = new annotation($annotationRecord);
+        } else {
+            $annotation = $annotationRecord;
+        }
+        $annotation->gradeid = $gradeid;
+        $annotation->pageno = $pageno;
+        $annotation->draft = 1;
+        return self::add_annotation($annotation);
     }
 
     /**
@@ -276,7 +373,7 @@ class page_editor {
     public static function unrelease_drafts($gradeid) {
         global $DB;
 
-        // Delete the non-draft annotations and comments.
+        // Delete the non-draft annotations.
         return $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
     }
 
@@ -286,27 +383,95 @@ class page_editor {
      * @return bool
      */
     public static function release_drafts($gradeid) {
-        global $DB;
+        global $CFG, $DB;
 
-        // Delete the previous non-draft annotations and comments.
-        $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
-
-        // Copy all the draft annotations and comments to non-drafts.
+        $annotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
         $parentlink = [];
-        $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
-        foreach ($records as $record) {
-            $oldid = $record->id;
-            unset($record->id);
-            $record->draft = 0;
-            $oldparentrecord = $record->parent_annot;
-            if ($record->parent_annot > 0) {
-                $record->parent_annot = $parentlink[$record->parent_annot];
+
+        if (!$annotationsRelease || sizeof($annotationsRelease) == 0 || $CFG->preserve_student_on_update == 0) {
+            // Delete the previous non-draft annotations.
+            $DB->delete_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
+
+            // Copy all the draft annotations to non-drafts.
+            $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
+            foreach ($records as $record) {
+                $oldid = $record->id;
+                $newid = self::create_annotation_for_release($record);
+                $parentlink[$oldid] = $newid;
             }
-            $newid = $DB->insert_record(self::BDDTABLEANNOTATION, $record);
-            $parentlink[$oldid] = $newid;
+            $newAnnotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
+            foreach ($newAnnotationsRelease as $annotation) {
+                if ($annotation->parent_annot > 0 && $parentlink[$annotation->parent_annot]) {
+                    $annotation->parent_annot = $parentlink[$annotation->parent_annot];
+                    $DB->update_record(self::BDDTABLEANNOTATION, $annotation);
+                }
+            }
+        } else {
+            $records = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 1));
+            $draftid = [];
+            // update existing annotations
+            foreach ($annotationsRelease as $annotation) {
+                $annotationDraft = self::get_annotation($annotation->draft_id);
+
+                //if no result, annotation has been deleted
+                if (!$annotationDraft) {
+                    self::remove_annotation($annotation->id);
+                    continue;
+                }
+
+                //maj annotation
+                $annotation = new annotation($annotation);
+                $annotation->clone_teacher_annotation($annotationDraft);
+                $DB->update_record(self::BDDTABLEANNOTATION, $annotation);
+
+                $parentlink[$annotation->draft_id] = $annotation->id;
+                $draftid[] = $annotation->draft_id;
+            }
+            //create only new annotations
+            foreach ($records as $record) {
+                if (in_array($record->id, $draftid)) {
+                    continue;
+                }
+                //need to be created
+                $oldid = $record->id;
+                $newid = self::create_annotation_for_release($record, $parentlink);
+                $parentlink[$oldid] = $newid;
+            }
+            //maj parent ling
+            $newAnnotationsRelease = $DB->get_records(self::BDDTABLEANNOTATION, array(self::GRADEID => $gradeid, self::DRAFLIB => 0));
+            foreach ($newAnnotationsRelease as $annotation) {
+                if (!$annotation->parent_annot || $annotation->parent_annot < 0 || in_array($annotation->draft_id, $draftid) || !$parentlink[$annotation->parent_annot]) {
+                    continue;
+                }
+                $annotation->parent_annot = $parentlink[$annotation->parent_annot];
+                $DB->update_record(self::BDDTABLEANNOTATION, $annotation);
+            }
         }
 
         return true;
+    }
+
+    /**
+     * create an annotation for a release draft
+     * @param annotation|record $annotationRecord annotation to create
+     * @param array $parentlink array with parent's annotation's id
+     * @return int new annotation id
+     */
+    private static function create_annotation_for_release($annotationRecord) {
+        $oldid = $annotationRecord->id;
+        unset($annotationRecord->id);
+        $annotationRecord->draft = 0;
+        $annotationRecord->draft_id = $oldid;
+        /* if ($annotationRecord->parent_annot > 0) {
+          $annotationRecord->parent_annot = $parentlink[$annotationRecord->parent_annot];
+          } */
+        // Force these.
+        if (!($annotationRecord instanceof annotation)) {
+            $annotation = new annotation($annotationRecord);
+        } else {
+            $annotation = $annotationRecord;
+        }
+        return self::add_annotation($annotation);
     }
 
     /**
@@ -469,44 +634,85 @@ class page_editor {
         global $CFG;
         switch ($newToolType->label) {
             case 'highlightplus':
-                $newToolType->setColor($CFG->highlightplus_color);
-                $newToolType->setCartridgeColor($CFG->highlightplus_cartridge_color);
-                $newToolType->setCartridgeX($CFG->highlightplus_cartridge_x);
-                $newToolType->setCartridgeY($CFG->highlightplus_cartridge_y);
+                $newToolType->set_color($CFG->highlightplus_color);
+                $newToolType->set_cartridge_color($CFG->highlightplus_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->highlightplus_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->highlightplus_cartridge_y);
                 break;
 
             case 'stampplus':
-                $newToolType->setColor($CFG->stampplus_color);
+                $newToolType->set_color($CFG->stampplus_color);
                 break;
 
             case 'frame':
-                $newToolType->setCartridgeX($CFG->frame_cartridge_x);
-                $newToolType->setCartridgeY($CFG->frame_cartridge_y);
+                $newToolType->set_cartridge_x($CFG->frame_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->frame_cartridge_y);
                 break;
 
             case 'verticalline':
-                $newToolType->setColor($CFG->verticalline_color);
-                $newToolType->setCartridgeColor($CFG->verticalline_cartridge_color);
-                $newToolType->setCartridgeX($CFG->verticalline_cartridge_x);
-                $newToolType->setCartridgeY($CFG->verticalline_cartridge_y);
+                $newToolType->set_color($CFG->verticalline_color);
+                $newToolType->set_cartridge_color($CFG->verticalline_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->verticalline_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->verticalline_cartridge_y);
                 break;
 
             case 'stampcomment':
-                $newToolType->setCartridgeColor($CFG->stampcomment_cartridge_color);
-                $newToolType->setCartridgeX($CFG->stampcomment_cartridge_x);
-                $newToolType->setCartridgeY($CFG->stampcomment_cartridge_y);
+                $newToolType->set_cartridge_color($CFG->stampcomment_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->stampcomment_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->stampcomment_cartridge_y);
                 break;
 
             case 'commentplus':
-                $newToolType->setCartridgeColor($CFG->commentplus_cartridge_color);
-                $newToolType->setCartridgeX($CFG->commentplus_cartridge_x);
-                $newToolType->setCartridgeY($CFG->commentplus_cartridge_y);
+                $newToolType->set_cartridge_color($CFG->commentplus_cartridge_color);
+                $newToolType->set_cartridge_x($CFG->commentplus_cartridge_x);
+                $newToolType->set_cartridge_y($CFG->commentplus_cartridge_y);
                 break;
 
             default:
                 break;
         }
         return $newToolType;
+    }
+
+    /**
+     * Set page rotation value.
+     * @param int $gradeid grade id.
+     * @param int $pageno page number.
+     * @param bool $isrotated whether the page is rotated or not.
+     * @param string $pathnamehash path name hash
+     * @param int $degree rotation degree.
+     * @throws \dml_exception
+     */
+    public static function set_page_rotation($gradeid, $pageno, $isrotated, $pathnamehash, $degree = 0) {
+        global $DB;
+        $oldrecord = self::get_page_rotation($gradeid, $pageno);
+        if ($oldrecord == null) {
+            $record = new \stdClass();
+            $record->gradeid = $gradeid;
+            $record->pageno = $pageno;
+            $record->isrotated = $isrotated;
+            $record->pathnamehash = $pathnamehash;
+            $record->degree = $degree;
+            $DB->insert_record('assignfeedback_editpp_rot', $record, false);
+        } else {
+            $oldrecord->isrotated = $isrotated;
+            $oldrecord->pathnamehash = $pathnamehash;
+            $oldrecord->degree = $degree;
+            $DB->update_record('assignfeedback_editpp_rot', $oldrecord, false);
+        }
+    }
+
+    /**
+     * Get Page Rotation Value.
+     * @param int $gradeid grade id.
+     * @param int $pageno page number.
+     * @return mixed
+     * @throws \dml_exception
+     */
+    public static function get_page_rotation($gradeid, $pageno) {
+        global $DB;
+        $result = $DB->get_record('assignfeedback_editpp_rot', array('gradeid' => $gradeid, 'pageno' => $pageno));
+        return $result;
     }
 
 }

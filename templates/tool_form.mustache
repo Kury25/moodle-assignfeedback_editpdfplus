@@ -20,7 +20,7 @@
     Admin template to manage a tool.
 
     Context variables required for this template:
-    * courseid - Course id
+    * contextid - Context id
     * tool - current tool object to edit
     * formid - id of moodleform
     * actionurl - moodle service url to send form
@@ -38,13 +38,13 @@
                 {{#tool.id}}<div id="editpdlplus_tool_label" class="btn alert-info">{{tool.label}}</div>{{/tool.id}}
             </td>
             <td style="text-align: right;padding-left: 20px;">
-                {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }}{{#tool.id}}s{{/tool.id}} :
+                {{# str }} admintoolboxaction, assignfeedback_editpdfplus {{/ str }} 
                 <div class="btn-group">
                     <button type="button" class="btn" id="toolFormSubmit"><i class="fa fa-{{#tool.id}}save{{/tool.id}}{{^tool.id}}save{{/tool.id}}" aria-hidden="true"></i></button>
                     {{#tool.id}}
                     <button type="button" class="btn" id="toolClone"><i class="fa fa-clone" aria-hidden="true"></i></button>
                     <button type="button" class="btn" id="toolEnabled"><i class="fa fa-eye{{^tool.enabled}}-slash{{/tool.enabled}}" aria-hidden="true"></i></button>
-                    <button type="button" class="btn" {{^tool.removable}}disabled{{/tool.removable}} id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-danger" {{^tool.removable}}disabled{{/tool.removable}} id="toolRemove"><i class="fa fa-remove" aria-hidden="true"></i></button>
                     {{/tool.id}}
                 </div>
             </td>
@@ -187,7 +187,7 @@
                     <div style='display:none;'>
                         <input type="hidden" name="toolid" value="{{tool.id}}" />
                         <input type="hidden" name="axisid" id="axisid" value="{{tool.axis}}" />
-                        <input type="hidden" name="courseid" value="{{courseid}}" />
+                        <input type="hidden" name="contextid" value="{{contextid}}" />
                         <input type="hidden" name="sesskey" value="{{sesskey}}" />
                         <input type="hidden" name="enabled" id="toolenabled" value="{{tool.enabled}}" />
                     </div>

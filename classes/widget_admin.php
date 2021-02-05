@@ -49,16 +49,14 @@ class widget_admin implements renderable, templatable {
     /**
      * Constructor
      * @param type $context
-     * @param type $course
      * @param type $userid - The user id we are grading
      * @param type $toolbars
      * @param type $axis - the different axis to display
      * @param type $typetools
      * @param type $toolbarsDispo
      */
-    public function __construct($context, $course, $userid, $toolbars, $axis, $typetools, $toolbarsDispo) {
+    public function __construct($context, $userid, $toolbars, $axis, $typetools, $toolbarsDispo) {
         $this->context = $context;
-        $this->course = $course;
         $this->userid = $userid;
         $this->toolbars = $toolbars;
         $this->axis = $axis;

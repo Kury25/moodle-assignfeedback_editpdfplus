@@ -33,6 +33,8 @@ require_once("locallib_admin.php");
 use \assignfeedback_editpdfplus\form\axis_form;
 use \assignfeedback_editpdfplus\form\axis_del_form;
 use \assignfeedback_editpdfplus\form\axis_import_form;
+use \assignfeedback_editpdfplus\form\axis_export_form;
+use \assignfeedback_editpdfplus\form\model_del_form;
 use \assignfeedback_editpdfplus\admin_editor;
 
 class assignfeedback_editpdfplus_external extends external_api {
@@ -41,7 +43,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     const DATAJSON = 'jsonformdata';
     const MESSAGELIB = 'message';
     const COURSELIB = "course";
-    const COURSEID = "courseid";
+    const CONTEXTID = "contextid";
     const AXEID = "axeid";
     const AXEIDDESC = "Axe ID";
     const AXELIB = "axelabel";
@@ -89,15 +91,15 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
-                array(
-            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
-            self::TOOLSELECTED => new external_value(PARAM_INT, self::TOOLIDDESC),
-            self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
-            self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC),
-            self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
-            self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL),
-            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
-                )
+                        array(
+                    self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
+                    self::TOOLSELECTED => new external_value(PARAM_INT, self::TOOLIDDESC),
+                    self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
+                    self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC),
+                    self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
+                    self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL),
+                    self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
+                        )
                 )
         );
     }
@@ -122,13 +124,12 @@ class assignfeedback_editpdfplus_external extends external_api {
      * Set Page context from the course id given. It returns the context found.
      * @global $DB
      * @global $PAGE
-     * @param int $courseid Current course id
+     * @param int $contextid Current context id
      * @return context course's context 
      */
-    public static function setPageContext($courseid) {
-        global $DB, $PAGE;
-        $course = $DB->get_record(self::COURSELIB, array('id' => $courseid), '*', MUST_EXIST);
-        $context = context_course::instance($course->id, MUST_EXIST);
+    public static function setPageContext($contextid) {
+        global $PAGE;
+        $context = context::instance_by_id($contextid, MUST_EXIST);
         $PAGE->set_context($context);
         return $context;
     }
@@ -153,7 +154,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -181,11 +182,11 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
-                array(
-            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
-            self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC),
-            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
-                )
+                        array(
+                    self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC),
+                    self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC),
+                    self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB, VALUE_OPTIONAL)
+                        )
                 )
         );
     }
@@ -206,7 +207,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_del_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        self::setPageContext($data[self::COURSEID]);
+        self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -244,7 +245,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_form($jsonformdata, $mode) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 
@@ -334,7 +335,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_del_form($jsonformdata) {
         $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 
@@ -382,7 +383,7 @@ class assignfeedback_editpdfplus_external extends external_api {
 
         $data = self::getParseData(self::submit_axis_import_form_parameters(), $jsonformdata);
 
-        $context = self::setPageContext($data[self::COURSEID]);
+        $context = self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
         $formparams = array($customdata);
@@ -392,7 +393,7 @@ class assignfeedback_editpdfplus_external extends external_api {
         $validateddata = $mform->get_data();
 
         if ($validateddata && $validateddata->axeid) {
-            $axeToImport = admin_editor::getAxisById($validateddata->axeid);
+            $axeToImport = admin_editor::get_axis_by_id($validateddata->axeid);
             $axeNew = admin_editor::import_axis($axeToImport, $context->id);
             if ($axeNew) {
                 $tools = admin_editor::get_tools_by_axis($axeToImport->id);
@@ -422,16 +423,139 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_axis_import_form_returns() {
         return new external_multiple_structure(
                 new external_single_structure(
-                array(
-            self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC, VALUE_OPTIONAL),
-            self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC, VALUE_OPTIONAL),
-            self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB),
-            self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
-            self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC, VALUE_OPTIONAL),
-            self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
-            self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL)
+                        array(
+                    self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC, VALUE_OPTIONAL),
+                    self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC, VALUE_OPTIONAL),
+                    self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB),
+                    self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
+                    self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC, VALUE_OPTIONAL),
+                    self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
+                    self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL)
+                        )
                 )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_axis_export_form_parameters() {
+        return self::submit_generic_form_parameters();
+    }
+
+    /**
+     * Submit axis form for exporting
+     * @param String $jsonformdata
+     * @return array
+     */
+    public static function submit_axis_export_form($jsonformdata) {
+        global $USER;
+
+        $data = self::getParseData(self::submit_axis_export_form_parameters(), $jsonformdata);
+
+        $context = self::setPageContext($data[self::CONTEXTID]);
+
+        $customdata = (object) $data;
+        $formparams = array($customdata);
+
+        // Data is injected into the form by the last param for the constructor.
+        $mform = new axis_export_form(null, $formparams, 'post', '', null, true, $data);
+        $validateddata = $mform->get_data();
+
+        if ($validateddata && $validateddata->axeid) {
+            $axeToExport = admin_editor::get_axis_by_id($validateddata->axeid);
+            $axeToExport->label = $validateddata->label;
+            $axeNew = admin_editor::import_axis($axeToExport, -1);
+            if ($axeNew) {
+                $tools = admin_editor::get_tools_by_axis($axeToExport->id);
+                foreach ($tools as $toolToImport) {
+                    admin_editor::import_tool($toolToImport, $axeNew, $context->id);
+                }
+                $model = admin_editor::addModel($axeNew, $validateddata->label, $USER);
+                if ($model > -1) {
+                    $res = array();
+                    $toolsNew = admin_editor::get_tools_by_axis($axeNew);
+                    if (sizeof($toolsNew) > 0) {
+                        foreach ($toolsNew as $tool) {
+                            $tool->set_design();
+                            $res[] = array('modelid' => $model, self::AXEID => $axeNew, self::AXELIB => $validateddata->label, self::MESSAGELIB => "", self::ENABLETOOL => $tool->enabled, self::TOOLID => $tool->id, self::TOOLTYPE => $tool->type, self::BOUTONLIBTOOL => $tool->label, 'style' => $tool->style);
+                        }
+                    } else {
+                        $res = array(array('modelid' => $model, self::AXEID => $axeNew, self::AXELIB => $validateddata->label, self::MESSAGELIB => ""));
+                    }
+
+                    return $res;
+                }
+            }
+        }
+        return array(self::getMessageError());
+    }
+
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
+    public static function submit_axis_export_form_returns() {
+        return new external_multiple_structure(
+                new external_single_structure(
+                        array(
+                    'modelid' => new external_value(PARAM_INT, self::AXEIDDESC, VALUE_OPTIONAL),
+                    self::AXEID => new external_value(PARAM_INT, self::AXEIDDESC, VALUE_OPTIONAL),
+                    self::AXELIB => new external_value(PARAM_TEXT, self::AXELIBDESC, VALUE_OPTIONAL),
+                    self::MESSAGELIB => new external_value(PARAM_TEXT, self::MESSAGELIB),
+                    self::ENABLETOOL => new external_value(PARAM_INT, self::ENABLETOOLDESC, VALUE_OPTIONAL),
+                    self::TOOLID => new external_value(PARAM_INT, self::TOOLIDDESC, VALUE_OPTIONAL),
+                    self::TOOLTYPE => new external_value(PARAM_INT, self::TOOLTYPEDESC, VALUE_OPTIONAL),
+                    self::BOUTONLIBTOOL => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL),
+                    'style' => new external_value(PARAM_TEXT, self::TOOLLIBDESC, VALUE_OPTIONAL)
+                        )
                 )
+        );
+    }
+
+    /**
+     * Returns description of method parameters
+     * @return external_function_parameters
+     */
+    public static function submit_model_del_form_parameters() {
+        return self::submit_generic_form_parameters();
+    }
+
+    /**
+     * Submit axis form for deleting
+     * @param String $jsonformdata
+     * @return array
+     */
+    public static function submit_model_del_form($jsonformdata) {
+        $data = self::getParseData(self::submit_axis_form_parameters(), $jsonformdata);
+
+        self::setPageContext($data[self::CONTEXTID]);
+
+        $customdata = (object) $data;
+        $formparams = array($customdata);
+
+        // Data is injected into the form by the last param for the constructor.
+        $mform = new model_del_form(null, $formparams, 'post', '', null, true, $data);
+        $validateddata = $mform->get_data();
+
+        if ($validateddata && $validateddata->modelid && admin_editor::delModel($validateddata->modelid)) {
+            $message = "1";
+            return array(array(self::MESSAGELIB => $message));
+        }
+        $warnings = array();
+        $message = get_string('admindeltool_messageko', self::PLUGINNAME);
+        $warnings[] = array(self::MESSAGELIB => $message);
+        return $warnings;
+    }
+
+    /**
+     * Form return structure
+     * @return \external_multiple_structure
+     */
+    public static function submit_model_del_form_returns() {
+        return new external_multiple_structure(
+                self::submit_generic_form_returns()
         );
     }
 
@@ -451,7 +575,7 @@ class assignfeedback_editpdfplus_external extends external_api {
     public static function submit_tool_order_form($jsonformdata) {
         $data = self::getParseData(self::submit_tool_order_form_parameters(), $jsonformdata);
 
-        self::setPageContext($data[self::COURSEID]);
+        self::setPageContext($data[self::CONTEXTID]);
 
         $customdata = (object) $data;
 

@@ -23,7 +23,6 @@
  * The code is based on mod/assign/feedback/editpdf/lib.php by Davo Smith.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -39,8 +38,8 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool false if file not found, does not return if found - just send the file
  */
 function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $filearea, $args, $forcedownload, array $options = array()) {
-    global $USER, $DB, $CFG;
-    
+    global $DB, $CFG;
+
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
     if ($context->contextlevel == CONTEXT_MODULE) {
@@ -81,133 +80,88 @@ function assignfeedback_editpdfplus_pluginfile($course, $cm, context $context, $
  * @param context_course $context
  */
 function assignfeedback_editpdfplus_extend_navigation_course(navigation_node $navigation, stdClass $course, context_course $context) {
-    if (has_capability('assignfeedback/editpdfplus:use', $context, null, false) && has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $course->id));
-        $feedbackadminnode = navigation_node::create('Feedback : configuration', $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
+    if (has_capability('assignfeedback/editpdfplus:managetools', $context)) {
+        $url = new moodle_url('/mod/assign/feedback/editpdfplus/view_admin.php', array('id' => $context->id));
+        $feedbackadminnode = navigation_node::create(get_string('feedback_configuration', "assignfeedback_editpdfplus"), $url, navigation_node::TYPE_CUSTOM, 'Bars d\'outils', 'editpdfplusadmin', new pix_icon('i/grades', ""));
         $navigation->add_node($feedbackadminnode);
     }
 }
 
 /**
  * Get axis form (add)
- * @global $DB
  * @param type $args
  */
 function assignfeedback_editpdfplus_output_fragment_axisadd($args) {
-    global $DB;
-
     $context = $args['context'];
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
-        return null;
-    }
     require_once('locallib_admin.php');
 
-    if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
-        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
-        return $editpdfplus->getAxisForm();
-    }
+    require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
-    return null;
+    $editpdfplus = new assign_feedback_editpdfplus_admin($context);
+    return $editpdfplus->getAxisForm();
 }
 
 /**
  * Get axis form (edit)
- * @global $DB
  * @param type $args
  */
 function assignfeedback_editpdfplus_output_fragment_axisedit($args) {
-    global $DB;
-
     $context = $args['context'];
     $axisid = $args['axeid'];
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
-        return null;
-    }
     require_once('locallib_admin.php');
 
-    if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
-        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
-        return $editpdfplus->getAxisForm($axisid);
-    }
+    require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
-    return null;
+    $editpdfplus = new assign_feedback_editpdfplus_admin($context);
+    return $editpdfplus->getAxisForm($axisid);
 }
 
 /**
- * Get axis form (delete)
- * @global $DB
+ * Get axis form (export)
  * @param type $args
  */
-function assignfeedback_editpdfplus_output_fragment_axisdel($args) {
-    global $DB;
-
+function assignfeedback_editpdfplus_output_fragment_axisexport($args) {
     $context = $args['context'];
     $axisid = $args['axeid'];
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
-        return null;
-    }
     require_once('locallib_admin.php');
 
-    if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
-        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
-        return $editpdfplus->getAxisDelForm($axisid);
-    }
+    require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
-    return null;
+    $editpdfplus = new assign_feedback_editpdfplus_admin($context);
+    return $editpdfplus->getAxisExportForm($axisid);
 }
 
 /**
  * Get tool form (edit)
- * @global $DB
  * @param type $args
  */
 function assignfeedback_editpdfplus_output_fragment_tooledit($args) {
-    global $DB;
-
     $context = $args['context'];
     $toolid = $args['toolid'];
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
-        return null;
-    }
     require_once('locallib_admin.php');
 
-    if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
-        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
-        return $editpdfplus->getToolForm($toolid);
-    }
+    require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
-    return null;
+    $editpdfplus = new assign_feedback_editpdfplus_admin($context);
+    return $editpdfplus->getToolForm($toolid);
 }
 
 /**
  * Get tool form (add)
- * @global $DB
  * @param type $args
  */
 function assignfeedback_editpdfplus_output_fragment_tooladd($args) {
-    global $DB;
-
     $context = $args['context'];
     $axisid = $args['axisid'];
 
-    if ($context->contextlevel != CONTEXT_COURSE) {
-        return null;
-    }
     require_once('locallib_admin.php');
 
-    if (has_capability('assignfeedback/editpdfplus:managetools', $context, null, false)) {
-        $course = $DB->get_record('course', array('id' => $context->instanceid), '*', MUST_EXIST);
-        $editpdfplus = new assign_feedback_editpdfplus_admin($context, $course);
-        return $editpdfplus->getToolForm(null, $axisid);
-    }
+    require_capability('assignfeedback/editpdfplus:managetools', $context, null, true, get_string('admin_access_error', 'assignfeedback_editpdfplus'));
 
-    return null;
+    $editpdfplus = new assign_feedback_editpdfplus_admin($context);
+    return $editpdfplus->getToolForm(null, $axisid);
 }

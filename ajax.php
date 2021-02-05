@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -74,6 +73,7 @@ if ($action === 'pollconversions') {
                 'filecount' => 0,
                 'pagecount' => 0,
                 'pageready' => 0,
+                'partial' => false,
                 'pages' => [],
     ];
 
@@ -81,10 +81,13 @@ if ($action === 'pollconversions') {
     $response->status = $combineddocument->get_status();
     $response->filecount = $combineddocument->get_document_count();
 
-    if ($response->status === combined_document::STATUS_READY) {
+    $readystatuslist = [combined_document::STATUS_READY, combined_document::STATUS_READY_PARTIAL];
+    $completestatuslist = [combined_document::STATUS_COMPLETE, combined_document::STATUS_FAILED];
+
+    if (in_array($response->status, $readystatuslist)) {
         $combineddocument = document_services::get_combined_pdf_for_attempt($assignment, $userid, $attemptnumber);
         $response->pagecount = $combineddocument->get_page_count();
-    } else if ($response->status === combined_document::STATUS_COMPLETE || $response->status === combined_document::STATUS_FAILED) {
+    } else if (in_array($response->status, $completestatuslist)) {
         $pages = document_services::get_page_images_for_attempt($assignment, $userid, $attemptnumber, $readonly);
 
         $response->pagecount = $combineddocument->get_page_count();
@@ -96,13 +99,12 @@ if ($action === 'pollconversions') {
         if ($readonly) {
             $filearea = document_services::PAGE_IMAGE_READONLY_FILEAREA;
         }
+        $response->partial = $combineddocument->is_partial_conversion();
 
         foreach ($pages as $id => $pagefile) {
             $index = count($response->pages);
             $page = new stdClass();
-            //$comments = page_editor::get_comments($grade->id, $index, $draft);
             $page->url = moodle_url::make_pluginfile_url($context->id, PLUGIN_NAME, $filearea, $grade->id, '/', $pagefile->get_filename())->out();
-            //$page->comments = $comments;
             if ($imageinfo = $pagefile->get_imageinfo()) {
                 $page->width = $imageinfo['width'];
                 $page->height = $imageinfo['height'];
@@ -165,7 +167,14 @@ if ($action === 'pollconversions') {
 
     $response->url = '';
     if ($file) {
-        $url = moodle_url::make_pluginfile_url($assignment->get_context()->id, PLUGIN_NAME, document_services::FINAL_PDF_FILEAREA, $grade->id, '/', $file->get_filename(), false);
+        $url = moodle_url::make_pluginfile_url(
+                        $assignment->get_context()->id,
+                        PLUGIN_NAME, document_services::FINAL_PDF_FILEAREA,
+                        $grade->id,
+                        '/',
+                        $file->get_filename(),
+                        false
+        );
         $response->url = $url->out(true);
         $response->filename = $file->get_filename();
     }
@@ -174,11 +183,11 @@ if ($action === 'pollconversions') {
         $teachers = get_users_by_capability($context, 'assignfeedback/editpdfplus:notify');
         $course = $assignment->get_course();
         $coursemodule = $assignment->get_course_module();
-        $a = (object)[
-                'coursename'     => format_string($course->shortname, true),
-                'modulename'     => get_string('modulename', 'assign'),
-                'assignmentname' => format_string($assignment->get_instance()->name, true),
-                'url'            => $response->url
+        $a = (object) [
+                    'coursename' => format_string($course->shortname, true),
+                    'modulename' => get_string('modulename', 'assign'),
+                    'assignmentname' => format_string($assignment->get_instance()->name, true),
+                    'url' => $response->url
         ];
         foreach ($teachers as $teacher) {
             $res = email_to_user($teacher, $USER, get_string('assignmentgradedsubject', 'assignfeedback_editpdfplus'), get_string('assignmentgradedbody', 'assignfeedback_editpdfplus', $a));
@@ -205,6 +214,27 @@ if ($action === 'pollconversions') {
     $result = $result && page_editor::unrelease_drafts($grade->id);
     echo json_encode($result);
     die();
+} else if ($action == 'rotatepage') {
+    require_capability(PERMISSION_ASSIGN_GRADE, $context);
+    $response = new stdClass();
+    $index = required_param('index', PARAM_INT);
+    $grade = $assignment->get_user_grade($userid, true, $attemptnumber);
+    $rotateleft = required_param('rotateleft', PARAM_BOOL);
+    $filearea = document_services::PAGE_IMAGE_FILEAREA;
+    $pagefile = document_services::rotate_page($assignment, $userid, $attemptnumber, $index, $rotateleft);
+    $page = new stdClass();
+    $page->url = moodle_url::make_pluginfile_url($context->id, document_services::COMPONENT, $filearea,
+                    $grade->id, '/', $pagefile->get_filename())->out();
+    if ($imageinfo = $pagefile->get_imageinfo()) {
+        $page->width = $imageinfo['width'];
+        $page->height = $imageinfo['height'];
+    } else {
+        $page->width = 0;
+        $page->height = 0;
+    }
+    $response = (object) ['page' => $page];
+    echo json_encode($response);
+    die();
 } else if ($action == 'updatestudentview') {
     require_capability(PERMISSION_ASSIGN_SUBMIT, $context);
 
@@ -223,8 +253,4 @@ if ($action === 'pollconversions') {
     }
     echo json_encode($response);
     die();
-}
-
-function getHtmlLink($url, $text) {
-    return '<a href="' . $url . '">' . $text . '</a>';
 }

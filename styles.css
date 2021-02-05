@@ -29,19 +29,23 @@
     cursor: default;
 }
 
-.assignfeedback_editpdfplus_widget .drawingregion {
-    border: 1px solid #ccc;
-    left: 0.1em;
-    right: 1em;
-    /*top: 52px;*/
-    bottom: 0;
-    position: absolute;
-    overflow: auto;
-    background-color: #ccc;
+.assignfeedback_editpdfplus_infoicon {
+    display: none;
 }
 
-.assignfeedback_editpdfplus_widget[data-region="review-panel-content"] .drawingregion {
-    top: 52px;
+.assignfeedback_editpdf_widget .warningmessages {
+    position: absolute;
+    margin-left: 20px;
+    margin-right: 20px;
+    bottom: 20px;
+}
+
+.assignfeedback_editpdfplus_widget .drawingregion {
+    border: 1px solid #ccc;
+    overflow: scroll;
+    background-color: #ccc;
+    touch-action: none;
+    max-height: 600px;
 }
 
 .assignfeedback_editpdfplus_widget {
@@ -65,11 +69,9 @@
     padding: 0;
 }
 
-.assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges.haschanges,
 .assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges_edit.haschanges {
     display: inline-block;
 }
-.assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges,
 .assignfeedback_editpdfplus_widget .assignfeedback_editpdfplus_unsavedchanges_edit {
     display: none;
     position: absolute;
@@ -77,9 +79,7 @@
     top: 60px;
 }
 
-.yui3-colourpicker-hidden,
-.yui3-commentsearch-hidden,
-.yui3-commentmenu-hidden {
+.yui3-colourpicker-hidden {
     display: none;
 }
 
@@ -186,27 +186,18 @@
     width: 0%;
 }
 
+.assignfeedback_editpdfplus_widget div.helpmessage {
+    display: none;
+}
+
 .assignfeedback_editpdfplus_widget .btn-toolbar {
-    min-height:50px;
+    min-height: 50px;
 }
 
 .assignfeedback_editpdfplus_colourpicker ul {
     margin: 0;
 }
 
-.assignfeedback_editpdfplus_commentmenu li.quicklist_comment {
-    width: 150px;
-}
-.assignfeedback_editpdfplus_commentmenu li.quicklist_comment a {
-    white-space: nowrap;
-    display: inline-block;
-    max-width: 130px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.assignfeedback_editpdfplus_commentmenu a.delete_quicklist_comment {
-    float: right;
-}
 .assignfeedback_editpdfplus_dropdown button {
     border: 0;
     background: none;
@@ -241,14 +232,14 @@
     color: #555;
     margin: 10px;
 }
-.assignfeedback_editpdfplus_menu li:hover,
-.assignfeedback_editpdfplus_menu li:hover a,
-.assignfeedback_editpdfplus_menu li a:hover {
+.assignfeedback_editpdfplus_menu li:hover {
     background-color: #ebebeb;
-    background-image: radial-gradient(ellipse at center, #fff 60%, #dfdfdf 100%);
 }
 ul.assignfeedback_editpdfplus_menu {
     margin: 0;
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
     padding-left: 0;
 }
 .assignfeedback_editpdfplus_menu li {
@@ -326,6 +317,7 @@ ul.assignfeedback_editpdfplus_menu {
         position: relative;
         margin-bottom: 1em;
         top: 0;
+        max-height: 312px;
     }
 
     .assignfeedback_editpdfplus_widget .pageheader {
@@ -409,12 +401,17 @@ ul.assignfeedback_editpdfplus_menu {
 }
 .assignfeedback_editpdfplus_widget .aepp-toolbar-vertical,
 .assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical {
-    width:100%;
+    width: 100%;
 }
 .assignfeedback_editpdfplus_widget .aepp-toolbar-vertical .btn,
 .assignfeedback_editpdfplus_widget_admin .aepp-toolbar-vertical .btn {
     font-size: small;
 }
+
+.assignfeedback_editpdfplus_widget_admin_div_axis {
+    min-width: 350px;
+}
+
 .assignfeedback_editpdfplus_highlightplus_input,
 .assignfeedback_editpdfplus_frame_input,
 .assignfeedback_editpdfplus_verticalline_input,
@@ -547,4 +544,45 @@ ul.assignfeedback_editpdfplus_menu {
     border-style: solid;
     height: 330px;
     box-sizing: border-box;
+}
+.assignfeedback_editpdfplus_resize{
+    position: absolute;
+}
+.assignfeedback_editpdfplus_resize_active {
+    background-color:#e3e3ff;
+    border: solid #ccccff;
+}
+.assignfeedback_editpdfplus_resize_horizontal.assignfeedback_editpdfplus_resize_active:hover {
+    cursor:col-resize;
+}
+.assignfeedback_editpdfplus_resize_vertical.assignfeedback_editpdfplus_resize_active:hover {
+    cursor:row-resize;
+}
+
+/* Tooltip text */
+.costumtoolbarbutton .assignfeedback_editpdfplus_tooltiptext {
+    visibility: hidden;
+    min-width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px; /* Use half of the width (120/2 = 60), to center the tooltip */
+    margin-top: 5px;
+
+    /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+    opacity: 0;
+    transition: opacity 1s;
+}
+/* Show the tooltip text when you mouse over the tooltip container */
+.costumtoolbarbutton:hover .assignfeedback_editpdfplus_tooltiptext {
+    visibility: visible;
+    opacity: 1;
 }

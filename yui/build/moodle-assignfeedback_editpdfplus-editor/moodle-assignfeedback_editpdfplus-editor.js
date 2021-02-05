@@ -32,15 +32,22 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
             LOADINGICON: '.loading',
             PROGRESSBARCONTAINER: '.progress-info.progress-striped',
             DRAWINGREGION: '.drawingregion',
+            DRAWINGREGIONCLASS: 'drawingregion',
             DRAWINGCANVAS: '.drawingcanvas',
+            DRAWINGTOOLBAR: 'drawingtoolbar',
             SAVE: '.savebutton',
             ANNOTATIONCOLOURBUTTON: '.annotationcolourbutton',
             DELETEANNOTATIONBUTTON: '.deleteannotationbutton',
-            UNSAVEDCHANGESDIV: '.assignfeedback_editpdfplus_unsavedchanges',
+            WARNINGMESSAGECONTAINER: '.warningmessages',
+            ICONMESSAGECONTAINER: '.assignfeedback_editpdfplus_infoicon',
+            UNSAVEDCHANGESDIV: '.assignfeedback_editpdf_warningmessages',
             UNSAVEDCHANGESINPUT: 'input[name="assignfeedback_editpdfplus_haschanges"]',
             UNSAVEDCHANGESDIVEDIT: '.assignfeedback_editpdfplus_unsavedchanges_edit',
             HELPMESSAGETITLE: '#afppHelpmessageTitle',
             HELPMESSAGE: '#afppHelpmessageBody',
+            USERINFOREGION: '[data-region="user-info"]',
+            ROTATELEFTBUTTON: '.rotateleftbutton',
+            ROTATERIGHTBUTTON: '.rotaterightbutton',
             DIALOGUE: '.' + CSS.DIALOGUE,
             CUSTOMTOOLBARID: '#toolbaraxis',
             CUSTOMTOOLBARS: '.customtoolbar',
@@ -67,7 +74,8 @@ var AJAXBASE = M.cfg.wwwroot + '/mod/assign/feedback/editpdfplus/ajax.php',
         CLICKTIMEOUT = 300,
         TOOLSELECTOR = {
             'select': '.selectbutton',
-            'drag': '.dragbutton'
+            'drag': '.dragbutton',
+            'resize': '.resizebutton'
         },
         TOOLTYPE = {
             'HIGHLIGHTPLUS': 1,
@@ -635,6 +643,12 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     drawable: false,
     /**
+     * List of all resize areas (div id) for this annotation
+     * @type array
+     * @public
+     */
+    resizeAreas: [],
+    /**
      * Reference to M.assignfeedback_editpdfplus.tool
      * @property tooltype
      * @type M.assignfeedback_editpdfplus.tool
@@ -747,6 +761,19 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     studentanswer: "",
     /**
+     * pdf display for this annotation
+     * @property pdfdisplay
+     * @type String
+     * @public
+     */
+    pdfdisplay: "footnote",
+    /**
+     * minimum size for resize area
+     * @type Int
+     * @public
+     */
+    minresizewidth: 20,
+    /**
      * Initialise the annotation.
      *
      * @method initializer
@@ -794,6 +821,8 @@ Y.extend(ANNOTATION, Y.Base, {
         this.path = config.path || '';
         this.toolid = config.toolid || this.editor.get_dialogue_element(TOOLTYPE.RECTANGLE);
         this.drawable = false;
+        this.resizeAreas = [];
+        this.pdfdisplay = config.pdfdisplay;
         this.tooltypefamille = this.editor.typetools[this.tooltype.type];
     },
     /**
@@ -805,6 +834,7 @@ Y.extend(ANNOTATION, Y.Base, {
     clean: function () {
         if (this.parent_annot_element) {
             return {
+                id: this.id,
                 gradeid: this.gradeid,
                 x: parseInt(this.x, 10),
                 y: parseInt(this.y, 10),
@@ -822,10 +852,13 @@ Y.extend(ANNOTATION, Y.Base, {
                 borderstyle: this.borderstyle,
                 parent_annot: parseInt(this.parent_annot, 10),
                 divcartridge: this.divcartridge,
-                parent_annot_div: this.parent_annot_element.divcartridge
+                parent_annot_div: this.parent_annot_element.divcartridge,
+                answerrequested: parseInt(this.answerrequested, 10),
+                pdfdisplay: this.pdfdisplay
             };
         }
         return {
+            id: this.id,
             gradeid: this.gradeid,
             x: parseInt(this.x, 10),
             y: parseInt(this.y, 10),
@@ -845,7 +878,8 @@ Y.extend(ANNOTATION, Y.Base, {
             divcartridge: this.divcartridge,
             parent_annot_div: '',
             answerrequested: parseInt(this.answerrequested, 10),
-            studentstatus: parseInt(this.studentstatus, 10)
+            studentstatus: parseInt(this.studentstatus, 10),
+            pdfdisplay: this.pdfdisplay
         };
     },
     /**
@@ -969,6 +1003,21 @@ Y.extend(ANNOTATION, Y.Base, {
     init_div_cartridge_id: function () {
         var date = (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         this.divcartridge = 'ct_' + this.tooltype.id + '_' + date;
+    },
+    /**
+     * Init the HTML id for the shape
+     * @protected
+     * @param {String} toolname
+     * @returns {String} the shape id
+     */
+    init_shape_id: function (toolname) {
+        if (!this.shape_id) {
+            //create only one time the shape_id
+            var d = new Date();
+            var n = d.getTime();
+            this.shape_id = "ct_" + toolname + "_" + n;
+        }
+        return this.shape_id;
     },
     /**
      * get the html node for the cartridge
@@ -1136,6 +1185,7 @@ Y.extend(ANNOTATION, Y.Base, {
         divconteneurdisplay.append(divinputdisplay);
         divconteneurdisplay.append(inputonof);
         divconteneurdisplay.append(this.get_input_question());
+        divconteneurdisplay.append(this.get_input_pdfdisplay());
 
         return divconteneurdisplay;
     },
@@ -1156,6 +1206,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (this.tooltype.reply === 1) {
                 divtoolbardisplay.append(this.get_button_question());
             }
+            divtoolbardisplay.append(this.get_button_pdfdisplay());
             divtoolbardisplay.append(this.get_button_remove());
         } else {
             divtoolbardisplay.append(this.get_button_student_status());
@@ -1283,6 +1334,21 @@ Y.extend(ANNOTATION, Y.Base, {
         return buttontrashdisplay;
     },
     /**
+     * get the html node for the button to change display on pdf for the annotation
+     * @return node
+     */
+    get_button_pdfdisplay: function () {
+        var buttontrash = "<button id='"
+                + this.divcartridge
+                + "_buttonpdfdisplay' style='display:none;margin-left:10px;' class='btn btn-sm btn-outline-dark' type='button'>"
+                + "<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                + "<i class='fa fa-arrow-circle-o-down' aria-hidden='true'></i>"
+                + "</button>";
+        var buttontrashdisplay = Y.Node.create(buttontrash);
+        buttontrashdisplay.on('click', this.change_pdf_display, this);
+        return buttontrashdisplay;
+    },
+    /**
      * get the html node for the hidden input to keep information about question state
      * @return node
      */
@@ -1292,6 +1358,13 @@ Y.extend(ANNOTATION, Y.Base, {
             qst = 1;
         }
         return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_question' value='" + qst + "'/>");
+    },
+    /**
+     * get the html node for the hidden input to keep information about question state
+     * @return node
+     */
+    get_input_pdfdisplay: function () {
+        return Y.Node.create("<input type='hidden' id='" + this.divcartridge + "_pdfdisplay' value='" + this.pdfdisplay + "'/>");
     },
     /**
      * get the final reference text value
@@ -1356,6 +1429,7 @@ Y.extend(ANNOTATION, Y.Base, {
             buttonstatus.hide();
         }
         this.apply_question_status();
+        this.apply_pdfdisplay();
     },
     /**
      * get the html node for the text to display for the annotation, according to parameters
@@ -1396,6 +1470,22 @@ Y.extend(ANNOTATION, Y.Base, {
         interrupt.set('value', finalvalue);
         this.displaylock = finalvalue;
         this.apply_visibility_annot();
+        this.editor.save_current_page();
+    },
+    /**
+     * change question status of the annotation (with or not)
+     */
+    change_pdf_display: function () {
+        var pdfdisplayvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_pdfdisplay");
+        var value = pdfdisplayvalue.get('value');
+        if (value === "footnote") {
+            pdfdisplayvalue.set('value', "inline");
+            this.pdfdisplay = "inline";
+        } else {
+            pdfdisplayvalue.set('value', "footnote");
+            this.pdfdisplay = "footnote";
+        }
+        this.apply_pdfdisplay();
         this.editor.save_current_page();
     },
     /**
@@ -1459,6 +1549,25 @@ Y.extend(ANNOTATION, Y.Base, {
         return;
     },
     /**
+     * change pdf display mode set of the annotation
+     * @return null
+     */
+    apply_pdfdisplay: function () {
+        var buttonpdf = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
+        var pdfdisplayvalue = this.editor.get_dialogue_element('#' + this.divcartridge + "_pdfdisplay");
+        var value = pdfdisplayvalue.get('value');
+        if (buttonpdf) {
+            if (value === 'footnote') {
+                buttonpdf.setHTML("<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                        + "<i class='fa fa-arrow-circle-o-down' aria-hidden='true'></i>");
+            } else {
+                buttonpdf.setHTML("<i class='fa fa-file-pdf-o' aria-hidden='true'></i>&nbsp;"
+                        + "<i class='fa fa-arrow-circle-o-right' aria-hidden='true'></i>");
+            }
+        }
+        return;
+    },
+    /**
      * drag-and-drop start
      * @param {type} e
      */
@@ -1510,6 +1619,7 @@ Y.extend(ANNOTATION, Y.Base, {
         var divcartridge = this.editor.get_dialogue_element('#' + this.divcartridge);
         divcartridge.setX(offsetcanvas[0] + this.x + this.cartridgex);
         divcartridge.setY(offsetcanvas[1] + this.y + this.cartridgey);
+        //window.console.log('move_cartridge_stop');
         this.editor.save_current_page();
     },
     /**
@@ -1517,6 +1627,106 @@ Y.extend(ANNOTATION, Y.Base, {
      */
     draw_catridge: function () {
         return true;
+    },
+    /**
+     * global method, replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        return true;
+    },
+    /**
+     * global method, draw empty resize area
+     */
+    draw_resizeAreas: function () {
+        return true;
+    },
+    /**
+     * get the html node for the cartridge
+     * @param {string} colorcartridge
+     * @return node
+     */
+    get_div_resizearea: function (direction, minwidth, minheight) {
+        var plane = "horizontal";
+        if (direction === "up" || direction === "down") {
+            plane = "vertical";
+        }
+        var div = "<div "
+                + "id='" + this.divcartridge + "_resize_" + direction + "' "
+                + "class='assignfeedback_editpdfplus_resize assignfeedback_editpdfplus_resize_" + plane + "' ";
+        if (plane === "horizontal") {
+            var intery = Math.max(this.endy - this.y, 7);
+            if (minheight) {
+                intery = minheight;
+            }
+            div += "style='min-width:7px;min-height:" + intery + "px;' ";
+        } else {
+            var interx = Math.max(this.endx - this.x, 7);
+            if (minwidth) {
+                interx = minwidth;
+            }
+            div += "style='min-height:7px;min-width:" + interx + "px;' ";
+        }
+        div += "data-direction='" + direction + "' ";
+        div += "data-page='" + this.pageno + "' "
+                + "> "
+                + "</div>";
+        return Y.Node.create(div);
+    },
+    /**
+     * Remove all resize areas
+     */
+    remove_resizearea: function () {
+        var divAreaResize = Y.all('.assignfeedback_editpdfplus_resize');
+        divAreaResize.remove();
+    },
+    /**
+     * Insert new resize area in the DOM
+     * @param {String} direction direction for the resizing {left, up down, right}
+     * @param {int} x left position of the resize area
+     * @param {int} y top position of the resize area
+     */
+    push_div_resizearea: function (direction, x, y, minwidth, minheight) {
+        var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var div = this.editor.get_dialogue_element('#' + this.divcartridge + "_resize_" + direction);
+        if (div) {
+            return;
+        }
+        var divresize = this.get_div_resizearea(direction, minwidth, minheight);
+        if (!divresize) {
+            return;
+        }
+        divresize.setX(x);
+        divresize.setY(y);
+        drawingregion.append(divresize);
+        this.resizeAreas.push(divresize);
+    },
+    /**
+     * global method, actions when resizing a shape
+     */
+    mousemoveResize: function () {
+        return true;
+    },
+    /**
+     * Actions after resizing a shape
+     * - save new positions
+     * - redraw cartridge
+     * @param {Event} e click event
+     * @param {Div node} divresize resize area div
+     */
+    mouseupResize: function (e, divresize) {
+        var canvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+        var offset = canvas.getXY();
+        var direction = divresize.getData('direction');
+        if (direction === 'right') {
+            this.endx = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'left') {
+            this.x = e.clientX + canvas.get('docScrollX') - offset[0];
+        } else if (direction === 'up') {
+            this.y = e.clientY + canvas.get('docScrollY') - offset[1];
+        } else if (direction === 'down') {
+            this.endy = e.clientY + canvas.get('docScrollY') - offset[1];
+        }
+        this.replacement_cartridge();
     },
     /**
      * display annotation view
@@ -1566,7 +1776,7 @@ Y.extend(ANNOTATION, Y.Base, {
         if (this.tooltype.type <= TOOLTYPE.COMMENTPLUS && !this.parent_annot_element) {
             var divprincipale = this.editor.get_dialogue_element('#' + this.divcartridge);
             var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_display");
-            if (!divdisplay){
+            if (!divdisplay) {
                 //for basic tools (pen, rectangle,...)
                 return;
             }
@@ -1577,6 +1787,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
             var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
             var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonpdfdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
             var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
             var input = this.editor.get_dialogue_element('#' + this.divcartridge + "_editinput");
             divdisplay.hide();
@@ -1595,6 +1806,7 @@ Y.extend(ANNOTATION, Y.Base, {
             if (buttonquestion) {
                 buttonquestion.show();
             }
+            buttonpdfdisplay.show();
             buttonremove.show();
             divprincipale.setStyle('z-index', 1000);
             if (input) {
@@ -1689,6 +1901,7 @@ Y.extend(ANNOTATION, Y.Base, {
             var buttoncancel = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttoncancel");
             var buttonquestion = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonquestion");
             var buttonrotation = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonrotation");
+            var buttonpdfdisplay = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonpdfdisplay");
             var buttonremove = this.editor.get_dialogue_element('#' + this.divcartridge + "_buttonremove");
             var buttonstatus = this.editor.get_dialogue_element('#' + this.divcartridge + "_radioContainer");
             if (divdisplay) {
@@ -1708,6 +1921,9 @@ Y.extend(ANNOTATION, Y.Base, {
             }
             if (buttonquestion) {
                 buttonquestion.hide();
+            }
+            if (buttonpdfdisplay) {
+                buttonpdfdisplay.hide();
             }
             if (buttonremove) {
                 buttonremove.hide();
@@ -1789,6 +2005,10 @@ Y.extend(ANNOTATION, Y.Base, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+
+        //init resize area
+        this.remove_resizearea();
+        this.draw_resizeAreas();
     },
     /**
      * Draw the in progress edit.
@@ -2385,7 +2605,7 @@ M.assignfeedback_editpdfplus.annotationpen = ANNOTATIONPEN;
  * @extends M.assignfeedback_editpdfplus.annotation
  * @module moodle-assignfeedback_editpdfplus-editor
  */
-var ANNOTATIONHIGHLIGHT = function(config) {
+var ANNOTATIONHIGHLIGHT = function (config) {
     ANNOTATIONHIGHLIGHT.superclass.constructor.apply(this, [config]);
 };
 
@@ -2399,16 +2619,16 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
      * @method draw
      * @return M.assignfeedback_editpdfplus.drawable
      */
-    draw : function() {
+    draw: function () {
         var drawable,
-            shape,
-            bounds,
-            highlightcolour;
+                shape,
+                bounds,
+                highlightcolour;
 
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
-                      new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
+            new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
         highlightcolour = ANNOTATIONCOLOUR[this.colour];
 
@@ -2442,15 +2662,15 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
      * @method draw_current_edit
      * @param M.assignfeedback_editpdfplus.edit edit
      */
-    draw_current_edit : function(edit) {
+    draw_current_edit: function (edit) {
         var drawable = new M.assignfeedback_editpdfplus.drawable(this.editor),
-            shape,
-            bounds,
-            highlightcolour;
+                shape,
+                bounds,
+                highlightcolour;
 
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(edit.start.x, edit.start.y),
-                      new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
+            new M.assignfeedback_editpdfplus.point(edit.end.x, edit.end.y)]);
 
         // Set min. width of highlight.
         if (!bounds.has_min_width()) {
@@ -2467,13 +2687,13 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
         shape = this.editor.graphic.addShape({
             type: Y.Rect,
             width: bounds.width,
-            height: 16,
+            height: 20,
             stroke: false,
             fill: {
-               color: highlightcolour
+                color: highlightcolour
             },
             x: bounds.x,
-            y: edit.start.y
+            y: edit.start.y - 10
         });
 
         drawable.shapes.push(shape);
@@ -2489,7 +2709,7 @@ Y.extend(ANNOTATIONHIGHLIGHT, M.assignfeedback_editpdfplus.annotation, {
      * @param M.assignfeedback_editpdfplus.edit edit
      * @return bool true if highlight bound is more than min width/height, else false.
      */
-    init_from_edit : function(edit) {
+    init_from_edit: function (edit) {
         var bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([edit.start, edit.end]);
 
@@ -2548,6 +2768,13 @@ ANNOTATIONHIGHLIGHTPLUS.NAME = "annotationhighlightplus";
 ANNOTATIONHIGHLIGHTPLUS.ATTRS = {};
 
 Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
+
+    /**
+     * Margin to let for resize area
+     * @type Number
+     * @protected
+     */
+    marginDivResize: 4,
     /**
      * Draw a highlight annotation
      * @protected
@@ -2560,14 +2787,16 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                 bounds,
                 highlightcolour;
 
+        highlightcolour = this.get_color();
+        this.init_shape_id('hightlightplus');
+
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
         bounds = new M.assignfeedback_editpdfplus.rect();
         bounds.bound([new M.assignfeedback_editpdfplus.point(this.x, this.y),
             new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
-        highlightcolour = this.get_color();
-
         shape = this.editor.graphic.addShape({
+            id: this.shape_id,
             type: Y.Rect,
             width: bounds.width,
             height: bounds.height,
@@ -2584,6 +2813,8 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONHIGHLIGHTPLUS.superclass.draw.apply(this);
     },
@@ -2657,7 +2888,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -2699,11 +2929,66 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
+    },
+    /**
+     * Draw empty resize area on left and right
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('left', this.x - this.marginDivResize, this.y);
+        this.push_div_resizearea('right', this.endx - this.marginDivResize, this.y);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on left, new x and width
+     * - on right, new width
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var direction = divresize.getData('direction');
+        var width = this.minresizewidth;
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointx = point.x;
+        //sortie de cadre
+        if (newpointx < 0) {
+            newpointx = 0;
+        } else if (canvasDim.width < newpointx) {
+            newpointx = canvasDim.width;
+        }
+        var decalage = canvasDim.x;
+        if (direction === 'right') {
+            width = Math.max(newpointx - this.x, this.minresizewidth);
+            shape.set('width', width);
+            divresize.setX(this.x + width + decalage - this.marginDivResize);
+        } else if (direction === 'left') {
+            width = Math.max(this.endx - newpointx, this.minresizewidth);
+            shape.set('x', Math.min(newpointx, this.endx - this.minresizewidth));
+            shape.set('width', width);
+            divresize.setX(this.endx - width + decalage - this.marginDivResize);
+        }
     },
     /**
      * Delete an annotation
@@ -2724,6 +3009,7 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -2739,172 +3025,6 @@ Y.extend(ANNOTATIONHIGHLIGHTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
 M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
 M.assignfeedback_editpdfplus.annotationhighlightplus = ANNOTATIONHIGHLIGHTPLUS;
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-/* global SELECTOR */
-
-/**
- * Provides an in browser PDF editor.
- *
- * @module moodle-assignfeedback_editpdfplus-editor
- */
-
-/**
- * Class representing a stamp.
- *
- * @namespace M.assignfeedback_editpdfplus
- * @class annotationstamp
- * @extends M.assignfeedback_editpdfplus.annotation
- */
-var ANNOTATIONSTAMP = function(config) {
-    ANNOTATIONSTAMP.superclass.constructor.apply(this, [config]);
-};
-
-ANNOTATIONSTAMP.NAME = "annotationstamp";
-ANNOTATIONSTAMP.ATTRS = {};
-
-Y.extend(ANNOTATIONSTAMP, M.assignfeedback_editpdfplus.annotation, {
-    /**
-     * Draw a stamp annotation
-     * @protected
-     * @method draw
-     * @return M.assignfeedback_editpdfplus.drawable
-     */
-    draw : function() {
-        var drawable = new M.assignfeedback_editpdfplus.drawable(this.editor),
-            drawingcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS),
-            node,
-            position;
-
-        position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(this.x, this.y));
-        node = Y.Node.create('<div/>');
-        node.setStyles({
-            'position': 'absolute',
-            'display': 'inline-block',
-            'backgroundImage': 'url(' + this.editor.get_stamp_image_url(this.path) + ')',
-            'width': (this.endx - this.x),
-            'height': (this.endy - this.y),
-            'backgroundSize': '100% 100%',
-            'zIndex': 50
-        });
-
-        drawingcanvas.append(node);
-        node.setX(position.x);
-        node.setY(position.y);
-        drawable.store_position(node, position.x, position.y);
-        drawable.nodes.push(node);
-
-        this.drawable = drawable;
-        return ANNOTATIONSTAMP.superclass.draw.apply(this);
-    },
-
-    /**
-     * Draw the in progress edit.
-     *
-     * @public
-     * @method draw_current_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
-     */
-    draw_current_edit : function(edit) {
-        var bounds = new M.assignfeedback_editpdfplus.rect(),
-            drawable = new M.assignfeedback_editpdfplus.drawable(this.editor),
-            drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGREGION),
-            node,
-            position;
-
-        bounds.bound([edit.start, edit.end]);
-        position = this.editor.get_window_coordinates(new M.assignfeedback_editpdfplus.point(bounds.x, bounds.y));
-
-        node = Y.Node.create('<div/>');
-        node.setStyles({
-            'position': 'absolute',
-            'display': 'inline-block',
-            'backgroundImage': 'url(' + this.editor.get_stamp_image_url(edit.stamp) + ')',
-            'width': bounds.width,
-            'height': bounds.height,
-            'backgroundSize': '100% 100%',
-            'zIndex': 50
-        });
-
-        drawingregion.append(node);
-        node.setX(position.x);
-        node.setY(position.y);
-        drawable.store_position(node, position.x, position.y);
-
-        drawable.nodes.push(node);
-
-        return drawable;
-    },
-
-    /**
-     * Promote the current edit to a real annotation.
-     *
-     * @public
-     * @method init_from_edit
-     * @param M.assignfeedback_editpdfplus.edit edit
-     * @return bool if width/height is more than min. required.
-     */
-    init_from_edit : function(edit) {
-        var bounds = new M.assignfeedback_editpdfplus.rect();
-        bounds.bound([edit.start, edit.end]);
-
-        if (bounds.width < 40) {
-            bounds.width = 40;
-        }
-        if (bounds.height < 40) {
-            bounds.height = 40;
-        }
-        this.gradeid = this.editor.get('gradeid');
-        this.pageno = this.editor.currentpage;
-        this.x = bounds.x;
-        this.y = bounds.y;
-        this.endx = bounds.x + bounds.width;
-        this.endy = bounds.y + bounds.height;
-        this.colour = edit.annotationcolour;
-        this.path = edit.stamp;
-
-        // Min width and height is always more than 40px.
-        return true;
-    },
-
-    /**
-     * Move an annotation to a new location.
-     * @public
-     * @param int newx
-     * @param int newy
-     * @method move_annotation
-     */
-    move : function(newx, newy) {
-        var diffx = newx - this.x,
-            diffy = newy - this.y;
-
-        this.x += diffx;
-        this.y += diffy;
-        this.endx += diffx;
-        this.endy += diffy;
-
-        if (this.drawable) {
-            this.drawable.erase();
-        }
-        this.editor.drawables.push(this.draw());
-    }
-
-});
-
-M.assignfeedback_editpdfplus = M.assignfeedback_editpdfplus || {};
-M.assignfeedback_editpdfplus.annotationstamp = ANNOTATIONSTAMP;
 /* global M, Y, SELECTOR */
 
 // This file is part of Moodle - http://moodle.org/
@@ -3222,7 +3342,6 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -3284,11 +3403,20 @@ Y.extend(ANNOTATIONSTAMPCOMMENT, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
     },
     change_stamp: function () {
         var rotationstate = this.editor.get_dialogue_element('#' + this.divcartridge + "_rotation");
@@ -3405,6 +3533,12 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     oldx: 0,
     oldy: 0,
     /**
+     * Margin to let for resize area
+     * @type Number
+     * @protected
+     */
+    marginDivResize: 4,
+    /**
      * Draw a highlight annotation
      * @protected
      * @method draw
@@ -3422,8 +3556,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             new M.assignfeedback_editpdfplus.point(this.endx, this.endy)]);
 
         highlightcolour = this.get_color();
+        this.init_shape_id('frame');
 
-        this.shape_id = 'ct_frame_' + (new Date().toJSON()).replace(/:/g, '').replace(/\./g, '');
         shape = this.editor.graphic.addShape({
             id: this.shape_id,
             type: Y.Rect,
@@ -3453,6 +3587,8 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONFRAME.superclass.draw.apply(this);
     },
@@ -3551,6 +3687,10 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
             this.drawable.erase();
         }
         this.editor.drawables.push(this.draw());
+
+        //init resize area
+        this.remove_resizearea();
+        this.draw_resizeAreas();
     },
     /**
      * Get the color of the element, depend of data on DB
@@ -3566,7 +3706,6 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
     draw_catridge: function () {
         if (this.parent_annot_element === null && this.parent_annot === 0) {
             var divdisplay;
-            var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
             if (this.divcartridge === '') {
                 this.init_div_cartridge_id();
                 var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -3723,13 +3862,68 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                 }
 
             } else {
-                var divid = '#' + this.divcartridge;
-                divdisplay = this.editor.get_dialogue_element(divid);
-                divdisplay.setX(offsetcanvas[0] + this.cartridgex);
-                divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
+                this.replacement_cartridge();
             }
         }
         return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divid = '#' + this.divcartridge;
+        var divdisplay = this.editor.get_dialogue_element(divid);
+        if (divdisplay) {
+            divdisplay.setX(offsetcanvas[0] + this.cartridgex);
+            divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
+        }
+    },
+    /**
+     * Draw empty resize area on left and right
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('left', this.x - this.marginDivResize, this.y);
+        this.push_div_resizearea('right', this.endx - this.marginDivResize, this.y);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on left, new x and width
+     * - on right, new width
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var direction = divresize.getData('direction');
+        var width = this.minresizewidth;
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointx = point.x;
+        //sortie de cadre
+        if (newpointx < 0) {
+            newpointx = 0;
+        } else if (canvasDim.width < newpointx) {
+            newpointx = canvasDim.width;
+        }
+        var decalage = canvasDim.x;
+        if (direction === 'right') {
+            width = Math.max(newpointx - this.x, this.minresizewidth);
+            shape.set('width', width);
+            divresize.setX(this.x + width + decalage - this.marginDivResize);
+        } else if (direction === 'left') {
+            width = Math.max(this.endx - point.x, this.minresizewidth);
+            shape.set('x', Math.min(newpointx, this.endx - this.minresizewidth));
+            shape.set('width', width);
+            divresize.setX(this.endx - width + decalage - this.marginDivResize);
+        }
     },
     /**
      * drag-and-drop process
@@ -3969,6 +4163,7 @@ Y.extend(ANNOTATIONFRAME, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(k, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -4041,6 +4236,25 @@ ANNOTATIONVERTICALLINE.NAME = "annotationverticalline";
 ANNOTATIONVERTICALLINE.ATTRS = {};
 
 Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
+
+    /**
+     * Margin to let for resize area on top and down
+     * @type Number
+     * @protected
+     */
+    marginyDivResize: 2,
+    /**
+     * Margin to let for resize area on left and right
+     * @type Number
+     * @protected
+     */
+    marginxDivResize: 7,
+    /**
+     * Min width for resize area
+     * @type Number
+     * @protected
+     */
+    minWidthDivResize: 15,
     /**
      * Draw a verticalline annotation
      * @protected
@@ -4055,8 +4269,10 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         drawable = new M.assignfeedback_editpdfplus.drawable(this.editor);
 
         verticallinecolour = this.get_color();
+        this.init_shape_id('verticalline');
 
         shape = this.editor.graphic.addShape({
+            id: this.shape_id,
             type: Y.Path,
             fill: false,
             stroke: {
@@ -4076,6 +4292,8 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
         this.drawable = drawable;
 
         this.draw_catridge();
+
+        this.draw_resizeAreas();
 
         return ANNOTATIONVERTICALLINE.superclass.draw.apply(this);
     },
@@ -4156,7 +4374,6 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -4198,11 +4415,71 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + this.cartridgex);
             divdisplay.setY(offsetcanvas[1] + this.y + this.cartridgey);
         }
-        return true;
+    },
+    /**
+     * Draw empty resize area on top and down
+     */
+    draw_resizeAreas: function () {
+        this.push_div_resizearea('up', this.x - this.marginxDivResize, this.y - this.marginyDivResize, this.minWidthDivResize);
+        this.push_div_resizearea('down', this.x - this.marginxDivResize, this.endy - this.marginyDivResize, this.minWidthDivResize);
+    },
+    /**
+     * Actions when resizing a shape:
+     * - on top, new height
+     * - on down, new y and nw height
+     * New placement of resize area (div)
+     * @param {Event} e
+     * @param {Point} point current position
+     * @param {div} divresize id of resize area
+     */
+    mousemoveResize: function (e, point, divresize) {
+        if (this.drawable.shapes.length === 0) {
+            return;
+        }
+        var shape = this.drawable.shapes[0];
+        if (!shape) {
+            return;
+        }
+        var height = this.minresizewidth;
+        var direction = divresize.getData('direction');
+        var canvasDim = this.editor.get_canvas_bounds();
+        var newpointy = point.y;
+        //sortie de cadre
+        if (newpointy < 0) {
+            newpointy = 0;
+        } else if (canvasDim.height < newpointy) {
+            newpointy = canvasDim.height;
+        }
+        var decalage = canvasDim.y;
+        if (direction === 'up') {
+            height = Math.max(this.endy - newpointy, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, Math.min(newpointy, this.endy - this.minresizewidth));
+            shape.lineTo(this.x, this.endy);
+            shape.end();
+            divresize.setY(this.endy - height + decalage - this.marginyDivResize);
+        } else if (direction === 'down') {
+            height = Math.max(newpointy - this.y, this.minresizewidth);
+            shape.clear();
+            shape.moveTo(this.x, this.y);
+            shape.lineTo(this.x, this.y + height);
+            shape.end();
+            divresize.setY(this.y + height + decalage - this.marginyDivResize);
+        }
     },
     /**
      * Delete an annotation
@@ -4224,6 +4501,7 @@ Y.extend(ANNOTATIONVERTICALLINE, M.assignfeedback_editpdfplus.annotation, {
                     var divdisplay = this.editor.get_dialogue_element(divid);
                     divdisplay.remove();
                 }
+                this.remove_resizearea();
                 annotations.splice(i, 1);
                 if (this.drawable) {
                     this.drawable.erase();
@@ -4383,7 +4661,6 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
      */
     draw_catridge: function () {
         var divdisplay;
-        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
         if (this.divcartridge === '') {
             this.init_div_cartridge_id();
             var drawingregion = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
@@ -4418,11 +4695,20 @@ Y.extend(ANNOTATIONCOMMENTPLUS, M.assignfeedback_editpdfplus.annotation, {
 
             this.apply_visibility_annot();
         } else {
-            divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+            this.replacement_cartridge();
+        }
+        return true;
+    },
+    /**
+     * Replacement of the cartridge after move or resize
+     */
+    replacement_cartridge: function () {
+        var offsetcanvas = this.editor.get_dialogue_element(SELECTOR.DRAWINGCANVAS).getXY();
+        var divdisplay = this.editor.get_dialogue_element('#' + this.divcartridge);
+        if (divdisplay) {
             divdisplay.setX(offsetcanvas[0] + this.x + 20);
             divdisplay.setY(offsetcanvas[1] + this.y);
         }
-        return true;
     },
     /**
      * Display the annotation according to current parameters
@@ -4699,7 +4985,7 @@ Y.extend(COLOURPICKER, M.assignfeedback_editpdfplus.dropdown, {
             colourlist.append(listitem);
         }, this);
 
-        body = Y.Node.create('<div/>');
+        body = Y.Node.create('<div style="max-width:50px;"></div>');
 
         // Set the call back.
         colourlist.delegate('click', this.callback_handler, 'button', this);
@@ -4815,6 +5101,11 @@ var EDITOR = function () {
     EDITOR.superclass.constructor.apply(this, arguments);
 };
 EDITOR.prototype = {
+
+    /**
+     * Store old coordinates of the annotations before rotation happens.
+     */
+    oldannotationcoordinates: null,
 
     /**
      * The dialogue used for all action menu displays.
@@ -4982,6 +5273,12 @@ EDITOR.prototype = {
      */
     currentannotationreview: null,
     /**
+     * id of the current selected resize area
+     * @type String
+     */
+    resizeareaselected: null,
+
+    /**
      * Called during the initialisation process of the object.
      * @method initializer
      */
@@ -5019,7 +5316,15 @@ EDITOR.prototype = {
     refresh_button_state: function () {
         var currenttoolnode, drawingregion, drawingcanvas;
 
+        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+
         this.refresh_button_color_state();
+
+        //remove active class for resize areas
+        var resizezones = Y.all('.assignfeedback_editpdfplus_resize');
+        if (resizezones) {
+            resizezones.removeClass('assignfeedback_editpdfplus_resize_active');
+        }
 
         if (this.currentedit.id) {
             currenttoolnode = this.get_dialogue_element('#' + this.currentedit.id);
@@ -5033,7 +5338,6 @@ EDITOR.prototype = {
         drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
         drawingregion.setAttribute('data-currenttool', this.currentedit.tool);
 
-        drawingcanvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
         switch (this.currentedit.tool) {
             case 'drag':
                 drawingcanvas.setStyle('cursor', 'move');
@@ -5043,6 +5347,11 @@ EDITOR.prototype = {
                 break;
             case 'select':
                 drawingcanvas.setStyle('cursor', 'default');
+                break;
+            case 'resize':
+                drawingcanvas.setStyle('cursor', 'default');
+                var resizezonespage = Y.all('.assignfeedback_editpdfplus_resize[data-page=' + this.currentpage + ']');
+                resizezonespage.addClass('assignfeedback_editpdfplus_resize_active');
                 break;
             default:
                 drawingcanvas.setStyle('cursor', 'crosshair');
@@ -5142,6 +5451,11 @@ EDITOR.prototype = {
             drawingcanvas.on('gesturemoveend', this.edit_end, null, this);
 
             this.refresh_button_state();
+
+            //trigger when window is resized
+            drawingcanvas.on('windowresize', this.resize, this);
+            var buttonChooseView = Y.one('.collapse-buttons');
+            buttonChooseView.on('click', this.temporise, this, this.resize, 500);
         }
 
         this.start_generation();
@@ -5217,9 +5531,7 @@ EDITOR.prototype = {
      * @method poll_document_conversion_status
      */
     poll_document_conversion_status: function () {
-        if (this.get('destroyed')) {
-            return;
-        }
+        var requestUserId = this.get('userid');
 
         Y.io(AJAXBASE, {
             method: 'get',
@@ -5235,6 +5547,15 @@ EDITOR.prototype = {
             },
             on: {
                 success: function (tid, response) {
+                    var currentUserRegion = Y.one(SELECTOR.USERINFOREGION);
+                    if (currentUserRegion) {
+                        var currentUserId = currentUserRegion.getAttribute('data-userid');
+                        if (currentUserId && (currentUserId != requestUserId)) {
+                            // Polling conversion status needs to abort because
+                            // the current user changed.
+                            return;
+                        }
+                    }
                     var data = this.handle_response_data(response),
                             poll = false;
                     if (data) {
@@ -5243,7 +5564,7 @@ EDITOR.prototype = {
                             // The combined document is still waiting for input to be ready.
                             poll = true;
 
-                        } else if (data.status === 1) {
+                        } else if (data.status === 1 || data.status === 3) {
                             // The combine document is ready for conversion into a single PDF.
                             poll = true;
 
@@ -5283,9 +5604,6 @@ EDITOR.prototype = {
      * @method get_images_for_documents
      */
     start_document_to_image_conversion: function () {
-        if (this.get('destroyed')) {
-            return;
-        }
         Y.io(AJAXBASE, {
             method: 'get',
             context: this,
@@ -5317,6 +5635,52 @@ EDITOR.prototype = {
     },
 
     /**
+     * Display an error in a small part of the page (don't block everything).
+     *
+     * @param string The error text.
+     * @param boolean dismissable Not critical messages can be removed after a short display.
+     * @protected
+     * @method warning
+     */
+    warning: function (message, dismissable) {
+        var warningmessageorigine = this.get_dialogue_element('div.assignfeedback_editpdfplus_warningmessages');
+        if (warningmessageorigine) {
+            warningmessageorigine.remove();
+        }
+
+        var icontemplate = this.get_dialogue_element(SELECTOR.ICONMESSAGECONTAINER);
+        var warningregion = this.get_dialogue_element(SELECTOR.WARNINGMESSAGECONTAINER);
+        var delay = 15, duration = 1;
+        var messageclasses = 'assignfeedback_editpdfplus_warningmessages label label-warning';
+        if (dismissable) {
+            delay = 4;
+            messageclasses = 'assignfeedback_editpdfplus_warningmessages label label-info';
+        }
+        var warningelement = Y.Node.create('<div class="' + messageclasses + '"></div>');
+
+        // Copy info icon template.
+        warningelement.append(icontemplate.one('*').cloneNode());
+
+        // Append the message.
+        warningelement.append(message);
+
+        // Add the entire warning to the container.
+        warningregion.prepend(warningelement);
+
+        // Remove the message after a short delay.
+        warningelement.transition(
+                {
+                    duration: duration,
+                    delay: delay,
+                    opacity: 0
+                },
+                function () {
+                    warningelement.remove();
+                }
+        );
+    },
+
+    /**
      * The info about all pages in the pdf has been returned.
      *
      * @param string The ajax response as text.
@@ -5324,7 +5688,7 @@ EDITOR.prototype = {
      * @method prepare_pages_for_display
      */
     prepare_pages_for_display: function (data) {
-        var i, j, error;
+        var i, j, error, annotation, readonly;
         if (!data.pagecount) {
             if (this.dialogue) {
                 this.dialogue.hide();
@@ -5361,12 +5725,17 @@ EDITOR.prototype = {
         for (i = 0; i < this.pages.length; i++) {
             var parentannot = [];
             for (j = 0; j < this.pages[i].annotations.length; j++) {
-                data = this.pages[i].annotations[j];
-                if (data.parent_annot && parseInt(data.parent_annot, 10) !== 0) {
-                    data.parent_annot_element = parentannot[data.parent_annot];
+                annotation = this.pages[i].annotations[j];
+                if (annotation.parent_annot && parseInt(annotation.parent_annot, 10) !== 0) {
+                    annotation.parent_annot_element = parentannot[annotation.parent_annot];
                 }
-                var dTId = data.toolid;
-                var newannot = this.create_annotation(this.typetools[this.tools[dTId].type].label, dTId, data, this.tools[dTId]);
+                var dTId = annotation.toolid;
+                var newannot = this.create_annotation(
+                        this.typetools[this.tools[dTId].type].label,
+                        dTId,
+                        annotation,
+                        this.tools[dTId]
+                        );
                 if (newannot.parent_annot_element) {
                     var parentAnnotElemId = newannot.parent_annot_element.id;
                     if (this.annotationsparent[parentAnnotElemId]) {
@@ -5375,9 +5744,15 @@ EDITOR.prototype = {
                         this.annotationsparent[parentAnnotElemId] = [newannot];
                     }
                 }
-                parentannot[data.id] = newannot;
+                parentannot[annotation.id] = newannot;
                 this.pages[i].annotations[j] = newannot;
             }
+        }
+
+        readonly = this.get('readonly');
+        if (!readonly && data.partial) {
+            // Warn about non converted files, but only for teachers.
+            this.warning(M.util.get_string('partialwarning', 'assignfeedback_editpdfplus', false));
         }
 
         // Update the ui.
@@ -5392,9 +5767,6 @@ EDITOR.prototype = {
      * @method update_page_load_progress
      */
     update_page_load_progress: function () {
-        if (this.get('destroyed')) {
-            return;
-        }
         var checkconversionstatus,
                 ajax_error_total = 0,
                 progressbar = this.get_dialogue_element(SELECTOR.PROGRESSBARCONTAINER + ' .bar');
@@ -5417,9 +5789,6 @@ EDITOR.prototype = {
             },
             on: {
                 success: function (tid, response) {
-                    if (this.get('destroyed')) {
-                        return;
-                    }
                     ajax_error_total = 0;
 
                     var progress = 0;
@@ -5441,9 +5810,6 @@ EDITOR.prototype = {
                     }
                 },
                 failure: function (tid, response) {
-                    if (this.get('destroyed')) {
-                        return;
-                    }
                     ajax_error_total = ajax_error_total + 1;
                     // We only continue on error if the all pages were not generated,
                     // and if the ajax call did not produce 5 errors in the row.
@@ -5476,9 +5842,6 @@ EDITOR.prototype = {
      * @return  {object}
      */
     handle_response_data: function (response) {
-        if (this.get('destroyed')) {
-            return;
-        }
         var data;
         try {
             data = Y.JSON.parse(response.responseText);
@@ -5523,7 +5886,7 @@ EDITOR.prototype = {
     /**
      * Attach listeners and enable the color picker buttons.
      * @protected
-     * @method setup_toolbar
+     * @method setup_toolbar_advanced
      */
     setup_toolbar_advanced: function () {
         var annotationcolourbutton,
@@ -5557,6 +5920,17 @@ EDITOR.prototype = {
 
             return;
         }
+
+        // Rotate Left.
+        var rotateleftbutton = this.get_dialogue_element(SELECTOR.ROTATELEFTBUTTON);
+        rotateleftbutton.on('click', this.rotatePDF, this, true);
+        rotateleftbutton.on('key', this.rotatePDF, 'down:13', this, true);
+        // Rotate Right.
+        var rotaterightbutton = this.get_dialogue_element(SELECTOR.ROTATERIGHTBUTTON);
+        rotaterightbutton.on('click', this.rotatePDF, this, false);
+        rotaterightbutton.on('key', this.rotatePDF, 'down:13', this, false);
+
+        this.disable_touch_scroll();
 
         var customtoolbar = this.get_dialogue_element(SELECTOR.CUSTOMTOOLBARID + '1');
         if (customtoolbar) {
@@ -5683,7 +6057,7 @@ EDITOR.prototype = {
         this.currentedit.tool = tool;
         this.currentedit.id = toolid;
 
-        if (tool !== "select" && tool !== "drag") {
+        if (tool !== "select" && tool !== "drag" && tool !== "resize") {
             this.lastannotationtool = tool;
         }
 
@@ -5871,6 +6245,30 @@ EDITOR.prototype = {
                 }
             }
         }
+
+        if (this.currentedit.tool === 'resize') {
+            var annotations2 = this.pages[this.currentpage].annotations;
+            var selectedAnnot = null;
+            // Find the first annotation whose bounds encompass the click.
+            Y.each(annotations2, function (annotation) {
+                Y.each(annotation.resizeAreas, function (area) {
+                    if (e.target == area) {
+                        selectedAnnot = annotation;
+                    }
+                });
+            });
+            if (selectedAnnot) {
+                this.resizeareaselected = e.target.get('id');
+                if (e.target.getData('direction') === 'left' || e.target.getData('direction') === 'right') {
+                    canvas.setStyle('cursor', 'col-resize');
+                } else {
+                    canvas.setStyle('cursor', 'row-resize');
+                }
+                this.lastannotation = this.currentannotation;
+                this.currentannotation = selectedAnnot;
+            }
+        }
+
         if (this.currentannotation) {
             // Used to calculate drag offset.
             this.currentedit.annotationstart = {x: this.currentannotation.x,
@@ -5916,6 +6314,10 @@ EDITOR.prototype = {
             drawingregion.getDOMNode().scrollLeft -= diffX;
             drawingregion.getDOMNode().scrollTop -= diffY;
 
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mousemoveResize(e, point, resizearea);
+
         } else {
             if (this.currentedit.start) {
                 this.currentedit.end = point;
@@ -5930,7 +6332,7 @@ EDITOR.prototype = {
      * @param Event
      * @method edit_end
      */
-    edit_end: function () {
+    edit_end: function (e) {
         var duration,
                 annotation;
 
@@ -5944,7 +6346,7 @@ EDITOR.prototype = {
         if (this.currentedit.id && this.currentedit.id[0] === 'c') {
             toolid = this.currentedit.id.substr(8);
         }
-        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'select' && this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             annotation = this.create_annotation(this.currentedit.tool, this.currentedit.id, {}, this.tools[toolid]);
             if (annotation) {
                 if (this.currentdrawable) {
@@ -5973,6 +6375,12 @@ EDITOR.prototype = {
                     this.drawablesannotations.push(annotation);
                 }
             }
+        } else if (this.currentedit.tool === 'resize' && this.resizeareaselected) {
+            var resizearea = this.get_dialogue_element("#" + this.resizeareaselected);
+            this.currentannotation.mouseupResize(e, resizearea);
+            var canvas = this.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+            canvas.setStyle('cursor', 'default');
+            this.resizeareaselected = null;
         }
 
         // Save the changes.
@@ -5983,9 +6391,19 @@ EDITOR.prototype = {
         this.currentedit.start = false;
         this.currentedit.end = false;
         this.currentedit.path = [];
-        if (this.currentedit.tool !== 'drag') {
+        if (this.currentedit.tool !== 'drag' && this.currentedit.tool !== 'resize') {
             this.handle_tool_button_action("select");
         }
+    },
+
+    /**
+     * Temporise a function.
+     * @public
+     * @method temporise
+     */
+    temporise: function (e, fct, timeout) {
+        e.preventDefault();
+        setTimeout(fct, timeout);
     },
 
     /**
@@ -5994,8 +6412,7 @@ EDITOR.prototype = {
      * @method resize
      */
     resize: function () {
-        var drawingregion, drawregionheight;
-
+        var drawingregion, drawregionheight, drawregiontop, drawheaderheight, drawfooterheight;
         if (this.dialogue) {
             if (!this.dialogue.get('visible')) {
                 return;
@@ -6003,16 +6420,45 @@ EDITOR.prototype = {
             this.dialogue.centerDialogue();
         }
 
+        //calculate top div
+        var drawingregionheaderSelector = document.getElementsByClassName(SELECTOR.DRAWINGTOOLBAR);
+        if (drawingregionheaderSelector.length > 0) {
+            var drawingregionheader = drawingregionheaderSelector[0];
+            drawregiontop = drawingregionheader.getBoundingClientRect().height;
+            drawheaderheight = drawingregionheader.getBoundingClientRect().bottom;
+        } else {
+            drawregiontop = 52;
+            drawheaderheight = 170;
+        }
+        //get footer's height
+        var footer = document.querySelector("div[data-region='grade-actions-panel']");
+        if (footer) {
+            drawfooterheight = footer.getBoundingClientRect().height;
+        } else {
+            drawfooterheight = 60;
+        }
         // Make sure the dialogue box is not bigger than the max height of the viewport.
-        drawregionheight = Y.one('body').get('winHeight') - 120; // Space for toolbar + titlebar.
+        // be careful to remove space for toolbar + titlebar.
+        drawregionheight = Y.one('body').get('winHeight') - (drawfooterheight + drawheaderheight);
         if (drawregionheight < 100) {
             drawregionheight = 100;
         }
-        drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
-        if (this.dialogue) {
-            drawingregion.setStyle('maxHeight', drawregionheight + 'px');
+        var drawingregionSelector = document.getElementsByClassName(SELECTOR.DRAWINGREGIONCLASS);
+        if (drawingregionSelector.length > 0) {
+            drawingregion = drawingregionSelector[0];
+            drawingregion.style.top = drawregiontop + 'px';
+            drawingregion.style.maxHeight = drawregionheight + 'px';
+        } else {
+            drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
+            if (this.dialogue) {
+                drawingregion.setStyle('maxHeight', drawregionheight + 'px');
+            }
         }
-        this.redraw();
+        try {
+            this.redraw();
+        } catch (exception) {
+        }
+
         return true;
     },
 
@@ -6032,22 +6478,6 @@ EDITOR.prototype = {
      */
     create_annotation: function (type, toolid, data, toolobjet) {
 
-        /*pour fonctionnement des anciens outils*/
-        /*if (type && typeof type !== 'undefined' && (typeof toolid === 'undefined' || toolid === null)) {
-            window.console.log("create_annotation deprecated");
-            if (type === "line") {
-                data.toolid = TOOLTYPE.LINE;
-            } else if (type === "rectangle") {
-                data.toolid = TOOLTYPE.RECTANGLE;
-            } else if (type === "oval") {
-                data.toolid = TOOLTYPE.OVAL;
-            } else if (type === "pen") {
-                data.toolid = TOOLTYPE.PEN;
-            } else if (type === "highlight") {
-                data.toolid = TOOLTYPE.HIGHLIGHT;
-            }
-            data.tooltype = this.tools[data.toolid];
-        } else */
         if (toolid !== null && toolid[0] === 'c') {
             data.toolid = toolid.substr(8);
         }
@@ -6168,9 +6598,7 @@ EDITOR.prototype = {
      * @method save_current_page
      */
     save_current_page: function () {
-        if (this.get('destroyed')) {
-            return;
-        }
+        this.clear_warnings(false);
         var ajaxurl = AJAXBASE,
                 config;
 
@@ -6195,16 +6623,9 @@ EDITOR.prototype = {
                         if (jsondata.error) {
                             return new M.core.ajaxException(jsondata);
                         }
+                        // Show warning that we have not saved the feedback.
                         Y.one(SELECTOR.UNSAVEDCHANGESINPUT).set('value', 'true');
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('opacity', 1);
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'inline-block');
-                        Y.one(SELECTOR.UNSAVEDCHANGESDIV).transition({
-                            duration: 1,
-                            delay: 2,
-                            opacity: 0
-                        }, function () {
-                            Y.one(SELECTOR.UNSAVEDCHANGESDIV).setStyle('display', 'none');
-                        });
+                        this.warning(M.util.get_string('draftchangessaved', 'assignfeedback_editpdfplus'), true);
                     } catch (e) {
                         return new M.core.exception(e);
                     }
@@ -6303,6 +6724,17 @@ EDITOR.prototype = {
             }
         }
 
+        //remove active class for resize areas
+        var resizezones = Y.all('.assignfeedback_editpdfplus_resize');
+        if (resizezones) {
+            resizezones.removeClass('assignfeedback_editpdfplus_resize_active');
+        }
+
+        //refresh selected tool
+        if (!this.get('readonly')) {
+            this.refresh_button_state();
+        }
+
         for (i = 0; i < page.annotations.length; i++) {
             annot = page.annotations[i];
             var tool = annot.tooltype;
@@ -6316,6 +6748,22 @@ EDITOR.prototype = {
                 this.drawables.push(annot.draw());
                 this.drawablesannotations.push(annot);
             }
+        }
+    },
+
+    /**
+     * Clear all current warning messages from display.
+     * @protected
+     * @method clear_warnings
+     * @param {Boolean} allwarnings If true, all previous warnings are removed.
+     */
+    clear_warnings: function (allwarnings) {
+        // Remove all warning messages, they may not relate to the current document or page anymore.
+        var warningregion = this.get_dialogue_element(SELECTOR.WARNINGMESSAGECONTAINER);
+        if (allwarnings) {
+            warningregion.empty();
+        } else {
+            warningregion.all('.alert-info').remove(true);
         }
     },
 
@@ -6345,10 +6793,13 @@ EDITOR.prototype = {
         }
 
         page = this.pages[this.currentpage];
-        this.loadingicon.hide();
+        if (this.loadingicon) {
+            this.loadingicon.hide();
+        }
         drawingcanvas.setStyle('backgroundImage', 'url("' + page.url + '")');
         drawingcanvas.setStyle('width', page.width + 'px');
         drawingcanvas.setStyle('height', page.height + 'px');
+        drawingcanvas.scrollIntoView();
 
         // Update page select.
         this.get_dialogue_element(SELECTOR.PAGESELECT).set('selectedIndex', this.currentpage);
@@ -6385,6 +6836,7 @@ EDITOR.prototype = {
         pageselect.removeAttribute('disabled');
         pageselect.on('change', function () {
             this.currentpage = pageselect.get('value');
+            this.clear_warnings(false);
             this.change_page();
         }, this);
 
@@ -6408,6 +6860,7 @@ EDITOR.prototype = {
         if (this.currentpage < 0) {
             this.currentpage = 0;
         }
+        this.clear_warnings(false);
         this.change_page();
     },
 
@@ -6422,6 +6875,7 @@ EDITOR.prototype = {
         if (this.currentpage >= this.pages.length) {
             this.currentpage = this.pages.length - 1;
         }
+        this.clear_warnings(false);
         this.change_page();
     },
 
@@ -6439,6 +6893,147 @@ EDITOR.prototype = {
 
         for (i = 0; i < this.drawables.length; i++) {
             this.drawables[i].scroll_update(x, y);
+        }
+    },
+
+    /**
+     * Calculate degree to rotate.
+     * @protected
+     * @param {Object} e javascript event
+     * @param {boolean} left  true if rotating left, false if rotating right
+     * @method rotatepdf
+     */
+    rotatePDF: function (e, left) {
+        e.preventDefault();
+
+        if (this.get('destroyed')) {
+            return;
+        }
+        var self = this;
+        // Save old coordinates.
+        var i;
+        this.oldannotationcoordinates = [];
+        var annotations = this.pages[this.currentpage].annotations;
+        for (i = 0; i < annotations.length; i++) {
+            var oldannotation = annotations[i];
+            this.oldannotationcoordinates.push([oldannotation.x, oldannotation.y]);
+        }
+
+        var ajaxurl = AJAXBASE;
+        var config = {
+            method: 'post',
+            context: this,
+            sync: false,
+            data: {
+                'sesskey': M.cfg.sesskey,
+                'action': 'rotatepage',
+                'index': this.currentpage,
+                'userid': this.get('userid'),
+                'attemptnumber': this.get('attemptnumber'),
+                'assignmentid': this.get('assignmentid'),
+                'rotateleft': left
+            },
+            on: {
+                success: function (tid, response) {
+                    var jsondata;
+                    try {
+                        jsondata = Y.JSON.parse(response.responseText);
+                        var page = self.pages[self.currentpage];
+                        page.url = jsondata.page.url;
+                        page.width = jsondata.page.width;
+                        page.height = jsondata.page.height;
+                        self.loadingicon.hide();
+
+                        // Change canvas size to fix the new page.
+                        var drawingcanvas = self.get_dialogue_element(SELECTOR.DRAWINGCANVAS);
+                        drawingcanvas.setStyle('backgroundImage', 'url("' + page.url + '")');
+                        drawingcanvas.setStyle('width', page.width + 'px');
+                        drawingcanvas.setStyle('height', page.height + 'px');
+
+                        /**
+                         * Move annotation to old position.
+                         * Reason: When canvas size change
+                         * > Shape annotations move with relation to canvas coordinates
+                         * > Nodes of stamp annotations move with relation to canvas coordinates
+                         * > Presentation (picture) of stamp annotations  stay to document coordinates (stick to its own position)
+                         * > Without relocating the node and presentation of a stamp annotation to the same x,y position,
+                         * the stamp annotation cannot be chosen when using "drag" tool.
+                         * The following code brings all annotations to their old positions with relation to the canvas coordinates.
+                         */
+                        var i;
+                        // Annotations.
+                        var annotations = page.annotations;
+                        for (i = 0; i < annotations.length; i++) {
+                            if (self.oldannotationcoordinates && self.oldannotationcoordinates[i]) {
+                                var oldX = self.oldannotationcoordinates[i][0];
+                                var oldY = self.oldannotationcoordinates[i][1];
+                                var annotation = annotations[i];
+                                annotation.move(oldX, oldY);
+                            }
+                        }
+                        // Save Annotations.
+                        return self.save_current_page();
+                    } catch (e) {
+                        return new M.core.exception(e);
+                    }
+                },
+                failure: function (tid, response) {
+                    return new M.core.exception(response.responseText);
+                }
+            }
+        };
+        Y.io(ajaxurl, config);
+    },
+
+    /**
+     * Test the browser support for options objects on event listeners.
+     * @return Boolean
+     */
+    event_listener_options_supported: function () {
+        var passivesupported = false,
+                options,
+                testeventname = "testpassiveeventoptions";
+
+        // Options support testing example from:
+        // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+
+        try {
+            options = Object.defineProperty({}, "passive", {
+                get: function () {
+                    passivesupported = true;
+                }
+            });
+
+            // We use an event name that is not likely to conflict with any real event.
+            document.addEventListener(testeventname, options, options);
+            // We remove the event listener as we have tested the options already.
+            document.removeEventListener(testeventname, options, options);
+        } catch (err) {
+            // It's already false.
+            passivesupported = false;
+        }
+        return passivesupported;
+    },
+
+    /**
+     * Disable Touch Move scrolling
+     */
+    disable_touch_scroll: function () {
+        if (this.event_listener_options_supported()) {
+            document.addEventListener('touchmove', this.stop_touch_scroll.bind(this), {passive: false});
+        }
+    },
+
+    /**
+     * Stop Touch Scrolling
+     * @param {Object} e
+     */
+    stop_touch_scroll: function (e) {
+        var drawingregion = this.get_dialogue_element(SELECTOR.DRAWINGREGION);
+
+        if (drawingregion.contains(e.target)) {
+            e.stopPropagation();
+            e.preventDefault();
         }
     },
 
@@ -6516,10 +7111,6 @@ M.assignfeedback_editpdfplus.editor = M.assignfeedback_editpdfplus.editor || {};
  * @param {Object} params
  */
 M.assignfeedback_editpdfplus.editor.init = M.assignfeedback_editpdfplus.editor.init || function (params) {
-    if (typeof M.assignfeedback_editpdfplus.instance !== 'undefined') {
-        M.assignfeedback_editpdfplus.instance.destroy();
-    }
-
     M.assignfeedback_editpdfplus.instance = new EDITOR(params);
     return M.assignfeedback_editpdfplus.instance;
 };
@@ -6539,6 +7130,7 @@ M.assignfeedback_editpdfplus.editor.init = M.assignfeedback_editpdfplus.editor.i
         "querystring-stringify-simple",
         "moodle-core-notification-dialog",
         "moodle-core-notification-alert",
+        "moodle-core-notification-warning",
         "moodle-core-notification-exception",
         "moodle-core-notification-ajaxexception"
     ]
