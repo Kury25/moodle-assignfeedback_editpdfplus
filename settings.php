@@ -30,6 +30,8 @@ $settings->add(new admin_setting_configcheckbox('assignfeedback_editpdfplus/defa
                 new lang_string('default', 'assignfeedback_editpdfplus'),
                 new lang_string('default_help', 'assignfeedback_editpdfplus'), 0));
 
+$settings->add(new admin_setting_configcheckbox('assignfeedback_editpdfplus/usecapabilities', get_string('setting_usecaps',  'assignfeedback_editpdfplus'), get_string('setting_usecaps_desc',  'assignfeedback_editpdfplus'), 0));
+
 // Base palette (contextid = 1) link.
 $basepaletteurl = $CFG->wwwroot . '/mod/assign/feedback/editpdfplus/view_admin.php?id=' . \context_system::instance()->id;
 $settings->add(new admin_setting_heading('basepalette', get_string('basepalette', 'assignfeedback_editpdfplus'), get_string('basepalette_desc', 'assignfeedback_editpdfplus', $basepaletteurl)));

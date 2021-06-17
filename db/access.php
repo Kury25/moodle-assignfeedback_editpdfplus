@@ -30,6 +30,7 @@ $capabilities = array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
+            'user' => CAP_ALLOW
         )
     ),
     'assignfeedback/editpdfplus:notify' => array(

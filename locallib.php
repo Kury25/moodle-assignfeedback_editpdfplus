@@ -413,29 +413,26 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
     }
 
     public function is_enabled() {
-        $editpdf = null;
-        $editpdfenable = false;
-        $editpdfconfenable = false;
-        $listPlugins = $this->assignment->get_feedback_plugins();
-        foreach ($listPlugins as $plug) {
-            if ($plug->get_name() == get_string('pluginname', 'assignfeedback_editpdf')) {
-                $editpdf = $plug;
-                $editpdfenable = $plug->is_enabled();
-                $tmpconf = $plug->get_config();
-                if ($tmpconf && isset($tmpconf->enabled)) {
-                    $editpdfconfenable = $plug->get_config()->enabled;
-                }
-                break;
-            }
-        }
-        if ($editpdf && $editpdfenable && $editpdfconfenable) {
+        $context = $this->assignment->get_context();
+        $editpdfplusconf = $this->get_config();
+        $usecapabilities = get_config('assignfeedback_editpdfplus', 'usecapabilities');
+        if ($usecapabilities && !has_capability('assignfeedback/editpdfplus:use', $context, null, false)) {
+            // User is not allowed to use the plugin.
             return false;
         }
-        $editpdfplusconf = $this->get_config();
-        if ($editpdfplusconf && isset($editpdfplusconf->enabled)) {
-            return $editpdfplusconf->enabled;
+        // User can use this plugin.
+        if ($editpdfplusconf && isset($editpdfplusconf->enabled) && $editpdfplusconf->enabled) {
+            // This plugin is enabled in this assignment's feedback settings.
+            $feedbackplugins = $this->assignment->get_feedback_plugins();
+            foreach ($feedbackplugins as $feedbackplugin) {
+                if ($feedbackplugin instanceof \assign_feedback_editpdf) {
+                    // We disable the core editpdf plugin to avoid possible conflicts.
+                    $feedbackplugin->disable();
+                    break;
+                }
+            }
         }
-        return $this->is_available();
+        return $editpdfplusconf->enabled && $this->is_available();
     }
 
     /**
@@ -444,7 +441,15 @@ class assign_feedback_editpdfplus extends assign_feedback_plugin {
      * @return bool
      */
     public function is_available() {
+        // Should the option be available to teachers in the assignment settings?
+        $usecapabilities = get_config('assignfeedback_editpdfplus', 'usecapabilities');
+        $context = $this->assignment->get_context();
+        if ($usecapabilities && !has_capability('assignfeedback/editpdfplus:use', $context, null, false)) {
+            // User does not have permission to use the plugin.
+            return false;
+        }
         if ($this->enabledcache === null) {
+            // Check whether the necessary GS works.
             $testpath = assignfeedback_editpdfplus\pdf::test_gs_path(false);
             $this->enabledcache = $testpath->status == assignfeedback_editpdfplus\pdf::GSPATH_OK;
         }

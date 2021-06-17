@@ -209,3 +209,6 @@ $string['erase_student_annotation'] = 'Student\'s modifications';
 $string['erase_student_annotation_desc'] = 'Student\'s modifications on annotations update';
 $string['erase_student_on_update'] = 'Preserve student\'s modifications on annotations update';
 $string['erase_student_on_update_desc'] = 'Preserve student\'s modifications on annotations update, default false';
+
+$string['setting_usecaps'] = 'Use capabilities to make plugin available to users';
+$string['setting_usecaps_desc'] = 'When checked, the plugin is only made available to users with the \'assignfeedback/editpdfplus:use\' capability.';
